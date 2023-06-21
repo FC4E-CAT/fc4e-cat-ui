@@ -1,10 +1,11 @@
-import React from 'react';
+import { Container } from 'react-bootstrap';
 import {
   BrowserRouter,
   Routes,
   Route
 } from "react-router-dom";
 import Header from "./components/Header"
+import KeycloakLogin from "./components/KeycloakLogin"
 import Home from "./pages/Home"
 import About from "./pages/About";
 import './App.css';
@@ -15,10 +16,13 @@ function App() {
     <div className="App">
       <BrowserRouter basename="/">
         <Header />
-        <Routes>
-          <Route path="/" element={<Home />}/>
-          <Route path="/about" element={<About />}/>
-        </Routes>
+        <Container>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/login" element={<KeycloakLogin />} />
+          </Routes>
+        </Container>
       </BrowserRouter>
     </div>
   );
