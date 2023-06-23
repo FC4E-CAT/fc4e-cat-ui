@@ -1,6 +1,10 @@
 # fc4e-cat-ui
 
 The Compliance Assessment Toolkit will support the EOSC PID policy with services to encode, record, and query compliance with the policy. To do so, a wide range of compliance requirements ( TRUST, FAIR, PID Policy, Reproducibility, GDPR, Licences) will be evaluated as use cases for definition of a conceptual model. At the same time, vocabularies, concepts, and designs are intended to be re-usable for other compliance needs: TRUST, FAIR, POSI, CARE, Data Commons, etc. This will be followed by a supporting service specification (the framework), accompanied  by development and testing of operational services for PID Policy Compliance monitoring. Though primarily aimed at machine-actionable operations, the API-based services will be complemented by user interfaces to broaden its use. 
+## Configuration
+
+Before running make sure to configure appropriatelly the `src/keycloak.json` file.
+
 
 This component refers to the User Interfaces based on the APIs that support the use of the APIs within websites and applications.
 

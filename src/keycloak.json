@@ -1,0 +1,9 @@
+{
+    "realm": "",
+    "url": "",
+    "ssl-required": "external",
+    "resource": "",
+    "public-client": true,
+    "confidential-port": 999999,
+    "clientId": ""
+}
