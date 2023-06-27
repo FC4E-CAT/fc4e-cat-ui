@@ -8,7 +8,7 @@ function Profile() {
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
   const { data } = UserAPI.useGetProfile(
-    { limit: 10, page: 1, sortBy: "asc", token: keycloak?.token }
+    { token: keycloak?.token }
   );
 
   useEffect(() => {

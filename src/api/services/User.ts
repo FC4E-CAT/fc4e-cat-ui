@@ -1,21 +1,36 @@
 import Client from "../client";
 import { useQuery } from "@tanstack/react-query";
 
-type UserResponse = UserProfile;
-
 const User = {
-  useGetProfile: ({ limit, page, sortBy, token }: ApiOptions) =>
-    useQuery<UserResponse, ApiServiceErr>(
-      [limit, page, sortBy, token],
+  useGetProfile: ({token }: ApiOptions) =>
+    useQuery<UserResponse, any>(
+      [token],
       async () => {
         const response = await Client(token).get<UserResponse>(
-          `/users/profile?limit=${limit}&page=${page}&sortby=${sortBy}`
+          `/users/profile`
         );
         return response.data;
       },
       {
         onError: (error) => {
-          console.error("Error fetching uer profile:", error);
+          console.log(error);
+          return (error.response as ApiServiceErr)
+        }
+      }
+    ),
+  useGetUsers: ({ limit, page, sortBy, token }: ApiOptions) =>
+    useQuery<UserListResponse, any>(
+      [limit, page, sortBy, token],
+      async () => {
+        const response = await Client(token).get<UserListResponse>(
+          `/users?limit=${limit}&page=${page}&sortby=${sortBy}`
+        );
+        return response.data;
+      },
+      {
+        onError: (error) => {
+          console.log(error.response);
+          return (error.response as ApiServiceErr)
         }
       }
     )
