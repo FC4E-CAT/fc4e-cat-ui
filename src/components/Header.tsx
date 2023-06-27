@@ -1,33 +1,62 @@
+import { useContext, useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { Container, Navbar } from 'react-bootstrap';
 import logo from '../logo.svg';
+import user from '../assets/user.svg';
+import { UserAPI } from '../api';
+import { AuthContext } from '../auth/AuthContext';
 
 function Header() {
-    return (
-        <Navbar variant="light" expand="lg" className="main-nav shadow-sm">
-        <Container>
+  const { authenticated, setAuthenticated, keycloak, setKeycloak } = useContext(AuthContext)!;
+  const [userProfile, setUserProfile] = useState<UserProfile>();
 
-          {/* Branding logos */}
-          <Navbar.Brand href="/">
+
+  useEffect(() => {
+    UserAPI.getProfile(keycloak?.token).then(res => {
+      setUserProfile(res.data);
+    }
+    ).catch(error => console.log(error));
+  }, [authenticated, keycloak?.token]);
+
+  return (
+    <Navbar variant="light" expand="lg" className="main-nav shadow-sm">
+      <Container>
+
+        {/* Branding logos */}
+        <Navbar.Brand>
+          <Link to="/">
             <img
               src={logo}
               height="40"
               className="d-inline-block align-top"
               alt="FAIRCORE4EOSC CAT"
             />
-          </Navbar.Brand>
+          </Link>
+        </Navbar.Brand>
 
-          {/* Hamburger button */}
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        {/* Hamburger button */}
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-          {/* Collapsible part that holds navigation links */}
-          <Navbar.Collapse id="basic-navbar-nav">
-           <Link to="/login" className="btn btn-primary" >Login</Link>
-          </Navbar.Collapse>
-
-        </Container>
-      </Navbar>
-    );
+        {/* Collapsible part that holds navigation links */}
+        <Navbar.Collapse id="basic-navbar-nav">
+          {!authenticated &&
+            <Link to="/login" className="btn btn-primary" >Login</Link>
+          }
+          {authenticated &&
+            <Link to="/profile" className="navbar-collapse collapse justify-content-end">
+              <div
+                id="nav-dropdown-dark-example"
+                title={userProfile?.id}
+              >
+                <img src={user} alt="mdo" className="rounded-circle" width="32" height="32" />
+                <span>{userProfile?.id}</span>
+              </div>
+            </Link>
+          }
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
+  );
 }
 
 export default Header;

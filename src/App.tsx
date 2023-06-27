@@ -1,4 +1,6 @@
 import { Container } from 'react-bootstrap';
+import { AuthProvider } from './auth/AuthContext';
+
 import {
   BrowserRouter,
   Routes,
@@ -7,24 +9,26 @@ import {
 import Header from "./components/Header"
 import KeycloakLogin from "./components/KeycloakLogin"
 import Home from "./pages/Home"
-import About from "./pages/About";
+import Profile from "./pages/Profile";
 import './App.css';
 
 function App() {
 
   return (
-    <div className="App">
-      <BrowserRouter basename="/">
-        <Header />
-        <Container>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/login" element={<KeycloakLogin />} />
-          </Routes>
-        </Container>
-      </BrowserRouter>
-    </div>
+      <div className="App">
+        <AuthProvider>
+          <BrowserRouter basename="/">
+            <Header />
+            <Container>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/login" element={<KeycloakLogin />} />
+              </Routes>
+            </Container>
+          </BrowserRouter>
+        </AuthProvider>
+      </div>
   );
 }
 

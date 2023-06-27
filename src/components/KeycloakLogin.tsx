@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import {
+    Navigate
+} from "react-router-dom";
+import { AuthContext } from '../auth/AuthContext';
 import Keycloak from 'keycloak-js';
-import decode from 'jwt-decode';
 import KeycloakConfig from '../keycloak.json';
 
 
 const KeycloakLogin = () => {
-    const [keycloak, setKeycloak] = useState<Keycloak>();
-    const [authenticated, setAuthenticated] = useState(false);
+    const { authenticated, setAuthenticated, keycloak, setKeycloak } = useContext(AuthContext)!;
 
     useEffect(() => {
         const initializeKeycloak = async () => {
@@ -27,20 +29,11 @@ const KeycloakLogin = () => {
 
         initializeKeycloak();
     }, []);
-
-    if (keycloak?.token && authenticated) {
-        const jwt = JSON.stringify(decode(keycloak.token));
-        return (
-            <div>
-                <h6>token:</h6>
-                <code>{keycloak.token}</code>
-                <hr />
-                <h6>contents:</h6>
-                <code>{jwt}</code>
-            </div>
-        );
-    } else {
-        return <div>Press Login to authenticate</div>;
+    if (authenticated) {
+        return <Navigate to="/profile" replace={true} />;
+    }
+    else {
+        return <></>
     }
 };
 
