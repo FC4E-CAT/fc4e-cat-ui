@@ -1,11 +1,11 @@
 import React, { createContext, useState } from 'react';
 
 interface AuthContextProps {
-    authenticated: boolean;
-    setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-    keycloak: any; // Replace 'any' with the appropriate type for your keycloak object
-    setKeycloak: React.Dispatch<React.SetStateAction<any>>;
-  }
+  authenticated: boolean;
+  setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  keycloak: any; // Replace 'any' with the appropriate type for your keycloak object
+  setKeycloak: React.Dispatch<React.SetStateAction<any>>;
+}
 
 // Create the context
 export const AuthContext = createContext<AuthContextProps | null>(null);

@@ -11,12 +11,13 @@ function Header() {
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
 
+  const { data } = UserAPI.useGetProfile(
+    { limit: 10, page: 1, sortBy: "asc", token: keycloak?.token },
+  );
+
   useEffect(() => {
-    UserAPI.getProfile(keycloak?.token).then(res => {
-      setUserProfile(res.data);
-    }
-    ).catch(error => console.log(error));
-  }, [authenticated, keycloak?.token]);
+    setUserProfile(data);
+  }, [data]);
 
   return (
     <Navbar variant="light" expand="lg" className="main-nav shadow-sm">
