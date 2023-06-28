@@ -25,11 +25,6 @@ function Profile() {
         <h6>User type:</h6>
         <code>{userProfile?.user_type}</code>
         <hr />
-        <h6>token:</h6>
-        <code>{keycloak.token}</code>
-        <hr />
-        <h6>contents:</h6>
-        <code>{jwt}</code>
       </div>
     );
   } else {
