@@ -40,3 +40,12 @@
 .active {
   color: red;
 }
+
+.custom-pagination input {
+  display:inline-block;
+  width:85px;
+  border-radius:0px;
+  float: left;
+  vertical-align: top;
+  margin-left: -1px;
+}

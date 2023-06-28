@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import {
     Navigate
 } from "react-router-dom";
-import { AuthContext } from '../auth/AuthContext';
+import { AuthContext } from './AuthContext';
 import Keycloak from 'keycloak-js';
 import KeycloakConfig from '../keycloak.json';
 
@@ -37,4 +37,4 @@ const KeycloakLogin = () => {
     }
 };
 
-export default KeycloakLogin;
+export { KeycloakLogin };

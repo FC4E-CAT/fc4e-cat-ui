@@ -1,34 +1,48 @@
 import { Container } from 'react-bootstrap';
-import { AuthProvider } from './auth/AuthContext';
 
 import {
   BrowserRouter,
   Routes,
   Route
 } from "react-router-dom";
-import Header from "./components/Header"
-import KeycloakLogin from "./components/KeycloakLogin"
-import Home from "./pages/Home"
-import Profile from "./pages/Profile";
+
+import {
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+
+import { AuthProvider, ProtectedRoute, KeycloakLogin } from './auth';
+import { Header } from "./components"
+import { Home, Profile, Users } from "./pages"
+
 import './App.css';
+
+const queryClient = new QueryClient();
 
 function App() {
 
   return (
-      <div className="App">
-        <AuthProvider>
+    <div className="App">
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
           <BrowserRouter basename="/">
             <Header />
             <Container>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile" element={<ProtectedRoute />} >
+                  <Route path="/profile" element={<Profile />} />
+                </Route>
+                <Route path="/users" element={<ProtectedRoute />} >
+                  <Route path="/users" element={<Users />} />
+                </Route>
                 <Route path="/login" element={<KeycloakLogin />} />
               </Routes>
             </Container>
           </BrowserRouter>
-        </AuthProvider>
-      </div>
+        </QueryClientProvider>
+      </AuthProvider>
+    </div>
   );
 }
 

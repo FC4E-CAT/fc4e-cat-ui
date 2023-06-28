@@ -11,12 +11,13 @@ function Header() {
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
 
+  const { data } = UserAPI.useGetProfile(
+    { token: keycloak?.token },
+  );
+
   useEffect(() => {
-    UserAPI.getProfile(keycloak?.token).then(res => {
-      setUserProfile(res.data);
-    }
-    ).catch(error => console.log(error));
-  }, [authenticated, keycloak?.token]);
+    setUserProfile(data);
+  }, [data]);
 
   return (
     <Navbar variant="light" expand="lg" className="main-nav shadow-sm">
@@ -43,15 +44,18 @@ function Header() {
             <Link to="/login" className="btn btn-primary" >Login</Link>
           }
           {authenticated &&
-            <Link to="/profile" className="navbar-collapse collapse justify-content-end">
-              <div
-                id="nav-dropdown-dark-example"
-                title={userProfile?.id}
-              >
-                <img src={user} alt="mdo" className="rounded-circle" width="32" height="32" />
-                <span>{userProfile?.id}</span>
-              </div>
-            </Link>
+            <>
+              <Link to="/users" className="btn btn-primary" >Users</Link>
+              <Link to="/profile" className="navbar-collapse collapse justify-content-end">
+                <div
+                  id="nav-dropdown-dark-example"
+                  title={userProfile?.id}
+                >
+                  <img src={user} alt="mdo" className="rounded-circle" width="32" height="32" />
+                  <span>{userProfile?.id}</span>
+                </div>
+              </Link>
+            </>
           }
         </Navbar.Collapse>
       </Container>
@@ -59,4 +63,4 @@ function Header() {
   );
 }
 
-export default Header;
+export { Header };

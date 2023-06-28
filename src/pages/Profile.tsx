@@ -7,15 +7,15 @@ function Profile() {
   const { authenticated, setAuthenticated, keycloak, setKeycloak } = useContext(AuthContext)!;
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
+  const { data } = UserAPI.useGetProfile(
+    { token: keycloak?.token }
+  );
+
   useEffect(() => {
-    UserAPI.getProfile(keycloak?.token).then(res => {
-      setUserProfile(res.data);
-    }
-    ).catch(error => console.log(error));
-  }, [authenticated, keycloak?.token]);
+    setUserProfile(data);
+  }, [data]);
 
   if (keycloak?.token && authenticated) {
-    console.log(keycloak);
     const jwt = JSON.stringify(decode(keycloak.token));
     return (
       <div className="mt-4">
