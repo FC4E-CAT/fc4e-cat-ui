@@ -1,8 +1,9 @@
 import axios from "axios";
+import { API } from "../config";
 
 const Client = (token: string) => {
   const client = axios.create({
-    baseURL: "http://localhost:8080/v1/",
+    baseURL: `${API.base_url}/${API.version}/`,
     headers: {'Authorization': `Bearer ${token}`}
   });
 

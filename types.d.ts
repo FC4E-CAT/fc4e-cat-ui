@@ -1,3 +1,8 @@
+type ApiT = {
+  base_url: string;
+  version: string;
+};
+
 interface ResponsePage<T> {
   size_of_page: number;
   number_of_pages: number;
