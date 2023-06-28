@@ -1,0 +1,6 @@
+{
+  "api": {
+    "base_url": "https://api.cat.argo.grnet.gr",
+    "version": "v1"
+  }
+}
