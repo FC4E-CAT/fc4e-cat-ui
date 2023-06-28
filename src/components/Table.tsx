@@ -15,6 +15,7 @@ import { AuthContext } from '../auth/AuthContext';
 function Table<T>({ columns, data_source }: { columns: ColumnDef<T>[], data_source: Function }) {
 
     const defaultData = React.useMemo(() => [], [])
+    const rerender = React.useReducer(() => ({}), {})[1]
     const { authenticated, setAuthenticated, keycloak, setKeycloak } = useContext(AuthContext)!;
 
     const [{ pageIndex, pageSize }, setPagination] =
@@ -32,14 +33,11 @@ function Table<T>({ columns, data_source }: { columns: ColumnDef<T>[], data_sour
     )
 
     const { data } = data_source(
-        { limit: pagination.pageSize, page: pagination.pageIndex, sortBy: "asc", token: keycloak?.token }
+        { size: pageSize, page: pageIndex, sortBy: "asc", token: keycloak?.token }
     );
 
     const table = useReactTable({
-        data: data?.content?.slice(
-            data?.number_of_page - 1,
-            data?.number_of_page
-        ) ?? defaultData,
+        data: data?.content ?? defaultData,
         columns,
         pageCount: data?.total_pages ?? -1,
         state: {
@@ -101,7 +99,7 @@ function Table<T>({ columns, data_source }: { columns: ColumnDef<T>[], data_sour
                     <li className="page-item">
                         <button
                             className="border rounded p-1"
-                            onClick={() => table.setPageIndex(0)}
+                            onClick={() => setPagination({pageIndex: 1, pageSize})}
                             disabled={pageIndex === 1}
                         >
                             {'<<'}
@@ -116,11 +114,11 @@ function Table<T>({ columns, data_source }: { columns: ColumnDef<T>[], data_sour
                             {'<'}
                         </button>
                     </li>
-                    <li className="page-item">
+                    {/* <li className="page-item">
                         <span className="flex items-center gap-1">
                             <input
                                 type="number"
-                                defaultValue={table.getState().pagination.pageIndex + 1}
+                                defaultValue={pageIndex + 1}
                                 onChange={e => {
                                     const page = e.target.value ? Number(e.target.value) - 1 : 0
                                     table.setPageIndex(page)
@@ -129,17 +127,17 @@ function Table<T>({ columns, data_source }: { columns: ColumnDef<T>[], data_sour
                                 className="form-control border p-1 rounded w-16"
                             />
                         </span>
-                    </li>
+                    </li> */}
                     <li className="page-item">
                         <button
                             className="border rounded p-1"
-                            onClick={() => { table.nextPage(); }}
-                            disabled={!table.getCanNextPage()}
+                            onClick={() => { setPagination({pageIndex: pageIndex + 1, pageSize})}}
+                            disabled={pageIndex === data?.total_pages}
                         >
                             {'>'}
                         </button>
                     </li>
-                    <li className="page-item">
+                    {/* <li className="page-item">
                         <button
                             className="border rounded p-1"
                             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
@@ -147,7 +145,7 @@ function Table<T>({ columns, data_source }: { columns: ColumnDef<T>[], data_sour
                         >
                             {'>>'}
                         </button>
-                    </li>
+                    </li> */}
                 </ul>
                 {/* {dataQuery.isFetching ? 'Loading...' : null} */}
             </nav>
