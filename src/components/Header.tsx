@@ -4,6 +4,7 @@ import { Container, Navbar } from 'react-bootstrap';
 import logo from '../logo.svg';
 import user from '../assets/user.svg';
 import { UserAPI } from '../api';
+import { trimProfileID } from '../utils/Utils';
 import { AuthContext } from '../auth/AuthContext';
 
 function Header() {
@@ -43,16 +44,16 @@ function Header() {
           {!authenticated &&
             <Link to="/login" className="btn btn-primary" >Login</Link>
           }
-          {authenticated &&
+          {authenticated && userProfile?.id &&
             <>
               <Link to="/users" className="btn btn-primary" >Users</Link>
               <Link to="/profile" className="navbar-collapse collapse justify-content-end">
                 <div
                   id="nav-dropdown-dark-example"
-                  title={userProfile?.id}
+                  title={trimProfileID(userProfile.id)}
                 >
                   <img src={user} alt="mdo" className="rounded-circle" width="32" height="32" />
-                  <span>{userProfile?.id}</span>
+                  <span>{trimProfileID(userProfile.id)}</span>
                 </div>
               </Link>
             </>
