@@ -41,7 +41,7 @@ interface ApiAuthOptions {
 }
 
 interface ApiAuthOptions {
-  limit?: number;
+  size?: number;
   page?: number;
   sortBy?: string;
 }

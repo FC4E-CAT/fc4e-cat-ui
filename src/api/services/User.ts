@@ -18,12 +18,12 @@ const User = {
         }
       }
     ),
-  useGetUsers: ({ limit, page, sortBy, token }: ApiOptions) =>
+  useGetUsers: ({ size, page, sortBy, token }: ApiOptions) =>
     useQuery<UserListResponse, any>(
-      [limit, page, sortBy, token],
+      [size, page, sortBy, token],
       async () => {
         const response = await Client(token).get<UserListResponse>(
-          `/users?limit=${limit}&page=${page}&sortby=${sortBy}`
+          `/users?size=${size}&page=${page}&sortby=${sortBy}`
         );
         return response.data;
       },
