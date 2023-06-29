@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
 import { UserAPI } from '../api';
 import { AuthContext } from '../auth/AuthContext';
 
@@ -6,13 +7,13 @@ function Profile() {
   const { authenticated, keycloak, registered } = useContext(AuthContext)!;
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
-  const { data } = UserAPI.useGetProfile(
+  const { data: profileData } = UserAPI.useGetProfile(
     { token: keycloak?.token, isRegistered: registered }
   );
 
   useEffect(() => {
-    setUserProfile(data);
-  }, [data]);
+    setUserProfile(profileData);
+  }, [profileData]);
 
   if (keycloak?.token && authenticated) {
     return (
@@ -22,6 +23,7 @@ function Profile() {
         <hr />
         <h6>User type:</h6>
         <code>{userProfile?.user_type}</code>
+        <Link to="/validations/request" className="btn btn-primary" >Request validation</Link>
         <hr />
       </div>
     );
