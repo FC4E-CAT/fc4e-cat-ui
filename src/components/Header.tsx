@@ -8,12 +8,12 @@ import { trimProfileID } from '../utils/Utils';
 import { AuthContext } from '../auth/AuthContext';
 
 function Header() {
-  const { authenticated, setAuthenticated, keycloak, setKeycloak } = useContext(AuthContext)!;
+  const { authenticated, keycloak, registered } = useContext(AuthContext)!;
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
 
   const { data } = UserAPI.useGetProfile(
-    { token: keycloak?.token },
+    { token: keycloak?.token, isRegistered: registered },
   );
 
   useEffect(() => {

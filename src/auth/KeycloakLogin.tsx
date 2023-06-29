@@ -5,10 +5,11 @@ import {
 import { AuthContext } from './AuthContext';
 import Keycloak from 'keycloak-js';
 import KeycloakConfig from '../keycloak.json';
+import { UserAPI } from '../api';
 
 
 const KeycloakLogin = () => {
-    const { authenticated, setAuthenticated, keycloak, setKeycloak } = useContext(AuthContext)!;
+    const { authenticated, setAuthenticated, keycloak, setKeycloak, registered, setRegistered } = useContext(AuthContext)!;
 
     useEffect(() => {
         const initializeKeycloak = async () => {
@@ -28,8 +29,19 @@ const KeycloakLogin = () => {
         };
 
         initializeKeycloak();
-    }, []);
-    if (authenticated) {
+    }, [setAuthenticated, setKeycloak]);
+
+    const { data } = UserAPI.useUserRegister(
+        { token: keycloak?.token, isRegistered: registered}
+    );
+
+    useEffect(() => {
+        if (typeof data === "boolean") {
+            setRegistered(data);
+        }
+    }, [data, setRegistered]);
+
+    if (authenticated && registered) {
         return <Navigate to="/profile" replace={true} />;
     }
     else {
