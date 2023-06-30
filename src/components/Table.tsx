@@ -15,8 +15,7 @@ import { AuthContext } from '../auth/AuthContext';
 function Table<T>({ columns, data_source }: { columns: ColumnDef<T>[], data_source: Function }) {
 
     const defaultData = React.useMemo(() => [], [])
-    const rerender = React.useReducer(() => ({}), {})[1]
-    const { authenticated, setAuthenticated, keycloak, setKeycloak } = useContext(AuthContext)!;
+    const { keycloak } = useContext(AuthContext)!;
 
     const [{ pageIndex, pageSize }, setPagination] =
         React.useState<PaginationState>({

@@ -38,6 +38,7 @@ type ApiServiceErr = {
 
 interface ApiAuthOptions {
   token: string;
+  isRegistered: boolean;
 }
 
 interface ApiAuthOptions {
