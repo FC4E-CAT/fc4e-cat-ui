@@ -41,10 +41,35 @@ interface ApiAuthOptions {
   isRegistered: boolean;
 }
 
-interface ApiAuthOptions {
+interface ApiPaginationOptions {
   size?: number;
   page?: number;
   sortBy?: string;
 }
 
-type ApiOptions = ApiAuthOptions | ApiAuthOptions;
+interface ValidationRequest {
+  organisation_role: string;
+  organisation_id: string;
+  organisation_source: string;
+  organisation_name: string;
+  organisation_website: string;
+  actor_id: number;
+};
+
+type ValidationRequestResponse = {
+  id: number;
+  user_id: string;
+  organisation_role: string;
+  organisation_id: string;
+  organisation_source: string;
+  organisation_name: string;
+  organisation_website: string;
+  actor_id: number;
+  status: string;
+  createdOn: string;
+  validated_on: string;
+  validatedBy: string;
+};
+
+type ApiOptions = ApiAuthOptions & ApiPaginationOptions;
+type ValidationRequestParams = ApiAuthOptions & ValidationRequest;
