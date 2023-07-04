@@ -27,8 +27,15 @@ interface UserProfile {
   updated_on: string;
 }
 
+interface Actor {
+  id: string;
+  name: string;
+  description: string;
+}
+
 type UserResponse = UserProfile;
 type UserListResponse = ResponsePage<UserProfile[]>;
+type ActorListResponse = ResponsePage<Actor[]>;
 
 
 type ApiServiceErr = {
@@ -69,6 +76,26 @@ type ValidationRequestResponse = {
   createdOn: string;
   validated_on: string;
   validatedBy: string;
+};
+
+type OrganisationRORSearchResult = {
+  id: string;
+  name: string;
+  website: string;
+};
+
+type OrganisationRORSearchResultModified = {
+  id: string;
+  value: string;
+  label: string;
+  website: string;
+};
+
+type OrganisationRORSearchResponse = ResponsePage<OrganisationRORSearchResult[]>;
+
+type OrganisationRORSearchParams = ApiAuthOptions & {
+  name: string;
+  page?: number;
 };
 
 type ApiOptions = ApiAuthOptions & ApiPaginationOptions;
