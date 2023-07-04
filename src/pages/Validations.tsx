@@ -1,11 +1,19 @@
-import { useContext, useState, useEffect } from 'react';
+import { useMemo, useContext, useState, useEffect, useRef } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { UserAPI, ValidationAPI, OrganisationAPI, ActorAPI } from '../api';
 import { AuthContext } from '../auth/AuthContext';
+import {
+  ColumnDef,
+} from '@tanstack/react-table'
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlusCircle } from 'react-icons/fa';
+import { BsArrowReturnLeft } from 'react-icons/bs';
+import decode from 'jwt-decode';
+import { Table } from '../components/Table';
 
-function Validations() {
+function RequestValidation() {
   const { keycloak, registered } = useContext(AuthContext)!;
 
   UserAPI.useGetProfile(
@@ -74,7 +82,6 @@ function Validations() {
   );
 
   const onSubmit: SubmitHandler<FormValues> = data => {
-    console.log(data);
     setOrganisationRole(data.organisation_role);
     setOrganisationID(data.organisation_id);
     setOrganisationSource(data.organisation_source);
@@ -84,7 +91,7 @@ function Validations() {
     setTimeout(() => {
       refetchValidationRequest();
     }, 1000);
-    
+
   };
 
   const renderOptions = () => {
@@ -148,6 +155,11 @@ function Validations() {
 
   return (
     <div className="mt-4">
+      <div className="d-flex justify-content-end my-2 container">
+        <Link to="/validations" className="my-2 btn btn-secondary">
+          <span><BsArrowReturnLeft />Back</span>
+        </Link>
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="organization_name" className="form-label fw-bold">
@@ -227,11 +239,200 @@ function Validations() {
             : null}
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <button className="btn btn-dark" type="submit">Request validation</button>
+          <button className="btn btn-primary" type="submit">Request validation</button>
         </div>
       </form>
     </div>
   );
 }
 
-export default Validations;
+function Validations(props: ComponentProps) {
+  let navigate = useNavigate();
+  let params = useParams();
+
+  const isAdmin = useRef<Boolean>(false);
+  const { keycloak } = useContext(AuthContext)!;
+  const jwt = JSON.stringify(decode(keycloak.token));
+
+  // FIXME: This is a naive approach, should reconsider
+  if (jwt.includes("admin")) {
+    isAdmin.current = true;
+  }
+
+  const cols = useMemo<ColumnDef<ValidationResponse>[]>(
+    () => [
+      {
+        header: ' ',
+        footer: props => props.column.id,
+        columns: [
+          {
+            accessorKey: 'id',
+            header: () => <span>ID</span>,
+            cell: info => info.getValue(),
+            footer: props => props.column.id,
+          },
+          {
+            accessorFn: row => row.user_id,
+            id: 'user_id',
+            cell: info => info.getValue(),
+            header: () => <span>User ID</span>,
+            footer: props => props.column.id,
+          },
+          {
+            accessorFn: row => row.organisation_name,
+            id: 'organisation_name',
+            cell: info => info.getValue(),
+            header: () => <span>Organisation Name</span>,
+            footer: props => props.column.id,
+          },
+          {
+            accessorFn: row => row.organisation_role,
+            id: 'organisation_role',
+            cell: info => info.getValue(),
+            header: () => <span>Organisation Role</span>,
+            footer: props => props.column.id,
+          },
+          {
+            accessorFn: row => row.status,
+            id: 'status',
+            cell: info => info.getValue(),
+            header: () => <span>Status</span>,
+            footer: props => props.column.id,
+          },
+          {
+            id: "action",
+            cell: (props) => {
+              if (isAdmin.current) {
+                return (
+                  <div className="edit-buttons btn-group shadow">
+                    <Link
+                      className="btn btn-secondary cat-action-view-link btn-sm "
+                      to={`#`}>
+                      <FaList />
+                    </Link>
+                    {props.row.original.status === "REVIEW" ?
+                      <Link
+                        className="btn btn-secondary cat-action-approve-link btn-sm "
+                        to={`/validations/${props.row.original.id}/approve`}>
+                        <FaCheck />
+                      </Link>
+                      :
+                      null
+                    }
+                    {props.row.original.status === "REVIEW" ?
+                      <Link
+                        className="btn btn-secondary cat-action-reject-link btn-sm "
+                        to={`/validations/${props.row.original.id}/reject`}>
+                        <FaTimes />
+                      </Link>
+                      : null}
+                  </div>
+                )
+              }
+              else {
+                return (
+                  <Link
+                    className="btn btn-secondary btn-sm "
+                    to={`#`}>
+                    <FaList />
+                  </Link>
+                )
+              }
+            },
+
+            header: () => <span>Description</span>,
+            footer: null,
+            enableColumnFilter: false
+          }
+        ],
+      },
+    ],
+    []
+  )
+
+  let rejectCard = null;
+  let approveCard = null;
+
+  if (props.toReject) {
+    rejectCard = (
+      <div className="container">
+        <div className="card border-danger mb-2">
+          <div className="card-header border-danger text-danger text-center">
+            <h5>
+              <FaExclamationTriangle className="mx-3" />
+              <strong>Prefix Rejection</strong>
+            </h5>
+          </div>
+          <div className=" card-body border-danger text-center">
+            Are you sure you want to reject validation with ID: <strong>{params.id}</strong> ?
+          </div>
+          <div className="card-footer border-danger text-danger text-center">
+            <button
+              className="btn btn-danger mr-2"
+              onClick={() => { }}>
+              Reject
+            </button>
+            <button
+              onClick={() => {
+                navigate("/validations");
+              }}
+              className="btn btn-dark">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (props.toApprove) {
+    approveCard = (
+      <div className="container">
+        <div className="card border-success mb-2">
+          <div className="card-header border-success text-success text-center">
+            <h5>
+              <FaExclamationTriangle className="mx-3" />
+              <strong>Prefix Approval</strong>
+            </h5>
+          </div>
+          <div className=" card-body border-info text-center">
+            Are you sure you want to approve validation with ID: <strong>{params.id}</strong> ?
+          </div>
+          <div className="card-footer border-success text-success text-center">
+            <button
+              className="btn btn-success mr-2"
+              onClick={() => { }}>
+              Approve
+            </button>
+            <button
+              onClick={() => {
+                navigate("/validations");
+              }}
+              className="btn btn-dark">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4">
+      {rejectCard}
+      {approveCard}
+      <div className="d-flex justify-content-end my-2 container">
+        <Link to="/validations/request" className="my-2 btn btn-primary">
+          <span><FaPlusCircle /> Request validation</span>
+        </Link>
+      </div>
+      {isAdmin.current ?
+        <Table columns={cols} data_source={ValidationAPI.useAdminValidations} />
+        :
+        <Table columns={cols} data_source={ValidationAPI.useValidations} />
+      }
+    </div>
+  );
+}
+
+export { RequestValidation, Validations };

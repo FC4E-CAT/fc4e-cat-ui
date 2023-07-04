@@ -13,7 +13,7 @@ import {
 
 import { AuthProvider, ProtectedRoute, KeycloakLogin } from './auth';
 import { Header, Footer } from "./components"
-import { Home, Profile, Users, Validations } from "./pages"
+import { Home, Profile, RequestValidation, Validations, Users } from "./pages"
 
 import './App.css';
 
@@ -38,7 +38,16 @@ function App() {
                   <Route path="/users" element={<Users />} />
                 </Route>
                 <Route path="/validations/request" element={<ProtectedRoute />} >
-                  <Route path="/validations/request" element={<Validations />} />
+                  <Route path="/validations/request" element={<RequestValidation />} />
+                </Route>
+                <Route path="/validations" element={<ProtectedRoute />} >
+                  <Route path="/validations" element={<Validations />} />
+                </Route>
+                <Route path="/validations/:id/reject" element={<ProtectedRoute />} >
+                  <Route path="/validations/:id/reject" element={<Validations toReject={true}/>} />
+                </Route>
+                <Route path="/validations/:id/approve" element={<ProtectedRoute />} >
+                  <Route path="/validations/:id/approve" element={<Validations toApprove={true}/>} />
                 </Route>
                 <Route path="/login" element={<KeycloakLogin />} />
               </Routes>

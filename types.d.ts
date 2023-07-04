@@ -63,7 +63,7 @@ interface ValidationRequest {
   actor_id: number;
 };
 
-type ValidationRequestResponse = {
+type ValidationResponse = {
   id: number;
   user_id: string;
   organisation_role: string;
@@ -100,3 +100,11 @@ type OrganisationRORSearchParams = ApiAuthOptions & {
 
 type ApiOptions = ApiAuthOptions & ApiPaginationOptions;
 type ValidationRequestParams = ApiAuthOptions & ValidationRequest;
+type APIValidationResponse = ResponsePage<ValidationResponse[]>;
+
+
+
+type ComponentProps = {
+  toReject?: boolean;
+  toApprove?: boolean;
+}

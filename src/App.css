@@ -26,6 +26,21 @@
   background-color: #e2e1e2;
 }
 
+.cat-action-approve-link:hover {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.cat-action-reject-link:hover {
+  background-color: #c0392b;
+  border-color: #c0392b;
+}
+
+.cat-action-view-link:hover {
+  background-color: #0a58ca;
+  border-color: #0a58ca;
+}
+
 
 footer h6 {
   color: grey;
