@@ -1,41 +1,51 @@
-.App {
+/* Custom classes are prefixed with cat- */
+
+
+.cat-logo-sm {
+  width:100px;
+  margin: 5px;
+}
+
+.cat-main-view {
+  min-height:60vh;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.cat-nav-link {
+  -moz-transition: all .2s ease-in;
+  -o-transition: all .2s ease-in;
+  -webkit-transition: all .2s ease-in;
+  transition: all .2s ease-in;
+  display:block;
+  text-decoration: none;
+  color:black;
+  padding: 15px 15px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.cat-nav-link:hover {
+  background-color: #e2e1e2;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+
+footer h6 {
+  color: grey;
+  font-weight: bold;
 }
 
-.App-link {
-  color: #61dafb;
+footer a{
+  text-decoration: none;
+  color:#00bcd4;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.main-nav{
+  border-bottom: 1px solid rgb(169, 169, 169);
 }
+
+.nav-text {
+  padding:15px 15px;
+}
+
+
 
 .active {
   color: red;

@@ -12,7 +12,7 @@ import {
 } from "@tanstack/react-query";
 
 import { AuthProvider, ProtectedRoute, KeycloakLogin } from './auth';
-import { Header } from "./components"
+import { Header, Footer } from "./components"
 import { Home, Profile, Users, Validations } from "./pages"
 
 import './App.css';
@@ -27,6 +27,7 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <BrowserRouter basename="/">
             <Header />
+            <main className="cat-main-view">
             <Container>
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -42,7 +43,10 @@ function App() {
                 <Route path="/login" element={<KeycloakLogin />} />
               </Routes>
             </Container>
+            </main>
+            <Footer/>
           </BrowserRouter>
+         
         </QueryClientProvider>
       </AuthProvider>
     </div>
