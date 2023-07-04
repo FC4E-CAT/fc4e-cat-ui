@@ -24,6 +24,7 @@ function Profile() {
         <h6>User type:</h6>
         <code>{userProfile?.user_type}</code>
         <Link to="/validations/request" className="btn btn-primary" >Request validation</Link>
+        <Link to="/validations" className="btn btn-primary" >Validations</Link>
         <hr />
       </div>
     );

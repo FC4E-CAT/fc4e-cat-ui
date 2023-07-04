@@ -1,6 +1,6 @@
 import Home from "./Home"
 import Profile from "./Profile";
 import Users from "./Users";
-import Validations from "./Validations";
+import { RequestValidation, Validations } from "./Validations";
 
-export { Home, Profile, Users, Validations };
+export { Home, Profile, Users, RequestValidation, Validations };
