@@ -11,7 +11,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 
-import { AuthProvider, ProtectedRoute, KeycloakLogin } from './auth';
+import { AuthProvider, ProtectedRoute, KeycloakLogin, KeycloakLogout } from './auth';
 import { Header, Footer } from "./components"
 import { Home, Profile, RequestValidation, Validations, Users } from "./pages"
 
@@ -32,24 +32,25 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/profile" element={<ProtectedRoute />} >
-                  <Route path="/profile" element={<Profile />} />
+                  <Route index element={<Profile />} />
                 </Route>
                 <Route path="/users" element={<ProtectedRoute />} >
-                  <Route path="/users" element={<Users />} />
+                  <Route index element={<Users />} />
                 </Route>
                 <Route path="/validations/request" element={<ProtectedRoute />} >
-                  <Route path="/validations/request" element={<RequestValidation />} />
+                  <Route index element={<RequestValidation />} />
                 </Route>
                 <Route path="/validations" element={<ProtectedRoute />} >
-                  <Route path="/validations" element={<Validations />} />
+                  <Route index element={<Validations />} />
                 </Route>
                 <Route path="/validations/:id/reject" element={<ProtectedRoute />} >
-                  <Route path="/validations/:id/reject" element={<Validations toReject={true}/>} />
+                  <Route index element={<Validations toReject={true}/>} />
                 </Route>
                 <Route path="/validations/:id/approve" element={<ProtectedRoute />} >
-                  <Route path="/validations/:id/approve" element={<Validations toApprove={true}/>} />
+                  <Route index element={<Validations toApprove={true}/>} />
                 </Route>
                 <Route path="/login" element={<KeycloakLogin />} />
+                <Route path="/logout" element={<KeycloakLogout />} />
               </Routes>
             </Container>
             </main>

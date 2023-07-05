@@ -4,6 +4,7 @@ import {
 } from '@tanstack/react-table'
 import { UserAPI } from '../api';
 import { Table } from '../components/Table';
+import { FaUsers } from 'react-icons/fa';
 
 function Users() {
 
@@ -41,6 +42,7 @@ function Users() {
 
     return (
         <div className="mt-4">
+            <h3 className="cat-view-heading"><FaUsers /> users</h3>
             <Table columns={cols} data_source={UserAPI.useGetUsers} />
         </div>
     );

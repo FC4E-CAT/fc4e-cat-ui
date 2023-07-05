@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
-import { Container, Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Container, Navbar, Nav, NavItem, Dropdown, NavDropdown } from 'react-bootstrap';
 import logo from '../logo.svg';
 import { UserAPI } from '../api';
 import { trimProfileID } from '../utils/Utils';
 import { AuthContext } from '../auth/AuthContext';
-import { FaUser, FaCog } from 'react-icons/fa';
+import { FaUser, FaCog, FaShieldAlt } from 'react-icons/fa';
 
 
 function Header() {
@@ -38,15 +38,25 @@ function Header() {
 
         {/* login button */}
         {!authenticated &&
-          <Link to="/login" className="btn btn-primary" >Login</Link>
+          <Link to="/login" className="btn btn-primary my-2" >Login</Link>
         }
 
         {/* if logged in display user id */}
         {authenticated && userProfile?.id &&
             <>
-              <Link to="/profile" className="my-2 btn btn-success dropdown-toggle">
+            <Dropdown>
+            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+              <FaUser /> {trimProfileID(userProfile.id)}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item as={Link} to="/profile">Profile</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/logout">Logout</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+              {/* <Link to="/profile" className="my-2 btn btn-success dropdown-toggle">
                   <span><FaUser /> {trimProfileID(userProfile.id)}</span>
-              </Link>
+              </Link> */}
             </>
         }
     
@@ -90,15 +100,12 @@ function Header() {
           }
           </Nav>
           
-          {authenticated && userProfile?.id &&
+          {authenticated && userProfile?.user_type === "Admin" &&
+          
           <Nav>
-        
-          <Navbar.Text className="nav-text">
-            Admin:
-          </Navbar.Text>
-          <NavItem>
-              <Link to="/users" className="cat-nav-link" >USERS</Link>
-            </NavItem>
+            <NavDropdown title={(<span className="text-dark"><FaShieldAlt /> ADMIN</span>)} className="cat-nav-item">
+              <NavDropdown.Item as={Link} to="/users">Users</NavDropdown.Item>
+            </NavDropdown>
           </Nav>
           }
 

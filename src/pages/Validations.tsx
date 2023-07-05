@@ -8,8 +8,7 @@ import {
   ColumnDef,
 } from '@tanstack/react-table'
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlusCircle } from 'react-icons/fa';
-import { BsArrowReturnLeft } from 'react-icons/bs';
+import { FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlus, FaRegCheckSquare } from 'react-icons/fa';
 import decode from 'jwt-decode';
 import { Table } from '../components/Table';
 
@@ -155,11 +154,7 @@ function RequestValidation() {
 
   return (
     <div className="mt-4">
-      <div className="d-flex justify-content-end my-2 container">
-        <Link to="/validations" className="my-2 btn btn-secondary">
-          <span><BsArrowReturnLeft />Back</span>
-        </Link>
-      </div>
+      <h3 className="cat-view-heading">Create new validation request</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="organization_name" className="form-label fw-bold">
@@ -239,7 +234,10 @@ function RequestValidation() {
             : null}
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <button className="btn btn-primary" type="submit">Request validation</button>
+          <button className="btn btn-light border-black" type="submit">Submit</button>
+          <Link to="/validations" className="my-2 btn btn-secondary mx-3">
+            <span>Cancel</span>
+          </Link>
         </div>
       </form>
     </div>
@@ -360,7 +358,7 @@ function Validations(props: ComponentProps) {
           <div className="card-header border-danger text-danger text-center">
             <h5>
               <FaExclamationTriangle className="mx-3" />
-              <strong>Prefix Rejection</strong>
+              <strong>Validation Request Rejection</strong>
             </h5>
           </div>
           <div className=" card-body border-danger text-center">
@@ -392,7 +390,7 @@ function Validations(props: ComponentProps) {
           <div className="card-header border-success text-success text-center">
             <h5>
               <FaExclamationTriangle className="mx-3" />
-              <strong>Prefix Approval</strong>
+              <strong>Validation Request Approval</strong>
             </h5>
           </div>
           <div className=" card-body border-info text-center">
@@ -421,10 +419,9 @@ function Validations(props: ComponentProps) {
     <div className="mt-4">
       {rejectCard}
       {approveCard}
-      <div className="d-flex justify-content-end my-2 container">
-        <Link to="/validations/request" className="my-2 btn btn-primary">
-          <span><FaPlusCircle /> Request validation</span>
-        </Link>
+      <div className="d-flex justify-content-between my-2 container">
+        <h3 className="cat-view-heading"><FaRegCheckSquare /> validation requests</h3>
+        <Link to="/validations/request" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
       </div>
       {isAdmin.current ?
         <Table columns={cols} data_source={ValidationAPI.useAdminValidations} />

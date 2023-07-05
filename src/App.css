@@ -1,5 +1,9 @@
 /* Custom classes are prefixed with cat- */
 
+.cat-view-heading {
+  color:#00bcd4;
+
+}
 
 .cat-logo-sm {
   width:100px;
@@ -8,7 +12,6 @@
 
 .cat-main-view {
   min-height:60vh;
-  text-align: center;
 }
 
 .cat-nav-link {
