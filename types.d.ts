@@ -63,6 +63,15 @@ interface ValidationRequest {
   actor_id: number;
 };
 
+interface ValidationDetailsRequest {
+  validation_id: string;
+};
+
+interface ValidationStatusUpdate {
+  validation_id: string;
+  status: string;
+};
+
 type ValidationResponse = {
   id: number;
   user_id: string;
@@ -100,6 +109,8 @@ type OrganisationRORSearchParams = ApiAuthOptions & {
 
 type ApiOptions = ApiAuthOptions & ApiPaginationOptions;
 type ValidationRequestParams = ApiAuthOptions & ValidationRequest;
+type ValidationDetailsRequestParams = ApiAuthOptions & ValidationDetailsRequest;
+type ValidationUpdateStatusParams = ApiAuthOptions & ValidationStatusUpdate;
 type APIValidationResponse = ResponsePage<ValidationResponse[]>;
 
 

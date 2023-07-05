@@ -8,7 +8,10 @@ import {
   ColumnDef,
 } from '@tanstack/react-table'
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlus, FaRegCheckSquare } from 'react-icons/fa';
+import {
+  FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlus,
+  FaRegCheckSquare
+} from 'react-icons/fa';
 import decode from 'jwt-decode';
 import { Table } from '../components/Table';
 
@@ -249,8 +252,18 @@ function Validations(props: ComponentProps) {
   let params = useParams();
 
   const isAdmin = useRef<Boolean>(false);
-  const { keycloak } = useContext(AuthContext)!;
+  const [reviewStatus, setReviewStatus] = useState<string>("");
+  const { keycloak, registered } = useContext(AuthContext)!;
   const jwt = JSON.stringify(decode(keycloak.token));
+
+  const { mutateAsync: mutateValidationUpdateStatus } = ValidationAPI.useValidationStatusUpdate(
+    {
+      validation_id: params.id!,
+      status: reviewStatus,
+      token: keycloak?.token,
+      isRegistered: registered
+    }
+  );
 
   // FIXME: This is a naive approach, should reconsider
   if (jwt.includes("admin")) {
@@ -291,6 +304,13 @@ function Validations(props: ComponentProps) {
             footer: props => props.column.id,
           },
           {
+            accessorFn: row => row.actor_id,
+            id: 'actor_id',
+            cell: info => info.getValue(),
+            header: () => <span>Actor ID</span>,
+            footer: props => props.column.id,
+          },
+          {
             accessorFn: row => row.status,
             id: 'status',
             cell: info => info.getValue(),
@@ -305,7 +325,7 @@ function Validations(props: ComponentProps) {
                   <div className="edit-buttons btn-group shadow">
                     <Link
                       className="btn btn-secondary cat-action-view-link btn-sm "
-                      to={`#`}>
+                      to={`/validations/${props.row.original.id}`}>
                       <FaList />
                     </Link>
                     {props.row.original.status === "REVIEW" ?
@@ -367,7 +387,12 @@ function Validations(props: ComponentProps) {
           <div className="card-footer border-danger text-danger text-center">
             <button
               className="btn btn-danger mr-2"
-              onClick={() => { }}>
+              onClick={() => {
+                setReviewStatus("REJECTED");
+                setTimeout(() => {
+                  mutateValidationUpdateStatus().then(r => navigate("/validations"));
+                }, 1000);
+              }}>
               Reject
             </button>
             <button
@@ -399,7 +424,12 @@ function Validations(props: ComponentProps) {
           <div className="card-footer border-success text-success text-center">
             <button
               className="btn btn-success mr-2"
-              onClick={() => { }}>
+              onClick={() => {
+                setReviewStatus("APPROVED");
+                setTimeout(() => {
+                  mutateValidationUpdateStatus().then(r => navigate("/validations"));
+                }, 1000);
+              }}>
               Approve
             </button>
             <button
@@ -423,13 +453,279 @@ function Validations(props: ComponentProps) {
         <h3 className="cat-view-heading"><FaRegCheckSquare /> validation requests</h3>
         <Link to="/validations/request" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
       </div>
-      {isAdmin.current ?
+      {isAdmin.current && keycloak ?
         <Table columns={cols} data_source={ValidationAPI.useAdminValidations} />
         :
-        <Table columns={cols} data_source={ValidationAPI.useValidations} />
+        <Table columns={cols} data_source={ValidationAPI.useGetValidationList} />
       }
     </div>
   );
 }
 
-export { RequestValidation, Validations };
+function ValidationDetails(props: ComponentProps) {
+  let params = useParams();
+  let navigate = useNavigate();
+  const isAdmin = useRef<Boolean>(false);
+  const [reviewStatus, setReviewStatus] = useState<string>("");
+  const { keycloak, registered } = useContext(AuthContext)!;
+  const jwt = JSON.stringify(decode(keycloak.token));
+
+  const { mutateAsync: mutateValidationUpdateStatus } = ValidationAPI.useValidationStatusUpdate(
+    {
+      validation_id: params.id!,
+      status: reviewStatus,
+      token: keycloak?.token,
+      isRegistered: registered
+    }
+  );
+
+  // FIXME: This is a naive approach, should reconsider
+  if (jwt.includes("admin")) {
+    isAdmin.current = true;
+  }
+
+  const [validation, setValidation] = useState<ValidationResponse>();
+
+  const { data: validationData } = ValidationAPI.useGetValidationDetails(
+    { validation_id: params.id!, token: keycloak?.token, isRegistered: registered }
+  );
+
+  useEffect(() => {
+    setValidation(validationData);
+  }, [validationData]);
+
+  let rejectCard = null;
+  let approveCard = null;
+
+  if (props.toReject) {
+    rejectCard = (
+      <div className="container">
+        <div className="card border-danger mb-2">
+          <div className="card-header border-danger text-danger text-center">
+            <h5>
+              <FaExclamationTriangle className="mx-3" />
+              <strong>Validation Request Rejection</strong>
+            </h5>
+          </div>
+          <div className=" card-body border-danger text-center">
+            Are you sure you want to reject validation with ID: <strong>{params.id}</strong> ?
+          </div>
+          <div className="card-footer border-danger text-danger text-center">
+            <button
+              className="btn btn-danger mr-2"
+              onClick={() => {
+                setReviewStatus("REJECTED");
+                setTimeout(() => {
+                  mutateValidationUpdateStatus().then(r => navigate("/validations"));
+                }, 1000);
+              }}>
+              Reject
+            </button>
+            <button
+              onClick={() => {
+                navigate("/validations");
+              }}
+              className="btn btn-dark">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (props.toApprove) {
+    approveCard = (
+      <div className="container">
+        <div className="card border-success mb-2">
+          <div className="card-header border-success text-success text-center">
+            <h5>
+              <FaExclamationTriangle className="mx-3" />
+              <strong>Validation Request Approval</strong>
+            </h5>
+          </div>
+          <div className=" card-body border-info text-center">
+            Are you sure you want to approve validation with ID: <strong>{params.id}</strong> ?
+          </div>
+          <div className="card-footer border-success text-success text-center">
+            <button
+              className="btn btn-success mr-2"
+              onClick={() => {
+                setReviewStatus("APPROVED");
+                setTimeout(() => {
+                  mutateValidationUpdateStatus().then(r => navigate("/validations"));
+                }, 1000);
+              }}>
+              Approve
+            </button>
+            <button
+              onClick={() => {
+                navigate("/validations");
+              }}
+              className="btn btn-dark">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (keycloak?.token) {
+    return (
+      <div className="mt-4">
+        {rejectCard}
+        {approveCard}
+        <div className="container">
+
+          <div className="card mt-4">
+            <div className="card-header text-start">
+              <h2 className="view-title"><i><FaRegCheckSquare /></i> Validation: {validation?.id}</h2>
+            </div>
+            <div className="card-body p-4">
+              <div className="row">
+                <div className="col-2">
+                  <span style={{ 'fontSize': '8rem' }}>📄</span>
+                </div>
+                <div className="col-10">
+
+                  <div className="row">
+                    <div className="col-auto">
+                      <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                          <div className="input-group-text">User ID: </div>
+                        </div>
+                        <span className="form-control" > {validation?.user_id}</span>
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                          <div className="input-group-text">Organisation Name: </div>
+                        </div>
+                        <span className="form-control" > {validation?.organisation_name}</span>
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                          <div className="input-group-text">Organisation ID: </div>
+                        </div>
+                        <span className="form-control" > {validation?.organisation_id}</span>
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                          <div className="input-group-text">Organisation Role: </div>
+                        </div>
+                        <span className="form-control" > {validation?.organisation_role}</span>
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                          <div className="input-group-text">Organisation Source: </div>
+                        </div>
+                        <span className="form-control" > {validation?.organisation_source}</span>
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                          <div className="input-group-text">Organisation Website: </div>
+                        </div>
+                        <span className="form-control" > {validation?.organisation_website}</span>
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                          <div className="input-group-text">Actor ID: </div>
+                        </div>
+                        <span className="form-control" > {validation?.actor_id}</span>
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                          <div className="input-group-text">Status: </div>
+                        </div>
+                        <span className="form-control" > {validation?.status}</span>
+                      </div>
+                    </div>
+                    <div className="col-auto">
+                      <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                          <div className="input-group-text">Created On: </div>
+                        </div>
+                        <span className="form-control" > {validation?.createdOn}</span>
+                      </div>
+                    </div>
+                    {validation?.status === "VERIFY" &&
+                      <>
+                        <div className="col-auto">
+                          <div className="input-group mb-2">
+                            <div className="input-group-prepend">
+                              <div className="input-group-text">Validated On: </div>
+                            </div>
+                            <span className="form-control" > {validation?.validated_on}</span>
+                          </div>
+                        </div>
+                        <div className="col-auto">
+                          <div className="input-group mb-2">
+                            <div className="input-group-prepend">
+                              <div className="input-group-text">Validated By: </div>
+                            </div>
+                            <span className="form-control" > {validation?.validatedBy}</span>
+                          </div>
+                        </div>
+                      </>
+                    }
+                  </div>
+                </div>
+
+                {isAdmin.current && validation?.status === "REVIEW" ?
+                  <div className="text-center">
+                    <div className="btn-group shadow">
+                      <Link
+                        className="btn btn-success"
+                        to={`/validations/${params.id}/approve`}>
+                        <FaCheck /> Approve
+                      </Link>
+                      <Link
+                        className="btn btn-danger"
+                        to={`/validations/${params.id}/reject`}>
+                        <FaTimes /> Reject
+                      </Link>
+                      <Link
+                        className="btn btn-secondary"
+                        to={`/validations`}>
+                        Back
+                      </Link>
+                    </div>
+                  </div>
+                  :
+                  <div className="text-center">
+                    <div className="btn-group shadow">
+                      <Link
+                        className="btn btn-secondary"
+                        to={`/validations`}>
+                        Back
+                      </Link>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    );
+  } else {
+    return <div>Press Login to authenticate</div>;
+  }
+}
+
+export { RequestValidation, Validations, ValidationDetails };
