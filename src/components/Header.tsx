@@ -105,6 +105,7 @@ function Header() {
           <Nav>
             <NavDropdown title={(<span className="text-dark"><FaShieldAlt /> ADMIN</span>)} className="cat-nav-item">
               <NavDropdown.Item as={Link} to="/users">Users</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/validations">Validations</NavDropdown.Item>
             </NavDropdown>
           </Nav>
           }
