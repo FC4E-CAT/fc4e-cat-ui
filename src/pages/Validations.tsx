@@ -351,7 +351,7 @@ function Validations(props: ComponentProps) {
                 return (
                   <Link
                     className="btn btn-secondary btn-sm "
-                    to={`#`}>
+                    to={`/validations/${props.row.original.id}`}>
                     <FaList />
                   </Link>
                 )
@@ -662,7 +662,7 @@ function ValidationDetails(props: ComponentProps) {
                         <span className="form-control" > {validation?.createdOn}</span>
                       </div>
                     </div>
-                    {validation?.status === "VERIFY" &&
+                    {validation?.status === "APPROVED" &&
                       <>
                         <div className="col-auto">
                           <div className="input-group mb-2">
