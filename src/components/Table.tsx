@@ -52,55 +52,53 @@ function Table<T>({ columns, data_source }: { columns: ColumnDef<T>[], data_sour
     return (
         <div className="p-2">
             <div className="h-2" />
-                <div className="table-responsive">
-                    <table className="table table-striped table-hover">
-                        <thead>
-                            {table.getHeaderGroups().map(headerGroup => (
-                                <tr key={headerGroup.id}>
-                                    {headerGroup.headers.map(header => {
-                                        return (
-                                            <th key={header.id} colSpan={header.colSpan}>
-                                                {header.isPlaceholder ? null : (
-                                                    <div>
-                                                        {flexRender(
-                                                            header.column.columnDef.header,
-                                                            header.getContext()
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </th>
-                                        )
-                                    })}
-                                </tr>
-                            ))}
-                        </thead>
-                        <tbody>
-                            {table.getRowModel().rows.map(row => {
+            <table className="table table-striped table-hover">
+                <thead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers.map(header => {
                                 return (
-                                    <tr key={row.id}>
-                                        {row.getVisibleCells().map(cell => {
-                                            return (
-                                                <td key={cell.id}>
-                                                    {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext()
-                                                    )}
-                                                </td>
-                                            )
-                                        })}
-                                    </tr>
+                                    <th key={header.id} colSpan={header.colSpan}>
+                                        {header.isPlaceholder ? null : (
+                                            <div>
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                            </div>
+                                        )}
+                                    </th>
                                 )
                             })}
-                        </tbody>
-                    </table>
-                </div>
+                        </tr>
+                    ))}
+                </thead>
+                <tbody>
+                    {table.getRowModel().rows.map(row => {
+                        return (
+                            <tr key={row.id}>
+                                {row.getVisibleCells().map(cell => {
+                                    return (
+                                        <td key={cell.id}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
+                                        </td>
+                                    )
+                                })}
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
             <div className="h-2" />
             <nav aria-label="Page navigation example">
                 <ul className="pagination custom-pagination">
                     <li className="page-item">
                         <button
                             className="border rounded p-1"
-                            onClick={() => setPagination({ pageIndex: 1, pageSize })}
+                            onClick={() => setPagination({pageIndex: 1, pageSize})}
                             disabled={pageIndex === 1}
                         >
                             {'<<'}
@@ -132,7 +130,7 @@ function Table<T>({ columns, data_source }: { columns: ColumnDef<T>[], data_sour
                     <li className="page-item">
                         <button
                             className="border rounded p-1"
-                            onClick={() => { setPagination({ pageIndex: pageIndex + 1, pageSize }) }}
+                            onClick={() => { setPagination({pageIndex: pageIndex + 1, pageSize})}}
                             disabled={pageIndex === data?.total_pages}
                         >
                             {'>'}
