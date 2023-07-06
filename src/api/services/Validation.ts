@@ -1,9 +1,15 @@
 import Client from "../client";
-import decode from 'jwt-decode';
+import decode from "jwt-decode";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
 const Validation = {
-  useGetValidationList: ({ size, page, sortBy, token, isRegistered }: ApiOptions) =>
+  useGetValidationList: ({
+    size,
+    page,
+    sortBy,
+    token,
+    isRegistered,
+  }: ApiOptions) =>
     useQuery<APIValidationResponse, any>({
       queryKey: ["validations", { size, page, sortBy }],
       queryFn: async () => {
@@ -17,9 +23,15 @@ const Validation = {
         return error.response as ApiServiceErr;
       },
       staleTime: 0,
-      enabled: !!token && isRegistered
+      enabled: !!token && isRegistered,
     }),
-  useAdminValidations: ({ size, page, sortBy, token, isRegistered }: ApiOptions) =>
+  useAdminValidations: ({
+    size,
+    page,
+    sortBy,
+    token,
+    isRegistered,
+  }: ApiOptions) =>
     useQuery<APIValidationResponse, any>({
       queryKey: ["admin_validations", { size, page, sortBy }],
       queryFn: async () => {
@@ -33,19 +45,26 @@ const Validation = {
         return error.response as ApiServiceErr;
       },
       staleTime: 0,
-      enabled: !!token && isRegistered
+      enabled: !!token && isRegistered,
     }),
-  useGetValidationDetails: ({ validation_id, token, isRegistered }: ValidationDetailsRequestParams) =>
+  useGetValidationDetails: ({
+    validation_id,
+    token,
+    isRegistered,
+  }: ValidationDetailsRequestParams) =>
     useQuery<ValidationResponse, any>({
       queryKey: ["validation_details"],
       queryFn: async () => {
         const jwt = JSON.stringify(decode(token));
         let response = null;
         if (jwt.includes("admin")) {
-          response = await Client(token).get<ValidationResponse>(`/admin/validations/${validation_id}`);
-        }
-        else {
-          response = await Client(token).get<ValidationResponse>(`/validations/${validation_id}`);
+          response = await Client(token).get<ValidationResponse>(
+            `/admin/validations/${validation_id}`
+          );
+        } else {
+          response = await Client(token).get<ValidationResponse>(
+            `/validations/${validation_id}`
+          );
         }
         return response.data;
       },
@@ -53,7 +72,7 @@ const Validation = {
         console.log(error);
         return error.response as ApiServiceErr;
       },
-      enabled: !!token && isRegistered
+      enabled: !!token && isRegistered,
     }),
   useValidationRequest: ({
     organisation_role,
@@ -62,46 +81,20 @@ const Validation = {
     organisation_name,
     organisation_website,
     actor_id,
-    token
+    token,
   }: ValidationRequestParams) =>
-    useQuery<ValidationResponse, any>({
-      queryKey: [
-        "validation_request",
-        {
-          organisation_role,
-          organisation_id,
-          organisation_source,
-          organisation_name,
-          organisation_website,
-          actor_id
-        }
-      ],
-      queryFn: async () => {
-        const response = await Client(token).post<ValidationResponse>(`/validations`, {
-          organisation_role,
-          organisation_id,
-          organisation_source,
-          organisation_name,
-          organisation_website,
-          actor_id,
-          token
-        });
-        return response.data;
-      },
-      onError: (error) => {
-        console.log(error);
-        return error.response as ApiServiceErr;
-      },
-      enabled: false
-    }),
-  useValidationStatusUpdate: ({ validation_id, status, token }: ValidationUpdateStatusParams) =>
     useMutation<ValidationResponse, any>(
       async () => {
-        const response = await Client(token).put<ValidationResponse>(
-          `/admin/validations/${validation_id}/update-status`,
+        const response = await Client(token).post<ValidationResponse>(
+          `/validations`,
           {
-            status,
-            token
+            organisation_role,
+            organisation_id,
+            organisation_source,
+            organisation_name,
+            organisation_website,
+            actor_id,
+            token,
           }
         );
         return response.data;
@@ -110,9 +103,32 @@ const Validation = {
         onError: (error) => {
           console.log(error);
           return error.response as ApiServiceErr;
-        }
+        },
       }
-    )
+    ),
+  useValidationStatusUpdate: ({
+    validation_id,
+    status,
+    token,
+  }: ValidationUpdateStatusParams) =>
+    useMutation<ValidationResponse, any>(
+      async () => {
+        const response = await Client(token).put<ValidationResponse>(
+          `/admin/validations/${validation_id}/update-status`,
+          {
+            status,
+            token,
+          }
+        );
+        return response.data;
+      },
+      {
+        onError: (error) => {
+          console.log(error);
+          return error.response as ApiServiceErr;
+        },
+      }
+    ),
 };
 
 export default Validation;

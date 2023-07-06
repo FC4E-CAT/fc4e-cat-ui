@@ -16,6 +16,7 @@ import decode from 'jwt-decode';
 import { Table } from '../components/Table';
 
 function RequestValidation() {
+  let navigate = useNavigate();
   const { keycloak, registered } = useContext(AuthContext)!;
 
   UserAPI.useGetProfile(
@@ -61,7 +62,7 @@ function RequestValidation() {
     }
   );
 
-  const { refetch: refetchValidationRequest } = ValidationAPI.useValidationRequest(
+  const { mutateAsync: refetchValidationRequest } = ValidationAPI.useValidationRequest(
     {
       organisation_role: organisation_role,
       organisation_id: organisation_id,
@@ -91,7 +92,7 @@ function RequestValidation() {
     setOrganisationWebsite(data.organisation_website);
     setActorID(data.actor_id);
     setTimeout(() => {
-      refetchValidationRequest();
+      refetchValidationRequest().then(r => navigate("/validations"));
     }, 1000);
 
   };
