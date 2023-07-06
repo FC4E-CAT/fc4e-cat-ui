@@ -539,6 +539,7 @@ function ValidationDetails(props: ComponentProps) {
   let rejectCard = null;
   let approveCard = null;
 
+
   if (props.toReject) {
     rejectCard = (
       <div className="container">
@@ -685,8 +686,8 @@ function ValidationDetails(props: ComponentProps) {
 
         {rejectCard}
         {approveCard}
-
-        { validation?.status === "REVIEW" &&
+        
+        { validation?.status === "REVIEW" && isAdmin?.current &&
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Actions</header>
           <section className="col-9">
@@ -700,7 +701,7 @@ function ValidationDetails(props: ComponentProps) {
             to={`/validations/${params.id}/reject#alert-spot`}>
             <FaTimes /> Reject
           </Link>
-          
+        
           </section>
         </div>
 
