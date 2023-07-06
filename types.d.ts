@@ -75,12 +75,16 @@ interface ValidationStatusUpdate {
 type ValidationResponse = {
   id: number;
   user_id: string;
+  user_name: string;
+  user_surname: string;
+  user_email: string;
   organisation_role: string;
   organisation_id: string;
   organisation_source: string;
   organisation_name: string;
   organisation_website: string;
   actor_id: number;
+  actor_name: string;
   status: string;
   createdOn: string;
   validated_on: string;

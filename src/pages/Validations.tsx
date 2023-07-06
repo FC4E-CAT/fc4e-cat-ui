@@ -583,6 +583,9 @@ function ValidationDetails(props: ComponentProps) {
           <header className="col-3 h4 text-muted">Requestor</header>
           <section className="col-9">
             <div><strong>User id:</strong> {validation?.user_id}</div>
+            <div><strong>User name:</strong> {validation?.user_name}</div>
+            <div><strong>User surname:</strong> {validation?.user_surname}</div>
+            <div><strong>User email:</strong> {validation?.user_email}</div>
           </section>
         </div>
         <div className="row border-top py-3 mt-4">
@@ -598,7 +601,7 @@ function ValidationDetails(props: ComponentProps) {
           <header className="col-3 h4 text-muted">Roles</header>
           <section className="col-9">
             <div><strong>User role in organisation:</strong> {validation?.organisation_role}</div>
-            <div><strong>User requests as Actor with:</strong> {validation?.actor_id}</div>
+            <div><strong>User requests as Actor with:</strong> {validation?.actor_name}</div>
           </section>
         </div>
 
