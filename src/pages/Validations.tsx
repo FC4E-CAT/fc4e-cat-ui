@@ -10,7 +10,7 @@ import {
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlus,
-  FaRegCheckSquare
+  FaRegCheckSquare, FaGlasses
 } from 'react-icons/fa';
 import decode from 'jwt-decode';
 import { Table } from '../components/Table';
@@ -331,7 +331,7 @@ function Validations(props: ComponentProps) {
                     {props.row.original.status === "REVIEW" ?
                       <Link
                         className="btn btn-secondary cat-action-approve-link btn-sm "
-                        to={`/validations/${props.row.original.id}/approve`}>
+                        to={`/validations/${props.row.original.id}/approve#alert-spot`}>
                         <FaCheck />
                       </Link>
                       :
@@ -340,7 +340,7 @@ function Validations(props: ComponentProps) {
                     {props.row.original.status === "REVIEW" ?
                       <Link
                         className="btn btn-secondary cat-action-reject-link btn-sm "
-                        to={`/validations/${props.row.original.id}/reject`}>
+                        to={`/validations/${props.row.original.id}/reject/#alert-spot`}>
                         <FaTimes />
                       </Link>
                       : null}
@@ -358,7 +358,7 @@ function Validations(props: ComponentProps) {
               }
             },
 
-            header: () => <span>Description</span>,
+            header: () => <span>Actions</span>,
             footer: null,
             enableColumnFilter: false
           }
@@ -376,7 +376,7 @@ function Validations(props: ComponentProps) {
       <div className="container">
         <div className="card border-danger mb-2">
           <div className="card-header border-danger text-danger text-center">
-            <h5>
+            <h5 id="reject-alert">
               <FaExclamationTriangle className="mx-3" />
               <strong>Validation Request Rejection</strong>
             </h5>
@@ -410,10 +410,10 @@ function Validations(props: ComponentProps) {
 
   if (props.toApprove) {
     approveCard = (
-      <div className="container">
+      <div  className="container">
         <div className="card border-success mb-2">
           <div className="card-header border-success text-success text-center">
-            <h5>
+            <h5 id="approve-alert">
               <FaExclamationTriangle className="mx-3" />
               <strong>Validation Request Approval</strong>
             </h5>
@@ -523,9 +523,9 @@ function ValidationDetails(props: ComponentProps) {
             </button>
             <button
               onClick={() => {
-                navigate("/validations");
+                navigate(`/validations/${params.id}`);
               }}
-              className="btn btn-dark">
+              className="btn btn-dark mx-4">
               Cancel
             </button>
           </div>
@@ -560,9 +560,9 @@ function ValidationDetails(props: ComponentProps) {
             </button>
             <button
               onClick={() => {
-                navigate("/validations");
+                navigate(`/validations/${params.id}`);
               }}
-              className="btn btn-dark">
+              className="btn btn-dark mx-4">
               Cancel
             </button>
           </div>
@@ -574,153 +574,96 @@ function ValidationDetails(props: ComponentProps) {
   if (keycloak?.token) {
     return (
       <div className="mt-4">
-        {rejectCard}
-        {approveCard}
-        <div className="container">
+        
+      
 
-          <div className="card mt-4">
-            <div className="card-header text-start">
-              <h2 className="view-title"><i><FaRegCheckSquare /></i> Validation: {validation?.id}</h2>
-            </div>
-            <div className="card-body p-4">
-              <div className="row">
-                <div className="col-2">
-                  <span style={{ 'fontSize': '8rem' }}>📄</span>
-                </div>
-                <div className="col-10">
-
-                  <div className="row">
-                    <div className="col-auto">
-                      <div className="input-group mb-2">
-                        <div className="input-group-prepend">
-                          <div className="input-group-text">User ID: </div>
-                        </div>
-                        <span className="form-control" > {validation?.user_id}</span>
-                      </div>
-                    </div>
-                    <div className="col-auto">
-                      <div className="input-group mb-2">
-                        <div className="input-group-prepend">
-                          <div className="input-group-text">Organisation Name: </div>
-                        </div>
-                        <span className="form-control" > {validation?.organisation_name}</span>
-                      </div>
-                    </div>
-                    <div className="col-auto">
-                      <div className="input-group mb-2">
-                        <div className="input-group-prepend">
-                          <div className="input-group-text">Organisation ID: </div>
-                        </div>
-                        <span className="form-control" > {validation?.organisation_id}</span>
-                      </div>
-                    </div>
-                    <div className="col-auto">
-                      <div className="input-group mb-2">
-                        <div className="input-group-prepend">
-                          <div className="input-group-text">Organisation Role: </div>
-                        </div>
-                        <span className="form-control" > {validation?.organisation_role}</span>
-                      </div>
-                    </div>
-                    <div className="col-auto">
-                      <div className="input-group mb-2">
-                        <div className="input-group-prepend">
-                          <div className="input-group-text">Organisation Source: </div>
-                        </div>
-                        <span className="form-control" > {validation?.organisation_source}</span>
-                      </div>
-                    </div>
-                    <div className="col-auto">
-                      <div className="input-group mb-2">
-                        <div className="input-group-prepend">
-                          <div className="input-group-text">Organisation Website: </div>
-                        </div>
-                        <span className="form-control" > {validation?.organisation_website}</span>
-                      </div>
-                    </div>
-                    <div className="col-auto">
-                      <div className="input-group mb-2">
-                        <div className="input-group-prepend">
-                          <div className="input-group-text">Actor ID: </div>
-                        </div>
-                        <span className="form-control" > {validation?.actor_id}</span>
-                      </div>
-                    </div>
-                    <div className="col-auto">
-                      <div className="input-group mb-2">
-                        <div className="input-group-prepend">
-                          <div className="input-group-text">Status: </div>
-                        </div>
-                        <span className="form-control" > {validation?.status}</span>
-                      </div>
-                    </div>
-                    <div className="col-auto">
-                      <div className="input-group mb-2">
-                        <div className="input-group-prepend">
-                          <div className="input-group-text">Created On: </div>
-                        </div>
-                        <span className="form-control" > {validation?.createdOn}</span>
-                      </div>
-                    </div>
-                    {validation?.status === "APPROVED" &&
-                      <>
-                        <div className="col-auto">
-                          <div className="input-group mb-2">
-                            <div className="input-group-prepend">
-                              <div className="input-group-text">Validated On: </div>
-                            </div>
-                            <span className="form-control" > {validation?.validated_on}</span>
-                          </div>
-                        </div>
-                        <div className="col-auto">
-                          <div className="input-group mb-2">
-                            <div className="input-group-prepend">
-                              <div className="input-group-text">Validated By: </div>
-                            </div>
-                            <span className="form-control" > {validation?.validatedBy}</span>
-                          </div>
-                        </div>
-                      </>
-                    }
-                  </div>
-                </div>
-
-                {isAdmin.current && validation?.status === "REVIEW" ?
-                  <div className="text-center">
-                    <div className="btn-group shadow">
-                      <Link
-                        className="btn btn-success"
-                        to={`/validations/${params.id}/approve`}>
-                        <FaCheck /> Approve
-                      </Link>
-                      <Link
-                        className="btn btn-danger"
-                        to={`/validations/${params.id}/reject`}>
-                        <FaTimes /> Reject
-                      </Link>
-                      <Link
-                        className="btn btn-secondary"
-                        to={`/validations`}>
-                        Back
-                      </Link>
-                    </div>
-                  </div>
-                  :
-                  <div className="text-center">
-                    <div className="btn-group shadow">
-                      <Link
-                        className="btn btn-secondary"
-                        to={`/validations`}>
-                        Back
-                      </Link>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
+        <h3 className="cat-view-heading"><FaRegCheckSquare /> Validation Request <span className="badge bg-secondary">id: {validation?.id}</span></h3>
+        
+        <div className="row border-top py-3 mt-4">
+          <header className="col-3 h4 text-muted">Requestor</header>
+          <section className="col-9">
+            <div><strong>User id:</strong> {validation?.user_id}</div>
+          </section>
+        </div>
+        <div className="row border-top py-3 mt-4">
+          <header className="col-3 h4 text-muted">Organisation</header>
+          <section className="col-9">
+          <div><strong>Name:</strong> {validation?.organisation_id} <small>({validation?.organisation_source})</small></div>
+            <div><strong>Name:</strong> {validation?.organisation_name}</div>
+            <div><strong>Website:</strong> {validation?.organisation_website}</div>
+            
+          </section>
+        </div>
+        <div className="row border-top py-3 mt-4">
+          <header className="col-3 h4 text-muted">Roles</header>
+          <section className="col-9">
+            <div><strong>User role in organisation:</strong> {validation?.organisation_role}</div>
+            <div><strong>User requests as Actor with:</strong> {validation?.actor_id}</div>
+          </section>
         </div>
 
+        
+        <div className="row border-top py-3 mt-4">
+          <header className="col-3 h4 text-muted">Status</header>
+          <section className="col-9">
+          <div><strong>Created on:</strong> {validation?.createdOn}</div>
+            { validation?.status === "REVIEW" &&
+              <div className="alert alert-info mt-4" role="alert">
+                <FaGlasses/> PENDING FOR REVIEW
+              </div> 
+            }
+            { validation?.status === "REJECTED" &&
+              <>
+                <div className="alert alert-danger mt-4" role="alert">
+                  <FaTimes/> REJECTED
+                </div>
+                <div><strong>Rejected on:</strong> {validation?.validated_on}</div>
+                <div><strong>Rejected by:</strong> {validation?.validatedBy}</div>
+              </>
+            }
+            { validation?.status === "APPROVED" &&
+              <>
+              <div className="alert alert-success mt-4" role="alert">
+                <FaCheck/> APPROVED
+              </div>
+              <div><strong>Approved on:</strong> {validation?.validated_on}</div>
+              <div><strong>Approved by:</strong> {validation?.validatedBy}</div>
+            </>
+            }
+          </section>
+        </div>
+
+        {rejectCard}
+        {approveCard}
+
+        { validation?.status === "REVIEW" &&
+        <div className="row border-top py-3 mt-4">
+          <header className="col-3 h4 text-muted">Actions</header>
+          <section className="col-9">
+          <Link
+            className="btn btn-light border-black text-success"
+            to={`/validations/${params.id}/approve#alert-spot`}>
+            <FaCheck /> Approve
+          </Link>
+          <Link
+            className="btn btn-light mx-4 text-danger border-black"
+            to={`/validations/${params.id}/reject#alert-spot`}>
+            <FaTimes /> Reject
+          </Link>
+          
+          </section>
+        </div>
+
+        }
+
+      
+        <Link
+            className="btn btn-secondary my-4"
+            to={`/validations`}>
+            Back
+        </Link>
+      
+        <span id="alert-spot" />
       </div>
     );
   } else {
