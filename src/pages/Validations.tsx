@@ -18,9 +18,14 @@ import { Table } from '../components/Table';
 function RequestValidation() {
   const { keycloak, registered } = useContext(AuthContext)!;
 
-  UserAPI.useGetProfile(
+  const { data: profileData } = UserAPI.useGetProfile(
     { token: keycloak?.token, isRegistered: registered }
   );
+
+  const [userProfile, setUserProfile] = useState<UserProfile>();
+  useEffect(() => {
+    setUserProfile(profileData);
+  }, [profileData]);
 
   const { data: actorsData } = ActorAPI.useGetActors(
     { size: 20, page: 1, sortBy: "asc", token: keycloak?.token, isRegistered: registered }
@@ -235,6 +240,42 @@ function RequestValidation() {
           {actors && actors.length > 0
             ? actors_select_div
             : null}
+        </div>
+        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
+          <label htmlFor="user_name" className="form-label fw-bold">
+            User Name
+          </label>
+          <input
+            type="text"
+            className={`form-control`}
+            id="user_name"
+            aria-describedby="user_name_help"
+            disabled={true} 
+            value={userProfile?.name}/>
+        </div>
+        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
+          <label htmlFor="user_surname" className="form-label fw-bold">
+            User Surname
+          </label>
+          <input
+            type="text"
+            className={`form-control`}
+            id="user_surname"
+            aria-describedby="user_surname_help"
+            disabled={true} 
+            value={userProfile?.surname}/>
+        </div>
+        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
+          <label htmlFor="user_email" className="form-label fw-bold">
+            User Email
+          </label>
+          <input
+            type="text"
+            className={`form-control`}
+            id="user_email"
+            aria-describedby="user_email_help"
+            disabled={true} 
+            value={userProfile?.email}/>
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <button className="btn btn-light border-black" type="submit">Submit</button>
