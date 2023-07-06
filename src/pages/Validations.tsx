@@ -633,9 +633,14 @@ function ValidationDetails(props: ComponentProps) {
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Organisation</header>
           <section className="col-9">
-          <div><strong>Name:</strong> {validation?.organisation_id} <small>({validation?.organisation_source})</small></div>
+          <div><strong>Id: </strong> 
+          { validation?.organisation_source === "ROR" 
+            ? <><span className="text-muted">ror.org/</span><a target="_blank" rel="noreferrer" href={"http://ror.org/"+validation?.organisation_id}>{validation?.organisation_id}</a></>
+            : <><span>{validation?.organisation_id}</span><small>({validation?.organisation_source})</small></>
+          }
+          </div>
             <div><strong>Name:</strong> {validation?.organisation_name}</div>
-            <div><strong>Website:</strong> {validation?.organisation_website}</div>
+            <div><strong>Website:</strong> <a target="_blank" rel="noreferrer" href={validation?.organisation_website}>{validation?.organisation_website}</a></div>
             
           </section>
         </div>
