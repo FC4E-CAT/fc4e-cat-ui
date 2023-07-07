@@ -16,6 +16,17 @@
   min-height:60vh;
 }
 
+.cat-hash-link{
+  color: grey;
+  border-bottom: 1px dotted grey;
+}
+
+.cat-hash-link:hover{
+  background-color: rgb(220, 220, 220);
+}
+
+
+
 .cat-nav-link {
   -moz-transition: all .2s ease-in;
   -o-transition: all .2s ease-in;

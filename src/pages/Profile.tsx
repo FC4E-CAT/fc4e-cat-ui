@@ -83,7 +83,7 @@ function Profile() {
             
             { !(userProfile?.user_type === "Validated" || userProfile?.user_type === "Admin") && 
             <div className="alert alert-warning" role="alert">
-              <FaLock/ > You should be a validated user in order to be able to create validation requests
+              <FaLock/ > You should be a validated user in order to be able to create assessments
             </div> 
             } 
             { (userProfile?.user_type === "Validated" || userProfile?.user_type === "Admin") &&
