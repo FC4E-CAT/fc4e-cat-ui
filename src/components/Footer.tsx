@@ -1,13 +1,20 @@
 import { Col, Row, Container } from 'react-bootstrap';
-import { FaEnvelope, FaYoutube, FaTwitter } from 'react-icons/fa';
+import { FaEnvelope, FaYoutube, FaTwitter, FaCalendar } from 'react-icons/fa';
 import logoDans from '../assets/logo-dans.svg'
 import logoDatacite from '../assets/logo-datacite.svg'
 import logoGrnet from '../assets/logo-grnet.png'
 import logoGwdg from '../assets/logo-gwdg.svg'
 import { Link } from 'react-router-dom';
+import packageJson from '../../package.json';
 
 function Footer() {
 
+  // tag build information on footer
+  const buildDate = process.env.REACT_APP_BUILD_DATE;
+  const buildCommitHash = process.env.REACT_APP_BUILD_COMMIT_HASH;
+  const buildCommitURL = process.env.REACT_APP_BUILD_COMMIT_URL;
+ 
+  
   return (
     <footer className="border-top">
      <Container className="text-left">
@@ -46,6 +53,14 @@ function Footer() {
             <a href="https://www.gwdg.de/" target="_blank" rel="noreferrer"><img className="cat-logo-sm" src={logoGwdg} alt="GWDG"/></a>
         </Col>
       </Row>
+      <div className="text-left">
+        <small className="text-muted">
+          <span>Version: <strong>{packageJson.version}</strong></span>
+          {buildCommitHash && <span style={{'marginLeft':'0.6rem'}}>Commit: <a className="text-muted cat-hash-link" target="_blank" rel="noreferrer" href={buildCommitURL}>{buildCommitHash}</a></span>} 
+          {buildDate && <span style={{'marginLeft':'0.6rem'}}><FaCalendar />: {buildDate}</span>}
+          
+        </small>
+      </div>
      </Container>
     </footer>
   );
