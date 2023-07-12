@@ -21,6 +21,12 @@ const enum AlertType {
   DANGER = "danger"
 }
 
+const enum ValidationStatus {
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  REVIEW = "REVIEW"
+}
+
 function RequestValidation() {
   let navigate = useNavigate();
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -443,7 +449,7 @@ function Validations(props: ComponentProps) {
             <button
               className="btn btn-danger mr-2"
               onClick={() => {
-                setReviewStatus("REJECTED");
+                setReviewStatus(ValidationStatus.REJECTED);
                 mutateValidationUpdateStatus().then(r => {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
                 }).catch(error => {
@@ -482,7 +488,7 @@ function Validations(props: ComponentProps) {
             <button
               className="btn btn-success mr-2"
               onClick={() => {
-                setReviewStatus("APPROVED");
+                setReviewStatus(ValidationStatus.APPROVED);
                 mutateValidationUpdateStatus().then(r => {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
                 }).catch(error => {
@@ -578,7 +584,7 @@ function ValidationDetails(props: ComponentProps) {
             <button
               className="btn btn-danger mr-2"
               onClick={() => {
-                setReviewStatus("REJECTED");
+                setReviewStatus(ValidationStatus.REJECTED);
                 mutateValidationUpdateStatus().then(r => {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
                 }).catch(error => {
@@ -617,7 +623,7 @@ function ValidationDetails(props: ComponentProps) {
             <button
               className="btn btn-success mr-2"
               onClick={() => {
-                setReviewStatus("APPROVED");
+                setReviewStatus(ValidationStatus.APPROVED);
                 mutateValidationUpdateStatus().then(r => {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
                 }).catch(error => {
@@ -687,7 +693,7 @@ function ValidationDetails(props: ComponentProps) {
                 <FaGlasses /> PENDING FOR REVIEW
               </div>
             }
-            {validation?.status === "REJECTED" &&
+            {validation?.status === ValidationStatus.REJECTED &&
               <>
                 <div className="alert alert-danger mt-4" role="alert">
                   <FaTimes /> REJECTED
@@ -696,7 +702,7 @@ function ValidationDetails(props: ComponentProps) {
                 <div><strong>Rejected by:</strong> {validation?.validatedBy}</div>
               </>
             }
-            {validation?.status === "APPROVED" &&
+            {validation?.status === ValidationStatus.APPROVED &&
               <>
                 <div className="alert alert-success mt-4" role="alert">
                   <FaCheck /> APPROVED
@@ -711,7 +717,7 @@ function ValidationDetails(props: ComponentProps) {
         {rejectCard}
         {approveCard}
 
-        {validation?.status === "REVIEW" && isAdmin?.current &&
+        {validation?.status === ValidationStatus.REVIEW && isAdmin?.current &&
           <div className="row border-top py-3 mt-4">
             <header className="col-3 h4 text-muted">Actions</header>
             <section className="col-9">
