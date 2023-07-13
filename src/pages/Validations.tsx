@@ -14,6 +14,18 @@ import {
 } from 'react-icons/fa';
 import decode from 'jwt-decode';
 import { Table } from '../components/Table';
+import { Alert } from '../components/Alert';
+
+const enum AlertType {
+  SUCCESS = "success",
+  DANGER = "danger"
+}
+
+const enum ValidationStatus {
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  REVIEW = "REVIEW"
+}
 
 function RequestValidation() {
   let navigate = useNavigate();
@@ -24,6 +36,7 @@ function RequestValidation() {
   );
 
   const [userProfile, setUserProfile] = useState<UserProfile>();
+  const [alert, setAlert] = useState<Alert>({ enabled: false, type: AlertType.SUCCESS, message: "" });
   useEffect(() => {
     setUserProfile(profileData);
   }, [profileData]);
@@ -96,9 +109,11 @@ function RequestValidation() {
     setOrganisationName(data.organisation_name);
     setOrganisationWebsite(data.organisation_website);
     setActorID(data.actor_id);
-    setTimeout(() => {
-      refetchValidationRequest().then(r => navigate("/validations"));
-    }, 1000);
+    refetchValidationRequest().then(r => {
+      setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation request succesfully submitted." });
+    }).catch(error => {
+      setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation request submission." });
+    }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
 
   };
 
@@ -163,6 +178,9 @@ function RequestValidation() {
 
   return (
     <div className="mt-4">
+      {alert.enabled &&
+        <Alert type={alert.type} message={alert.message} />
+      }
       <h3 className="cat-view-heading">Create new validation request</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
@@ -251,8 +269,8 @@ function RequestValidation() {
             className={`form-control`}
             id="user_name"
             aria-describedby="user_name_help"
-            disabled={true} 
-            value={userProfile?.name}/>
+            disabled={true}
+            value={userProfile?.name} />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="user_surname" className="form-label fw-bold">
@@ -263,8 +281,8 @@ function RequestValidation() {
             className={`form-control`}
             id="user_surname"
             aria-describedby="user_surname_help"
-            disabled={true} 
-            value={userProfile?.surname}/>
+            disabled={true}
+            value={userProfile?.surname} />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="user_email" className="form-label fw-bold">
@@ -275,8 +293,8 @@ function RequestValidation() {
             className={`form-control`}
             id="user_email"
             aria-describedby="user_email_help"
-            disabled={true} 
-            value={userProfile?.email}/>
+            disabled={true}
+            value={userProfile?.email} />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <button className="btn btn-light border-black" type="submit">Submit</button>
@@ -291,6 +309,7 @@ function RequestValidation() {
 
 function Validations(props: ComponentProps) {
   let navigate = useNavigate();
+  const [alert, setAlert] = useState<Alert>({ enabled: false, type: AlertType.SUCCESS, message: "" });
   let params = useParams();
 
   const isAdmin = useRef<Boolean>(false);
@@ -430,10 +449,12 @@ function Validations(props: ComponentProps) {
             <button
               className="btn btn-danger mr-2"
               onClick={() => {
-                setReviewStatus("REJECTED");
-                setTimeout(() => {
-                  mutateValidationUpdateStatus().then(r => navigate("/validations"));
-                }, 1000);
+                setReviewStatus(ValidationStatus.REJECTED);
+                mutateValidationUpdateStatus().then(r => {
+                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
+                }).catch(error => {
+                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
+                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
               }}>
               Reject
             </button>
@@ -452,7 +473,7 @@ function Validations(props: ComponentProps) {
 
   if (props.toApprove) {
     approveCard = (
-      <div  className="container">
+      <div className="container">
         <div className="card border-success mb-2">
           <div className="card-header border-success text-success text-center">
             <h5 id="approve-alert">
@@ -467,10 +488,12 @@ function Validations(props: ComponentProps) {
             <button
               className="btn btn-success mr-2"
               onClick={() => {
-                setReviewStatus("APPROVED");
-                setTimeout(() => {
-                  mutateValidationUpdateStatus().then(r => navigate("/validations"));
-                }, 1000);
+                setReviewStatus(ValidationStatus.APPROVED);
+                mutateValidationUpdateStatus().then(r => {
+                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
+                }).catch(error => {
+                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
+                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
               }}>
               Approve
             </button>
@@ -489,6 +512,9 @@ function Validations(props: ComponentProps) {
 
   return (
     <div className="mt-4">
+      {alert.enabled &&
+        <Alert type={alert.type} message={alert.message} />
+      }
       {rejectCard}
       {approveCard}
       <div className="d-flex justify-content-between my-2 container">
@@ -507,6 +533,7 @@ function Validations(props: ComponentProps) {
 function ValidationDetails(props: ComponentProps) {
   let params = useParams();
   let navigate = useNavigate();
+  const [alert, setAlert] = useState<Alert>({ enabled: false, type: AlertType.SUCCESS, message: "" });
   const isAdmin = useRef<Boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -557,10 +584,12 @@ function ValidationDetails(props: ComponentProps) {
             <button
               className="btn btn-danger mr-2"
               onClick={() => {
-                setReviewStatus("REJECTED");
-                setTimeout(() => {
-                  mutateValidationUpdateStatus().then(r => navigate("/validations"));
-                }, 1000);
+                setReviewStatus(ValidationStatus.REJECTED);
+                mutateValidationUpdateStatus().then(r => {
+                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
+                }).catch(error => {
+                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
+                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
               }}>
               Reject
             </button>
@@ -594,10 +623,12 @@ function ValidationDetails(props: ComponentProps) {
             <button
               className="btn btn-success mr-2"
               onClick={() => {
-                setReviewStatus("APPROVED");
-                setTimeout(() => {
-                  mutateValidationUpdateStatus().then(r => navigate("/validations"));
-                }, 1000);
+                setReviewStatus(ValidationStatus.APPROVED);
+                mutateValidationUpdateStatus().then(r => {
+                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
+                }).catch(error => {
+                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
+                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
               }}>
               Approve
             </button>
@@ -617,11 +648,10 @@ function ValidationDetails(props: ComponentProps) {
   if (keycloak?.token) {
     return (
       <div className="mt-4">
-        
-      
-
+        {alert.enabled &&
+          <Alert type={alert.type} message={alert.message} />
+        }
         <h3 className="cat-view-heading"><FaRegCheckSquare /> Validation Request <span className="badge bg-secondary">id: {validation?.id}</span></h3>
-        
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Requestor</header>
           <section className="col-9">
@@ -634,15 +664,15 @@ function ValidationDetails(props: ComponentProps) {
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Organisation</header>
           <section className="col-9">
-          <div><strong>Id: </strong> 
-          { validation?.organisation_source === "ROR" 
-            ? <><span className="text-muted">ror.org/</span><a target="_blank" rel="noreferrer" href={"http://ror.org/"+validation?.organisation_id}>{validation?.organisation_id}</a></>
-            : <><span>{validation?.organisation_id}</span><small>({validation?.organisation_source})</small></>
-          }
-          </div>
+            <div><strong>Id: </strong>
+              {validation?.organisation_source === "ROR"
+                ? <><span className="text-muted">ror.org/</span><a target="_blank" rel="noreferrer" href={"http://ror.org/" + validation?.organisation_id}>{validation?.organisation_id}</a></>
+                : <><span>{validation?.organisation_id}</span><small>({validation?.organisation_source})</small></>
+              }
+            </div>
             <div><strong>Name:</strong> {validation?.organisation_name}</div>
             <div><strong>Website:</strong> <a target="_blank" rel="noreferrer" href={validation?.organisation_website}>{validation?.organisation_website}</a></div>
-            
+
           </section>
         </div>
         <div className="row border-top py-3 mt-4">
@@ -653,67 +683,67 @@ function ValidationDetails(props: ComponentProps) {
           </section>
         </div>
 
-        
+
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Status</header>
           <section className="col-9">
-          <div><strong>Created on:</strong> {validation?.createdOn}</div>
-            { validation?.status === "REVIEW" &&
+            <div><strong>Created on:</strong> {validation?.createdOn}</div>
+            {validation?.status === "REVIEW" &&
               <div className="alert alert-info mt-4" role="alert">
-                <FaGlasses/> PENDING FOR REVIEW
-              </div> 
+                <FaGlasses /> PENDING FOR REVIEW
+              </div>
             }
-            { validation?.status === "REJECTED" &&
+            {validation?.status === ValidationStatus.REJECTED &&
               <>
                 <div className="alert alert-danger mt-4" role="alert">
-                  <FaTimes/> REJECTED
+                  <FaTimes /> REJECTED
                 </div>
                 <div><strong>Rejected on:</strong> {validation?.validated_on}</div>
                 <div><strong>Rejected by:</strong> {validation?.validatedBy}</div>
               </>
             }
-            { validation?.status === "APPROVED" &&
+            {validation?.status === ValidationStatus.APPROVED &&
               <>
-              <div className="alert alert-success mt-4" role="alert">
-                <FaCheck/> APPROVED
-              </div>
-              <div><strong>Approved on:</strong> {validation?.validated_on}</div>
-              <div><strong>Approved by:</strong> {validation?.validatedBy}</div>
-            </>
+                <div className="alert alert-success mt-4" role="alert">
+                  <FaCheck /> APPROVED
+                </div>
+                <div><strong>Approved on:</strong> {validation?.validated_on}</div>
+                <div><strong>Approved by:</strong> {validation?.validatedBy}</div>
+              </>
             }
           </section>
         </div>
 
         {rejectCard}
         {approveCard}
-        
-        { validation?.status === "REVIEW" && isAdmin?.current &&
-        <div className="row border-top py-3 mt-4">
-          <header className="col-3 h4 text-muted">Actions</header>
-          <section className="col-9">
-          <Link
-            className="btn btn-light border-black text-success"
-            to={`/validations/${params.id}/approve#alert-spot`}>
-            <FaCheck /> Approve
-          </Link>
-          <Link
-            className="btn btn-light mx-4 text-danger border-black"
-            to={`/validations/${params.id}/reject#alert-spot`}>
-            <FaTimes /> Reject
-          </Link>
-        
-          </section>
-        </div>
+
+        {validation?.status === ValidationStatus.REVIEW && isAdmin?.current &&
+          <div className="row border-top py-3 mt-4">
+            <header className="col-3 h4 text-muted">Actions</header>
+            <section className="col-9">
+              <Link
+                className="btn btn-light border-black text-success"
+                to={`/validations/${params.id}/approve#alert-spot`}>
+                <FaCheck /> Approve
+              </Link>
+              <Link
+                className="btn btn-light mx-4 text-danger border-black"
+                to={`/validations/${params.id}/reject#alert-spot`}>
+                <FaTimes /> Reject
+              </Link>
+
+            </section>
+          </div>
 
         }
 
-      
+
         <Link
-            className="btn btn-secondary my-4"
-            to={`/validations`}>
-            Back
+          className="btn btn-secondary my-4"
+          to={`/validations`}>
+          Back
         </Link>
-      
+
         <span id="alert-spot" />
       </div>
     );

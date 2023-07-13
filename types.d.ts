@@ -117,9 +117,14 @@ type ValidationDetailsRequestParams = ApiAuthOptions & ValidationDetailsRequest;
 type ValidationUpdateStatusParams = ApiAuthOptions & ValidationStatusUpdate;
 type APIValidationResponse = ResponsePage<ValidationResponse[]>;
 
-
-
 type ComponentProps = {
   toReject?: boolean;
   toApprove?: boolean;
+}
+
+
+type Alert = {
+  enabled: boolean;
+  type: string;
+  message: string;
 }
