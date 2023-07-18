@@ -82,7 +82,7 @@ function Header() {
             <Link to="/" className="cat-nav-link">SEARCH</Link>
           </NavItem>
           <NavItem>
-            <Link to="/" className="cat-nav-link">ASSESS</Link>
+            <Link to="/assessment" className="cat-nav-link">ASSESS</Link>
           </NavItem>
           <NavItem>
             <Link to="/" className="cat-nav-link">RESOURCES</Link>

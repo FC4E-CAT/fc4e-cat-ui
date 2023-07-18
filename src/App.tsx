@@ -16,6 +16,7 @@ import { Header, Footer } from "./components"
 import { Home, Profile, RequestValidation, Validations, Users, ProfileUpdate, ValidationDetails } from "./pages"
 
 import './App.css';
+import AssessmentEdit from './pages/AssessmentEdit';
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,9 @@ function App() {
             <Container>
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/assessment" element={<ProtectedRoute />} >
+                  <Route index element={<AssessmentEdit />} />
+                </Route>
                 <Route path="/profile" element={<ProtectedRoute />} >
                   <Route index element={<Profile />} />
                 </Route>
