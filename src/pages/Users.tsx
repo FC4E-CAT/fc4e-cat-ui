@@ -5,6 +5,8 @@ import {
 import { UserAPI } from '../api';
 import { Table } from '../components/Table';
 import { FaUsers } from 'react-icons/fa';
+import { UserProfile } from '../types';
+
 
 function Users() {
 

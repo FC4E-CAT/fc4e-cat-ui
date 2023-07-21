@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { UserAPI } from '../api';
 import { AuthContext } from '../auth/AuthContext';
 import { FaAddressCard, FaPlus, FaLock, FaCheckCircle, FaShieldAlt } from 'react-icons/fa';
+import { UserProfile } from '../types';
+
 
 
 function Profile() {
