@@ -74,7 +74,7 @@ const Validation = {
         console.log(error);
         return error.response as ApiServiceErr;
       },
-      enabled: !!token && isRegistered,
+      enabled: !!token && isRegistered && (validation_id !== ""),
     }),
   useValidationRequest: ({
     organisation_role,

@@ -56,7 +56,7 @@ export interface AssessmentOrg {
 /** An assessment has a definite result wether compliance is met or not and a ranking score */
 export interface AssessmentResult {
   compliance: boolean;
-
+  ranking: number;
 }
 
 /** An assessment contains a list of principles */
