@@ -6,6 +6,7 @@ import { UserAPI } from '../api';
 import { trimProfileID } from '../utils/Utils';
 import { AuthContext } from '../auth/AuthContext';
 import { FaUser, FaCog, FaShieldAlt } from 'react-icons/fa';
+import { UserProfile } from '../types';
 
 
 function Header() {

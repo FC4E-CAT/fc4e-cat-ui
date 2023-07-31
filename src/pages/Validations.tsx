@@ -1,4 +1,4 @@
-import { useMemo, useContext, useState, useEffect, useRef } from 'react';
+import { useMemo, useContext, useState, useEffect, useRef} from 'react';
 import Select, { SingleValue } from 'react-select';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
@@ -15,6 +15,7 @@ import {
 import decode from 'jwt-decode';
 import { Table } from '../components/Table';
 import { Alert } from '../components/Alert';
+import { UserProfile, Actor, OrganisationRORSearchResultModified, ValidationResponse, AlertInfo, ValidationProps } from '../types';
 
 const enum AlertType {
   SUCCESS = "success",
@@ -36,7 +37,7 @@ function RequestValidation() {
   );
 
   const [userProfile, setUserProfile] = useState<UserProfile>();
-  const [alert, setAlert] = useState<Alert>({ enabled: false, type: AlertType.SUCCESS, message: "" });
+  const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
   useEffect(() => {
     setUserProfile(profileData);
   }, [profileData]);
@@ -307,9 +308,9 @@ function RequestValidation() {
   );
 }
 
-function Validations(props: ComponentProps) {
+function Validations(props: ValidationProps) {
   let navigate = useNavigate();
-  const [alert, setAlert] = useState<Alert>({ enabled: false, type: AlertType.SUCCESS, message: "" });
+  const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
   let params = useParams();
 
   const isAdmin = useRef<Boolean>(false);
@@ -530,10 +531,10 @@ function Validations(props: ComponentProps) {
   );
 }
 
-function ValidationDetails(props: ComponentProps) {
+function ValidationDetails(props: ValidationProps) {
   let params = useParams();
   let navigate = useNavigate();
-  const [alert, setAlert] = useState<Alert>({ enabled: false, type: AlertType.SUCCESS, message: "" });
+  const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
   const isAdmin = useRef<Boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;

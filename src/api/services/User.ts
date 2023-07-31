@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Client from "../client";
+import { ApiOptions, ApiServiceErr } from "../../types/common";
+import { UserResponse, UserListResponse } from "../../types/profile";
 
 const User = {
   useGetProfile: ({ token, isRegistered }: ApiOptions) =>
