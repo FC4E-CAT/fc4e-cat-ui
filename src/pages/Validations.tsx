@@ -30,6 +30,7 @@ const enum ValidationStatus {
 
 function RequestValidation() {
   let navigate = useNavigate();
+
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const { data: profileData } = UserAPI.useGetProfile(
@@ -129,7 +130,8 @@ function RequestValidation() {
           value: tmp[i]["name"],
           label: tmp[i]["name"],
           website: tmp[i]["website"],
-          id: tmp[i]["id"]
+          id: tmp[i]["id"],
+          acronym: tmp[i]["acronym"]
         };
         result.push(t);
       }
@@ -196,6 +198,7 @@ function RequestValidation() {
             isSearchable={true}
             name="organisation_name"
             options={renderOptions()}
+            filterOption={() => true}
           />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>

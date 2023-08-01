@@ -47,6 +47,7 @@ export type OrganisationRORSearchResult = {
     id: string;
     name: string;
     website: string;
+    acronym?: string;
 };
 
 export type OrganisationRORSearchResultModified = {
@@ -54,6 +55,7 @@ export type OrganisationRORSearchResultModified = {
     value: string;
     label: string;
     website: string;
+    acronym?: string
 };
 
 export type OrganisationRORSearchResponse = ResponsePage<OrganisationRORSearchResult[]>;
