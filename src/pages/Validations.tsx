@@ -13,7 +13,7 @@ import {
   FaRegCheckSquare, FaGlasses, FaIdBadge
 } from 'react-icons/fa';
 import decode from 'jwt-decode';
-import { Table } from '../components/Table';
+import { CustomTable } from '../components/CustomTable';
 import { Alert } from '../components/Alert';
 import { UserProfile, Actor, OrganisationRORSearchResultModified, ValidationResponse, AlertInfo, ValidationProps } from '../types';
 
@@ -346,6 +346,7 @@ function Validations(props: ValidationProps) {
             header: () => <span>ID</span>,
             cell: info => info.getValue(),
             footer: props => props.column.id,
+            enableColumnFilter: false
           },
           {
             accessorFn: row => row.user_id,
@@ -353,6 +354,7 @@ function Validations(props: ValidationProps) {
             cell: info => info.getValue(),
             header: () => <span>User ID</span>,
             footer: props => props.column.id,
+            enableColumnFilter: true
           },
           {
             accessorFn: row => row.organisation_name,
@@ -374,6 +376,7 @@ function Validations(props: ValidationProps) {
             cell: info => info.getValue(),
             header: () => <span>Actor</span>,
             footer: props => props.column.id,
+            enableColumnFilter: true
           },
           {
             accessorFn: row => row.status,
@@ -535,9 +538,9 @@ function Validations(props: ValidationProps) {
         <Link to="/validations/request" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
       </div>
       {isAdmin.current && keycloak ?
-        <Table columns={cols} data_source={ValidationAPI.useAdminValidations} />
+        <CustomTable columns={cols} data_source={ValidationAPI.useAdminValidations} />
         :
-        <Table columns={cols} data_source={ValidationAPI.useGetValidationList} />
+        <CustomTable columns={cols} data_source={ValidationAPI.useGetValidationList} />
       }
     </div>
   );
