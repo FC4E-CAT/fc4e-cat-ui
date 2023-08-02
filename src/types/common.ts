@@ -34,7 +34,7 @@ export type ApiServiceErr = {
 
 export interface ApiAuthOptions {
     token: string;
-    isRegistered: boolean;
+    isRegistered?: boolean;
 }
 
 export interface ApiPaginationOptions {
