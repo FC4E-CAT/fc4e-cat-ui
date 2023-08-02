@@ -5,7 +5,7 @@ import { ApiOptions, ApiServiceErr } from "../../types/common";
 import { UserResponse, UserListResponse } from "../../types/profile";
 
 const User = {
-  useGetProfile: ({ token }: ApiOptions) =>
+  useGetProfile: ({ token, isRegistered }: ApiOptions) =>
     useQuery<UserResponse, any>({
       queryKey: ["profile"],
       queryFn: async () => {
@@ -19,7 +19,7 @@ const User = {
         return error.response as ApiServiceErr;
       },
       retry: false,
-      enabled: false,
+      enabled: isRegistered,
     }),
   useGetUsers: ({ size, page, sortBy, token, isRegistered }: ApiOptions) =>
     useQuery<UserListResponse, any>({
