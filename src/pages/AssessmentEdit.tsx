@@ -5,6 +5,7 @@ import { Assessment } from '../types';
 import { useParams } from "react-router";
 import { Tab, Row, Col, Nav } from 'react-bootstrap';
 import { AssessmentInfo } from '../components/assessment/AssessmentInfo';
+import { TestBinary } from '../components/tests/TestBinary';
 
 type AssessmentEditProps = {
   createMode?: boolean;
@@ -19,7 +20,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   const [debug, setDebug] = useState<boolean>(false);
 
   const { valID } = useParams()
-  
+
 
   // for the time being get the only one assessment template supported
   // with templateId: 1 (pid policy) and actorId: 6 (for pid owner)
@@ -43,8 +44,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   }, [qTemplate.data, qValidation]);
 
 
-
-  console.log(assessment?.assessment_type)
+  
 
   return (
     <div className="mt-4">
@@ -73,17 +73,24 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                 <Nav variant="pills" className="flex-column">
                   <Nav.Item>
                     <Nav.Link eventKey="first">Criterion 1
-                </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link eventKey="second">Criterion 2</Nav.Link>
+                    </Nav.Link>
                   </Nav.Item>
                 </Nav>
               </Col>
               <Col sm={9}>
-                <Tab.Content className="text-dark">
-                  <Tab.Pane eventKey="first"><p>Tests for Criterion 1</p></Tab.Pane>
-                  <Tab.Pane eventKey="second">Tests for Criterion 2</Tab.Pane>
+                <Tab.Content >
+                  <Tab.Pane className="text-dark" eventKey="first">
+
+                     {/* For the time being the component is used with hardcoded props to display its functionality
+                         The props are going to be dynamically handled from json in next implementation
+                     */}
+                    <h3>Principle 1</h3>
+                    <h4 className="border-bottom pb-2">Criterion 1</h4>
+                    <TestBinary text="Do you regularly maintain the metadata for your object ?" value={0} />
+      
+
+                  </Tab.Pane>
+                  <Tab.Pane className="text-dark" eventKey="second">Tests for Criterion 2</Tab.Pane>
                 </Tab.Content>
               </Col>
             </Row>
