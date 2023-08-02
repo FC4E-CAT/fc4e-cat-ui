@@ -32,7 +32,7 @@ function App() {
             <Container>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/assessment" element={<ProtectedRoute />} >
+                <Route path="/assessment/:valID" element={<ProtectedRoute />} >
                   <Route index element={<AssessmentEdit />} />
                 </Route>
                 <Route path="/profile" element={<ProtectedRoute />} >
@@ -66,7 +66,6 @@ function App() {
             </main>
             <Footer/>
           </BrowserRouter>
-         
         </QueryClientProvider>
       </AuthProvider>
     </div>

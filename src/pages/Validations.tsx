@@ -10,7 +10,7 @@ import {
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlus,
-  FaRegCheckSquare, FaGlasses
+  FaRegCheckSquare, FaGlasses, FaCross
 } from 'react-icons/fa';
 import decode from 'jwt-decode';
 import { Table } from '../components/Table';
@@ -414,11 +414,20 @@ function Validations(props: ValidationProps) {
               }
               else {
                 return (
+                  <div className="edit-buttons btn-group shadow">
                   <Link
                     className="btn btn-secondary btn-sm "
                     to={`/validations/${props.row.original.id}`}>
                     <FaList />
                   </Link>
+                  {props.row.original.status === "APPROVED" &&
+                      <Link
+                        className="btn btn-secondary cat-action-approve-link btn-sm "
+                        to={`/assessment/${props.row.original.id}`}>
+                        <FaPlus /> Assessment
+                      </Link>
+                  }
+                  </div>
                 )
               }
             },

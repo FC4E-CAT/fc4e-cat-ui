@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 const Template = {
   useGetTemplate: (templateTypeId: number, actorId: number, token: string, isRegistered: boolean ) =>
     useQuery<TemplateResponse, any>({
+      queryKey: ["template"],
       queryFn: async () => {
         const response = await Client(token).get<TemplateResponse>(
           `/templates/by-type/${templateTypeId}/by-actor/${actorId}`
