@@ -10,15 +10,19 @@ const KeycloakLogin = () => {
     authenticated,
     setAuthenticated,
     keycloak,
-    setKeycloak
+    setKeycloak,
+    registered,
+    setRegistered
   } = useContext(AuthContext)!;
 
   const {
+    data: profileData,
     refetch: getProfile,
     isError: isErrorUserProfile,
     isSuccess,
   } = UserAPI.useGetProfile({
     token: keycloak?.token,
+    isRegistered: registered
   });
 
   const { mutateAsync: userRegister, isSuccess: isSuccessRegister } = UserAPI.useUserRegister();
@@ -58,6 +62,12 @@ const KeycloakLogin = () => {
     }
   }, [isErrorUserProfile, keycloak, userRegister]);
 
+  useEffect(() => {
+    if (isSuccessRegister || profileData) {
+        console.log("Sucesssss")
+      setRegistered(true);
+    }
+  }, [isSuccessRegister, setRegistered, profileData]);
 
   if (authenticated && isSuccess) {
     return <Navigate to="/profile" replace={true} />;
