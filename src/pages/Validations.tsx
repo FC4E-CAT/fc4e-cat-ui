@@ -10,7 +10,7 @@ import {
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlus,
-  FaRegCheckSquare, FaGlasses, FaCross
+  FaRegCheckSquare, FaGlasses
 } from 'react-icons/fa';
 import decode from 'jwt-decode';
 import { Table } from '../components/Table';
