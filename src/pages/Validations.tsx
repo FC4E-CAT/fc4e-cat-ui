@@ -274,7 +274,7 @@ function RequestValidation() {
             id="user_name"
             aria-describedby="user_name_help"
             disabled={true}
-            value={userProfile?.name} />
+            value={userProfile?.name || ""} />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="user_surname" className="form-label fw-bold">
@@ -286,7 +286,7 @@ function RequestValidation() {
             id="user_surname"
             aria-describedby="user_surname_help"
             disabled={true}
-            value={userProfile?.surname} />
+            value={userProfile?.surname || ""} />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="user_email" className="form-label fw-bold">
@@ -298,7 +298,7 @@ function RequestValidation() {
             id="user_email"
             aria-describedby="user_email_help"
             disabled={true}
-            value={userProfile?.email} />
+            value={userProfile?.email || ""} />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <button className="btn btn-light border-black" type="submit">Submit</button>

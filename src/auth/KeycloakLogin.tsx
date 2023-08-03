@@ -64,7 +64,6 @@ const KeycloakLogin = () => {
 
   useEffect(() => {
     if (isSuccessRegister || profileData) {
-        console.log("Sucesssss")
       setRegistered(true);
     }
   }, [isSuccessRegister, setRegistered, profileData]);
