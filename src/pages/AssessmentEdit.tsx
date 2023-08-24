@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../auth/AuthContext';
 import { TemplateAPI, ValidationAPI } from '../api';
-import { Assessment } from '../types';
+import { Assessment, AssessmentSubject } from '../types';
 import { useParams } from "react-router";
 import { Tab, Row, Col, Nav } from 'react-bootstrap';
 import { AssessmentInfo } from '../components/assessment/AssessmentInfo';
@@ -15,7 +15,7 @@ type AssessmentEditProps = {
 /** AssessmentEdit page that holds the main body of an assessment */
 const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   const { keycloak, registered } = useContext(AuthContext)!;
-  const [assessment, setAssesment] = useState<Assessment>();
+  const [assessment, setAssessment] = useState<Assessment>();
 
   const [debug, setDebug] = useState<boolean>(false);
 
@@ -32,19 +32,44 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     { validation_id: valID!, token: keycloak?.token, isRegistered: registered }
   );
 
-  // save the template_doc into the assessment state variable
+  // save the template_doc into the assessment state variable - this needs to be fired only once when the assessment is not yet prepared
   useEffect(() => {
-    if (qTemplate.data && qValidation.data) {
+    if (!assessment && qTemplate.data && qValidation.data) {
       const data = qTemplate.data.template_doc;
       data.organisation.id = qValidation.data.organisation_id;
       data.organisation.name = qValidation.data.organisation_name;
-      setAssesment(data);
+      setAssessment(data);
     }
 
-  }, [qTemplate.data, qValidation]);
+  }, [qTemplate.data, qValidation,assessment]);
 
 
-  
+  function handleNameChange(name: string) {
+    if (assessment) {
+      setAssessment({
+        ...assessment,
+        "name": name
+      })
+    }
+  }
+
+  function handleSubjectChange(subject: AssessmentSubject) {
+    if (assessment) {
+      setAssessment({
+        ...assessment,
+        "subject": subject
+      })
+    }
+  }
+
+  function handlePublishedChange(published: boolean) {
+    if (assessment) {
+      setAssessment({
+        ...assessment,
+        "published": published
+      })
+    }
+  }
 
   return (
     <div className="mt-4">
@@ -63,6 +88,11 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
             type={assessment.assessment_type.name}
             org={assessment.organisation.name}
             orgId={assessment.organisation.id}
+            subject={assessment.subject}
+            published={assessment.published}
+            onNameChange={handleNameChange}
+            onPublishedChange={handlePublishedChange}
+            onSubjectChange={handleSubjectChange}
           />
 
           <hr/>
