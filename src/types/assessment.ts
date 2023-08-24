@@ -27,13 +27,22 @@ export interface Assessment {
   status: AssessmentStatus;
   timestamp: string;
   subject: Subject;
-  assessment_type: string;
-  actor: string;
+  assessment_type: AssessmentType;
+  actor: AssessmentActor;
   organisation: AssessmentOrg;
   result: AssessmentResult;
   principles: Principle[];
 
 }
+/** Reference with numerical id */
+export interface RefNumID {
+  id: number;
+  name: string;
+}
+
+export interface AssessmentActor extends RefNumID {}
+export interface AssessmentType extends RefNumID{}
+
 /** Assessment subject */
 export interface Subject {
   id: string;
