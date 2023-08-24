@@ -59,8 +59,8 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
           <AssessmentInfo 
             id={assessment.id}
             name={assessment.name} 
-            actor={assessment.actor}
-            type={assessment.assessment_type}
+            actor={assessment.actor.name}
+            type={assessment.assessment_type.name}
             org={assessment.organisation.name}
             orgId={assessment.organisation.id}
           />
