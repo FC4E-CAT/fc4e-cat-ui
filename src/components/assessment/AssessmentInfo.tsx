@@ -4,7 +4,7 @@
 
 import { InputGroup, Form, Col, Row } from "react-bootstrap"
 import { AssessmentSubject } from "../../types"
-import { FaCog, FaLock, FaRegBuilding } from "react-icons/fa"
+import { FaCog, FaLock } from "react-icons/fa"
 
 interface AssessmentInfoProps {
     id?: string
@@ -32,7 +32,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
     }
 
     return (
-        <div>
+        <div className="px-4 pb-2 pt-3 yellow-gradient mb-4 ">
             {props.id && <div><strong>Assesment id:</strong> {props.id}</div>}
             <Row>
                 {props.id &&

@@ -10,7 +10,7 @@ import {
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlus,
-  FaRegCheckSquare, FaGlasses
+  FaRegCheckSquare, FaGlasses, FaIdBadge
 } from 'react-icons/fa';
 import decode from 'jwt-decode';
 import { Table } from '../components/Table';
@@ -184,7 +184,7 @@ function RequestValidation() {
       {alert.enabled &&
         <Alert type={alert.type} message={alert.message} />
       }
-      <h3 className="cat-view-heading">Create new validation request</h3>
+      <h3 className="cat-view-heading"><FaIdBadge/> create new validation request</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="organization_name" className="form-label fw-bold">
@@ -531,7 +531,7 @@ function Validations(props: ValidationProps) {
       {rejectCard}
       {approveCard}
       <div className="d-flex justify-content-between my-2 container">
-        <h3 className="cat-view-heading"><FaRegCheckSquare /> validation requests</h3>
+        <h3 className="cat-view-heading"><FaIdBadge/> validation requests</h3>
         <Link to="/validations/request" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
       </div>
       {isAdmin.current && keycloak ?

@@ -1,6 +1,10 @@
 /* Custom classes are prefixed with cat- */
 
-
+.yellow-gradient {
+  background: rgb(226,226,226);
+  background: linear-gradient(0deg, rgba(226,226,226,1) 0%, rgba(243,243,243,1) 29%, rgba(249,249,249,1) 60%, rgba(255,255,255,1) 100%);
+  border-bottom: solid 2px #919191;
+}
 
 .cat-view-heading {
   color:#00bcd4;
