@@ -29,7 +29,9 @@
   background-color: rgb(220, 220, 220);
 }
 
-
+.cat-metric-tooltip .tooltip.show p{
+ text-align: left;
+}
 
 .cat-nav-link {
   -moz-transition: all .2s ease-in;
@@ -94,3 +96,5 @@ footer a{
   vertical-align: top;
   margin-left: -1px;
 }
+
+
