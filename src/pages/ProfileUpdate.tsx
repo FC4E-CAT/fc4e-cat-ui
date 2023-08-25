@@ -85,7 +85,7 @@ export default function ProfileUpdate() {
       </Form.Group>
       <Form.Group className="mt-2">
         <button type="submit" className="btn btn-light border-black">Submit</button>
-        <button
+        <button type="button"
           onClick={() => {
             navigate("/profile");
           }}
