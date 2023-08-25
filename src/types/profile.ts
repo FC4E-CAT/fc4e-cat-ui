@@ -12,6 +12,7 @@ export interface UserProfile {
 
 export interface UserProfile {
     id: string;
+    orcid_id?: string;
     registered_on: string;
     user_type: string;
     name: string;

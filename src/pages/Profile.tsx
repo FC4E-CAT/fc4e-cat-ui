@@ -32,7 +32,6 @@ function Profile() {
           <header className="col-3 h4 text-muted">Account</header>
           <section className="col-9">
             <div><strong>id:</strong> {userProfile?.id}</div>
-           
             <div><strong>type:</strong> 
               {userProfile?.user_type === "Identified" &&
                 <span className="m-2">{userProfile?.user_type}</span>
@@ -55,6 +54,9 @@ function Profile() {
             <div><strong>Name:</strong> {userProfile?.name}</div>
             <div><strong>Surname:</strong> {userProfile?.surname}</div>
             <div><strong>Email:</strong> {userProfile?.email}</div>
+            {userProfile?.orcid_id &&
+              <div><strong>ORCID:</strong> {userProfile?.orcid_id}</div>
+            }
             <Link to="/profile/update" className="btn btn-light border-black mt-4" >Update Details</Link>
             
           </section>
