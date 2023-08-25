@@ -4,6 +4,7 @@
 
 import { InputGroup, Form, Col, Row } from "react-bootstrap"
 import { AssessmentSubject } from "../../types"
+import { FaCog, FaLock, FaRegBuilding } from "react-icons/fa"
 
 interface AssessmentInfoProps {
     id?: string
@@ -61,6 +62,36 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
 
             <Row>
                 <Col>
+                    <InputGroup className="mb-3">
+                        <InputGroup.Text id="label-info-type">
+                            Type:
+                        </InputGroup.Text>
+                        <Form.Control id="input-info-type" placeholder={props.type} aria-describedby="label-info-type" readOnly />
+                    </InputGroup>
+                </Col>
+                <Col>
+                    <InputGroup className="mb-3">
+                        <InputGroup.Text id="label-info-actor">
+                            Actor:
+                        </InputGroup.Text>
+                        <Form.Control id="input-info-actor" placeholder={props.actor} aria-describedby="label-info-actor" readOnly />
+                    </InputGroup>
+                </Col>
+                <Col xs={6}>
+                    <InputGroup className="mb-3">
+                        <InputGroup.Text id="label-info-org">
+                            Organisation:
+                        </InputGroup.Text>
+                        <Form.Control id="input-info-org" placeholder={props.org} aria-describedby="label-info-org" readOnly />
+                        <InputGroup.Text className="text-white bg-secondary"><span className="me-2">id: </span><strong>{props.orgId}</strong></InputGroup.Text>
+                    </InputGroup>
+                </Col>
+            </Row>
+            <Row className="mt-2">
+                <span><FaCog color="orange" className="me-2"/>Subject of assessment <em>(Object, Entity or Service)</em>:</span>
+            </Row>
+            <Row className="m-2">
+                <Col>
                     <InputGroup className="mb-3" size="sm">
                         <InputGroup.Text id="label-info-subject-type">
                             Subject Type:
@@ -100,43 +131,22 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                     </InputGroup>
                 </Col>
             </Row>
+            
 
-
-            <Row>
-                <Col>
-                    <InputGroup className="mb-3" size="sm">
-                        <InputGroup.Text id="label-info-type">
-                            Type:
-                        </InputGroup.Text>
-                        <Form.Control id="input-info-type" placeholder={props.type} aria-describedby="label-info-type" readOnly />
-                    </InputGroup>
-                </Col>
-                <Col>
-                    <InputGroup className="mb-3" size="sm">
-                        <InputGroup.Text id="label-info-actor">
-                            Actor:
-                        </InputGroup.Text>
-                        <Form.Control id="input-info-actor" placeholder={props.actor} aria-describedby="label-info-actor" readOnly />
-                    </InputGroup>
-                </Col>
-                <Col xs={6}>
-                    <InputGroup className="mb-3" size="sm">
-                        <InputGroup.Text id="label-info-org">
-                            Organisation:
-                        </InputGroup.Text>
-                        <Form.Control id="input-info-org" placeholder={props.org} aria-describedby="label-info-org" readOnly />
-                        <InputGroup.Text className="text-white bg-secondary"><span className="me-2">id: </span><strong>{props.orgId}</strong></InputGroup.Text>
-                    </InputGroup>
-                </Col>
+            
+            <Row className="mt-2">
+                <span><FaLock color="crimson" className="me-2"/>You can choose to make the assessment public <em>(It is private by default)</em>:</span>
             </Row>
-
-            <Row>
+            <Row className="m-2">
                 <Col>
+                    
                     <Form.Check 
                         id="input-info-published"
-                        label="Published"
+                        label="This Assessment is Public and Licensed with CC 4.0 BY"
                         checked={props.published}
                         onChange={(e)=>{props.onPublishedChange(e.target.checked)}} 
+                        className={`${props.published ? 'text-success' : 'text-muted'}`}
+                        
                     />
                     
                 </Col>
