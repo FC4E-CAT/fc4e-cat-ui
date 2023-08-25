@@ -5,9 +5,15 @@ import { FaLink } from "react-icons/fa";
 /**
  * Small component to add url list
  */
-export const EvidenceURLS = ({ urls }: { urls: string[] }) => {
 
-    const [urlList, setUrlList] = useState<string[]>(urls)
+interface EvidenceURLSProps {
+    urls: string[]
+    onListChange(newURLs: string[]):void
+}
+
+export const EvidenceURLS = (props:EvidenceURLSProps) => {
+
+    const [urlList, setUrlList] = useState<string[]>(props.urls)
     const [newURL, setNewURL] = useState('');
     const [error, setError] = useState('');
     const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
@@ -15,12 +21,15 @@ export const EvidenceURLS = ({ urls }: { urls: string[] }) => {
     const handleRemoveURL = (index: number) => {
         const updatedUrls = urlList.filter((item, i) => i !== index);
         setUrlList(updatedUrls);
+        props.onListChange(updatedUrls);
     };
 
     const handleAddURL = () => {
         if (newURL) {
             if (urlRegex.test(newURL)) {
-                setUrlList([...urlList, newURL]);
+                const updatedURLs = [...urlList, newURL]
+                setUrlList(updatedURLs);
+                props.onListChange(updatedURLs);
                 setNewURL('');
                 setError('');
             } else {

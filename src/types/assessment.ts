@@ -71,15 +71,19 @@ export interface AssessmentResult {
 
 /** An assessment contains a list of principles */
 export interface Principle {
+  id: string
   name: string;
   criteria: Criterion[]
+  description: string;
 }
 
 /** Each principle contains a list of criteria */
 export interface Criterion {
+  id: string;
   name: string;
   type: CriterionType
   metric: Metric;
+  description?: string;
 }
 
 /** Each criterion can be either mandatory or optional */
@@ -95,7 +99,7 @@ export interface Metric {
   benchmark: Benchmark
   value: number;
   result: number;
-  tests: Test[];
+  tests: AssessmentTest[];
 }
 
 /** Each metric has a type. For now, we only deal with type: number  */
@@ -120,13 +124,17 @@ export type Benchmark = BenchmarkEqualGreaterThan
  *  For now, we only deal with Tests of Binary kind
  */
 export interface TestBinary {
+  id:string;
+  name:string
+  description?: string;
+  guidance? :string; 
   type: "binary";
   text: string;
   value: 0 | 1;
   evidence_url: string[]
 }
 
-/** Each test will gonna have different types - right now only one type: binary test is supported  */
-export type Test = TestBinary
+/** Each assessment test will gonna have different types - right now only one type: binary test is supported  */
+export type AssessmentTest = TestBinary
 
 
