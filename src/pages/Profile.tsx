@@ -92,7 +92,11 @@ function Profile() {
             } 
             { (userProfile?.user_type === "Validated" || userProfile?.user_type === "Admin") &&
             <>
-              <div className="text-muted">View your current assesments or create a new one.<br/><span className="badge bg-info">Under construction</span></div>
+              <div>View your current assessments or create a new one.</div>
+              <div className="mt-4">
+                <Link to="/assessments" className="btn btn-light border-black" >View List</Link>
+                <Link to="/validations" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
+              </div>
 
             </>
             }

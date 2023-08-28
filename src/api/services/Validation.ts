@@ -57,6 +57,7 @@ const Validation = {
     useQuery<ValidationResponse, any>({
       queryKey: ["validation_details"],
       queryFn: async () => {
+       
         const jwt = JSON.stringify(decode(token));
         let response = null;
         if (jwt.includes("admin")) {
@@ -74,7 +75,7 @@ const Validation = {
         console.log(error);
         return error.response as ApiServiceErr;
       },
-      enabled: !!token && isRegistered && (validation_id !== ""),
+      enabled: !!token && isRegistered && (validation_id !== "" && validation_id !== undefined),
     }),
   useValidationRequest: ({
     organisation_role,
