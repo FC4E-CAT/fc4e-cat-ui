@@ -79,13 +79,13 @@ function Header() {
             <Link to="/" className="cat-nav-link">HOME</Link>
           </NavItem>
           <NavItem>
-            <Link to="/" className="cat-nav-link">SEARCH</Link>
+            <Link to="/" className="cat-nav-link cat-text-faded">SEARCH</Link>
           </NavItem>
           <NavItem>
-            <Link to="/validations" className="cat-nav-link">ASSESS</Link>
+            <Link to="/assessments" className="cat-nav-link">ASSESS</Link>
           </NavItem>
           <NavItem>
-            <Link to="/" className="cat-nav-link">RESOURCES</Link>
+            <Link to="#" className="cat-nav-link cat-text-faded">RESOURCES</Link>
           </NavItem>
           
           {authenticated && userProfile?.id &&
@@ -95,7 +95,7 @@ function Header() {
           </NavItem>
 
           <NavItem>
-            <Link to="/" className="cat-nav-link"><FaCog /></Link>
+            <Link to="/" className="cat-nav-link cat-text-faded"><FaCog /></Link>
           </NavItem>
           </>
           }

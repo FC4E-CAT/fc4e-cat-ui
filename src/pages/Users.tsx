@@ -35,7 +35,7 @@ function Users() {
                         cell: info => info.getValue(),
                         header: () => <span>Registered On</span>,
                         footer: props => props.column.id,
-                    },
+                    }
                 ],
             },
         ],

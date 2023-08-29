@@ -49,6 +49,7 @@ export const TestBinary = (props:AssessmentTestProps) => {
                     name="test-input-group"
                     type="radio"
                     id="test-check-yes"
+                    checked={props.test.value===1}
                     onChange={handleValueChange}
                 />
                 <Form.Check
@@ -58,6 +59,7 @@ export const TestBinary = (props:AssessmentTestProps) => {
                     name="test-input-group"
                     type="radio"
                     id="test-check-no"
+                    checked={props.test.value===0}
                     onChange={handleValueChange}
                 />
                 </div>

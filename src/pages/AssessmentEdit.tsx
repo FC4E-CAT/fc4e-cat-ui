@@ -8,6 +8,8 @@ import { AssessmentInfo } from '../components/assessment/AssessmentInfo';
 import { FaChartLine, FaCheckCircle } from 'react-icons/fa';
 import {evalAssessment, evalMetric} from '../utils/Assessment';
 import AssessmentTabs from '../components/assessment/AssessmentTabs';
+import { useCreateAssessment, useGetAssessment, useUpdateAssessment } from '../api/services/Assessment';
+import { Link } from 'react-router-dom';
 type AssessmentEditProps = {
   createMode?: boolean;
 }
@@ -17,10 +19,10 @@ type AssessmentEditProps = {
 const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [assessment, setAssessment] = useState<Assessment>();
-
+  const [templateId, setTemplateID] = useState<number>();
   const [debug, setDebug] = useState<boolean>(false);
 
-  const { valID } = useParams()
+  const { valID, asmtID } = useParams()
 
 
   // for the time being get the only one assessment template supported
@@ -33,16 +35,53 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     { validation_id: valID!, token: keycloak?.token, isRegistered: registered }
   );
 
-  // save the template_doc into the assessment state variable - this needs to be fired only once when the assessment is not yet prepared
+  const asmtNumID = asmtID !== undefined ? parseInt(asmtID) : NaN
+
+  const qAssessment = useGetAssessment(
+    { id: asmtNumID, token: keycloak?.token, isRegistered: registered }
+  );
+
+  const mutationCreateAssessment = useCreateAssessment(keycloak?.token)
+  const mutationUpdateAssessment = useUpdateAssessment(keycloak?.token, asmtID)
+
+  function handleCreateAssessment() {
+    if (templateId && valID && assessment) {
+      mutationCreateAssessment.mutate({
+        'validation_id': parseInt(valID),
+        'template_id': templateId,
+        'assessment_doc':assessment
+      })
+    }
+  }
+
+  function handleUpdateAssessment() {
+    if (assessment && asmtID) {
+      mutationUpdateAssessment.mutate({
+        'assessment_doc':assessment
+      })
+    }
+  }
+
+  // load the assessment content
   useEffect(() => {
-    if (!assessment && qTemplate.data && qValidation.data) {
-      const data = qTemplate.data.template_doc;
-      data.organisation.id = qValidation.data.organisation_id;
-      data.organisation.name = qValidation.data.organisation_name;
-      setAssessment(data);
+    // if assessment hasn't been set yet
+    if (!assessment) {
+      // if on creative mode load template
+      if (createMode && qTemplate.data && qValidation.data) {
+        const data = qTemplate.data.template_doc;
+        data.organisation.id = qValidation.data.organisation_id;
+        data.organisation.name = qValidation.data.organisation_name;
+        setAssessment(data);
+        setTemplateID(qTemplate.data.id);
+      // if not on create mode load assessment itself
+      } else if (createMode === false && qAssessment.data) {
+        const data = qAssessment.data.assessmentDoc;
+        setAssessment(data);
+      }
     }
 
-  }, [qTemplate.data, qValidation, assessment]);
+
+  }, [qTemplate.data, qValidation, assessment, createMode, qAssessment.data]);
 
 
   function handleNameChange(name: string) {
@@ -148,7 +187,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     <div className="mt-4">
       <h3 className='cat-view-heading'><FaCheckCircle className="me-2"/> {(createMode ? "create" : "edit") + " assessment"}</h3>
       {/* when template data hasn't loaded yet */}
-      {qTemplate.isLoading || qValidation.isLoading || !assessment
+      {(createMode && (qTemplate.isLoading || qValidation.isLoading)) || !assessment
         ? <p>Loading Assessment Body...</p>
         :
         <>
@@ -220,15 +259,44 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
           </Alert>
             </Col>
           </Row>
-          }
-        
-          
-
-          
+          }          
           <AssessmentTabs principles={assessment.principles} onTestChange={handleCriterionChange} />
 
-          {/* Debug info here - display assessment json */}
 
+          {/* Add create/update button here and cancel */}
+        
+          <div className="text-end mt-2">
+          {createMode &&
+        
+            <button type="button" className="btn btn-success px-5" onClick={handleCreateAssessment}
+             disabled={
+              assessment.result.compliance === null
+              ? true 
+              : false
+             }
+            >
+              Create
+            </button> 
+          }
+          {!createMode &&
+            <button type="button" className="btn btn-success px-5" onClick={handleUpdateAssessment}
+             disabled={
+              assessment.result.compliance === null
+              ? true 
+              : false
+             }
+            >
+              Update
+            </button>
+            }
+            <Link className="btn btn-secondary ms-2 px-5" to="/assessments">Cancel</Link>
+          </div>
+            
+          
+
+          
+
+          {/* Debug info here - display assessment json */}
           <div className="mt-5">
             <button type="button" className="btn btn-warning btn-sm"
               onClick={() => setDebug(!debug)}

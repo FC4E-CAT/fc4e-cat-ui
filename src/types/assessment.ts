@@ -1,6 +1,8 @@
+import { ResponsePage } from "./common";
+
 /** API response when requesting a template */
 export interface TemplateResponse {
-  id: string;
+  id: number;
   type: AssessmentType;
   actor: ActorType;
   template_doc: Assessment;
@@ -146,4 +148,20 @@ export interface ResultStats {
   optionalFilled: number,
   mandatory: number,
   optional: number
+}
+
+export interface AssessmentListItem {
+  id: number,
+  user_id: string,
+  validationId: number
+  created_on: number,
+  updated_on: string,
+  templateId: number,
+}
+
+export type AssessmentListResponse = ResponsePage<AssessmentListItem[]>;
+
+export interface AssessmentDetailsResponse {
+  id: number
+  assessmentDoc: Assessment
 }

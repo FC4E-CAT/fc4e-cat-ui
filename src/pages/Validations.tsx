@@ -423,7 +423,7 @@ function Validations(props: ValidationProps) {
                   {props.row.original.status === "APPROVED" &&
                       <Link
                         className="btn btn-secondary cat-action-approve-link btn-sm "
-                        to={`/assessment/${props.row.original.id}`}>
+                        to={`/assessments/create/${props.row.original.id}`}>
                         <FaPlus /> Assessment
                       </Link>
                   }
