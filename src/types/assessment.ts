@@ -153,15 +153,15 @@ export interface ResultStats {
 export interface AssessmentListItem {
   id: number,
   user_id: string,
-  validationId: number
+  validation_id: number
   created_on: number,
   updated_on: string,
-  templateId: number,
+  template_id: number,
 }
 
 export type AssessmentListResponse = ResponsePage<AssessmentListItem[]>;
 
 export interface AssessmentDetailsResponse {
   id: number
-  assessmentDoc: Assessment
+  assessment_doc: Assessment
 }

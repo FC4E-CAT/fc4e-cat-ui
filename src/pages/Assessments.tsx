@@ -31,14 +31,14 @@ function Assessments() {
                         footer: props => props.column.id,
                     },
                     {
-                        accessorFn: row => row.validationId,
+                        accessorFn: row => row.validation_id,
                         id: 'validation_id',
                         cell: info => info.getValue(),
                         header: () => <span>Validation ID</span>,
                         footer: props => props.column.id,
                     },
                     {
-                        accessorFn: row => row.templateId,
+                        accessorFn: row => row.template_id,
                         id: 'template_id',
                         cell: info => info.getValue(),
                         header: () => <span>Template ID</span>,
