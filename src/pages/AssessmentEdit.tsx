@@ -75,7 +75,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
         setTemplateID(qTemplate.data.id);
       // if not on create mode load assessment itself
       } else if (createMode === false && qAssessment.data) {
-        const data = qAssessment.data.assessmentDoc;
+        const data = qAssessment.data.assessment_doc;
         setAssessment(data);
       }
     }
