@@ -1,101 +1,16 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../auth/AuthContext';
 import { TemplateAPI, ValidationAPI } from '../api';
-import { Assessment, AssessmentSubject, Principle, AssessmentTest } from '../types';
+import { Assessment, AssessmentSubject, AssessmentTest, CriterionImperative, Criterion,  } from '../types';
 import { useParams } from "react-router";
-import { Tab, Row, Col, Nav, Alert, ListGroup } from 'react-bootstrap';
+import { Row, Col, Alert, ProgressBar} from 'react-bootstrap';
 import { AssessmentInfo } from '../components/assessment/AssessmentInfo';
-import { TestBinary } from '../components/tests/TestBinary';
-import { FaCheckCircle, FaFileContract } from 'react-icons/fa';
-
+import { FaChartLine, FaCheckCircle } from 'react-icons/fa';
+import {evalAssessment, evalMetric} from '../utils/Assessment';
+import AssessmentTabs from '../components/assessment/AssessmentTabs';
 type AssessmentEditProps = {
   createMode?: boolean;
 }
-
-type AssessmentTabsProps = {
-  principles: Principle[],
-  onTestChange(principleId: string, criterionId: string, newTest: AssessmentTest): void
-}
-
-/** AssessmentTabs holds the tabs and test content for different criteria */
-const AssessmentTabs = (props: AssessmentTabsProps) => {
-
-  const navs: JSX.Element[] = []
-  const tabs: JSX.Element[] = []
-
-  let firstCriterionId = ""
-
-  props.principles.forEach(principle => {
-
-
-
-    // push principle lable to navigation list
-    navs.push(<span className="mb-2" key={principle.id}>{principle.name}</span>)
-
-    principle.criteria.forEach(criterion => {
-      // grab first criterion id to make it by default active
-      if (!firstCriterionId) {
-        firstCriterionId = criterion.id
-      }
-      navs.push(<Nav.Item key={criterion.id}><Nav.Link eventKey={criterion.id}>{criterion.name}</Nav.Link></Nav.Item>)
-
-      // tests for each criterion
-      let testList: JSX.Element[] = [];
-
-      // store state of test results
-      criterion.metric.tests.forEach(test => {
-        if (test.type === "binary") {
-          testList.push(
-            <ListGroup.Item key={test.id}>
-              <TestBinary
-                test={test}
-                onTestChange={props.onTestChange}
-                criterionId={criterion.id}
-                principleId={principle.id}
-              />
-            </ListGroup.Item>)
-        }
-      })
-
-      // add criterion content
-      tabs.push(
-        <Tab.Pane key={criterion.id} className="text-dark" eventKey={criterion.id}>
-          {/* add a principle info box before criterion content */}
-          <Alert variant="light">
-            <h6>Principle {principle.id}: {principle.name}</h6>
-            <small className="text-small">{principle.description}</small>
-          </Alert>
-          <div className="ms-2">
-            <h5>Criterion {criterion.id}: {criterion.name} <span className="badge bg-sm">May</span></h5>
-            <p>{criterion.description}</p>
-            <ListGroup>
-              {testList}
-            </ListGroup>
-          </div>
-        </Tab.Pane>
-      )
-    })
-
-  })
-
-  return (
-    <Tab.Container id="left-tabs-example" defaultActiveKey={firstCriterionId}>
-      <Row>
-        <Col sm={3}>
-          <Nav variant="pills" className="flex-column">
-            {navs}
-          </Nav>
-        </Col>
-        <Col sm={9}>
-          <Tab.Content >
-            {tabs}
-          </Tab.Content>
-        </Col>
-      </Row>
-    </Tab.Container>
-  )
-}
-
 
 
 /** AssessmentEdit page that holds the main body of an assessment */
@@ -159,34 +74,79 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
   function handleCriterionChange(principleID: string, criterionID: string, newTest: AssessmentTest) {
     // update criterion change
+    let mandatory: (number|null)[] = [];
+    let optional: (number|null)[] = [];
+
     if (assessment) {
+
+      const newPrinciples = assessment.principles.map(principle => {
+        if (principle.id === principleID) {
+          const newCriteria = principle.criteria.map(criterion => {
+            let resultCriterion: Criterion;
+            if (criterion.id === criterionID) {
+              const newTests = criterion.metric.tests.map(test =>{
+                if (test.id === newTest.id) {
+                  return newTest;
+                }
+                return test;
+              })
+              let newMetric = {...criterion.metric,"tests":newTests};
+              let {result, value} = evalMetric(newMetric);
+              newMetric = {...newMetric,"result":result, "value":value}
+              // create a new criterion object with updates due to changes
+              resultCriterion = {...criterion,"metric":newMetric};
+            } else {
+              // use the old object with no changes
+              resultCriterion = criterion;
+            }
+
+            // update criteria result reference tables
+            if (resultCriterion.imperative === CriterionImperative.Should) {
+              mandatory.push(resultCriterion.metric.value);
+            } else {
+              optional.push(resultCriterion.metric.value);
+            }
+            return resultCriterion;
+          })
+
+          return {...principle,"criteria":newCriteria};
+        }
+        return principle;
+      })
+
+      let compliance: boolean | null;
+      let ranking: number | null;
+
+      if (mandatory.some((result) => result === null)) {
+        compliance = null
+      } else {
+        compliance = mandatory.every((result) => result ===1)
+      }
+
+     
+      ranking = optional.reduce((sum,result)=>{
+        if (sum === null || result === null) return null;
+        return sum+result;
+      },0)
+      
+
+      
       setAssessment({
         ...assessment,
-        "principles": assessment.principles.map(principle =>
-          principle.id === principleID
-            ? {
-              ...principle,
-              "criteria": principle.criteria.map(criterion =>
-                criterion.id === criterionID
-                  ? {
-                    ...criterion,
-                    "metric": {
-                      ...criterion.metric,
-                      "tests": criterion.metric.tests.map(test =>
-                      test.id === newTest.id
-                        ? newTest : test)
-                      }
-                  } : criterion)
-            } : principle)
+        "principles": newPrinciples,
+        "result": {"compliance":compliance,"ranking":ranking}
       })
+
+    
     }
   }
 
-
+  // evaluate the assessment  
+  let evalResult = evalAssessment(assessment);
 
   return (
     <div className="mt-4">
-      <h3 className='cat-view-heading'><FaCheckCircle /> {(createMode ? "create" : "edit") + " assessment"}</h3>
+      <h3 className='cat-view-heading'><FaCheckCircle className="me-2"/> {(createMode ? "create" : "edit") + " assessment"}</h3>
       {/* when template data hasn't loaded yet */}
       {qTemplate.isLoading || qValidation.isLoading || !assessment
         ? <p>Loading Assessment Body...</p>
@@ -206,9 +166,65 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
             onPublishedChange={handlePublishedChange}
             onSubjectChange={handleSubjectChange}
           />
+          
+          {/* provide assessment status/statistics here... */}
+          
+          {evalResult &&
 
+          <Row>
+            <Col>
+            <Alert variant={
+              evalResult.mandatoryFilled!==evalResult.totalMandatory
+              ? "secondary"
+              : assessment.result.compliance ? "success" : "danger"
+            }
+            >
+            <Row>
+              <Col>
+              <span><FaCheckCircle className="me-2"/>
+                Compliance: 
+                  { evalResult.mandatoryFilled!==evalResult.totalMandatory
+                    ? <span className="badge bg-secondary ms-2">UNKNOWN</span> 
+                    : assessment.result.compliance 
+                      ? <span className="badge bg-success ms-2">PASS</span> 
+                      : <span className="badge bg-danger ms-2">FAIL</span>
+                  }
+                
+                </span> 
+              </Col>
+              <Col>
+              <span><FaChartLine className="me-2"/>Ranking:</span> {assessment.result.ranking}
+              </Col>
+              <Col>
+              </Col>
+              <Col xs={4}>
+                <div className="mb-2">
+                  <span>Mandatory: {evalResult.mandatoryFilled} / {evalResult.totalMandatory}</span>
+                  <ProgressBar className="mt-1">
+                   <ProgressBar key="mandatory-pass" variant="success"   now={evalResult.totalMandatory ? (evalResult.mandatory / evalResult.totalMandatory * 100): 0 }/>
+                   <ProgressBar key="mandatory-fail" variant="danger"  now={evalResult.totalMandatory ? (evalResult.mandatoryFilled-evalResult.mandatory) / evalResult.totalMandatory * 100: 0 }/>
+                  </ProgressBar>
+                 
+                </div>
+              </Col>
+              {(evalResult.totalOptional > 0) &&
+              <Col xs={2}>
+                <div className="mb-2">
+                  <span>Optional: {evalResult.optional} / {evalResult.totalOptional}</span>
+                  <ProgressBar className="mt-1" variant="warning" style={{height:'3px', background:"darkgrey"}} now={evalResult.totalOptional ? evalResult.optional / evalResult.totalOptional * 100 : 0}/>
+                </div>
+              </Col>
+              }
+            </Row>
+            
+          </Alert>
+            </Col>
+          </Row>
+          }
+        
           
 
+          
           <AssessmentTabs principles={assessment.principles} onTestChange={handleCriterionChange} />
 
           {/* Debug info here - display assessment json */}

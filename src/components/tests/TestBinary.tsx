@@ -67,7 +67,14 @@ export const TestBinary = (props:AssessmentTestProps) => {
                     onListChange={onURLChange}
                 />
 
-                <div className="text-muted mt-2 border-top align-right"><span><em>Test Result: </em><strong>{props.test.value}</strong></span></div>
+                <div className="text-muted mt-2 border-top align-right">
+                    <small><em>Test Result: </em>
+                    { props.test.value !== null
+                    ? <strong>{props.test.value}</strong>
+                    : <span><strong>Unknown</strong> - Please answer the question above</span>
+                    }
+                    </small>
+                </div>
             </Form>
            
         </div>

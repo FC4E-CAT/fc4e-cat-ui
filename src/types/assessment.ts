@@ -33,8 +33,9 @@ export interface Assessment {
   result: AssessmentResult;
   principles: Principle[];
   published: boolean;
-
 }
+
+
 /** Reference with numerical id */
 export interface RefNumID {
   id: number;
@@ -65,8 +66,8 @@ export interface AssessmentOrg {
 
 /** An assessment has a definite result wether compliance is met or not and a ranking score */
 export interface AssessmentResult {
-  compliance: boolean;
-  ranking: number;
+  compliance: boolean| null;
+  ranking: number | null;
 }
 
 /** An assessment contains a list of principles */
@@ -81,15 +82,15 @@ export interface Principle {
 export interface Criterion {
   id: string;
   name: string;
-  type: CriterionType
+  imperative: CriterionImperative
   metric: Metric;
   description?: string;
 }
 
 /** Each criterion can be either mandatory or optional */
-export enum CriterionType {
-  Mandatory = "mandatory",
-  Optional = "optional"
+export enum CriterionImperative {
+  May = "may",
+  Should = "should"
 }
 
 /** Each criterion includes a SINGLE metric */
@@ -97,8 +98,8 @@ export interface Metric {
   type: MetricType;
   algorithm: MetricAlgorithm;
   benchmark: Benchmark
-  value: number;
-  result: number;
+  value: number | null;
+  result: number | null;
   tests: AssessmentTest[];
 }
 
@@ -107,9 +108,10 @@ export enum MetricType {
   Number = "number"
 }
 
-/** Each metric has an algorithm. For now, we only deal with algorithm: sum  */
+/** Each metric has an algorithm. For now, we only deal with algorithms: single and sum  */
 export enum MetricAlgorithm {
-  Sum = "sum"
+  Sum = "sum",
+  Single = "single"
 }
 
 /** Each metric includes a benchmark. For now, we only deal with equal than greater kind  */
@@ -130,11 +132,18 @@ export interface TestBinary {
   guidance? :string; 
   type: "binary";
   text: string;
-  value: 0 | 1;
+  value: 0 | 1 | null;
   evidence_url: string[]
 }
 
 /** Each assessment test will gonna have different types - right now only one type: binary test is supported  */
 export type AssessmentTest = TestBinary
 
-
+export interface ResultStats {
+  totalMandatory: number,
+  totalOptional: number,
+  mandatoryFilled: number,
+  optionalFilled: number,
+  mandatory: number,
+  optional: number
+}
