@@ -369,10 +369,10 @@ function Validations(props: ValidationProps) {
             footer: props => props.column.id,
           },
           {
-            accessorFn: row => row.actor_id,
-            id: 'actor_id',
+            accessorFn: row => row.actor_name,
+            id: 'actor_name',
             cell: info => info.getValue(),
-            header: () => <span>Actor ID</span>,
+            header: () => <span>Actor</span>,
             footer: props => props.column.id,
           },
           {
@@ -420,7 +420,7 @@ function Validations(props: ValidationProps) {
                     to={`/validations/${props.row.original.id}`}>
                     <FaList />
                   </Link>
-                  {props.row.original.status === "APPROVED" &&
+                  {props.row.original.status === "APPROVED" && props.row.original.actor_id === 6 &&
                       <Link
                         className="btn btn-secondary cat-action-approve-link btn-sm "
                         to={`/assessments/create/${props.row.original.id}`}>
