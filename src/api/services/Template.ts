@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 
 /** Backend calls for getting Assessment Template */
 const Template = {
-  useGetTemplate: (templateTypeId: number, actorId: number, token: string, isRegistered: boolean ) =>
+  useGetTemplate: (templateTypeId: number, actorId: number|undefined, token: string, isRegistered: boolean ) =>
     useQuery<TemplateResponse, any>({
-      queryKey: ["template"],
+      queryKey: ["template",actorId],
       queryFn: async () => {
         const response = await Client(token).get<TemplateResponse>(
           `/templates/by-type/${templateTypeId}/by-actor/${actorId}`
@@ -17,7 +17,7 @@ const Template = {
         console.log(error.response);
         return error.response as ApiServiceErr;
       },
-      enabled: !!token && isRegistered
+      enabled: !!token && isRegistered && actorId !== undefined
     })
 };
 

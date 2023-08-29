@@ -1,6 +1,6 @@
 /** Helper  */
 
-import { Assessment, CriterionImperative, Metric, ResultStats, TestBinary } from "../types";
+import { Assessment, CriterionImperative, Metric, ResultStats, AssessmentTest } from "../types";
 
 
 /** Evaluates all tests of a metric if the metric is number */
@@ -12,16 +12,16 @@ export function evalMetric(metric: Metric): {result:number|null, value:number|nu
     // if metric algo indicates sum calculate the sum of test scores
     if (metric.algorithm === "sum" || metric.algorithm === "single") {
         // if one of the tests in not filled yet the result of the metric should be -1 (unresolved)
-        value = metric.tests.reduce((sum: (number|null),item: TestBinary)=>
+        value = metric.tests.reduce((sum: (number|null),item: AssessmentTest)=>
         {
             // if any of the test values are null (not filled-in) designate the whole metric value/result as null
-            if (sum === null || item.value === null) return null;
-            return sum+item.value
+            if (sum === null || item.result === null) return null;
+            return sum+item.result
         },0)
     }
     // if all the tests are filled-in and a value has been produced calculate also the rating
     if (value !== null) {
-        if ("equal_greater_than" in metric.benchmark) {
+        if ("equal_greater_than" in metric.benchmark && (typeof metric.benchmark["equal_greater_than"] === "number")) {
             result = (value && value >= metric.benchmark["equal_greater_than"]) ? 1 : 0
         }
     }

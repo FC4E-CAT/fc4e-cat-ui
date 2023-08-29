@@ -83,7 +83,6 @@ footer a{
 }
 
 
-
 .active {
   color: red;
 }
@@ -100,4 +99,8 @@ footer a{
 
 .cat-text-faded {
   color:lightgrey;
+}
+
+.list-group-item:nth-child(even) {
+  background: #f7f9fb;
 }

@@ -10,6 +10,7 @@ import {evalAssessment, evalMetric} from '../utils/Assessment';
 import AssessmentTabs from '../components/assessment/AssessmentTabs';
 import { useCreateAssessment, useGetAssessment, useUpdateAssessment } from '../api/services/Assessment';
 import { Link } from 'react-router-dom';
+
 type AssessmentEditProps = {
   createMode?: boolean;
 }
@@ -24,16 +25,17 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
   const { valID, asmtID } = useParams()
 
-
   // for the time being get the only one assessment template supported
   // with templateId: 1 (pid policy) and actorId: 6 (for pid owner)
   // this will be replaced in time with dynamic code
-  const qTemplate = TemplateAPI.useGetTemplate(
-    1, 6, keycloak?.token, registered)
+ 
 
   const qValidation = ValidationAPI.useGetValidationDetails(
     { validation_id: valID!, token: keycloak?.token, isRegistered: registered }
   );
+
+  const qTemplate = TemplateAPI.useGetTemplate(
+    1, qValidation.data?.actor_id , keycloak?.token, registered)
 
   const asmtNumID = asmtID !== undefined ? parseInt(asmtID) : NaN
 
@@ -64,6 +66,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
   // load the assessment content
   useEffect(() => {
+    
     // if assessment hasn't been set yet
     if (!assessment) {
       // if on creative mode load template
@@ -139,12 +142,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
               resultCriterion = criterion;
             }
 
-            // update criteria result reference tables
-            if (resultCriterion.imperative === CriterionImperative.Should) {
-              mandatory.push(resultCriterion.metric.value);
-            } else {
-              optional.push(resultCriterion.metric.value);
-            }
+            
             return resultCriterion;
           })
 
@@ -155,6 +153,23 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
       let compliance: boolean | null;
       let ranking: number | null;
+      
+      const newAssessment = {
+        ...assessment,
+        "principles": newPrinciples
+      }
+      // update criteria result reference tables
+      newAssessment.principles.forEach(principle => {
+        principle.criteria.forEach(criterion =>{
+          if (criterion.imperative === CriterionImperative.Should) {
+            mandatory.push(criterion.metric.result);
+          } else {
+            optional.push(criterion.metric.result);
+          }
+        })
+      })
+
+      console.log(mandatory, optional)
 
       if (mandatory.some((result) => result === null)) {
         compliance = null
@@ -170,9 +185,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       
 
       
-      setAssessment({
-        ...assessment,
-        "principles": newPrinciples,
+      setAssessment({...newAssessment,
         "result": {"compliance":compliance,"ranking":ranking}
       })
 
@@ -185,7 +198,9 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
   return (
     <div className="mt-4">
-      <h3 className='cat-view-heading'><FaCheckCircle className="me-2"/> {(createMode ? "create" : "edit") + " assessment"}</h3>
+      <h3 className='cat-view-heading'><FaCheckCircle className="me-2"/> {(createMode ? "create" : "edit") + " assessment"}
+      { assessment && assessment.id && <span className="badge bg-secondary ms-2">id: {assessment?.id}</span>}
+      </h3>
       {/* when template data hasn't loaded yet */}
       {(createMode && (qTemplate.isLoading || qValidation.isLoading)) || !assessment
         ? <p>Loading Assessment Body...</p>
@@ -236,10 +251,10 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
               </Col>
               <Col>
               </Col>
-              <Col xs={4}>
+              <Col xs={2}>
                 <div className="mb-2">
                   <span>Mandatory: {evalResult.mandatoryFilled} / {evalResult.totalMandatory}</span>
-                  <ProgressBar className="mt-1">
+                  <ProgressBar style={{backgroundColor:"darkgrey", height:"0.6rem"}} className="mt-1">
                    <ProgressBar key="mandatory-pass" variant="success"   now={evalResult.totalMandatory ? (evalResult.mandatory / evalResult.totalMandatory * 100): 0 }/>
                    <ProgressBar key="mandatory-fail" variant="danger"  now={evalResult.totalMandatory ? (evalResult.mandatoryFilled-evalResult.mandatory) / evalResult.totalMandatory * 100: 0 }/>
                   </ProgressBar>
@@ -249,8 +264,11 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
               {(evalResult.totalOptional > 0) &&
               <Col xs={2}>
                 <div className="mb-2">
-                  <span>Optional: {evalResult.optional} / {evalResult.totalOptional}</span>
-                  <ProgressBar className="mt-1" variant="warning" style={{height:'3px', background:"darkgrey"}} now={evalResult.totalOptional ? evalResult.optional / evalResult.totalOptional * 100 : 0}/>
+                  <span>Optional: {evalResult.optionalFilled} / {evalResult.totalOptional}</span>
+                  <ProgressBar style={{backgroundColor:"darkgrey", height:"0.6rem"}} className="mt-1">
+                  <ProgressBar key="mandatory-pass" striped variant="success"   now={evalResult.totalOptional ? (evalResult.optional / evalResult.totalOptional * 100): 0 }/>
+                  <ProgressBar key="mandatory-fail" striped variant="danger"  now={evalResult.totalOptional ? (evalResult.optionalFilled-evalResult.optional) / evalResult.totalOptional * 100: 0 }/>
+                  </ProgressBar>
                 </div>
               </Col>
               }

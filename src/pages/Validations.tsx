@@ -420,7 +420,7 @@ function Validations(props: ValidationProps) {
                     to={`/validations/${props.row.original.id}`}>
                     <FaList />
                   </Link>
-                  {props.row.original.status === "APPROVED" && props.row.original.actor_id === 6 &&
+                  {props.row.original.status === "APPROVED" && (props.row.original.actor_id === 6 || props.row.original.actor_id === 2) &&
                       <Link
                         className="btn btn-secondary cat-action-approve-link btn-sm "
                         to={`/assessments/create/${props.row.original.id}`}>

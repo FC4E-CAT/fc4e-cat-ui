@@ -24,6 +24,14 @@ export function useUpdateAssessment (token: string, assessmentID: string| undefi
         mutationFn: (putData:{assessment_doc:Assessment}) => {
             return Client(token).put(`/assessments/${assessmentID}`,putData)
         },
+        // optimistically update the cached data
+        onMutate: (newData) => {
+          // Optimistically update the cache with the new data
+          if (assessmentID) {
+            queryClient.setQueryData(['assessment',parseInt(assessmentID)], newData);
+          }
+          
+        },
         // for the time being redirect to assessment list
         onSuccess: () => {
             queryClient.invalidateQueries(["assessment", { assessmentID }])
@@ -53,7 +61,7 @@ export function useGetAssessments({ size, page, sortBy, token, isRegistered }: A
 
 export function useGetAssessment({ id, token, isRegistered }: {id:number, token:string, isRegistered:boolean}){
     return useQuery<AssessmentDetailsResponse, any>({
-      queryKey: ["assessment", { id }],
+      queryKey: ["assessment", id],
       queryFn: async () => {
         const response = await Client(token).get<AssessmentDetailsResponse>(
           `/assessments/${id}`

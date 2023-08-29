@@ -118,28 +118,47 @@ export enum MetricAlgorithm {
 
 /** Each metric includes a benchmark. For now, we only deal with equal than greater kind  */
 export interface BenchmarkEqualGreaterThan {
-  equal_greater_than: number
+  equal_greater_than: number | string
 }
 
 /** Each benchmark will gonna have different types - right now only one type is supported  */
 export type Benchmark = BenchmarkEqualGreaterThan
 
-/** Each metric has a list of tests. Test can be of different kinds
- *  For now, we only deal with Tests of Binary kind
- */
+/** Each metric has a list of tests. Test can be of different kinds */
 export interface TestBinary {
-  id:string;
-  name:string
+  id: string;
+  name: string
   description?: string;
-  guidance? :string; 
+  guidance? :Guidance; 
   type: "binary";
   text: string;
-  value: 0 | 1 | null;
-  evidence_url: string[]
+  result: number | null;
+  value: boolean | null;
+  evidence_url?: string[]
 }
 
-/** Each assessment test will gonna have different types - right now only one type: binary test is supported  */
-export type AssessmentTest = TestBinary
+export interface TestValue {
+  id: string;
+  name: string
+  description?: string;
+  guidance? :Guidance; 
+  type: "value";
+  text: string;
+  result: number | null;
+  value: number | null;
+  threshold?: number | null;
+  value_name: string;
+  threshold_name?: string;
+  benchmark: Benchmark
+  evidence_url?: string[]
+}
+
+export interface Guidance{
+  id: string;
+  description: string;
+}
+
+
 
 export interface ResultStats {
   totalMandatory: number,
@@ -165,3 +184,6 @@ export interface AssessmentDetailsResponse {
   id: number
   assessment_doc: Assessment
 }
+
+/** Each assessment test will gonna have different types - right now only two types: binary/value test are supported  */
+export type AssessmentTest = (TestValue | TestBinary)

@@ -33,18 +33,8 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
 
     return (
         <div className="px-4 pb-2 pt-3 yellow-gradient mb-4 ">
-            {props.id && <div><strong>Assesment id:</strong> {props.id}</div>}
+           
             <Row>
-                {props.id &&
-                    <Col>
-                        <InputGroup className="mb-3">
-                            <InputGroup.Text id="label-info-name">
-                                Id:
-                            </InputGroup.Text>
-                            <Form.Control id="input-info-name" placeholder={props.id} aria-describedby="label-info-name" readOnly />
-                        </InputGroup>
-                    </Col>
-                }
                 <Col>
                     <InputGroup className="mb-3">
                         <InputGroup.Text id="label-info-name">

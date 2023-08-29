@@ -55,7 +55,7 @@ const Validation = {
     isRegistered,
   }: ValidationDetailsRequestParams) =>
     useQuery<ValidationResponse, any>({
-      queryKey: ["validation_details"],
+      queryKey: ["validation_details", validation_id],
       queryFn: async () => {
        
         const jwt = JSON.stringify(decode(token));

@@ -1,7 +1,8 @@
 import { Alert, Col, ListGroup, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap"
 import { AssessmentTest, CriterionImperative, MetricAlgorithm, Principle } from "../../types"
-import { TestBinary } from "../tests/TestBinary"
+import { TestBinaryForm } from "../tests/TestBinaryForm"
 import { FaInfoCircle } from "react-icons/fa"
+import { TestValueForm } from "../tests/TestValueForm"
 
 type AssessmentTabsProps = {
     principles: Principle[],
@@ -38,7 +39,17 @@ export default function AssessmentTabs(props: AssessmentTabsProps){
           if (test.type === "binary") {
             testList.push(
               <ListGroup.Item key={test.id}>
-                <TestBinary
+                <TestBinaryForm
+                  test={test}
+                  onTestChange={props.onTestChange}
+                  criterionId={criterion.id}
+                  principleId={principle.id}
+                />
+              </ListGroup.Item>)
+          } else if (test.type === "value") {
+            testList.push(
+              <ListGroup.Item key={test.id}>
+                <TestValueForm
                   test={test}
                   onTestChange={props.onTestChange}
                   criterionId={criterion.id}
@@ -84,7 +95,7 @@ export default function AssessmentTabs(props: AssessmentTabsProps){
                       { criterion.metric.type === "number" &&
                       <>
                         <br/>
-                        - <em>result</em> of <code>0</code> indicates a <span className="text-success">PASS</span>.
+                        - <em>result</em> of <code>1</code> indicates a <span className="text-success">PASS</span>.
                         <br/>
                         - <em>result</em> of <code>0</code> indicates a <span className="text-danger">FAIL</span>.
                         <br/>
@@ -110,10 +121,16 @@ export default function AssessmentTabs(props: AssessmentTabsProps){
                       }
                     </p>
                     
+                    
                   </Tooltip>}>
                       <span><FaInfoCircle className="ms-2" title="tootltip"/></span>
                   </OverlayTrigger>
                   
+                  </div>
+                  <div className="text-end">
+                    
+                    <div><small>tests: {criterion.metric.tests.filter(item=>item.result!==null).length}/{criterion.metric.tests.length}</small></div>
+                    {criterion.metric.result !==null && <div><small>result: {criterion.metric.result}</small></div>}
                   </div>
                   
   
