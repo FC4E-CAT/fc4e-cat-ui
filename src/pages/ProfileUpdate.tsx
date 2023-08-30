@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Client from "../api/client";
 import { AxiosError } from 'axios';
 import { UserAPI } from '../api';
+import logoOrcid from '../assets/logo-orcid-id.svg'
 
 type FormData = {
   name: string;
@@ -33,7 +34,7 @@ export default function ProfileUpdate() {
   }, [setValue, profileData]);
   
   const onSubmit = handleSubmit(async data => {
-      if (data["orcid_id"] == "" || data["orcid_id"] === null) {
+      if (data["orcid_id"] === "" || data["orcid_id"] === null) {
         delete data["orcid_id"];
       }
       try {
@@ -88,8 +89,8 @@ export default function ProfileUpdate() {
         {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
       </Form.Group>
 
-      <Form.Group>
-        <label htmlFor="inputOrcidId">ORCID id:</label>
+      <Form.Group className="mt-2">
+        <label htmlFor="inputOrcidId"><img height="16px" className="mb-1 me-1" src={logoOrcid} alt="orcid-id logo"/>ORCID id:</label>
         <input  {...register("orcid_id", { pattern: { value: /[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}/ , message: "Invalid ORCID id"} })} placeholder="XXXX-XXXX-XXXX-XXXX" type="orcid_id" className={`form-control ${errors.orcid_id ? "is-invalid" : ""}`} id="inputOrcidId" aria-describedby="emailHelp" />
         {errors.orcid_id && <div className="invalid-feedback">{errors.orcid_id.message}</div>}
       </Form.Group>
