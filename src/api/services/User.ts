@@ -18,9 +18,8 @@ const User = {
         console.log(error);
         return error.response as ApiServiceErr;
       },
-      staleTime: 0,
       retry: false,
-      enabled: !!token && isRegistered,
+      enabled: isRegistered,
     }),
   useGetUsers: ({ size, page, sortBy, token, isRegistered }: ApiOptions) =>
     useQuery<UserListResponse, any>({

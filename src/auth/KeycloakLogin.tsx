@@ -1,5 +1,4 @@
 import { useContext, useEffect } from "react";
-import { useQueryClient } from '@tanstack/react-query'
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import Keycloak from "keycloak-js";
@@ -26,19 +25,11 @@ const KeycloakLogin = () => {
     isRegistered: registered
   });
 
-  const queryClient = useQueryClient()
-  
   const { mutateAsync: userRegister, isSuccess: isSuccessRegister } = UserAPI.useUserRegister();
 
   useEffect(() => {
     const initializeKeycloak = async () => {
       const keycloakInstance = new Keycloak(KeycloakConfig);
-      keycloakInstance.onTokenExpired = () => {
-        keycloakInstance?.updateToken(5).then(() => {
-            setKeycloak(keycloakInstance);
-            queryClient.resetQueries();
-        });
-      };
       try {
         const authenticated = await keycloakInstance.init({
           scope: "openid voperson_id",
@@ -52,20 +43,17 @@ const KeycloakLogin = () => {
         console.error("Failed to initialize Keycloak:", error);
       }
     };
+
     initializeKeycloak();
-  }, [setAuthenticated, setKeycloak, queryClient]);
+  }, [setAuthenticated, setKeycloak]);
 
   useEffect(() => {
-    if (!keycloak?.isTokenExpired(0)) {
+    if (keycloak?.token) {
       if (authenticated) {
         getProfile();
       }
     }
   }, [authenticated, isSuccessRegister, getProfile, keycloak]);
-
-  useEffect(() => {
-    setKeycloak(keycloak);
-  });
 
   useEffect(() => {
     if (isErrorUserProfile) {
