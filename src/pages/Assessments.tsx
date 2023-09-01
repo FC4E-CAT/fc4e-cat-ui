@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import {
     ColumnDef,
 } from '@tanstack/react-table'
-import { Table } from '../components/Table';
+import { CustomTable } from '../components/CustomTable';
 import { FaCheckCircle, FaEdit, FaPlus } from 'react-icons/fa';
 import { AssessmentListItem} from '../types';
 import { useGetAssessments } from '../api/services/Assessment';
@@ -22,6 +22,7 @@ function Assessments() {
                         header: () => <span>ID</span>,
                         cell: info => info.getValue(),
                         footer: props => props.column.id,
+                        enableColumnFilter: false
                     },
                     {
                         accessorFn: row => row.created_on,
@@ -29,6 +30,7 @@ function Assessments() {
                         cell: info => info.getValue(),
                         header: () => <span>Created On</span>,
                         footer: props => props.column.id,
+                        enableColumnFilter: false
                     },
                     {
                         accessorFn: row => row.validation_id,
@@ -36,6 +38,7 @@ function Assessments() {
                         cell: info => info.getValue(),
                         header: () => <span>Validation ID</span>,
                         footer: props => props.column.id,
+                        enableColumnFilter: true
                     },
                     {
                         accessorFn: row => row.template_id,
@@ -43,6 +46,7 @@ function Assessments() {
                         cell: info => info.getValue(),
                         header: () => <span>Template ID</span>,
                         footer: props => props.column.id,
+                        enableColumnFilter: true
                     },
                     {
                         id: "action",
@@ -73,7 +77,7 @@ function Assessments() {
              <h3 className="cat-view-heading"><FaCheckCircle className="me-1"/> assessments</h3>
                  <Link to="/validations" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
             </div>
-            <Table columns={cols} data_source={useGetAssessments} />
+            <CustomTable columns={cols} data_source={useGetAssessments} />
         </div>
     );
 }

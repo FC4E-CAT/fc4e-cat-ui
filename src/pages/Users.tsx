@@ -3,7 +3,7 @@ import {
     ColumnDef,
 } from '@tanstack/react-table'
 import { UserAPI } from '../api';
-import { Table } from '../components/Table';
+import { CustomTable } from '../components/CustomTable';
 import { FaUsers } from 'react-icons/fa';
 import { UserProfile } from '../types';
 
@@ -45,7 +45,7 @@ function Users() {
     return (
         <div className="mt-4">
             <h3 className="cat-view-heading"><FaUsers /> users</h3>
-            <Table columns={cols} data_source={UserAPI.useGetUsers} />
+            <CustomTable columns={cols} data_source={UserAPI.useGetUsers} />
         </div>
     );
 }
