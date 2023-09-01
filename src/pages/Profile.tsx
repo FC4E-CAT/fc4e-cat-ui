@@ -11,9 +11,17 @@ function Profile() {
   const { authenticated, keycloak, registered } = useContext(AuthContext)!;
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
-  const { data: profileData } = UserAPI.useGetProfile(
-    { token: keycloak?.token, isRegistered: registered }
-  );
+  const {
+    data: profileData,
+    refetch: getProfile,
+  } = UserAPI.useGetProfile({
+    token: keycloak?.token,
+    isRegistered: registered
+  });
+
+  useEffect(() => {
+    getProfile();
+  }, [authenticated, getProfile]);
 
   useEffect(() => {
     setUserProfile(profileData);
