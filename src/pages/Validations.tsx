@@ -38,7 +38,7 @@ function RequestValidation() {
   );
 
   const [userProfile, setUserProfile] = useState<UserProfile>();
-  const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
+  const alert = useRef<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
   useEffect(() => {
     setUserProfile(profileData);
   }, [profileData]);
@@ -112,10 +112,10 @@ function RequestValidation() {
     setOrganisationWebsite(data.organisation_website);
     setActorID(data.actor_id);
     refetchValidationRequest().then(r => {
-      setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation request succesfully submitted." });
+      alert.current = { enabled: true, type: AlertType.SUCCESS, message: "Validation request succesfully submitted." };
     }).catch(error => {
-      setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation request submission." });
-    }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
+      alert.current = { enabled: true, type: AlertType.DANGER, message: "Error during validation request submission." };
+    }).finally(() => navigate("/validations"));
 
   };
 
@@ -181,8 +181,8 @@ function RequestValidation() {
 
   return (
     <div className="mt-4">
-      {alert.enabled &&
-        <Alert type={alert.type} message={alert.message} />
+      {alert.current.enabled &&
+        <Alert type={alert.current.type} message={alert.current.message} />
       }
       <h3 className="cat-view-heading"><FaIdBadge/> create new validation request</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -470,7 +470,7 @@ function Validations(props: ValidationProps) {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
                 }).catch(error => {
                   setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
-                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
+                }).finally(() => navigate("/validations"));
               }}>
               Reject
             </button>
@@ -509,7 +509,7 @@ function Validations(props: ValidationProps) {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
                 }).catch(error => {
                   setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
-                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
+                }).finally(() => navigate("/validations"));
               }}>
               Approve
             </button>
@@ -605,7 +605,7 @@ function ValidationDetails(props: ValidationProps) {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
                 }).catch(error => {
                   setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
-                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
+                }).finally(() => navigate("/validations"));
               }}>
               Reject
             </button>
@@ -644,7 +644,7 @@ function ValidationDetails(props: ValidationProps) {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
                 }).catch(error => {
                   setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
-                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
+                }).finally(() => navigate("/validations"));
               }}>
               Approve
             </button>
@@ -667,6 +667,8 @@ function ValidationDetails(props: ValidationProps) {
         {alert.enabled &&
           <Alert type={alert.type} message={alert.message} />
         }
+        {rejectCard}
+        {approveCard}
         <h3 className="cat-view-heading"><FaRegCheckSquare /> Validation Request <span className="badge bg-secondary">id: {validation?.id}</span></h3>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Requestor</header>
@@ -730,10 +732,7 @@ function ValidationDetails(props: ValidationProps) {
           </section>
         </div>
 
-        {rejectCard}
-        {approveCard}
-
-        {validation?.status === ValidationStatus.REVIEW && isAdmin?.current &&
+        {validation?.status === ValidationStatus.REVIEW && isAdmin?.current && !props.toApprove && !props.toReject &&
           <div className="row border-top py-3 mt-4">
             <header className="col-3 h4 text-muted">Actions</header>
             <section className="col-9">
