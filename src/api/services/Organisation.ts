@@ -1,3 +1,4 @@
+import { ApiServiceErr, OrganisationRORSearchParams, OrganisationRORSearchResponse } from "../../types/common";
 import Client from "../client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -7,7 +8,7 @@ const Organisation = {
       queryKey: ["organisation_ror_search", name],
       queryFn: async () => {
         const response = await Client(token).get<OrganisationRORSearchResponse>(
-          `/integrations/organisations/ROR/search?name=${name}&page=${page}`
+          `/integrations/organisations/ROR/${name}?page=${page}`
         );
         return response.data;
       },

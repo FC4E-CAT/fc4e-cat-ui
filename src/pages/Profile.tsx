@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { UserAPI } from '../api';
 import { AuthContext } from '../auth/AuthContext';
 import { FaAddressCard, FaPlus, FaLock, FaCheckCircle, FaShieldAlt } from 'react-icons/fa';
+import { UserProfile } from '../types';
+
 
 
 function Profile() {
@@ -30,7 +32,6 @@ function Profile() {
           <header className="col-3 h4 text-muted">Account</header>
           <section className="col-9">
             <div><strong>id:</strong> {userProfile?.id}</div>
-           
             <div><strong>type:</strong> 
               {userProfile?.user_type === "Identified" &&
                 <span className="m-2">{userProfile?.user_type}</span>
@@ -53,6 +54,9 @@ function Profile() {
             <div><strong>Name:</strong> {userProfile?.name}</div>
             <div><strong>Surname:</strong> {userProfile?.surname}</div>
             <div><strong>Email:</strong> {userProfile?.email}</div>
+            {userProfile?.orcid_id &&
+              <div><strong>ORCID:</strong> {userProfile?.orcid_id}</div>
+            }
             <Link to="/profile/update" className="btn btn-light border-black mt-4" >Update Details</Link>
             
           </section>
@@ -88,7 +92,11 @@ function Profile() {
             } 
             { (userProfile?.user_type === "Validated" || userProfile?.user_type === "Admin") &&
             <>
-              <div className="text-muted">View your current assesments or create a new one.<br/><span className="badge bg-info">Under construction</span></div>
+              <div>View your current assessments or create a new one.</div>
+              <div className="mt-4">
+                <Link to="/assessments" className="btn btn-light border-black" >View List</Link>
+                <Link to="/validations" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
+              </div>
 
             </>
             }

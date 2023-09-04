@@ -16,6 +16,8 @@ import { Header, Footer } from "./components"
 import { Home, Profile, RequestValidation, Validations, Users, ProfileUpdate, ValidationDetails } from "./pages"
 
 import './App.css';
+import AssessmentEdit from './pages/AssessmentEdit';
+import Assessments from './pages/Assessments';
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,16 @@ function App() {
             <Container>
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/assessments/create/:valID" element={<ProtectedRoute />} >
+                  <Route index element={<AssessmentEdit />} />
+                </Route>
+                <Route path="/assessments/:asmtID" element={<ProtectedRoute />} >
+                  {/* Use AssessmentEdit component with create mode = false to configure the view for update */}
+                  <Route index element={<AssessmentEdit createMode={false} />} />
+                </Route>
+                <Route path="/assessments" element={<ProtectedRoute />} >
+                  <Route index element={<Assessments />} />
+                </Route>
                 <Route path="/profile" element={<ProtectedRoute />} >
                   <Route index element={<Profile />} />
                 </Route>
@@ -62,7 +74,6 @@ function App() {
             </main>
             <Footer/>
           </BrowserRouter>
-         
         </QueryClientProvider>
       </AuthProvider>
     </div>

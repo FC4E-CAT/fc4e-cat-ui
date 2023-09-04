@@ -1,5 +1,6 @@
 import { Header } from "./Header"
 import { Footer } from "./Footer"
-import { Table } from "./Table"
+import { CustomTable } from "./CustomTable"
+import { Alert } from "./Alert"
 
-export { Header, Table, Footer };
+export { Header, CustomTable, Footer, Alert };

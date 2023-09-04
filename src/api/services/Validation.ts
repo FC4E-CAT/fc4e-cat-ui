@@ -1,6 +1,8 @@
 import Client from "../client";
 import decode from "jwt-decode";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { ApiOptions, ApiServiceErr } from "../../types/common";
+import { APIValidationResponse, ValidationDetailsRequestParams, ValidationResponse, ValidationRequestParams, ValidationUpdateStatusParams } from "../../types/validation";
 
 const Validation = {
   useGetValidationList: ({
@@ -53,8 +55,9 @@ const Validation = {
     isRegistered,
   }: ValidationDetailsRequestParams) =>
     useQuery<ValidationResponse, any>({
-      queryKey: ["validation_details"],
+      queryKey: ["validation_details", validation_id],
       queryFn: async () => {
+       
         const jwt = JSON.stringify(decode(token));
         let response = null;
         if (jwt.includes("admin")) {
@@ -72,7 +75,7 @@ const Validation = {
         console.log(error);
         return error.response as ApiServiceErr;
       },
-      enabled: !!token && isRegistered,
+      enabled: !!token && isRegistered && (validation_id !== "" && validation_id !== undefined),
     }),
   useValidationRequest: ({
     organisation_role,
