@@ -11,7 +11,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 
-import { AuthProvider, ProtectedRoute, KeycloakLogin, KeycloakLogout } from './auth';
+import { AuthProvider, ProtectedRoute, KeycloakLogout } from './auth';
 import { Header, Footer } from "./components"
 import { Home, Profile, RequestValidation, Validations, Users, ProfileUpdate, ValidationDetails } from "./pages"
 
@@ -67,7 +67,9 @@ function App() {
                 <Route path="/validations/:id/approve" element={<ProtectedRoute />} >
                   <Route index element={<ValidationDetails toApprove={true}/>} />
                 </Route>
-                <Route path="/login" element={<KeycloakLogin />} />
+                <Route path="/login" element={<ProtectedRoute />} >
+                  <Route index element={<Profile />} />
+                </Route>
                 <Route path="/logout" element={<KeycloakLogout />} />
               </Routes>
             </Container>
