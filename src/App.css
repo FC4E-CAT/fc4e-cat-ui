@@ -111,3 +111,17 @@ footer a{
   text-overflow: ellipsis;
   max-width: 10ch;
 }
+
+.dropdown a:hover { text-decoration-line: none; }
+.dropdown a { text-decoration-line: none; }
+
+.actor-card {
+  height: 300px;
+}
+
+.disabled-div {
+  opacity: 0.5; /* Reduce opacity to make it appear disabled */
+  pointer-events: none; /* Prevent mouse interactions */
+}
+
+
