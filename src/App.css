@@ -124,4 +124,12 @@ footer a{
   pointer-events: none; /* Prevent mouse interactions */
 }
 
+.assessment-card .nav-link {
+  color: #3b3b3b !important;
+}
+
+.assessment-card .nav-link.active {
+  color: #0b5ed7 !important;
+}
+
 

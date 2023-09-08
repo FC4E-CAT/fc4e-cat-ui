@@ -1,13 +1,16 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../auth/AuthContext';
 import { TemplateAPI, ValidationAPI } from '../api';
-import { Assessment, AssessmentSubject, AssessmentTest, CriterionImperative, Criterion,  } from '../types';
+import { Assessment, AssessmentSubject, AssessmentTest, CriterionImperative, Criterion, } from '../types';
 import { useParams } from "react-router";
-import { Row, Col, Alert, ProgressBar} from 'react-bootstrap';
+import { Row, Col, Alert, ProgressBar, Card, Nav } from 'react-bootstrap';
 import { AssessmentInfo } from '../components/assessment/AssessmentInfo';
 import { FaChartLine, FaCheckCircle } from 'react-icons/fa';
-import {evalAssessment, evalMetric} from '../utils/Assessment';
+import { PiNumberSquareOneFill, PiNumberSquareTwoFill, PiNumberSquareThreeFill } from "react-icons/pi"
+import { evalAssessment, evalMetric } from '../utils/Assessment';
 import AssessmentTabs from '../components/assessment/AssessmentTabs';
+import { ActorCard } from "../components";
+import schemesImg from '../assets/schemes.png'
 import { useCreateAssessment, useGetAssessment, useUpdateAssessment } from '../api/services/Assessment';
 import { Link } from 'react-router-dom';
 
@@ -28,14 +31,14 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   // for the time being get the only one assessment template supported
   // with templateId: 1 (pid policy) and actorId: 6 (for pid owner)
   // this will be replaced in time with dynamic code
- 
+
 
   const qValidation = ValidationAPI.useGetValidationDetails(
     { validation_id: valID!, token: keycloak?.token, isRegistered: registered }
   );
 
   const qTemplate = TemplateAPI.useGetTemplate(
-    1, qValidation.data?.actor_id , keycloak?.token, registered)
+    1, qValidation.data?.actor_id, keycloak?.token, registered)
 
   const asmtNumID = asmtID !== undefined ? parseInt(asmtID) : NaN
 
@@ -51,7 +54,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       mutationCreateAssessment.mutate({
         'validation_id': parseInt(valID),
         'template_id': templateId,
-        'assessment_doc':assessment
+        'assessment_doc': assessment
       })
     }
   }
@@ -59,14 +62,14 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   function handleUpdateAssessment() {
     if (assessment && asmtID) {
       mutationUpdateAssessment.mutate({
-        'assessment_doc':assessment
+        'assessment_doc': assessment
       })
     }
   }
 
   // load the assessment content
   useEffect(() => {
-    
+
     // if assessment hasn't been set yet
     if (!assessment) {
       // if on creative mode load template
@@ -76,7 +79,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
         data.organisation.name = qValidation.data.organisation_name;
         setAssessment(data);
         setTemplateID(qTemplate.data.id);
-      // if not on create mode load assessment itself
+        // if not on create mode load assessment itself
       } else if (createMode === false && qAssessment.data) {
         const data = qAssessment.data.assessment_doc;
         setAssessment(data);
@@ -116,8 +119,8 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
   function handleCriterionChange(principleID: string, criterionID: string, newTest: AssessmentTest) {
     // update criterion change
-    let mandatory: (number|null)[] = [];
-    let optional: (number|null)[] = [];
+    let mandatory: (number | null)[] = [];
+    let optional: (number | null)[] = [];
 
     if (assessment) {
 
@@ -126,41 +129,41 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
           const newCriteria = principle.criteria.map(criterion => {
             let resultCriterion: Criterion;
             if (criterion.id === criterionID) {
-              const newTests = criterion.metric.tests.map(test =>{
+              const newTests = criterion.metric.tests.map(test => {
                 if (test.id === newTest.id) {
                   return newTest;
                 }
                 return test;
               })
-              let newMetric = {...criterion.metric,"tests":newTests};
-              let {result, value} = evalMetric(newMetric);
-              newMetric = {...newMetric,"result":result, "value":value}
+              let newMetric = { ...criterion.metric, "tests": newTests };
+              let { result, value } = evalMetric(newMetric);
+              newMetric = { ...newMetric, "result": result, "value": value }
               // create a new criterion object with updates due to changes
-              resultCriterion = {...criterion,"metric":newMetric};
+              resultCriterion = { ...criterion, "metric": newMetric };
             } else {
               // use the old object with no changes
               resultCriterion = criterion;
             }
 
-            
+
             return resultCriterion;
           })
 
-          return {...principle,"criteria":newCriteria};
+          return { ...principle, "criteria": newCriteria };
         }
         return principle;
       })
 
       let compliance: boolean | null;
       let ranking: number | null;
-      
+
       const newAssessment = {
         ...assessment,
         "principles": newPrinciples
       }
       // update criteria result reference tables
       newAssessment.principles.forEach(principle => {
-        principle.criteria.forEach(criterion =>{
+        principle.criteria.forEach(criterion => {
           if (criterion.imperative === CriterionImperative.Should) {
             mandatory.push(criterion.metric.result);
           } else {
@@ -174,145 +177,221 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       if (mandatory.some((result) => result === null)) {
         compliance = null
       } else {
-        compliance = mandatory.every((result) => result ===1)
+        compliance = mandatory.every((result) => result === 1)
       }
 
-     
-      ranking = optional.reduce((sum,result)=>{
-        if (sum === null || result === null) return null;
-        return sum+result;
-      },0)
-      
 
-      
-      setAssessment({...newAssessment,
-        "result": {"compliance":compliance,"ranking":ranking}
+      ranking = optional.reduce((sum, result) => {
+        if (sum === null || result === null) return null;
+        return sum + result;
+      }, 0)
+
+
+
+      setAssessment({
+        ...newAssessment,
+        "result": { "compliance": compliance, "ranking": ranking }
       })
 
-    
+
     }
   }
 
   // evaluate the assessment  
   let evalResult = evalAssessment(assessment);
 
+  const [key, setKey] = useState("#options");
+  const handleSelect = (key: string | null) => {
+    if (key !== null) {
+      setKey(key);
+    }
+  };
+
+  const cardprops = [
+    {
+      title: "Schemes",
+      link: "/validations",
+      link_text: "View Schemes",
+      image: schemesImg,
+      description: "This is a wild card",
+    },
+    {
+      title: "Authorities",
+      link: "/test",
+      link_text: "View Authorities",
+      image: schemesImg,
+      description: "This is a wild card"
+    },
+    {
+      title: "Services",
+      link: "/test",
+      link_text: "View Services",
+      image: schemesImg,
+      description: "This is a wild card"
+    },
+    {
+      title: "Managers",
+      link: "/test",
+      link_text: "View Managers",
+      image: schemesImg,
+      description: "This is a wild card"
+    }
+  ];
+
+  let current_tab = <></>
+  if (key === "#options") {
+    current_tab = <>
+      <h6>Read about different actors in the ecosystem before starting.</h6>
+      <div className="row row-cols-4 row-cols-md-4 g-4 mt-2">
+        {cardprops.map((c, index) => (
+          <div key={index} className="col">
+            <ActorCard key={index} {...c} />
+          </div>
+        ))}
+      </div>
+    </>;
+  }
+  else if (key === "#submission" && assessment) {
+    /* Display the Assessment header info */
+    current_tab =
+        <AssessmentInfo
+        id={assessment.id}
+        name={assessment.name}
+        actor={assessment.actor.name}
+        type={assessment.assessment_type.name}
+        org={assessment.organisation.name}
+        orgId={assessment.organisation.id}
+        subject={assessment.subject}
+        published={assessment.published}
+        onNameChange={handleNameChange}
+        onPublishedChange={handlePublishedChange}
+        onSubjectChange={handleSubjectChange}
+      />
+  }
+  else if (key === "#assessment" && assessment && evalResult) {
+    current_tab = <>
+    {/* provide assessment status/statistics here... */}
+
+<Row>
+  <Col>
+    <Alert variant={
+      evalResult.mandatoryFilled !== evalResult.totalMandatory
+        ? "secondary"
+        : assessment.result.compliance ? "success" : "danger"
+    }
+    >
+      <Row>
+        <Col>
+          <span><FaCheckCircle className="me-2" />
+            Compliance:
+            {evalResult.mandatoryFilled !== evalResult.totalMandatory
+              ? <span className="badge bg-secondary ms-2">UNKNOWN</span>
+              : assessment.result.compliance
+                ? <span className="badge bg-success ms-2">PASS</span>
+                : <span className="badge bg-danger ms-2">FAIL</span>
+            }
+
+          </span>
+        </Col>
+        <Col>
+          <span><FaChartLine className="me-2" />Ranking:</span> {assessment.result.ranking}
+        </Col>
+        <Col>
+        </Col>
+        <Col xs={2}>
+          <div className="mb-2">
+            <span>Mandatory: {evalResult.mandatoryFilled} / {evalResult.totalMandatory}</span>
+            <ProgressBar style={{ backgroundColor: "darkgrey", height: "0.6rem" }} className="mt-1">
+              <ProgressBar key="mandatory-pass" variant="success" now={evalResult.totalMandatory ? (evalResult.mandatory / evalResult.totalMandatory * 100) : 0} />
+              <ProgressBar key="mandatory-fail" variant="danger" now={evalResult.totalMandatory ? (evalResult.mandatoryFilled - evalResult.mandatory) / evalResult.totalMandatory * 100 : 0} />
+            </ProgressBar>
+
+          </div>
+        </Col>
+        {(evalResult.totalOptional > 0) &&
+          <Col xs={2}>
+            <div className="mb-2">
+              <span>Optional: {evalResult.optionalFilled} / {evalResult.totalOptional}</span>
+              <ProgressBar style={{ backgroundColor: "darkgrey", height: "0.6rem" }} className="mt-1">
+                <ProgressBar key="mandatory-pass" striped variant="success" now={evalResult.totalOptional ? (evalResult.optional / evalResult.totalOptional * 100) : 0} />
+                <ProgressBar key="mandatory-fail" striped variant="danger" now={evalResult.totalOptional ? (evalResult.optionalFilled - evalResult.optional) / evalResult.totalOptional * 100 : 0} />
+              </ProgressBar>
+            </div>
+          </Col>
+        }
+      </Row>
+
+    </Alert>
+  </Col>
+</Row>
+    <AssessmentTabs principles={assessment.principles} onTestChange={handleCriterionChange} />
+    </>
+  }
+
   return (
     <div className="mt-4">
-      <h3 className='cat-view-heading'><FaCheckCircle className="me-2"/> {(createMode ? "create" : "edit") + " assessment"}
-      { assessment && assessment.id && <span className="badge bg-secondary ms-2">id: {assessment?.id}</span>}
+      <h3 className='cat-view-heading'><FaCheckCircle className="me-2" /> {(createMode ? "create" : "edit") + " assessment"}
+        {assessment && assessment.id && <span className="badge bg-secondary ms-2">id: {assessment?.id}</span>}
       </h3>
       {/* when template data hasn't loaded yet */}
       {(createMode && (qTemplate.isLoading || qValidation.isLoading)) || !assessment
         ? <p>Loading Assessment Body...</p>
         :
         <>
-          {/* Display the Assessment header info */}
-          <AssessmentInfo
-            id={assessment.id}
-            name={assessment.name}
-            actor={assessment.actor.name}
-            type={assessment.assessment_type.name}
-            org={assessment.organisation.name}
-            orgId={assessment.organisation.id}
-            subject={assessment.subject}
-            published={assessment.published}
-            onNameChange={handleNameChange}
-            onPublishedChange={handlePublishedChange}
-            onSubjectChange={handleSubjectChange}
-          />
-          
-          {/* provide assessment status/statistics here... */}
-          
-          {evalResult &&
-
-          <Row>
-            <Col>
-            <Alert variant={
-              evalResult.mandatoryFilled!==evalResult.totalMandatory
-              ? "secondary"
-              : assessment.result.compliance ? "success" : "danger"
-            }
-            >
-            <Row>
-              <Col>
-              <span><FaCheckCircle className="me-2"/>
-                Compliance: 
-                  { evalResult.mandatoryFilled!==evalResult.totalMandatory
-                    ? <span className="badge bg-secondary ms-2">UNKNOWN</span> 
-                    : assessment.result.compliance 
-                      ? <span className="badge bg-success ms-2">PASS</span> 
-                      : <span className="badge bg-danger ms-2">FAIL</span>
-                  }
-                
-                </span> 
-              </Col>
-              <Col>
-              <span><FaChartLine className="me-2"/>Ranking:</span> {assessment.result.ranking}
-              </Col>
-              <Col>
-              </Col>
-              <Col xs={2}>
-                <div className="mb-2">
-                  <span>Mandatory: {evalResult.mandatoryFilled} / {evalResult.totalMandatory}</span>
-                  <ProgressBar style={{backgroundColor:"darkgrey", height:"0.6rem"}} className="mt-1">
-                   <ProgressBar key="mandatory-pass" variant="success"   now={evalResult.totalMandatory ? (evalResult.mandatory / evalResult.totalMandatory * 100): 0 }/>
-                   <ProgressBar key="mandatory-fail" variant="danger"  now={evalResult.totalMandatory ? (evalResult.mandatoryFilled-evalResult.mandatory) / evalResult.totalMandatory * 100: 0 }/>
-                  </ProgressBar>
-                 
-                </div>
-              </Col>
-              {(evalResult.totalOptional > 0) &&
-              <Col xs={2}>
-                <div className="mb-2">
-                  <span>Optional: {evalResult.optionalFilled} / {evalResult.totalOptional}</span>
-                  <ProgressBar style={{backgroundColor:"darkgrey", height:"0.6rem"}} className="mt-1">
-                  <ProgressBar key="mandatory-pass" striped variant="success"   now={evalResult.totalOptional ? (evalResult.optional / evalResult.totalOptional * 100): 0 }/>
-                  <ProgressBar key="mandatory-fail" striped variant="danger"  now={evalResult.totalOptional ? (evalResult.optionalFilled-evalResult.optional) / evalResult.totalOptional * 100: 0 }/>
-                  </ProgressBar>
-                </div>
-              </Col>
-              }
-            </Row>
-            
-          </Alert>
-            </Col>
-          </Row>
-          }          
-          <AssessmentTabs principles={assessment.principles} onTestChange={handleCriterionChange} />
-
+          <Card>
+            <Card.Header>
+              <Nav variant="tabs" className="assessment-card" defaultActiveKey="#options" activeKey={key}
+                onSelect={(k) => { handleSelect(k); }}>
+                <Nav.Item>
+                  <Nav.Link href="#options"><span><PiNumberSquareOneFill size="25px" className="me-1"/></span>OPTIONS</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link href="#submission"><span><PiNumberSquareTwoFill size="25px" className="me-1"/></span>SUBMISSION</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link href="#assessment"><span><PiNumberSquareThreeFill size="25px" className="me-1"/></span>ASSESSMENT</Nav.Link>
+                </Nav.Item>
+              </Nav>
+            </Card.Header>
+            <Card.Body>
+              <Card.Text>
+                {current_tab}
+              </Card.Text>
+            </Card.Body>
+          </Card>
 
           {/* Add create/update button here and cancel */}
-        
+
           <div className="text-end mt-2">
-          {createMode &&
-        
-            <button type="button" className="btn btn-success px-5" onClick={handleCreateAssessment}
-             disabled={
-              assessment.result.compliance === null
-              ? true 
-              : false
-             }
-            >
-              Create
-            </button> 
-          }
-          {!createMode &&
-            <button type="button" className="btn btn-success px-5" onClick={handleUpdateAssessment}
-             disabled={
-              assessment.result.compliance === null
-              ? true 
-              : false
-             }
-            >
-              Update
-            </button>
+            {createMode &&
+
+              <button type="button" className="btn btn-success px-5" onClick={handleCreateAssessment}
+                disabled={
+                  assessment.result.compliance === null
+                    ? true
+                    : false
+                }
+              >
+                Create
+              </button>
+            }
+            {!createMode &&
+              <button type="button" className="btn btn-success px-5" onClick={handleUpdateAssessment}
+                disabled={
+                  assessment.result.compliance === null
+                    ? true
+                    : false
+                }
+              >
+                Update
+              </button>
             }
             <Link className="btn btn-secondary ms-2 px-5" to="/assessments">Cancel</Link>
           </div>
-            
-          
 
-          
+
+
+
 
           {/* Debug info here - display assessment json */}
           <div className="mt-5">
