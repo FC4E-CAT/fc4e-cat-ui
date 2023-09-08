@@ -119,9 +119,47 @@ footer a{
   height: 300px;
 }
 
+/* Default for small screens */
+.row-cols-1 {
+  flex-basis: 100%;
+  max-width: 100%;
+}
+
+/* Two columns for screens with a minimum width of 576px */
+@media (min-width: 576px) {
+  .row-cols-2 {
+    flex-basis: calc(50% - 1rem);
+    max-width: calc(50% - 1rem);
+  }
+}
+
+/* Three columns for screens with a minimum width of 768px */
+@media (min-width: 768px) {
+  .row-cols-3 {
+    flex-basis: calc(33.3333% - 1rem);
+    max-width: calc(33.3333% - 1rem);
+  }
+}
+
+/* Four columns for screens with a minimum width of 992px */
+@media (min-width: 992px) {
+  .row-cols-4 {
+    flex-basis: calc(25% - 1rem);
+    max-width: calc(25% - 1rem);
+  }
+}
+
 .disabled-div {
   opacity: 0.5; /* Reduce opacity to make it appear disabled */
   pointer-events: none; /* Prevent mouse interactions */
+}
+
+.assessment-card .nav-link {
+  color: #3b3b3b !important;
+}
+
+.assessment-card .nav-link.active {
+  color: #0b5ed7 !important;
 }
 
 
