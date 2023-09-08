@@ -59,7 +59,7 @@ export function useGetAssessments({ size, page, sortBy, token, isRegistered }: A
 }
 
 
-export function useGetAssessment({ id, token, isRegistered }: {id:number, token:string, isRegistered:boolean}){
+export function useGetAssessment({ id, token, isRegistered }: {id:string, token:string, isRegistered:boolean}){
     return useQuery<AssessmentDetailsResponse, any>({
       queryKey: ["assessment", id],
       queryFn: async () => {
@@ -72,6 +72,6 @@ export function useGetAssessment({ id, token, isRegistered }: {id:number, token:
         console.log(error.response);
         return error.response as ApiServiceErr;
       },
-      enabled: !!token && isRegistered && !isNaN(id),
+      enabled: !!token && isRegistered && id !== "",
     })
 }
