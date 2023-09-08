@@ -37,7 +37,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   const qTemplate = TemplateAPI.useGetTemplate(
     1, qValidation.data?.actor_id , keycloak?.token, registered)
 
-  const asmtNumID = asmtID !== undefined ? parseInt(asmtID) : NaN
+  const asmtNumID = asmtID !== undefined ? asmtID : ""
 
   const qAssessment = useGetAssessment(
     { id: asmtNumID, token: keycloak?.token, isRegistered: registered }
