@@ -1,4 +1,4 @@
-import { useMemo, useContext, useState, useEffect, useRef} from 'react';
+import { useMemo, useContext, useState, useEffect, useRef } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
@@ -184,7 +184,7 @@ function RequestValidation() {
       {alert.current.enabled &&
         <Alert type={alert.current.type} message={alert.current.message} />
       }
-      <h3 className="cat-view-heading"><FaIdBadge/> create new validation request</h3>
+      <h3 className="cat-view-heading"><FaIdBadge /> create new validation request</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="organization_name" className="form-label fw-bold">
@@ -418,18 +418,18 @@ function Validations(props: ValidationProps) {
               else {
                 return (
                   <div className="edit-buttons btn-group shadow">
-                  <Link
-                    className="btn btn-secondary btn-sm "
-                    to={`/validations/${props.row.original.id}`}>
-                    <FaList />
-                  </Link>
-                  {props.row.original.status === "APPROVED" && (props.row.original.actor_id === 6 || props.row.original.actor_id === 2) &&
+                    <Link
+                      className="btn btn-secondary btn-sm "
+                      to={`/validations/${props.row.original.id}`}>
+                      <FaList />
+                    </Link>
+                    {props.row.original.status === "APPROVED" && (props.row.original.actor_id === 6 || props.row.original.actor_id === 2 || props.row.original.actor_id === 9 || props.row.original.actor_id === 5) &&
                       <Link
                         className="btn btn-secondary cat-action-approve-link btn-sm "
                         to={`/assessments/create/${props.row.original.id}`}>
                         <FaPlus /> Assessment
                       </Link>
-                  }
+                    }
                   </div>
                 )
               }
@@ -534,7 +534,7 @@ function Validations(props: ValidationProps) {
       {rejectCard}
       {approveCard}
       <div className="d-flex justify-content-between my-2 container">
-        <h3 className="cat-view-heading"><FaIdBadge/> validation requests</h3>
+        <h3 className="cat-view-heading"><FaIdBadge /> validation requests</h3>
         <Link to="/validations/request" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
       </div>
       {isAdmin.current && keycloak ?
