@@ -74,11 +74,13 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
         const data = qTemplate.data.template_doc;
         data.organisation.id = qValidation.data.organisation_id;
         data.organisation.name = qValidation.data.organisation_name;
+        data.timestamp = new Date().toISOString();
         setAssessment(data);
         setTemplateID(qTemplate.data.id);
       // if not on create mode load assessment itself
       } else if (createMode === false && qAssessment.data) {
         const data = qAssessment.data.assessment_doc;
+        data.timestamp = new Date().toISOString();
         setAssessment(data);
       }
     }
