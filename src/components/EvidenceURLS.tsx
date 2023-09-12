@@ -19,7 +19,7 @@ export const EvidenceURLS = (props:EvidenceURLSProps) => {
     const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
 
     const handleRemoveURL = (index: number) => {
-        const updatedUrls = urlList.filter((item, i) => i !== index);
+        const updatedUrls = urlList.filter((_, i) => i !== index);
         setUrlList(updatedUrls);
         props.onListChange(updatedUrls);
     };
