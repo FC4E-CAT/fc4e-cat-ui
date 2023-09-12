@@ -14,9 +14,9 @@ export type ValidationResponse = {
     actor_id: number;
     actor_name: string;
     status: string;
-    createdOn: string;
+    created_on: string;
     validated_on: string;
-    validatedBy: string;
+    validated_by: string;
 };
 
 export type APIValidationResponse = ResponsePage<ValidationResponse[]>;

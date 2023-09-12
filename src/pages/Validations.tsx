@@ -705,7 +705,7 @@ function ValidationDetails(props: ValidationProps) {
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Status</header>
           <section className="col-9">
-            <div><strong>Created on:</strong> {validation?.createdOn}</div>
+            <div><strong>Created on:</strong> {validation?.created_on}</div>
             {validation?.status === "REVIEW" &&
               <div className="alert alert-info mt-4" role="alert">
                 <FaGlasses /> PENDING FOR REVIEW
@@ -717,7 +717,7 @@ function ValidationDetails(props: ValidationProps) {
                   <FaTimes /> REJECTED
                 </div>
                 <div><strong>Rejected on:</strong> {validation?.validated_on}</div>
-                <div><strong>Rejected by:</strong> {validation?.validatedBy}</div>
+                <div><strong>Rejected by:</strong> {validation?.validated_by}</div>
               </>
             }
             {validation?.status === ValidationStatus.APPROVED &&
@@ -726,7 +726,7 @@ function ValidationDetails(props: ValidationProps) {
                   <FaCheck /> APPROVED
                 </div>
                 <div><strong>Approved on:</strong> {validation?.validated_on}</div>
-                <div><strong>Approved by:</strong> {validation?.validatedBy}</div>
+                <div><strong>Approved by:</strong> {validation?.validated_by}</div>
               </>
             }
           </section>
