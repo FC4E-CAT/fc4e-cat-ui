@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { AuthContext } from './AuthContext';
 import Keycloak from "keycloak-js";
 import KeycloakConfig from "../keycloak.json";
@@ -73,7 +73,7 @@ function ProtectedRoute() {
   } else {
     return <></>;
   }
-};
+}
 
 
 export { ProtectedRoute };

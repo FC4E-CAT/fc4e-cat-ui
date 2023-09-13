@@ -111,9 +111,9 @@ function RequestValidation() {
     setOrganisationName(data.organisation_name);
     setOrganisationWebsite(data.organisation_website);
     setActorID(data.actor_id);
-    refetchValidationRequest().then(r => {
+    refetchValidationRequest().then(() => {
       alert.current = { enabled: true, type: AlertType.SUCCESS, message: "Validation request succesfully submitted." };
-    }).catch(error => {
+    }).catch(() => {
       alert.current = { enabled: true, type: AlertType.DANGER, message: "Error during validation request submission." };
     }).finally(() => navigate("/validations"));
 
@@ -466,9 +466,9 @@ function Validations(props: ValidationProps) {
               className="btn btn-danger mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.REJECTED);
-                mutateValidationUpdateStatus().then(r => {
+                mutateValidationUpdateStatus().then(() => {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
-                }).catch(error => {
+                }).catch(() => {
                   setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
                 }).finally(() => navigate("/validations"));
               }}>
@@ -505,9 +505,9 @@ function Validations(props: ValidationProps) {
               className="btn btn-success mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.APPROVED);
-                mutateValidationUpdateStatus().then(r => {
+                mutateValidationUpdateStatus().then(() => {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
-                }).catch(error => {
+                }).catch(() => {
                   setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
                 }).finally(() => navigate("/validations"));
               }}>
@@ -601,9 +601,9 @@ function ValidationDetails(props: ValidationProps) {
               className="btn btn-danger mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.REJECTED);
-                mutateValidationUpdateStatus().then(r => {
+                mutateValidationUpdateStatus().then(() => {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
-                }).catch(error => {
+                }).catch(() => {
                   setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
                 }).finally(() => navigate("/validations"));
               }}>
@@ -640,9 +640,9 @@ function ValidationDetails(props: ValidationProps) {
               className="btn btn-success mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.APPROVED);
-                mutateValidationUpdateStatus().then(r => {
+                mutateValidationUpdateStatus().then(() => {
                   setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
-                }).catch(error => {
+                }).catch(() => {
                   setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
                 }).finally(() => navigate("/validations"));
               }}>

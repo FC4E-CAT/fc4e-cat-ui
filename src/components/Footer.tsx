@@ -10,9 +10,9 @@ import packageJson from '../../package.json';
 function Footer() {
 
   // tag build information on footer
-  const buildDate = process.env.REACT_APP_BUILD_DATE;
-  const buildCommitHash = process.env.REACT_APP_BUILD_COMMIT_HASH;
-  const buildCommitURL = process.env.REACT_APP_BUILD_COMMIT_URL;
+  const buildDate = import.meta.env.VITE_APP_BUILD_DATE;
+  const buildCommitHash = import.meta.env.VITE_APP_BUILD_COMMIT_HASH;
+  const buildCommitURL = import.meta.env.VITE_APP_BUILD_COMMIT_URL;
  
   
   return (
