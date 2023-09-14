@@ -29,12 +29,12 @@ const enum ValidationStatus {
 }
 
 function RequestValidation() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const { data: profileData } = UserAPI.useGetProfile(
-    { token: keycloak?.token, isRegistered: registered }
+    { token: keycloak?.token || "", isRegistered: registered }
   );
 
   const [userProfile, setUserProfile] = useState<UserProfile>();
@@ -44,7 +44,7 @@ function RequestValidation() {
   }, [profileData]);
 
   const { data: actorsData } = ActorAPI.useGetActors(
-    { size: 20, page: 1, sortBy: "asc", token: keycloak?.token, isRegistered: registered }
+    { size: 20, page: 1, sortBy: "asc", token: keycloak?.token || "", isRegistered: registered }
   );
 
   const [actors, setActors] = useState<Actor[]>();
@@ -90,7 +90,7 @@ function RequestValidation() {
       organisation_name: organisation_name,
       organisation_website: organisation_website,
       actor_id: actor_id,
-      token: keycloak?.token,
+      token: keycloak?.token || "",
       isRegistered: registered
     }
   );
@@ -99,7 +99,7 @@ function RequestValidation() {
     {
       name: inputValue,
       page: 1,
-      token: keycloak?.token,
+      token: keycloak?.token || "",
       isRegistered: registered
     }
   );
@@ -121,12 +121,11 @@ function RequestValidation() {
 
   const renderOptions = () => {
     let tmp = [];
-    let result: OrganisationRORSearchResultModified[] = [];
+    const result: OrganisationRORSearchResultModified[] = [];
     if (organisations?.content) {
       tmp = organisations?.content;
-      var i;
-      for (i = 0; i < tmp.length; i++) {
-        let t: OrganisationRORSearchResultModified = {
+      for (let i = 0; i < tmp.length; i++) {
+        const t: OrganisationRORSearchResultModified = {
           value: tmp[i]["name"],
           label: tmp[i]["name"],
           website: tmp[i]["website"],
@@ -193,7 +192,7 @@ function RequestValidation() {
           <Select
             className="basic-single"
             classNamePrefix="select"
-            onInputChange={(value, _) => setInputValue(value)}
+            onInputChange={(value) => setInputValue(value)}
             onChange={(s) => updateForm(s)}
             isSearchable={true}
             name="organisation_name"
@@ -312,20 +311,20 @@ function RequestValidation() {
 }
 
 function Validations(props: ValidationProps) {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
-  let params = useParams();
+  const params = useParams();
 
-  const isAdmin = useRef<Boolean>(false);
+  const isAdmin = useRef<boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;
-  const jwt = JSON.stringify(decode(keycloak.token));
+  const jwt = JSON.stringify(decode(keycloak?.token || ""));
 
   const { mutateAsync: mutateValidationUpdateStatus } = ValidationAPI.useValidationStatusUpdate(
     {
       validation_id: params.id!,
       status: reviewStatus,
-      token: keycloak?.token,
+      token: keycloak?.token || "",
       isRegistered: registered
     }
   );
@@ -547,19 +546,19 @@ function Validations(props: ValidationProps) {
 }
 
 function ValidationDetails(props: ValidationProps) {
-  let params = useParams();
-  let navigate = useNavigate();
+  const params = useParams();
+  const navigate = useNavigate();
   const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
-  const isAdmin = useRef<Boolean>(false);
+  const isAdmin = useRef<boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;
-  const jwt = JSON.stringify(decode(keycloak.token));
+  const jwt = JSON.stringify(decode(keycloak?.token || ""));
 
   const { mutateAsync: mutateValidationUpdateStatus } = ValidationAPI.useValidationStatusUpdate(
     {
       validation_id: params.id!,
       status: reviewStatus,
-      token: keycloak?.token,
+      token: keycloak?.token || "",
       isRegistered: registered
     }
   );
@@ -572,7 +571,7 @@ function ValidationDetails(props: ValidationProps) {
   const [validation, setValidation] = useState<ValidationResponse>();
 
   const { data: validationData } = ValidationAPI.useGetValidationDetails(
-    { validation_id: params.id!, token: keycloak?.token, isRegistered: registered }
+    { validation_id: params.id!, token: keycloak?.token || "", isRegistered: registered }
   );
 
   useEffect(() => {

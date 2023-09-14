@@ -14,27 +14,27 @@ function Users() {
         () => [
             {
                 header: ' ',
-                footer: props => props.column.id,
+                // footer: props => props.column.id,
                 columns: [
                     {
                         accessorKey: 'id',
                         header: () => <span>ID</span>,
                         cell: info => info.getValue(),
-                        footer: props => props.column.id,
+                        // footer: props => props.column.id,
                     },
                     {
                         accessorFn: row => row.user_type,
                         id: 'user_type',
                         cell: info => info.getValue(),
                         header: () => <span>Type</span>,
-                        footer: props => props.column.id,
+                        // footer: props => props.column.id,
                     },
                     {
                         accessorFn: row => row.registered_on,
                         id: 'registered_on',
                         cell: info => info.getValue(),
                         header: () => <span>Registered On</span>,
-                        footer: props => props.column.id,
+                        // footer: props => props.column.id,
                     }
                 ],
             },

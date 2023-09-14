@@ -21,7 +21,7 @@ export default function ProfileUpdate() {
   const navigate = useNavigate();
 
   const { data: profileData } = UserAPI.useGetProfile(
-    { token: keycloak?.token, isRegistered: registered }
+    { token: keycloak?.token || "", isRegistered: registered }
   );
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function ProfileUpdate() {
         delete data["orcid_id"];
       }
       try {
-        const response = await Client(keycloak.token).put<any>(`/users/profile`,data);
+        const response = await Client(keycloak?.token || "").put<FormData>(`/users/profile`,data);
         console.log(response);
         if (response.status === 200) {
           // if all good go back to profile

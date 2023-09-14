@@ -15,7 +15,7 @@ function Header() {
 
 
   const { data } = UserAPI.useGetProfile(
-    { token: keycloak?.token, isRegistered: registered },
+    { token: keycloak?.token || "", isRegistered: registered },
   );
 
   useEffect(() => {

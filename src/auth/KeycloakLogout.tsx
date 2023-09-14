@@ -10,7 +10,10 @@ const KeycloakLogout = () => {
     useEffect(() => {
         const logout = async () => {
           // Try redirecting when logging out
-          await keycloak.logout({redirectUri: window.location.origin});
+          if (keycloak) {
+            await keycloak.logout({redirectUri: window.location.origin});
+          }
+  
         };
     
         logout();

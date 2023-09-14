@@ -21,7 +21,7 @@ function ProtectedRoute() {
     isError: isErrorUserProfile,
     isSuccess,
   } = UserAPI.useGetProfile({
-    token: keycloak?.token,
+    token: keycloak?.token || "",
     isRegistered: registered
   });
 
@@ -57,7 +57,7 @@ function ProtectedRoute() {
 
   useEffect(() => {
     if (isErrorUserProfile) {
-      const data: any = { token: keycloak?.token };
+      const data: string =  keycloak?.token || "" ;
       userRegister(data);
     }
   }, [isErrorUserProfile, keycloak, userRegister]);

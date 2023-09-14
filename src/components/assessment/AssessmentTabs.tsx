@@ -32,7 +32,7 @@ export default function AssessmentTabs(props: AssessmentTabsProps){
         navs.push(<Nav.Item key={criterion.id}><Nav.Link eventKey={criterion.id}>{criterion.id} - {criterion.name}</Nav.Link></Nav.Item>)
   
         // tests for each criterion
-        let testList: JSX.Element[] = [];
+        const testList: JSX.Element[] = [];
   
         // store state of test results
         criterion.metric.tests.forEach(test => {

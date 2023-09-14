@@ -1,12 +1,13 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Client from "../client";
-import { ApiOptions, ApiServiceErr } from "../../types/common";
+import { ApiOptions } from "../../types/common";
 import { UserResponse, UserListResponse } from "../../types/profile";
+import { handleBackendError } from "../../utils/Utils";
 
 const User = {
   useGetProfile: ({ token, isRegistered }: ApiOptions) =>
-    useQuery<UserResponse, any>({
+    useQuery({
       queryKey: ["profile"],
       queryFn: async () => {
         const response = await Client(token).get<UserResponse>(
@@ -14,15 +15,14 @@ const User = {
         );
         return response.data;
       },
-      onError: (error) => {
-        console.log(error);
-        return error.response as ApiServiceErr;
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
       },
       retry: false,
       enabled: isRegistered,
     }),
   useGetUsers: ({ size, page, sortBy, token, isRegistered }: ApiOptions) =>
-    useQuery<UserListResponse, any>({
+    useQuery({
       queryKey: ["users", { size, page, sortBy }],
       queryFn: async () => {
         const response = await Client(token).get<UserListResponse>(
@@ -30,17 +30,16 @@ const User = {
         );
         return response.data;
       },
-      onError: (error) => {
-        console.log(error.response);
-        return error.response as ApiServiceErr;
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
       },
       enabled: !!token && isRegistered,
     }),
   useUserRegister: () =>
-    useMutation<any, any>(
-      async (data: any) => {
+    useMutation(
+      async (token: string) => {
         try {
-          const response = await Client(data.token).post<any>(`/users/register`);
+          const response = await Client(token).post(`/users/register`);
           if (response.status === 200) {
             return true;
           } else {
@@ -56,10 +55,8 @@ const User = {
         }
       },
       {
-        onError: (error) => {
-          console.log("Error in register");
-          console.log(error);
-          return error.response as ApiServiceErr;
+        onError: (error: AxiosError) => {
+          return handleBackendError(error);
         },
       }
     ),

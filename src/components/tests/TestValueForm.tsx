@@ -29,7 +29,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
 
 
     const handleValueChange = (eventType: TestValueEventType, event: React.ChangeEvent<HTMLInputElement>) => {
-        let newTest = { ...props.test }
+        const newTest = { ...props.test }
         if (eventType === TestValueEventType.Value) {
             newTest.value = parseInt(event.target.value);
         } else {

@@ -1,8 +1,10 @@
 import Client from "../client";
 import decode from "jwt-decode";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { ApiOptions, ApiServiceErr } from "../../types/common";
+import { ApiOptions } from "../../types/common";
 import { APIValidationResponse, ValidationDetailsRequestParams, ValidationResponse, ValidationRequestParams, ValidationUpdateStatusParams } from "../../types/validation";
+import { AxiosError } from "axios";
+import { handleBackendError } from "../../utils/Utils";
 
 const Validation = {
   useGetValidationList: ({
@@ -12,7 +14,7 @@ const Validation = {
     token,
     isRegistered,
   }: ApiOptions) =>
-    useQuery<APIValidationResponse, any>({
+    useQuery({
       queryKey: ["validations", { size, page, sortBy }],
       queryFn: async () => {
         const response = await Client(token).get<APIValidationResponse>(
@@ -20,9 +22,8 @@ const Validation = {
         );
         return response.data;
       },
-      onError: (error) => {
-        console.log(error.response);
-        return error.response as ApiServiceErr;
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
       },
       staleTime: 0,
       enabled: !!token && isRegistered,
@@ -34,7 +35,7 @@ const Validation = {
     token,
     isRegistered,
   }: ApiOptions) =>
-    useQuery<APIValidationResponse, any>({
+    useQuery({
       queryKey: ["admin_validations", { size, page, sortBy }],
       queryFn: async () => {
         const response = await Client(token).get<APIValidationResponse>(
@@ -42,9 +43,8 @@ const Validation = {
         );
         return response.data;
       },
-      onError: (error) => {
-        console.log(error.response);
-        return error.response as ApiServiceErr;
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
       },
       staleTime: 0,
       enabled: !!token && isRegistered,
@@ -54,7 +54,7 @@ const Validation = {
     token,
     isRegistered,
   }: ValidationDetailsRequestParams) =>
-    useQuery<ValidationResponse, any>({
+    useQuery({
       queryKey: ["validation_details", validation_id],
       queryFn: async () => {
        
@@ -71,9 +71,8 @@ const Validation = {
         }
         return response.data;
       },
-      onError: (error) => {
-        console.log(error);
-        return error.response as ApiServiceErr;
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
       },
       enabled: !!token && isRegistered && (validation_id !== "" && validation_id !== undefined),
     }),
@@ -86,7 +85,7 @@ const Validation = {
     actor_id,
     token,
   }: ValidationRequestParams) =>
-    useMutation<ValidationResponse, any>(
+    useMutation(
       async () => {
         const response = await Client(token).post<ValidationResponse>(
           `/validations`,
@@ -103,9 +102,8 @@ const Validation = {
         return response.data;
       },
       {
-        onError: (error) => {
-          console.log(error);
-          return error.response as ApiServiceErr;
+        onError: (error: AxiosError) => {
+          return handleBackendError(error);
         },
       }
     ),
@@ -114,7 +112,7 @@ const Validation = {
     status,
     token,
   }: ValidationUpdateStatusParams) =>
-    useMutation<ValidationResponse, any>(
+    useMutation(
       async () => {
         const response = await Client(token).put<ValidationResponse>(
           `/admin/validations/${validation_id}/update-status`,
@@ -126,9 +124,8 @@ const Validation = {
         return response.data;
       },
       {
-        onError: (error) => {
-          console.log(error);
-          return error.response as ApiServiceErr;
+        onError: (error: AxiosError) => {
+          return handleBackendError(error);
         },
       }
     ),
