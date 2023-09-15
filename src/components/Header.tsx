@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { Container, Navbar, Nav, NavItem, Dropdown, NavDropdown } from 'react-bootstrap';
-import logo from '../logo.svg';
-import { UserAPI } from '../api';
-import { trimProfileID } from '../utils/Utils';
-import { AuthContext } from '../auth/AuthContext';
+import logo from '@/logo.svg';
+import { useGetProfile } from '@/api';
+import { trimProfileID } from '@/utils';
+import { AuthContext } from '@/auth';
 import { FaUser, FaCog, FaShieldAlt } from 'react-icons/fa';
-import { UserProfile } from '../types';
+import { UserProfile } from '@/types';
 
 
 function Header() {
@@ -14,7 +14,7 @@ function Header() {
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
 
-  const { data } = UserAPI.useGetProfile(
+  const { data } = useGetProfile(
     { token: keycloak?.token || "", isRegistered: registered },
   );
 

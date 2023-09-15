@@ -5,7 +5,7 @@
 // import { useState } from "react"
 import { Button, Col, Form, Row } from "react-bootstrap"
 import { EvidenceURLS } from "../EvidenceURLS"
-import { AssessmentTest, TestBinary } from "../../types"
+import { AssessmentTest, TestBinary } from "@/types"
 import { useState } from "react"
 import { FaCaretLeft, FaCaretRight, FaRegQuestionCircle } from "react-icons/fa"
 

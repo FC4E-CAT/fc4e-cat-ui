@@ -3,7 +3,7 @@
  */
 
 import { InputGroup, Form, Col, Row, Accordion } from "react-bootstrap"
-import { AssessmentSubject } from "../../types"
+import { AssessmentSubject } from "@/types"
 import { FaCog, FaLock, FaUserAlt } from "react-icons/fa"
 
 interface AssessmentInfoProps {

@@ -1,20 +1,19 @@
 import { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../auth/AuthContext';
-import { TemplateAPI, ValidationAPI } from '../api';
-import { Assessment, AssessmentSubject, AssessmentTest, CriterionImperative, Criterion, } from '../types';
+import { AuthContext } from '@/auth';
+import { useGetTemplate, useGetValidationDetails} from '@/api';
+import { Assessment, AssessmentSubject, AssessmentTest, CriterionImperative, Criterion, } from '@/types';
 import { useParams } from "react-router";
 import { Row, Col, Alert, ProgressBar, Card, Nav } from 'react-bootstrap';
-import { AssessmentInfo } from '../components/assessment/AssessmentInfo';
+import { AssessmentInfo, AssessmentTabs, ActorCard } from '@/components';
 import { FaChartLine, FaCheckCircle } from 'react-icons/fa';
 import { PiNumberSquareOneFill, PiNumberSquareTwoFill, PiNumberSquareThreeFill } from "react-icons/pi"
-import { evalAssessment, evalMetric } from '../utils/Assessment';
-import AssessmentTabs from '../components/assessment/AssessmentTabs';
-import { ActorCard } from "../components";
-import schemesImg from '../assets/thumb_scheme.png'
-import authImg from '../assets/thumb_auth.png'
-import serviceImg from '../assets/thumb_service.png'
-import manageImg from '../assets/thumb_manage.png'
-import { useCreateAssessment, useGetAssessment, useUpdateAssessment } from '../api/services/Assessment';
+import { evalAssessment, evalMetric } from '@/utils';
+
+import schemesImg from '@/assets/thumb_scheme.png'
+import authImg from '@/assets/thumb_auth.png'
+import serviceImg from '@/assets/thumb_service.png'
+import manageImg from '@/assets/thumb_manage.png'
+import { useCreateAssessment, useGetAssessment, useUpdateAssessment } from '@/api';
 import { Link } from 'react-router-dom';
 
 type AssessmentEditProps = {
@@ -36,11 +35,11 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   // this will be replaced in time with dynamic code
 
 
-  const qValidation = ValidationAPI.useGetValidationDetails(
+  const qValidation = useGetValidationDetails(
     { validation_id: valID!, token: keycloak?.token || "", isRegistered: registered }
   );
 
-  const qTemplate = TemplateAPI.useGetTemplate(
+  const qTemplate = useGetTemplate(
     1, qValidation.data?.actor_id, keycloak?.token || "", registered)
 
   const asmtNumID = asmtID !== undefined ? asmtID : ""

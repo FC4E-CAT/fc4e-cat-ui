@@ -1,12 +1,12 @@
 import { useContext, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { Form, Col, Row } from "react-bootstrap";
-import { AuthContext } from '../auth/AuthContext';
+import { AuthContext } from '@/auth';
 import { useNavigate } from 'react-router-dom';
-import Client from "../api/client";
+import { APIClient } from "@/api";
 import { AxiosError } from 'axios';
-import { UserAPI } from '../api';
-import logoOrcid from '../assets/logo-orcid-id.svg'
+import { useGetProfile } from '@/api';
+import logoOrcid from '@/assets/logo-orcid-id.svg'
 
 type FormData = {
   name: string;
@@ -20,7 +20,7 @@ export default function ProfileUpdate() {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
   const navigate = useNavigate();
 
-  const { data: profileData } = UserAPI.useGetProfile(
+  const { data: profileData } = useGetProfile(
     { token: keycloak?.token || "", isRegistered: registered }
   );
 
@@ -38,7 +38,7 @@ export default function ProfileUpdate() {
         delete data["orcid_id"];
       }
       try {
-        const response = await Client(keycloak?.token || "").put<FormData>(`/users/profile`,data);
+        const response = await APIClient(keycloak?.token || "").put<FormData>(`/users/profile`,data);
         console.log(response);
         if (response.status === 200) {
           // if all good go back to profile

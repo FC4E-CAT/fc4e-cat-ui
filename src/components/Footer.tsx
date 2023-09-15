@@ -1,11 +1,11 @@
 import { Col, Row, Container } from 'react-bootstrap';
 import { FaEnvelope, FaYoutube, FaTwitter, FaCalendar } from 'react-icons/fa';
-import logoDans from '../assets/logo-dans.svg'
-import logoDatacite from '../assets/logo-datacite.svg'
-import logoGrnet from '../assets/logo-grnet.png'
-import logoGwdg from '../assets/logo-gwdg.svg'
+import logoDans from '@/assets/logo-dans.svg'
+import logoDatacite from '@/assets/logo-datacite.svg'
+import logoGrnet from '@/assets/logo-grnet.png'
+import logoGwdg from '@/assets/logo-gwdg.svg'
 import { Link } from 'react-router-dom';
-import packageJson from '../../package.json';
+import packageJson from '@/../package.json';
 
 function Footer() {
 

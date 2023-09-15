@@ -1,11 +1,11 @@
 import { useContext, useEffect } from 'react';
 import { Outlet } from "react-router-dom";
-import { AuthContext } from './AuthContext';
+import { AuthContext } from '@/auth';
 import Keycloak from "keycloak-js";
-import KeycloakConfig from "../keycloak.json";
-import { UserAPI } from "../api";
+import KeycloakConfig from "@/keycloak.json";
+import { useUserRegister, useGetProfile } from "@/api";
 
-function ProtectedRoute() {
+export function ProtectedRoute() {
   const {
     authenticated,
     setAuthenticated,
@@ -20,12 +20,12 @@ function ProtectedRoute() {
     refetch: getProfile,
     isError: isErrorUserProfile,
     isSuccess,
-  } = UserAPI.useGetProfile({
+  } = useGetProfile({
     token: keycloak?.token || "",
     isRegistered: registered
   });
 
-  const { mutateAsync: userRegister, isSuccess: isSuccessRegister } = UserAPI.useUserRegister();
+  const { mutateAsync: userRegister, isSuccess: isSuccessRegister } = useUserRegister();
 
   useEffect(() => {
     const initializeKeycloak = async () => {
@@ -75,5 +75,3 @@ function ProtectedRoute() {
   }
 }
 
-
-export { ProtectedRoute };

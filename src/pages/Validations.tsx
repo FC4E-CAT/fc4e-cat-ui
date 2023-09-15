@@ -2,8 +2,8 @@ import { useMemo, useContext, useState, useEffect, useRef } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
-import { UserAPI, ValidationAPI, OrganisationAPI, ActorAPI } from '../api';
-import { AuthContext } from '../auth/AuthContext';
+import { useAdminValidations, useGetActors, useGetProfile, useGetValidationDetails, useGetValidationList, useOrganisationRORSearch, useValidationRequest, useValidationStatusUpdate } from '@/api';
+import { AuthContext } from '@/auth';
 import {
   ColumnDef,
 } from '@tanstack/react-table'
@@ -13,9 +13,9 @@ import {
   FaRegCheckSquare, FaGlasses, FaIdBadge
 } from 'react-icons/fa';
 import decode from 'jwt-decode';
-import { CustomTable } from '../components/CustomTable';
-import { Alert } from '../components/Alert';
-import { UserProfile, Actor, OrganisationRORSearchResultModified, ValidationResponse, AlertInfo, ValidationProps } from '../types';
+import { CustomTable } from '@/components';
+import { Alert } from '@/components';
+import { UserProfile, Actor, OrganisationRORSearchResultModified, ValidationResponse, AlertInfo, ValidationProps } from '@/types';
 
 const enum AlertType {
   SUCCESS = "success",
@@ -33,7 +33,7 @@ function RequestValidation() {
 
   const { keycloak, registered } = useContext(AuthContext)!;
 
-  const { data: profileData } = UserAPI.useGetProfile(
+  const { data: profileData } = useGetProfile(
     { token: keycloak?.token || "", isRegistered: registered }
   );
 
@@ -43,7 +43,7 @@ function RequestValidation() {
     setUserProfile(profileData);
   }, [profileData]);
 
-  const { data: actorsData } = ActorAPI.useGetActors(
+  const { data: actorsData } = useGetActors(
     { size: 20, page: 1, sortBy: "asc", token: keycloak?.token || "", isRegistered: registered }
   );
 
@@ -82,7 +82,7 @@ function RequestValidation() {
     }
   );
 
-  const { mutateAsync: refetchValidationRequest } = ValidationAPI.useValidationRequest(
+  const { mutateAsync: refetchValidationRequest } = useValidationRequest(
     {
       organisation_role: organisation_role,
       organisation_id: organisation_id,
@@ -95,7 +95,7 @@ function RequestValidation() {
     }
   );
 
-  const { data: organisations } = OrganisationAPI.useOrganisationRORSearch(
+  const { data: organisations } = useOrganisationRORSearch(
     {
       name: inputValue,
       page: 1,
@@ -320,7 +320,7 @@ function Validations(props: ValidationProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const jwt = JSON.stringify(decode(keycloak?.token || ""));
 
-  const { mutateAsync: mutateValidationUpdateStatus } = ValidationAPI.useValidationStatusUpdate(
+  const { mutateAsync: mutateValidationUpdateStatus } = useValidationStatusUpdate(
     {
       validation_id: params.id!,
       status: reviewStatus,
@@ -537,9 +537,9 @@ function Validations(props: ValidationProps) {
         <Link to="/validations/request" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
       </div>
       {isAdmin.current && keycloak ?
-        <CustomTable columns={cols} data_source={ValidationAPI.useAdminValidations} />
+        <CustomTable columns={cols} data_source={useAdminValidations} />
         :
-        <CustomTable columns={cols} data_source={ValidationAPI.useGetValidationList} />
+        <CustomTable columns={cols} data_source={useGetValidationList} />
       }
     </div>
   );
@@ -554,7 +554,7 @@ function ValidationDetails(props: ValidationProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const jwt = JSON.stringify(decode(keycloak?.token || ""));
 
-  const { mutateAsync: mutateValidationUpdateStatus } = ValidationAPI.useValidationStatusUpdate(
+  const { mutateAsync: mutateValidationUpdateStatus } = useValidationStatusUpdate(
     {
       validation_id: params.id!,
       status: reviewStatus,
@@ -570,7 +570,7 @@ function ValidationDetails(props: ValidationProps) {
 
   const [validation, setValidation] = useState<ValidationResponse>();
 
-  const { data: validationData } = ValidationAPI.useGetValidationDetails(
+  const { data: validationData } = useGetValidationDetails(
     { validation_id: params.id!, token: keycloak?.token || "", isRegistered: registered }
   );
 

@@ -1,8 +1,7 @@
 import { Alert, Col, ListGroup, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap"
-import { AssessmentTest, CriterionImperative, MetricAlgorithm, Principle } from "../../types"
-import { TestBinaryForm } from "../tests/TestBinaryForm"
+import { AssessmentTest, CriterionImperative, MetricAlgorithm, Principle } from "@/types"
+import { TestBinaryForm, TestValueForm } from "@/components/tests"
 import { FaInfoCircle } from "react-icons/fa"
-import { TestValueForm } from "../tests/TestValueForm"
 
 type AssessmentTabsProps = {
     principles: Principle[],
@@ -10,7 +9,7 @@ type AssessmentTabsProps = {
   }
   
 /** AssessmentTabs holds the tabs and test content for different criteria */
-export default function AssessmentTabs(props: AssessmentTabsProps){
+export function AssessmentTabs(props: AssessmentTabsProps){
   
     const navs: JSX.Element[] = []
     const tabs: JSX.Element[] = []
