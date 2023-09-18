@@ -2,9 +2,7 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
-
 ## [v0.2.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v0.2.0) (2023-09-04)
-
 
 ### Added
 
@@ -20,14 +18,12 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-103 Add functionality to store/update an assessment. ([#53](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/53)
 - CAT-164 Support new type of test: TestValue. Support template for actor: Pid Authority ([#57](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/57)
 
-
 ### Changed
 
 - CAT-115 reorganise ts type declarations in ui ([#36](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/36)
 - CAT-152 update assessment actor/assessment_type field schemas to use both ids and names ([#47](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/47)
 - CAT-153 Update labels information and grouping of fields on assessmenent ([#48](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/48)
 - CAT-162 Update assessment fields to snake_case ([#56](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/56)
-
 
 ### Fixed
 
@@ -36,9 +32,6 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-121 Fix uncontrolled component in validation request form ([#43](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/43)
 - CAT-125 Fix ror search call([#45] (https://github.com/FC4E-CAT/fc4e-cat-ui/pull/45)
 - CAT-154 Fix Profile Update Form not connected warning ([#50](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/50)
-
-
-
 
 ## [v0.1.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v0.1.0) (2023-07-07)
 
@@ -64,7 +57,6 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-80 Display more user and actor information on validation details ([#28](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/28))
 - CAT-85 Add version and build info ([#31](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/31))
 
-
 ### Changed
 
 - CAT-46 Remove token related info from profile page ([#13](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/13))
@@ -79,4 +71,3 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-79 Fix redirection upon a successful validation request ([#27](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/27))
 - CAT-81 Minor UI fixes on validations, profile and footer ([#29](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/29))
 - CAT-81 Fix admin buttons in validation ([#30](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/30))
-

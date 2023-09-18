@@ -1,5 +1,5 @@
-import React, { createContext, useState } from 'react';
-import Keycloak from 'keycloak-js';
+import React, { createContext, useState } from "react";
+import Keycloak from "keycloak-js";
 
 interface AuthContextProps {
   authenticated: boolean;
@@ -14,7 +14,6 @@ interface AuthContextProps {
 export const AuthContext = createContext<AuthContextProps | null>(null);
 
 type NullableKeycloak = null | Keycloak;
-
 
 // Create a provider component
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -32,9 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider
-      value={authContextValue}
-    >
+    <AuthContext.Provider value={authContextValue}>
       {children}
     </AuthContext.Provider>
   );

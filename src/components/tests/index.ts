@@ -1,4 +1,4 @@
-import { TestBinaryForm } from "./TestBinaryForm"
-import { TestValueForm } from "./TestValueForm"
+import { TestBinaryForm } from "./TestBinaryForm";
+import { TestValueForm } from "./TestValueForm";
 
 export { TestBinaryForm, TestValueForm };

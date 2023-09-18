@@ -34,18 +34,14 @@ function Filter({
     columnFilterValue = "";
   }
 
-  const sortedUniqueValues = React.useMemo(
-    () => {
-      if (typeof firstValue === "number") {
-        return [];
-      }
-      else {
-        const uniq = column.getFacetedUniqueValues();
-        return Array.from(uniq).sort()
-      }
-    },
-    [column, firstValue]
-  );
+  const sortedUniqueValues = React.useMemo(() => {
+    if (typeof firstValue === "number") {
+      return [];
+    } else {
+      const uniq = column.getFacetedUniqueValues();
+      return Array.from(uniq).sort();
+    }
+  }, [column, firstValue]);
 
   return (
     <div className={column.id === "user_id" ? "limited" : ""}>
@@ -143,14 +139,14 @@ function CustomTable<T>({
       pageSize: 10,
     });
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const pagination = React.useMemo(
     () => ({
       pageIndex,
       pageSize,
     }),
-    [pageIndex, pageSize]
+    [pageIndex, pageSize],
   );
 
   const { data } = data_source({
@@ -197,8 +193,7 @@ function CustomTable<T>({
                             </div>
                           ) : (
                             <>
-                              <span
-                              >
+                              <span>
                                 {header.column.id
                                   .split("_")
                                   .join(" ")
@@ -207,7 +202,7 @@ function CustomTable<T>({
                                     /\b[a-z](?=[a-z])/g,
                                     function (letter) {
                                       return letter.toUpperCase();
-                                    }
+                                    },
                                   )}
                               </span>
                               <div className="flex space-x-2">
@@ -231,15 +226,20 @@ function CustomTable<T>({
             {table.getRowModel().rows.map((row) => {
               return (
                 <tr key={row.id}>
-                  {row.getVisibleCells().map(cell => {
+                  {row.getVisibleCells().map((cell) => {
                     return (
-                      <td key={cell.id} className={cell.column.id === "user_id" ? "limited" : ""}>
+                      <td
+                        key={cell.id}
+                        className={
+                          cell.column.id === "user_id" ? "limited" : ""
+                        }
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </td>
-                    )
+                    );
                   })}
                 </tr>
               );

@@ -19,7 +19,7 @@ pipeline {
                     sh '''
                         cd $WORKSPACE/$PROJECT_DIR
                         npm install
-                        CI=false npm run build
+                        CI=false npm run prettier && npm run lint && npm run build
                     '''
             }
         }

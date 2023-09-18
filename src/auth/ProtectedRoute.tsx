@@ -1,6 +1,6 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { AuthContext } from '@/auth';
+import { AuthContext } from "@/auth";
 import Keycloak from "keycloak-js";
 import KeycloakConfig from "@/keycloak.json";
 import { useUserRegister, useGetProfile } from "@/api";
@@ -12,7 +12,7 @@ export function ProtectedRoute() {
     keycloak,
     setKeycloak,
     registered,
-    setRegistered
+    setRegistered,
   } = useContext(AuthContext)!;
 
   const {
@@ -22,10 +22,11 @@ export function ProtectedRoute() {
     isSuccess,
   } = useGetProfile({
     token: keycloak?.token || "",
-    isRegistered: registered
+    isRegistered: registered,
   });
 
-  const { mutateAsync: userRegister, isSuccess: isSuccessRegister } = useUserRegister();
+  const { mutateAsync: userRegister, isSuccess: isSuccessRegister } =
+    useUserRegister();
 
   useEffect(() => {
     const initializeKeycloak = async () => {
@@ -57,7 +58,7 @@ export function ProtectedRoute() {
 
   useEffect(() => {
     if (isErrorUserProfile) {
-      const data: string =  keycloak?.token || "" ;
+      const data: string = keycloak?.token || "";
       userRegister(data);
     }
   }, [isErrorUserProfile, keycloak, userRegister]);
@@ -69,9 +70,8 @@ export function ProtectedRoute() {
   }, [isSuccessRegister, setRegistered, profileData]);
 
   if (authenticated && isSuccess) {
-    return <Outlet />
+    return <Outlet />;
   } else {
     return <></>;
   }
 }
-
