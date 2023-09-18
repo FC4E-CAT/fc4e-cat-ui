@@ -359,32 +359,18 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
             </Card.Body>
           </Card>
 
-          {/* Add create/update button here and cancel */}
-
+          {/* Add SAVE button here and cancel */}
           <div className="text-end mt-2">
-            {createMode &&
-
-              <button type="button" className="btn btn-success px-5" onClick={handleCreateAssessment}
-                disabled={
-                  assessment.result.compliance === null
-                    ? true
-                    : false
+              <button type="button" className="btn btn-success px-5" 
+              onClick={()=>{
+                if (createMode) {
+                  handleCreateAssessment();
+                } else {
+                  handleUpdateAssessment();
                 }
-              >
-                Create
+              }}>
+                Save
               </button>
-            }
-            {!createMode &&
-              <button type="button" className="btn btn-success px-5" onClick={handleUpdateAssessment}
-                disabled={
-                  assessment.result.compliance === null
-                    ? true
-                    : false
-                }
-              >
-                Update
-              </button>
-            }
             <Link className="btn btn-secondary ms-2 px-5" to="/assessments">Cancel</Link>
           </div>
 
