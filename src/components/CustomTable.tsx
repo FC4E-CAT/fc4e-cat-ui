@@ -16,7 +16,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-import { AuthContext } from "../auth/AuthContext";
+import { AuthContext } from "@/auth";
 
 function Filter({
   column,

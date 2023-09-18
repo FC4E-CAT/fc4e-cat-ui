@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
-import { UserAPI } from '../api';
-import { AuthContext } from '../auth/AuthContext';
+import { useGetProfile } from '@/api';
+import { AuthContext } from '@/auth';
 import { FaAddressCard, FaPlus, FaLock, FaCheckCircle, FaShieldAlt } from 'react-icons/fa';
-import { UserProfile } from '../types';
+import { UserProfile } from '@/types';
 
 
 
@@ -11,7 +11,7 @@ function Profile() {
   const { authenticated, keycloak, registered } = useContext(AuthContext)!;
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
-  const { data: profileData } = UserAPI.useGetProfile(
+  const { data: profileData } = useGetProfile(
     { token: keycloak?.token || "", isRegistered: registered }
   );
 

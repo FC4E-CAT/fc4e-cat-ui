@@ -1,16 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import Client from "../client";
+import {APIClient } from "@/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiOptions, Assessment, AssessmentDetailsResponse, AssessmentListResponse } from "../../types";
+import { ApiOptions, Assessment, AssessmentDetailsResponse, AssessmentListResponse } from "@/types";
 import { AxiosError } from "axios";
-import { handleBackendError } from "../../utils/Utils";
+import { handleBackendError } from "@/utils";
 
 
 export function useCreateAssessment (token: string) {
     const navigate = useNavigate();
     return useMutation({
         mutationFn: (postData:{validation_id: number, template_id:number, assessment_doc:Assessment}) => {
-            return Client(token).post("/assessments",postData)
+            return APIClient(token).post("/assessments",postData)
         },
         // for the time being redirect to assessment list
         onSuccess: () => {
@@ -24,7 +24,7 @@ export function useUpdateAssessment (token: string, assessmentID: string| undefi
     const navigate = useNavigate();
     return useMutation({
         mutationFn: (putData:{assessment_doc:Assessment}) => {
-            return Client(token).put(`/assessments/${assessmentID}`,putData)
+            return APIClient(token).put(`/assessments/${assessmentID}`,putData)
         },
         // optimistically update the cached data
         onMutate: (newData) => {
@@ -47,7 +47,7 @@ export function useGetAssessments({ size, page, sortBy, token, isRegistered }: A
     return useQuery({
       queryKey: ["assessments", { size, page, sortBy }],
       queryFn: async () => {
-        const response = await Client(token).get<AssessmentListResponse>(
+        const response = await APIClient(token).get<AssessmentListResponse>(
           `/assessments?size=${size}&page=${page}&sortby=${sortBy}`
         );
         return response.data;
@@ -64,7 +64,7 @@ export function useGetAssessment({ id, token, isRegistered }: {id:string, token:
     return useQuery({
       queryKey: ["assessment", id],
       queryFn: async () => {
-        const response = await Client(token).get<AssessmentDetailsResponse>(
+        const response = await APIClient(token).get<AssessmentDetailsResponse>(
           `/assessments/${id}`
         );
         return response.data;

@@ -11,13 +11,13 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 
-import { AuthProvider, ProtectedRoute, KeycloakLogout } from './auth';
-import { Header, Footer } from "./components"
-import { Home, Profile, RequestValidation, Validations, Users, ProfileUpdate, ValidationDetails } from "./pages"
+import { AuthProvider, ProtectedRoute, KeycloakLogout } from '@/auth';
+import { Header, Footer } from "@/components"
+import { Home, Profile, RequestValidation, Validations, Users, ProfileUpdate, ValidationDetails } from "@/pages"
 
-import './App.css';
-import AssessmentEdit from './pages/AssessmentEdit';
-import Assessments from './pages/Assessments';
+import '@/App.css';
+import AssessmentEdit from '@/pages/AssessmentEdit';
+import Assessments from '@/pages/Assessments';
 
 const queryClient = new QueryClient();
 

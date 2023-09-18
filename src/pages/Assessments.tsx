@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import {
     ColumnDef,
 } from '@tanstack/react-table'
-import { CustomTable } from '../components/CustomTable';
+import { CustomTable } from '@/components';
 import { FaCheckCircle, FaEdit, FaPlus } from 'react-icons/fa';
-import { AssessmentListItem} from '../types';
-import { useGetAssessments } from '../api/services/Assessment';
+import { AssessmentListItem} from '@/types';
+import { useGetAssessments } from '@/api';
 import { Link } from 'react-router-dom';
 
 

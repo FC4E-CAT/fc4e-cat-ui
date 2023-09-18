@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import {
     ColumnDef,
 } from '@tanstack/react-table'
-import { UserAPI } from '../api';
-import { CustomTable } from '../components/CustomTable';
+import { useGetUsers } from '@/api';
+import { CustomTable } from '@/components';
 import { FaUsers } from 'react-icons/fa';
-import { UserProfile } from '../types';
+import { UserProfile } from '@/types';
 
 
 function Users() {
@@ -45,7 +45,7 @@ function Users() {
     return (
         <div className="mt-4">
             <h3 className="cat-view-heading"><FaUsers /> users</h3>
-            <CustomTable columns={cols} data_source={UserAPI.useGetUsers} />
+            <CustomTable columns={cols} data_source={useGetUsers} />
         </div>
     );
 }

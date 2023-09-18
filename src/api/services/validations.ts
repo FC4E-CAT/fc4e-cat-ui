@@ -1,13 +1,13 @@
-import Client from "../client";
+import {APIClient} from "@/api";
 import decode from "jwt-decode";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { ApiOptions } from "../../types/common";
-import { APIValidationResponse, ValidationDetailsRequestParams, ValidationResponse, ValidationRequestParams, ValidationUpdateStatusParams } from "../../types/validation";
+import { ApiOptions } from "@/types";
+import { APIValidationResponse, ValidationDetailsRequestParams, ValidationResponse, ValidationRequestParams, ValidationUpdateStatusParams } from "@/types";
 import { AxiosError } from "axios";
-import { handleBackendError } from "../../utils/Utils";
+import { handleBackendError } from "@/utils";
 
-const Validation = {
-  useGetValidationList: ({
+
+export const useGetValidationList = ({
     size,
     page,
     sortBy,
@@ -17,7 +17,7 @@ const Validation = {
     useQuery({
       queryKey: ["validations", { size, page, sortBy }],
       queryFn: async () => {
-        const response = await Client(token).get<APIValidationResponse>(
+        const response = await APIClient(token).get<APIValidationResponse>(
           `/validations?size=${size}&page=${page}&sortby=${sortBy}`
         );
         return response.data;
@@ -27,8 +27,9 @@ const Validation = {
       },
       staleTime: 0,
       enabled: !!token && isRegistered,
-    }),
-  useAdminValidations: ({
+    });
+
+export const useAdminValidations = ({
     size,
     page,
     sortBy,
@@ -38,7 +39,7 @@ const Validation = {
     useQuery({
       queryKey: ["admin_validations", { size, page, sortBy }],
       queryFn: async () => {
-        const response = await Client(token).get<APIValidationResponse>(
+        const response = await APIClient(token).get<APIValidationResponse>(
           `/admin/validations?size=${size}&page=${page}&sortby=${sortBy}`
         );
         return response.data;
@@ -48,8 +49,9 @@ const Validation = {
       },
       staleTime: 0,
       enabled: !!token && isRegistered,
-    }),
-  useGetValidationDetails: ({
+    });
+
+export const useGetValidationDetails = ({
     validation_id,
     token,
     isRegistered,
@@ -61,11 +63,11 @@ const Validation = {
         const jwt = JSON.stringify(decode(token));
         let response = null;
         if (jwt.includes("admin")) {
-          response = await Client(token).get<ValidationResponse>(
+          response = await APIClient(token).get<ValidationResponse>(
             `/admin/validations/${validation_id}`
           );
         } else {
-          response = await Client(token).get<ValidationResponse>(
+          response = await APIClient(token).get<ValidationResponse>(
             `/validations/${validation_id}`
           );
         }
@@ -75,8 +77,9 @@ const Validation = {
         return handleBackendError(error);
       },
       enabled: !!token && isRegistered && (validation_id !== "" && validation_id !== undefined),
-    }),
-  useValidationRequest: ({
+    });
+
+export const useValidationRequest = ({
     organisation_role,
     organisation_id,
     organisation_source,
@@ -87,7 +90,7 @@ const Validation = {
   }: ValidationRequestParams) =>
     useMutation(
       async () => {
-        const response = await Client(token).post<ValidationResponse>(
+        const response = await APIClient(token).post<ValidationResponse>(
           `/validations`,
           {
             organisation_role,
@@ -106,15 +109,16 @@ const Validation = {
           return handleBackendError(error);
         },
       }
-    ),
-  useValidationStatusUpdate: ({
+    );
+
+export const useValidationStatusUpdate = ({
     validation_id,
     status,
     token,
   }: ValidationUpdateStatusParams) =>
     useMutation(
       async () => {
-        const response = await Client(token).put<ValidationResponse>(
+        const response = await APIClient(token).put<ValidationResponse>(
           `/admin/validations/${validation_id}/update-status`,
           {
             status,
@@ -128,7 +132,6 @@ const Validation = {
           return handleBackendError(error);
         },
       }
-    ),
-};
+    );
+    
 
-export default Validation;

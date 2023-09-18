@@ -1,16 +1,16 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import Client from "../client";
-import { ApiOptions } from "../../types/common";
-import { UserResponse, UserListResponse } from "../../types/profile";
-import { handleBackendError } from "../../utils/Utils";
+import { APIClient } from "@/api";
+import { ApiOptions } from "@/types";
+import { UserResponse, UserListResponse } from "@/types";
+import { handleBackendError } from "@/utils";
 
-const User = {
-  useGetProfile: ({ token, isRegistered }: ApiOptions) =>
+
+export const useGetProfile = ({ token, isRegistered }: ApiOptions) =>
     useQuery({
       queryKey: ["profile"],
       queryFn: async () => {
-        const response = await Client(token).get<UserResponse>(
+        const response = await APIClient(token).get<UserResponse>(
           `/users/profile`
         );
         return response.data;
@@ -20,12 +20,13 @@ const User = {
       },
       retry: false,
       enabled: isRegistered,
-    }),
-  useGetUsers: ({ size, page, sortBy, token, isRegistered }: ApiOptions) =>
+    });
+
+export const useGetUsers = ({ size, page, sortBy, token, isRegistered }: ApiOptions) =>
     useQuery({
       queryKey: ["users", { size, page, sortBy }],
       queryFn: async () => {
-        const response = await Client(token).get<UserListResponse>(
+        const response = await APIClient(token).get<UserListResponse>(
           `/users?size=${size}&page=${page}&sortby=${sortBy}`
         );
         return response.data;
@@ -34,12 +35,13 @@ const User = {
         return handleBackendError(error);
       },
       enabled: !!token && isRegistered,
-    }),
-  useUserRegister: () =>
+    });
+
+export const useUserRegister = () =>
     useMutation(
       async (token: string) => {
         try {
-          const response = await Client(token).post(`/users/register`);
+          const response = await APIClient(token).post(`/users/register`);
           if (response.status === 200) {
             return true;
           } else {
@@ -59,7 +61,7 @@ const User = {
           return handleBackendError(error);
         },
       }
-    ),
-};
+    );
 
-export default User;
+
+

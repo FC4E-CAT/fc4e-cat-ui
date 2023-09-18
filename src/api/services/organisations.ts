@@ -1,15 +1,15 @@
 import { AxiosError } from "axios";
-import { OrganisationRORSearchParams, OrganisationRORSearchResponse } from "../../types/common";
-import Client from "../client";
+import { OrganisationRORSearchParams, OrganisationRORSearchResponse } from "@/types";
+import {APIClient} from "@/api";
 import { useQuery } from "@tanstack/react-query";
-import { handleBackendError } from "../../utils/Utils";
+import { handleBackendError } from "@/utils";
 
-const Organisation = {
-  useOrganisationRORSearch: ({ name, page, token }: OrganisationRORSearchParams) =>
+
+export const  useOrganisationRORSearch = ({ name, page, token }: OrganisationRORSearchParams) =>
     useQuery({
       queryKey: ["organisation_ror_search", name],
       queryFn: async () => {
-        const response = await Client(token).get<OrganisationRORSearchResponse>(
+        const response = await APIClient(token).get<OrganisationRORSearchResponse>(
           `/integrations/organisations/ROR/${name}?page=${page}`
         );
         return response.data;
@@ -19,7 +19,5 @@ const Organisation = {
       },
       enabled: name.length > 2,
       staleTime: 10 * 1000
-    })
-};
+    });
 
-export default Organisation;
