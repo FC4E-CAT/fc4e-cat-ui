@@ -77,12 +77,3 @@ export type AlertInfo = {
     type: string;
     message: string;
 }
-
-export type ActorCardPros = {
-    title: string;
-    link: string;
-    link_text: string;
-    image: string;
-    description: string;
-    disabled?: boolean;
-}

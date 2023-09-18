@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import Client from "../client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiOptions, ApiServiceErr, Assessment, AssessmentDetailsResponse, AssessmentListResponse } from "../../types";
+import { ApiOptions, Assessment, AssessmentDetailsResponse, AssessmentListResponse } from "../../types";
+import { AxiosError } from "axios";
+import { handleBackendError } from "../../utils/Utils";
 
 
 export function useCreateAssessment (token: string) {
@@ -42,7 +44,7 @@ export function useUpdateAssessment (token: string, assessmentID: string| undefi
 
 
 export function useGetAssessments({ size, page, sortBy, token, isRegistered }: ApiOptions){
-    return useQuery<AssessmentListResponse, any>({
+    return useQuery({
       queryKey: ["assessments", { size, page, sortBy }],
       queryFn: async () => {
         const response = await Client(token).get<AssessmentListResponse>(
@@ -50,9 +52,8 @@ export function useGetAssessments({ size, page, sortBy, token, isRegistered }: A
         );
         return response.data;
       },
-      onError: (error) => {
-        console.log(error.response);
-        return error.response as ApiServiceErr;
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
       },
       enabled: !!token && isRegistered,
     })
@@ -60,7 +61,7 @@ export function useGetAssessments({ size, page, sortBy, token, isRegistered }: A
 
 
 export function useGetAssessment({ id, token, isRegistered }: {id:string, token:string, isRegistered:boolean}){
-    return useQuery<AssessmentDetailsResponse, any>({
+    return useQuery({
       queryKey: ["assessment", id],
       queryFn: async () => {
         const response = await Client(token).get<AssessmentDetailsResponse>(
@@ -68,9 +69,8 @@ export function useGetAssessment({ id, token, isRegistered }: {id:string, token:
         );
         return response.data;
       },
-      onError: (error) => {
-        console.log(error.response);
-        return error.response as ApiServiceErr;
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
       },
       enabled: !!token && isRegistered && id !== "",
     })

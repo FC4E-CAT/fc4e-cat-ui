@@ -12,7 +12,7 @@ function Profile() {
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
   const { data: profileData } = UserAPI.useGetProfile(
-    { token: keycloak?.token, isRegistered: registered }
+    { token: keycloak?.token || "", isRegistered: registered }
   );
 
   useEffect(() => {

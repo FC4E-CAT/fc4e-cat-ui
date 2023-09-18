@@ -34,8 +34,8 @@ export function evalAssessment(assessment: Assessment | undefined | null ): Resu
     
     if (!assessment) return null;
     
-    let mandatory: (number|null)[] = []
-    let optional: (number|null)[] = []
+    const mandatory: (number|null)[] = []
+    const optional: (number|null)[] = []
 
     assessment.principles.forEach(principle =>{
         principle.criteria.forEach(criterion =>{

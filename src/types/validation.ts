@@ -28,11 +28,11 @@ export interface ValidationRequest {
     organisation_name: string;
     organisation_website: string;
     actor_id: number;
-};
+}
 
 export interface ValidationDetailsRequest {
     validation_id: string;
-};
+}
 
 export type ValidationRequestParams = ApiAuthOptions & ValidationRequest;
 export type ValidationDetailsRequestParams = ApiAuthOptions & ValidationDetailsRequest;
@@ -41,7 +41,7 @@ export type ValidationUpdateStatusParams = ApiAuthOptions & ValidationStatusUpda
 export interface ValidationStatusUpdate {
     validation_id: string;
     status: string;
-};
+}
 
 export type ValidationProps = {
     toReject?: boolean;

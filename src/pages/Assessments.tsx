@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import {
     ColumnDef,
@@ -15,13 +16,11 @@ function Assessments() {
         () => [
             {
                 header: ' ',
-                footer: props => props.column.id,
                 columns: [
                     {
                         accessorKey: 'id',
                         header: () => <span>ID</span>,
                         cell: info => info.getValue(),
-                        footer: props => props.column.id,
                         enableColumnFilter: false
                     },
                     {
@@ -29,7 +28,6 @@ function Assessments() {
                         id: 'created_on',
                         cell: info => info.getValue(),
                         header: () => <span>Created On</span>,
-                        footer: props => props.column.id,
                         enableColumnFilter: false
                     },
                     {
@@ -37,7 +35,6 @@ function Assessments() {
                         id: 'validation_id',
                         cell: info => info.getValue(),
                         header: () => <span>Validation ID</span>,
-                        footer: props => props.column.id,
                         enableColumnFilter: true
                     },
                     {
@@ -45,19 +42,19 @@ function Assessments() {
                         id: 'template_id',
                         cell: info => info.getValue(),
                         header: () => <span>Template ID</span>,
-                        footer: props => props.column.id,
                         enableColumnFilter: true
                     },
                     {
                         id: "action",
+                        accessorFn: row => row.id,
                         header: () => <span>Actions</span>,
-                        cell: (props) => {
+                        cell: (info) => {
                           
                             return (
                               <div className="edit-buttons btn-group shadow">
                                 <Link
                                   className="btn btn-secondary cat-action-view-link btn-sm "
-                                  to={`/assessments/${props.row.original.id}`}>
+                                  to={`/assessments/${info.getValue()}`}>
                                   <FaEdit />
                                 </Link>
                               </div>

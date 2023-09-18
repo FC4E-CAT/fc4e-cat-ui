@@ -37,20 +37,20 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
 
   const qValidation = ValidationAPI.useGetValidationDetails(
-    { validation_id: valID!, token: keycloak?.token, isRegistered: registered }
+    { validation_id: valID!, token: keycloak?.token || "", isRegistered: registered }
   );
 
   const qTemplate = TemplateAPI.useGetTemplate(
-    1, qValidation.data?.actor_id, keycloak?.token, registered)
+    1, qValidation.data?.actor_id, keycloak?.token || "", registered)
 
   const asmtNumID = asmtID !== undefined ? asmtID : ""
 
   const qAssessment = useGetAssessment(
-    { id: asmtNumID, token: keycloak?.token, isRegistered: registered }
+    { id: asmtNumID, token: keycloak?.token || "", isRegistered: registered }
   );
 
-  const mutationCreateAssessment = useCreateAssessment(keycloak?.token)
-  const mutationUpdateAssessment = useUpdateAssessment(keycloak?.token, asmtID)
+  const mutationCreateAssessment = useCreateAssessment(keycloak?.token || "")
+  const mutationUpdateAssessment = useUpdateAssessment(keycloak?.token || "", asmtID)
 
   function handleCreateAssessment() {
     if (templateId && valID && assessment) {
@@ -122,8 +122,8 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
   function handleCriterionChange(principleID: string, criterionID: string, newTest: AssessmentTest) {
     // update criterion change
-    let mandatory: (number | null)[] = [];
-    let optional: (number | null)[] = [];
+    const mandatory: (number | null)[] = [];
+    const optional: (number | null)[] = [];
 
     if (assessment) {
 
@@ -139,7 +139,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                 return test;
               })
               let newMetric = { ...criterion.metric, "tests": newTests };
-              let { result, value } = evalMetric(newMetric);
+              const { result, value } = evalMetric(newMetric);
               newMetric = { ...newMetric, "result": result, "value": value }
               // create a new criterion object with updates due to changes
               resultCriterion = { ...criterion, "metric": newMetric };
@@ -158,7 +158,6 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       })
 
       let compliance: boolean | null;
-      let ranking: number | null;
 
       const newAssessment = {
         ...assessment,
@@ -184,7 +183,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       }
 
 
-      ranking = optional.reduce((sum, result) => {
+      const ranking: number | null = optional.reduce((sum, result) => {
         if (sum === null || result === null) return null;
         return sum + result;
       }, 0)
@@ -201,7 +200,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   }
 
   // evaluate the assessment  
-  let evalResult = evalAssessment(assessment);
+  const evalResult = evalAssessment(assessment);
 
   const [key, setKey] = useState("#options");
   const handleSelect = (key: string | null) => {

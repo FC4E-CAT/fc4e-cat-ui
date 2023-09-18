@@ -1,11 +1,13 @@
-import { ApiServiceErr, TemplateResponse } from "../../types";
+import { AxiosError } from "axios";
+import { TemplateResponse } from "../../types";
 import Client from "../client";
 import { useQuery } from "@tanstack/react-query";
+import { handleBackendError } from "../../utils/Utils";
 
 /** Backend calls for getting Assessment Template */
 const Template = {
   useGetTemplate: (templateTypeId: number, actorId: number|undefined, token: string, isRegistered: boolean ) =>
-    useQuery<TemplateResponse, any>({
+    useQuery({
       queryKey: ["template",actorId],
       queryFn: async () => {
         const response = await Client(token).get<TemplateResponse>(
@@ -13,9 +15,8 @@ const Template = {
         );
         return response.data;
       },
-      onError: (error) => {
-        console.log(error.response);
-        return error.response as ApiServiceErr;
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
       },
       enabled: !!token && isRegistered && actorId !== undefined
     })

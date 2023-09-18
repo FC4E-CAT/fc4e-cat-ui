@@ -14,8 +14,8 @@ interface EvidenceURLSProps {
 export const EvidenceURLS = (props:EvidenceURLSProps) => {
 
     const [urlList, setUrlList] = useState<string[]>(props.urls)
-    const [newURL, setNewURL] = useState('');
-    const [error, setError] = useState('');
+    const [newURL, setNewURL] = useState("");
+    const [error, setError] = useState("");
     const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
 
     const handleRemoveURL = (index: number) => {
@@ -30,8 +30,8 @@ export const EvidenceURLS = (props:EvidenceURLSProps) => {
                 const updatedURLs = [...urlList, newURL]
                 setUrlList(updatedURLs);
                 props.onListChange(updatedURLs);
-                setNewURL('');
-                setError('');
+                setNewURL("");
+                setError("");
             } else {
                 setError('please provide a valid url (e.g. http://example.com/path/to)');
 
@@ -58,7 +58,7 @@ export const EvidenceURLS = (props:EvidenceURLSProps) => {
                 <InputGroup.Text id="label-add-url">
                     URL:
                 </InputGroup.Text>
-                <Form.Control id="input-add-url" value={newURL} onChange={(e) => { setNewURL(e.target.value); setError('') }} aria-describedby="label-add-url" />
+                <Form.Control id="input-add-url" value={newURL} onChange={(e) => { setNewURL(e.target.value); setError("") }} aria-describedby="label-add-url" />
                 <span className="btn btn-primary btn-sm" onClick={handleAddURL} >Add</span>
                
             </InputGroup>
