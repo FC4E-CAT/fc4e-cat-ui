@@ -1,46 +1,51 @@
 /* Custom classes are prefixed with cat- */
 
 .yellow-gradient {
-  background: rgb(226,226,226);
-  background: linear-gradient(0deg, rgba(226,226,226,1) 0%, rgba(243,243,243,1) 29%, rgba(249,249,249,1) 60%, rgba(255,255,255,1) 100%);
+  background: rgb(226, 226, 226);
+  background: linear-gradient(
+    0deg,
+    rgba(226, 226, 226, 1) 0%,
+    rgba(243, 243, 243, 1) 29%,
+    rgba(249, 249, 249, 1) 60%,
+    rgba(255, 255, 255, 1) 100%
+  );
   border-bottom: solid 2px #919191;
 }
 
 .cat-view-heading {
-  color:#00bcd4;
-
+  color: #00bcd4;
 }
 
 .cat-logo-sm {
-  width:100px;
+  width: 100px;
   margin: 5px;
 }
 
 .cat-main-view {
-  min-height:60vh;
+  min-height: 60vh;
 }
 
-.cat-hash-link{
+.cat-hash-link {
   color: grey;
   border-bottom: 1px dotted grey;
 }
 
-.cat-hash-link:hover{
+.cat-hash-link:hover {
   background-color: rgb(220, 220, 220);
 }
 
-.cat-metric-tooltip .tooltip.show p{
- text-align: left;
+.cat-metric-tooltip .tooltip.show p {
+  text-align: left;
 }
 
 .cat-nav-link {
-  -moz-transition: all .2s ease-in;
-  -o-transition: all .2s ease-in;
-  -webkit-transition: all .2s ease-in;
-  transition: all .2s ease-in;
-  display:block;
+  -moz-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  -webkit-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+  display: block;
   text-decoration: none;
-  color:black;
+  color: black;
   padding: 15px 15px;
 }
 
@@ -63,42 +68,39 @@
   border-color: #0a58ca;
 }
 
-
 footer h6 {
   color: grey;
   font-weight: bold;
 }
 
-footer a{
+footer a {
   text-decoration: none;
-  color:#00bcd4;
+  color: #00bcd4;
 }
 
-.main-nav{
+.main-nav {
   border-bottom: 1px solid rgb(169, 169, 169);
 }
 
 .nav-text {
-  padding:15px 15px;
+  padding: 15px 15px;
 }
-
 
 .active {
   color: red;
 }
 
 .custom-pagination input {
-  display:inline-block;
-  width:85px;
-  border-radius:0px;
+  display: inline-block;
+  width: 85px;
+  border-radius: 0px;
   float: left;
   vertical-align: top;
   margin-left: -1px;
 }
 
-
 .cat-text-faded {
-  color:lightgrey;
+  color: lightgrey;
 }
 
 .list-group-item:nth-child(even) {
@@ -112,8 +114,12 @@ footer a{
   max-width: 10ch;
 }
 
-.dropdown a:hover { text-decoration-line: none; }
-.dropdown a { text-decoration-line: none; }
+.dropdown a:hover {
+  text-decoration-line: none;
+}
+.dropdown a {
+  text-decoration-line: none;
+}
 
 .actor-card {
   height: 300px;
@@ -161,5 +167,3 @@ footer a{
 .assessment-card .nav-link.active {
   color: #0b5ed7 !important;
 }
-
-

@@ -1,31 +1,51 @@
-import { useMemo, useContext, useState, useEffect, useRef } from 'react';
-import Select, { SingleValue } from 'react-select';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { ErrorMessage } from '@hookform/error-message';
-import { useAdminValidations, useGetActors, useGetProfile, useGetValidationDetails, useGetValidationList, useOrganisationRORSearch, useValidationRequest, useValidationStatusUpdate } from '@/api';
-import { AuthContext } from '@/auth';
+import { useMemo, useContext, useState, useEffect, useRef } from "react";
+import Select, { SingleValue } from "react-select";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
 import {
-  ColumnDef,
-} from '@tanstack/react-table'
+  useAdminValidations,
+  useGetActors,
+  useGetProfile,
+  useGetValidationDetails,
+  useGetValidationList,
+  useOrganisationRORSearch,
+  useValidationRequest,
+  useValidationStatusUpdate,
+} from "@/api";
+import { AuthContext } from "@/auth";
+import { ColumnDef } from "@tanstack/react-table";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
-  FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlus,
-  FaRegCheckSquare, FaGlasses, FaIdBadge
-} from 'react-icons/fa';
-import decode from 'jwt-decode';
-import { CustomTable } from '@/components';
-import { Alert } from '@/components';
-import { UserProfile, Actor, OrganisationRORSearchResultModified, ValidationResponse, AlertInfo, ValidationProps } from '@/types';
+  FaCheck,
+  FaList,
+  FaTimes,
+  FaExclamationTriangle,
+  FaPlus,
+  FaRegCheckSquare,
+  FaGlasses,
+  FaIdBadge,
+} from "react-icons/fa";
+import decode from "jwt-decode";
+import { CustomTable } from "@/components";
+import { Alert } from "@/components";
+import {
+  UserProfile,
+  Actor,
+  OrganisationRORSearchResultModified,
+  ValidationResponse,
+  AlertInfo,
+  ValidationProps,
+} from "@/types";
 
 const enum AlertType {
   SUCCESS = "success",
-  DANGER = "danger"
+  DANGER = "danger",
 }
 
 const enum ValidationStatus {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
-  REVIEW = "REVIEW"
+  REVIEW = "REVIEW",
 }
 
 function RequestValidation() {
@@ -33,19 +53,28 @@ function RequestValidation() {
 
   const { keycloak, registered } = useContext(AuthContext)!;
 
-  const { data: profileData } = useGetProfile(
-    { token: keycloak?.token || "", isRegistered: registered }
-  );
+  const { data: profileData } = useGetProfile({
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
 
   const [userProfile, setUserProfile] = useState<UserProfile>();
-  const alert = useRef<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
+  const alert = useRef<AlertInfo>({
+    enabled: false,
+    type: AlertType.SUCCESS,
+    message: "",
+  });
   useEffect(() => {
     setUserProfile(profileData);
   }, [profileData]);
 
-  const { data: actorsData } = useGetActors(
-    { size: 20, page: 1, sortBy: "asc", token: keycloak?.token || "", isRegistered: registered }
-  );
+  const { data: actorsData } = useGetActors({
+    size: 20,
+    page: 1,
+    sortBy: "asc",
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
 
   const [actors, setActors] = useState<Actor[]>();
   useEffect(() => {
@@ -69,54 +98,63 @@ function RequestValidation() {
   const [organisation_website, setOrganisationWebsite] = useState("");
   const [inputValue, setInputValue] = useState("");
 
-  const { register, setValue, handleSubmit, formState: { errors } } = useForm<FormValues>(
-    {
-      defaultValues: {
-        organisation_role: organisation_role,
-        organisation_id: organisation_id,
-        organisation_source: organisation_source,
-        organisation_name: organisation_name,
-        organisation_website: organisation_website,
-        actor_id: actor_id
-      }
-    }
-  );
-
-  const { mutateAsync: refetchValidationRequest } = useValidationRequest(
-    {
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
       organisation_role: organisation_role,
       organisation_id: organisation_id,
       organisation_source: organisation_source,
       organisation_name: organisation_name,
       organisation_website: organisation_website,
       actor_id: actor_id,
-      token: keycloak?.token || "",
-      isRegistered: registered
-    }
-  );
+    },
+  });
 
-  const { data: organisations } = useOrganisationRORSearch(
-    {
-      name: inputValue,
-      page: 1,
-      token: keycloak?.token || "",
-      isRegistered: registered
-    }
-  );
+  const { mutateAsync: refetchValidationRequest } = useValidationRequest({
+    organisation_role: organisation_role,
+    organisation_id: organisation_id,
+    organisation_source: organisation_source,
+    organisation_name: organisation_name,
+    organisation_website: organisation_website,
+    actor_id: actor_id,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
 
-  const onSubmit: SubmitHandler<FormValues> = data => {
+  const { data: organisations } = useOrganisationRORSearch({
+    name: inputValue,
+    page: 1,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
     setOrganisationRole(data.organisation_role);
     setOrganisationID(data.organisation_id);
     setOrganisationSource(data.organisation_source);
     setOrganisationName(data.organisation_name);
     setOrganisationWebsite(data.organisation_website);
     setActorID(data.actor_id);
-    refetchValidationRequest().then(() => {
-      alert.current = { enabled: true, type: AlertType.SUCCESS, message: "Validation request succesfully submitted." };
-    }).catch(() => {
-      alert.current = { enabled: true, type: AlertType.DANGER, message: "Error during validation request submission." };
-    }).finally(() => navigate("/validations"));
-
+    refetchValidationRequest()
+      .then(() => {
+        alert.current = {
+          enabled: true,
+          type: AlertType.SUCCESS,
+          message: "Validation request succesfully submitted.",
+        };
+      })
+      .catch(() => {
+        alert.current = {
+          enabled: true,
+          type: AlertType.DANGER,
+          message: "Error during validation request submission.",
+        };
+      })
+      .finally(() => navigate("/validations"));
   };
 
   const renderOptions = () => {
@@ -130,13 +168,12 @@ function RequestValidation() {
           label: tmp[i]["name"],
           website: tmp[i]["website"],
           id: tmp[i]["id"],
-          acronym: tmp[i]["acronym"]
+          acronym: tmp[i]["acronym"],
         };
         result.push(t);
       }
       return result;
-    }
-    else return [];
+    } else return [];
   };
 
   const updateForm = (s: SingleValue<OrganisationRORSearchResultModified>) => {
@@ -153,11 +190,11 @@ function RequestValidation() {
       <select
         className={`form-select ${errors.actor_id ? "is-invalid" : ""}`}
         id="actor_id"
-        {...register("actor_id",
-          {
-            // onChange: (e) => { actor_id.current = e.target.value; },
-            required: true
-          })}>
+        {...register("actor_id", {
+          // onChange: (e) => { actor_id.current = e.target.value; },
+          required: true,
+        })}
+      >
         <option disabled value={-1}>
           Select Actor
         </option>
@@ -180,10 +217,12 @@ function RequestValidation() {
 
   return (
     <div className="mt-4">
-      {alert.current.enabled &&
+      {alert.current.enabled && (
         <Alert type={alert.current.type} message={alert.current.message} />
-      }
-      <h3 className="cat-view-heading"><FaIdBadge /> create new validation request</h3>
+      )}
+      <h3 className="cat-view-heading">
+        <FaIdBadge /> create new validation request
+      </h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="organization_name" className="form-label fw-bold">
@@ -206,13 +245,19 @@ function RequestValidation() {
           </label>
           <input
             type="text"
-            className={`form-control ${errors.organisation_role ? "is-invalid" : ""}`}
+            className={`form-control ${
+              errors.organisation_role ? "is-invalid" : ""
+            }`}
             id="organisation_role"
             aria-describedby="organisation_role_help"
             {...register("organisation_role", {
               // onChange: (e) => { setOrganisationRole(e.target.value) },
-              required: { value: true, message: "Organisation Role is required" }
-            })} />
+              required: {
+                value: true,
+                message: "Organisation Role is required",
+              },
+            })}
+          />
           <ErrorMessage
             errors={errors}
             name="organisation_role"
@@ -225,14 +270,20 @@ function RequestValidation() {
           </label>
           <input
             type="text"
-            className={`form-control ${errors.organisation_source ? "is-invalid" : ""}`}
+            className={`form-control ${
+              errors.organisation_source ? "is-invalid" : ""
+            }`}
             id="organisation_source"
             aria-describedby="organisation_source_help"
             disabled={true}
             {...register("organisation_source", {
-              required: { value: true, message: "Organisation Source is required" },
-              minLength: { value: 3, message: "Minimum length is 3" }
-            })} />
+              required: {
+                value: true,
+                message: "Organisation Source is required",
+              },
+              minLength: { value: 3, message: "Minimum length is 3" },
+            })}
+          />
           <ErrorMessage
             errors={errors}
             name="organisation_source"
@@ -245,13 +296,19 @@ function RequestValidation() {
           </label>
           <input
             type="text"
-            className={`form-control ${errors.organisation_website ? "is-invalid" : ""}`}
+            className={`form-control ${
+              errors.organisation_website ? "is-invalid" : ""
+            }`}
             id="organisation_website"
             aria-describedby="organisation_website_help"
             disabled={true}
             {...register("organisation_website", {
-              required: { value: true, message: "Organisation Website is required" }
-            })} />
+              required: {
+                value: true,
+                message: "Organisation Website is required",
+              },
+            })}
+          />
           <ErrorMessage
             errors={errors}
             name="organisation_website"
@@ -259,9 +316,7 @@ function RequestValidation() {
           />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          {actors && actors.length > 0
-            ? actors_select_div
-            : null}
+          {actors && actors.length > 0 ? actors_select_div : null}
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="user_name" className="form-label fw-bold">
@@ -273,7 +328,8 @@ function RequestValidation() {
             id="user_name"
             aria-describedby="user_name_help"
             disabled={true}
-            value={userProfile?.name || ""} />
+            value={userProfile?.name || ""}
+          />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="user_surname" className="form-label fw-bold">
@@ -285,7 +341,8 @@ function RequestValidation() {
             id="user_surname"
             aria-describedby="user_surname_help"
             disabled={true}
-            value={userProfile?.surname || ""} />
+            value={userProfile?.surname || ""}
+          />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="user_email" className="form-label fw-bold">
@@ -297,10 +354,13 @@ function RequestValidation() {
             id="user_email"
             aria-describedby="user_email_help"
             disabled={true}
-            value={userProfile?.email || ""} />
+            value={userProfile?.email || ""}
+          />
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <button className="btn btn-light border-black" type="submit">Submit</button>
+          <button className="btn btn-light border-black" type="submit">
+            Submit
+          </button>
           <Link to="/validations" className="my-2 btn btn-secondary mx-3">
             <span>Cancel</span>
           </Link>
@@ -312,7 +372,11 @@ function RequestValidation() {
 
 function Validations(props: ValidationProps) {
   const navigate = useNavigate();
-  const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
+  const [alert, setAlert] = useState<AlertInfo>({
+    enabled: false,
+    type: AlertType.SUCCESS,
+    message: "",
+  });
   const params = useParams();
 
   const isAdmin = useRef<boolean>(false);
@@ -320,14 +384,13 @@ function Validations(props: ValidationProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const jwt = JSON.stringify(decode(keycloak?.token || ""));
 
-  const { mutateAsync: mutateValidationUpdateStatus } = useValidationStatusUpdate(
-    {
+  const { mutateAsync: mutateValidationUpdateStatus } =
+    useValidationStatusUpdate({
       validation_id: params.id!,
       status: reviewStatus,
       token: keycloak?.token || "",
-      isRegistered: registered
-    }
-  );
+      isRegistered: registered,
+    });
 
   // FIXME: This is a naive approach, should reconsider
   if (jwt.includes("admin")) {
@@ -337,52 +400,52 @@ function Validations(props: ValidationProps) {
   const cols = useMemo<ColumnDef<ValidationResponse>[]>(
     () => [
       {
-        header: ' ',
-        footer: props => props.column.id,
+        header: " ",
+        footer: (props) => props.column.id,
         columns: [
           {
-            accessorKey: 'id',
+            accessorKey: "id",
             header: () => <span>ID</span>,
-            cell: info => info.getValue(),
-            footer: props => props.column.id,
-            enableColumnFilter: false
+            cell: (info) => info.getValue(),
+            footer: (props) => props.column.id,
+            enableColumnFilter: false,
           },
           {
-            accessorFn: row => row.user_id,
-            id: 'user_id',
-            cell: info => info.getValue(),
+            accessorFn: (row) => row.user_id,
+            id: "user_id",
+            cell: (info) => info.getValue(),
             header: () => <span>User ID</span>,
-            footer: props => props.column.id,
-            enableColumnFilter: true
+            footer: (props) => props.column.id,
+            enableColumnFilter: true,
           },
           {
-            accessorFn: row => row.organisation_name,
-            id: 'organisation_name',
-            cell: info => info.getValue(),
+            accessorFn: (row) => row.organisation_name,
+            id: "organisation_name",
+            cell: (info) => info.getValue(),
             header: () => <span>Organisation Name</span>,
-            footer: props => props.column.id,
+            footer: (props) => props.column.id,
           },
           {
-            accessorFn: row => row.organisation_role,
-            id: 'organisation_role',
-            cell: info => info.getValue(),
+            accessorFn: (row) => row.organisation_role,
+            id: "organisation_role",
+            cell: (info) => info.getValue(),
             header: () => <span>Organisation Role</span>,
-            footer: props => props.column.id,
+            footer: (props) => props.column.id,
           },
           {
-            accessorFn: row => row.actor_name,
-            id: 'actor_name',
-            cell: info => info.getValue(),
+            accessorFn: (row) => row.actor_name,
+            id: "actor_name",
+            cell: (info) => info.getValue(),
             header: () => <span>Actor</span>,
-            footer: props => props.column.id,
-            enableColumnFilter: true
+            footer: (props) => props.column.id,
+            enableColumnFilter: true,
           },
           {
-            accessorFn: row => row.status,
-            id: 'status',
-            cell: info => info.getValue(),
+            accessorFn: (row) => row.status,
+            id: "status",
+            cell: (info) => info.getValue(),
             header: () => <span>Status</span>,
-            footer: props => props.column.id,
+            footer: (props) => props.column.id,
           },
           {
             id: "action",
@@ -392,57 +455,63 @@ function Validations(props: ValidationProps) {
                   <div className="edit-buttons btn-group shadow">
                     <Link
                       className="btn btn-secondary cat-action-view-link btn-sm "
-                      to={`/validations/${props.row.original.id}`}>
+                      to={`/validations/${props.row.original.id}`}
+                    >
                       <FaList />
                     </Link>
-                    {props.row.original.status === "REVIEW" ?
+                    {props.row.original.status === "REVIEW" ? (
                       <Link
                         className="btn btn-secondary cat-action-approve-link btn-sm "
-                        to={`/validations/${props.row.original.id}/approve#alert-spot`}>
+                        to={`/validations/${props.row.original.id}/approve#alert-spot`}
+                      >
                         <FaCheck />
                       </Link>
-                      :
-                      null
-                    }
-                    {props.row.original.status === "REVIEW" ?
+                    ) : null}
+                    {props.row.original.status === "REVIEW" ? (
                       <Link
                         className="btn btn-secondary cat-action-reject-link btn-sm "
-                        to={`/validations/${props.row.original.id}/reject/#alert-spot`}>
+                        to={`/validations/${props.row.original.id}/reject/#alert-spot`}
+                      >
                         <FaTimes />
                       </Link>
-                      : null}
+                    ) : null}
                   </div>
-                )
-              }
-              else {
+                );
+              } else {
                 return (
                   <div className="edit-buttons btn-group shadow">
                     <Link
                       className="btn btn-secondary btn-sm "
-                      to={`/validations/${props.row.original.id}`}>
+                      to={`/validations/${props.row.original.id}`}
+                    >
                       <FaList />
                     </Link>
-                    {props.row.original.status === "APPROVED" && (props.row.original.actor_id === 6 || props.row.original.actor_id === 2 || props.row.original.actor_id === 9 || props.row.original.actor_id === 5) &&
-                      <Link
-                        className="btn btn-secondary cat-action-approve-link btn-sm "
-                        to={`/assessments/create/${props.row.original.id}`}>
-                        <FaPlus /> Assessment
-                      </Link>
-                    }
+                    {props.row.original.status === "APPROVED" &&
+                      (props.row.original.actor_id === 6 ||
+                        props.row.original.actor_id === 2 ||
+                        props.row.original.actor_id === 9 ||
+                        props.row.original.actor_id === 5) && (
+                        <Link
+                          className="btn btn-secondary cat-action-approve-link btn-sm "
+                          to={`/assessments/create/${props.row.original.id}`}
+                        >
+                          <FaPlus /> Assessment
+                        </Link>
+                      )}
                   </div>
-                )
+                );
               }
             },
 
             header: () => <span>Actions</span>,
             footer: null,
-            enableColumnFilter: false
-          }
+            enableColumnFilter: false,
+          },
         ],
       },
     ],
-    []
-  )
+    [],
+  );
 
   let rejectCard = null;
   let approveCard = null;
@@ -458,26 +527,40 @@ function Validations(props: ValidationProps) {
             </h5>
           </div>
           <div className=" card-body border-danger text-center">
-            Are you sure you want to reject validation with ID: <strong>{params.id}</strong> ?
+            Are you sure you want to reject validation with ID:{" "}
+            <strong>{params.id}</strong> ?
           </div>
           <div className="card-footer border-danger text-danger text-center">
             <button
               className="btn btn-danger mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.REJECTED);
-                mutateValidationUpdateStatus().then(() => {
-                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
-                }).catch(() => {
-                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
-                }).finally(() => navigate("/validations"));
-              }}>
+                mutateValidationUpdateStatus()
+                  .then(() => {
+                    setAlert({
+                      enabled: true,
+                      type: AlertType.SUCCESS,
+                      message: "Validation succesfully rejected.",
+                    });
+                  })
+                  .catch(() => {
+                    setAlert({
+                      enabled: true,
+                      type: AlertType.DANGER,
+                      message: "Error during validation rejection.",
+                    });
+                  })
+                  .finally(() => navigate("/validations"));
+              }}
+            >
               Reject
             </button>
             <button
               onClick={() => {
                 navigate("/validations");
               }}
-              className="btn btn-dark">
+              className="btn btn-dark"
+            >
               Cancel
             </button>
           </div>
@@ -497,26 +580,40 @@ function Validations(props: ValidationProps) {
             </h5>
           </div>
           <div className=" card-body border-info text-center">
-            Are you sure you want to approve validation with ID: <strong>{params.id}</strong> ?
+            Are you sure you want to approve validation with ID:{" "}
+            <strong>{params.id}</strong> ?
           </div>
           <div className="card-footer border-success text-success text-center">
             <button
               className="btn btn-success mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.APPROVED);
-                mutateValidationUpdateStatus().then(() => {
-                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
-                }).catch(() => {
-                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
-                }).finally(() => navigate("/validations"));
-              }}>
+                mutateValidationUpdateStatus()
+                  .then(() => {
+                    setAlert({
+                      enabled: true,
+                      type: AlertType.SUCCESS,
+                      message: "Validation succesfully approved.",
+                    });
+                  })
+                  .catch(() => {
+                    setAlert({
+                      enabled: true,
+                      type: AlertType.DANGER,
+                      message: "Error during validation approval.",
+                    });
+                  })
+                  .finally(() => navigate("/validations"));
+              }}
+            >
               Approve
             </button>
             <button
               onClick={() => {
                 navigate("/validations");
               }}
-              className="btn btn-dark">
+              className="btn btn-dark"
+            >
               Cancel
             </button>
           </div>
@@ -527,20 +624,25 @@ function Validations(props: ValidationProps) {
 
   return (
     <div className="mt-4">
-      {alert.enabled &&
-        <Alert type={alert.type} message={alert.message} />
-      }
+      {alert.enabled && <Alert type={alert.type} message={alert.message} />}
       {rejectCard}
       {approveCard}
       <div className="d-flex justify-content-between my-2 container">
-        <h3 className="cat-view-heading"><FaIdBadge /> validation requests</h3>
-        <Link to="/validations/request" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
+        <h3 className="cat-view-heading">
+          <FaIdBadge /> validation requests
+        </h3>
+        <Link
+          to="/validations/request"
+          className="btn btn-light border-black mx-3"
+        >
+          <FaPlus /> Create New
+        </Link>
       </div>
-      {isAdmin.current && keycloak ?
+      {isAdmin.current && keycloak ? (
         <CustomTable columns={cols} data_source={useAdminValidations} />
-        :
+      ) : (
         <CustomTable columns={cols} data_source={useGetValidationList} />
-      }
+      )}
     </div>
   );
 }
@@ -548,20 +650,23 @@ function Validations(props: ValidationProps) {
 function ValidationDetails(props: ValidationProps) {
   const params = useParams();
   const navigate = useNavigate();
-  const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
+  const [alert, setAlert] = useState<AlertInfo>({
+    enabled: false,
+    type: AlertType.SUCCESS,
+    message: "",
+  });
   const isAdmin = useRef<boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;
   const jwt = JSON.stringify(decode(keycloak?.token || ""));
 
-  const { mutateAsync: mutateValidationUpdateStatus } = useValidationStatusUpdate(
-    {
+  const { mutateAsync: mutateValidationUpdateStatus } =
+    useValidationStatusUpdate({
       validation_id: params.id!,
       status: reviewStatus,
       token: keycloak?.token || "",
-      isRegistered: registered
-    }
-  );
+      isRegistered: registered,
+    });
 
   // FIXME: This is a naive approach, should reconsider
   if (jwt.includes("admin")) {
@@ -570,9 +675,11 @@ function ValidationDetails(props: ValidationProps) {
 
   const [validation, setValidation] = useState<ValidationResponse>();
 
-  const { data: validationData } = useGetValidationDetails(
-    { validation_id: params.id!, token: keycloak?.token || "", isRegistered: registered }
-  );
+  const { data: validationData } = useGetValidationDetails({
+    validation_id: params.id!,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
 
   useEffect(() => {
     setValidation(validationData);
@@ -580,7 +687,6 @@ function ValidationDetails(props: ValidationProps) {
 
   let rejectCard = null;
   let approveCard = null;
-
 
   if (props.toReject) {
     rejectCard = (
@@ -593,26 +699,40 @@ function ValidationDetails(props: ValidationProps) {
             </h5>
           </div>
           <div className=" card-body border-danger text-center">
-            Are you sure you want to reject validation with ID: <strong>{params.id}</strong> ?
+            Are you sure you want to reject validation with ID:{" "}
+            <strong>{params.id}</strong> ?
           </div>
           <div className="card-footer border-danger text-danger text-center">
             <button
               className="btn btn-danger mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.REJECTED);
-                mutateValidationUpdateStatus().then(() => {
-                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
-                }).catch(() => {
-                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
-                }).finally(() => navigate("/validations"));
-              }}>
+                mutateValidationUpdateStatus()
+                  .then(() => {
+                    setAlert({
+                      enabled: true,
+                      type: AlertType.SUCCESS,
+                      message: "Validation succesfully rejected.",
+                    });
+                  })
+                  .catch(() => {
+                    setAlert({
+                      enabled: true,
+                      type: AlertType.DANGER,
+                      message: "Error during validation rejection.",
+                    });
+                  })
+                  .finally(() => navigate("/validations"));
+              }}
+            >
               Reject
             </button>
             <button
               onClick={() => {
                 navigate(`/validations/${params.id}`);
               }}
-              className="btn btn-dark mx-4">
+              className="btn btn-dark mx-4"
+            >
               Cancel
             </button>
           </div>
@@ -632,26 +752,40 @@ function ValidationDetails(props: ValidationProps) {
             </h5>
           </div>
           <div className=" card-body border-info text-center">
-            Are you sure you want to approve validation with ID: <strong>{params.id}</strong> ?
+            Are you sure you want to approve validation with ID:{" "}
+            <strong>{params.id}</strong> ?
           </div>
           <div className="card-footer border-success text-success text-center">
             <button
               className="btn btn-success mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.APPROVED);
-                mutateValidationUpdateStatus().then(() => {
-                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
-                }).catch(() => {
-                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
-                }).finally(() => navigate("/validations"));
-              }}>
+                mutateValidationUpdateStatus()
+                  .then(() => {
+                    setAlert({
+                      enabled: true,
+                      type: AlertType.SUCCESS,
+                      message: "Validation succesfully approved.",
+                    });
+                  })
+                  .catch(() => {
+                    setAlert({
+                      enabled: true,
+                      type: AlertType.DANGER,
+                      message: "Error during validation approval.",
+                    });
+                  })
+                  .finally(() => navigate("/validations"));
+              }}
+            >
               Approve
             </button>
             <button
               onClick={() => {
                 navigate(`/validations/${params.id}`);
               }}
-              className="btn btn-dark mx-4">
+              className="btn btn-dark mx-4"
+            >
               Cancel
             </button>
           </div>
@@ -663,98 +797,146 @@ function ValidationDetails(props: ValidationProps) {
   if (keycloak?.token) {
     return (
       <div className="mt-4">
-        {alert.enabled &&
-          <Alert type={alert.type} message={alert.message} />
-        }
+        {alert.enabled && <Alert type={alert.type} message={alert.message} />}
         {rejectCard}
         {approveCard}
-        <h3 className="cat-view-heading"><FaRegCheckSquare /> Validation Request <span className="badge bg-secondary">id: {validation?.id}</span></h3>
+        <h3 className="cat-view-heading">
+          <FaRegCheckSquare /> Validation Request{" "}
+          <span className="badge bg-secondary">id: {validation?.id}</span>
+        </h3>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Requestor</header>
           <section className="col-9">
-            <div><strong>User id:</strong> {validation?.user_id}</div>
-            <div><strong>User name:</strong> {validation?.user_name}</div>
-            <div><strong>User surname:</strong> {validation?.user_surname}</div>
-            <div><strong>User email:</strong> {validation?.user_email}</div>
+            <div>
+              <strong>User id:</strong> {validation?.user_id}
+            </div>
+            <div>
+              <strong>User name:</strong> {validation?.user_name}
+            </div>
+            <div>
+              <strong>User surname:</strong> {validation?.user_surname}
+            </div>
+            <div>
+              <strong>User email:</strong> {validation?.user_email}
+            </div>
           </section>
         </div>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Organisation</header>
           <section className="col-9">
-            <div><strong>Id: </strong>
-              {validation?.organisation_source === "ROR"
-                ? <><span className="text-muted">ror.org/</span><a target="_blank" rel="noreferrer" href={"http://ror.org/" + validation?.organisation_id}>{validation?.organisation_id}</a></>
-                : <><span>{validation?.organisation_id}</span><small>({validation?.organisation_source})</small></>
-              }
+            <div>
+              <strong>Id: </strong>
+              {validation?.organisation_source === "ROR" ? (
+                <>
+                  <span className="text-muted">ror.org/</span>
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href={"http://ror.org/" + validation?.organisation_id}
+                  >
+                    {validation?.organisation_id}
+                  </a>
+                </>
+              ) : (
+                <>
+                  <span>{validation?.organisation_id}</span>
+                  <small>({validation?.organisation_source})</small>
+                </>
+              )}
             </div>
-            <div><strong>Name:</strong> {validation?.organisation_name}</div>
-            <div><strong>Website:</strong> <a target="_blank" rel="noreferrer" href={validation?.organisation_website}>{validation?.organisation_website}</a></div>
-
+            <div>
+              <strong>Name:</strong> {validation?.organisation_name}
+            </div>
+            <div>
+              <strong>Website:</strong>{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href={validation?.organisation_website}
+              >
+                {validation?.organisation_website}
+              </a>
+            </div>
           </section>
         </div>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Roles</header>
           <section className="col-9">
-            <div><strong>User role in organisation:</strong> {validation?.organisation_role}</div>
-            <div><strong>User requests as Actor with:</strong> {validation?.actor_name}</div>
+            <div>
+              <strong>User role in organisation:</strong>{" "}
+              {validation?.organisation_role}
+            </div>
+            <div>
+              <strong>User requests as Actor with:</strong>{" "}
+              {validation?.actor_name}
+            </div>
           </section>
         </div>
-
 
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Status</header>
           <section className="col-9">
-            <div><strong>Created on:</strong> {validation?.created_on}</div>
-            {validation?.status === "REVIEW" &&
+            <div>
+              <strong>Created on:</strong> {validation?.created_on}
+            </div>
+            {validation?.status === "REVIEW" && (
               <div className="alert alert-info mt-4" role="alert">
                 <FaGlasses /> PENDING FOR REVIEW
               </div>
-            }
-            {validation?.status === ValidationStatus.REJECTED &&
+            )}
+            {validation?.status === ValidationStatus.REJECTED && (
               <>
                 <div className="alert alert-danger mt-4" role="alert">
                   <FaTimes /> REJECTED
                 </div>
-                <div><strong>Rejected on:</strong> {validation?.validated_on}</div>
-                <div><strong>Rejected by:</strong> {validation?.validated_by}</div>
+                <div>
+                  <strong>Rejected on:</strong> {validation?.validated_on}
+                </div>
+                <div>
+                  <strong>Rejected by:</strong> {validation?.validated_by}
+                </div>
               </>
-            }
-            {validation?.status === ValidationStatus.APPROVED &&
+            )}
+            {validation?.status === ValidationStatus.APPROVED && (
               <>
                 <div className="alert alert-success mt-4" role="alert">
                   <FaCheck /> APPROVED
                 </div>
-                <div><strong>Approved on:</strong> {validation?.validated_on}</div>
-                <div><strong>Approved by:</strong> {validation?.validated_by}</div>
+                <div>
+                  <strong>Approved on:</strong> {validation?.validated_on}
+                </div>
+                <div>
+                  <strong>Approved by:</strong> {validation?.validated_by}
+                </div>
               </>
-            }
+            )}
           </section>
         </div>
 
-        {validation?.status === ValidationStatus.REVIEW && isAdmin?.current && !props.toApprove && !props.toReject &&
-          <div className="row border-top py-3 mt-4">
-            <header className="col-3 h4 text-muted">Actions</header>
-            <section className="col-9">
-              <Link
-                className="btn btn-light border-black text-success"
-                to={`/validations/${params.id}/approve#alert-spot`}>
-                <FaCheck /> Approve
-              </Link>
-              <Link
-                className="btn btn-light mx-4 text-danger border-black"
-                to={`/validations/${params.id}/reject#alert-spot`}>
-                <FaTimes /> Reject
-              </Link>
+        {validation?.status === ValidationStatus.REVIEW &&
+          isAdmin?.current &&
+          !props.toApprove &&
+          !props.toReject && (
+            <div className="row border-top py-3 mt-4">
+              <header className="col-3 h4 text-muted">Actions</header>
+              <section className="col-9">
+                <Link
+                  className="btn btn-light border-black text-success"
+                  to={`/validations/${params.id}/approve#alert-spot`}
+                >
+                  <FaCheck /> Approve
+                </Link>
+                <Link
+                  className="btn btn-light mx-4 text-danger border-black"
+                  to={`/validations/${params.id}/reject#alert-spot`}
+                >
+                  <FaTimes /> Reject
+                </Link>
+              </section>
+            </div>
+          )}
 
-            </section>
-          </div>
-
-        }
-
-
-        <Link
-          className="btn btn-secondary my-4"
-          to={`/validations`}>
+        <Link className="btn btn-secondary my-4" to={`/validations`}>
           Back
         </Link>
 

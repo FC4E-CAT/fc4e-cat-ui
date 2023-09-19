@@ -1,9 +1,9 @@
 {
-    "realm": "quarkus",
-    "url": "http://localhost:58080/",
-    "ssl-required": "external",
-    "resource": "frontend-service",
-    "public-client": true,
-    "confidential-port": 0,
-    "clientId": "frontend-service"
+  "realm": "quarkus",
+  "url": "http://localhost:58080/",
+  "ssl-required": "external",
+  "resource": "frontend-service",
+  "public-client": true,
+  "confidential-port": 0,
+  "clientId": "frontend-service"
 }
