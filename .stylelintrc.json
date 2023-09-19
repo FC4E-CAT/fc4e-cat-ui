@@ -1,0 +1,8 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-config-recess-order"],
+  "ignoreFiles": [
+    "./node_modules/**/*.css",
+    "./dist/**/*.css",
+    "./coverage/**/*.css"
+  ]
+}
