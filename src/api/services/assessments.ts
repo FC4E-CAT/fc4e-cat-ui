@@ -41,10 +41,7 @@ export function useUpdateAssessment(
     onMutate: (newData) => {
       // Optimistically update the cache with the new data
       if (assessmentID) {
-        queryClient.setQueryData(
-          ["assessment", parseInt(assessmentID)],
-          newData,
-        );
+        queryClient.setQueryData(["assessment", assessmentID], newData);
       }
     },
     // for the time being redirect to assessment list
