@@ -1,13 +1,13 @@
 /* Custom classes are prefixed with cat- */
 
 .yellow-gradient {
-  background: rgb(226, 226, 226);
+  background: rgb(226 226 226);
   background: linear-gradient(
     0deg,
-    rgba(226, 226, 226, 1) 0%,
-    rgba(243, 243, 243, 1) 29%,
-    rgba(249, 249, 249, 1) 60%,
-    rgba(255, 255, 255, 1) 100%
+    rgb(226 226 226 / 100%) 0%,
+    rgb(243 243 243 / 100%) 29%,
+    rgb(249 249 249 / 100%) 60%,
+    rgb(255 255 255 / 100%) 100%
   );
   border-bottom: solid 2px #919191;
 }
@@ -31,7 +31,7 @@
 }
 
 .cat-hash-link:hover {
-  background-color: rgb(220, 220, 220);
+  background-color: rgb(220 220 220);
 }
 
 .cat-metric-tooltip .tooltip.show p {
@@ -39,14 +39,11 @@
 }
 
 .cat-nav-link {
-  -moz-transition: all 0.2s ease-in;
-  -o-transition: all 0.2s ease-in;
-  -webkit-transition: all 0.2s ease-in;
-  transition: all 0.2s ease-in;
   display: block;
-  text-decoration: none;
+  padding: 15px;
   color: black;
-  padding: 15px 15px;
+  text-decoration: none;
+  transition: all 0.2s ease-in;
 }
 
 .cat-nav-link:hover {
@@ -69,21 +66,21 @@
 }
 
 footer h6 {
-  color: grey;
   font-weight: bold;
+  color: grey;
 }
 
 footer a {
-  text-decoration: none;
   color: #00bcd4;
+  text-decoration: none;
 }
 
 .main-nav {
-  border-bottom: 1px solid rgb(169, 169, 169);
+  border-bottom: 1px solid rgb(169 169 169);
 }
 
 .nav-text {
-  padding: 15px 15px;
+  padding: 15px;
 }
 
 .active {
@@ -92,11 +89,11 @@ footer a {
 
 .custom-pagination input {
   display: inline-block;
-  width: 85px;
-  border-radius: 0px;
   float: left;
-  vertical-align: top;
+  width: 85px;
   margin-left: -1px;
+  vertical-align: top;
+  border-radius: 0;
 }
 
 .cat-text-faded {
@@ -108,16 +105,17 @@ footer a {
 }
 
 .limited {
-  white-space: nowrap;
+  max-width: 10ch;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 10ch;
+  white-space: nowrap;
+}
+
+.dropdown a {
+  text-decoration-line: none;
 }
 
 .dropdown a:hover {
-  text-decoration-line: none;
-}
-.dropdown a {
   text-decoration-line: none;
 }
 
@@ -132,7 +130,7 @@ footer a {
 }
 
 /* Two columns for screens with a minimum width of 576px */
-@media (min-width: 576px) {
+@media (width >= 576px) {
   .row-cols-2 {
     flex-basis: calc(50% - 1rem);
     max-width: calc(50% - 1rem);
@@ -140,7 +138,7 @@ footer a {
 }
 
 /* Three columns for screens with a minimum width of 768px */
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .row-cols-3 {
     flex-basis: calc(33.3333% - 1rem);
     max-width: calc(33.3333% - 1rem);
@@ -148,7 +146,7 @@ footer a {
 }
 
 /* Four columns for screens with a minimum width of 992px */
-@media (min-width: 992px) {
+@media (width >= 992px) {
   .row-cols-4 {
     flex-basis: calc(25% - 1rem);
     max-width: calc(25% - 1rem);
@@ -156,8 +154,8 @@ footer a {
 }
 
 .disabled-div {
-  opacity: 0.5; /* Reduce opacity to make it appear disabled */
   pointer-events: none; /* Prevent mouse interactions */
+  opacity: 0.5; /* Reduce opacity to make it appear disabled */
 }
 
 .assessment-card .nav-link {
