@@ -19,6 +19,7 @@ import {
 import "@/App.css";
 import AssessmentEdit from "@/pages/AssessmentEdit";
 import Assessments from "@/pages/Assessments";
+import AssessmentsList from "@/pages/AssessmentsList";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,12 @@ function App() {
                     <Route index element={<AssessmentEdit />} />
                   </Route>
                   <Route
+                    path="/assessments/create/"
+                    element={<ProtectedRoute />}
+                  >
+                    <Route index element={<AssessmentEdit />} />
+                  </Route>
+                  <Route
                     path="/assessments/:asmtID"
                     element={<ProtectedRoute />}
                   >
@@ -49,8 +56,9 @@ function App() {
                       element={<AssessmentEdit createMode={false} />}
                     />
                   </Route>
+                  <Route path="/assess" element={<Assessments />} />
                   <Route path="/assessments" element={<ProtectedRoute />}>
-                    <Route index element={<Assessments />} />
+                    <Route index element={<AssessmentsList />} />
                   </Route>
                   <Route path="/profile" element={<ProtectedRoute />}>
                     <Route index element={<Profile />} />

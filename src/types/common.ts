@@ -7,7 +7,7 @@ export type ApiT = {
 
 export interface ResponsePage<T> {
   size_of_page: number;
-  number_of_pages: number;
+  number_of_page: number;
   total_elements: number;
   total_pages: number;
   links: [

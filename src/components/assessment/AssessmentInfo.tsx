@@ -66,34 +66,6 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                 />
               </InputGroup>
             </Col>
-            <Col>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-actor">Actor:</InputGroup.Text>
-                <Form.Control
-                  id="input-info-actor"
-                  placeholder={props.actor}
-                  aria-describedby="label-info-actor"
-                  readOnly
-                />
-              </InputGroup>
-            </Col>
-            <Col xs={6}>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-org">
-                  Organisation:
-                </InputGroup.Text>
-                <Form.Control
-                  id="input-info-org"
-                  placeholder={props.org}
-                  aria-describedby="label-info-org"
-                  readOnly
-                />
-                <InputGroup.Text className="text-white bg-secondary">
-                  <span className="me-2">id: </span>
-                  <strong>{props.orgId}</strong>
-                </InputGroup.Text>
-              </InputGroup>
-            </Col>
           </Row>
         </Accordion.Body>
       </Accordion.Item>
