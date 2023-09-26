@@ -17,6 +17,7 @@ import {
 } from "@tanstack/react-table";
 
 import { AuthContext } from "@/auth";
+import { TableExtraDataOps } from "@/types";
 
 function Filter({
   column,
@@ -125,10 +126,12 @@ function DebouncedInput({
 
 function CustomTable<T>({
   columns,
-  data_source,
+  dataSource,
+  extraDataOps,
 }: {
   columns: ColumnDef<T>[];
-  data_source: Function;
+  dataSource: Function;
+  extraDataOps?: TableExtraDataOps;
 }) {
   const defaultData = React.useMemo(() => [], []);
   const { keycloak } = useContext(AuthContext)!;
@@ -149,12 +152,20 @@ function CustomTable<T>({
     [pageIndex, pageSize],
   );
 
-  const { data } = data_source({
-    size: pageSize,
-    page: pageIndex,
-    sortBy: "asc",
-    token: keycloak?.token,
-  });
+  // create the data options to pass to the datasource function
+  // if extra data options are available add them to the mix
+  const dataOpts = {
+    ...{
+      size: pageSize,
+      page: pageIndex,
+      sortBy: "asc",
+      token: keycloak?.token,
+    },
+    ...(extraDataOps || {}),
+  };
+
+  // call the defined datasource with the designated data options
+  const { data } = dataSource(dataOpts);
 
   const table = useReactTable({
     data: data?.content ?? defaultData,

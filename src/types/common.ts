@@ -43,6 +43,11 @@ export interface ApiPaginationOptions {
   sortBy?: string;
 }
 
+export interface ApiPublicAssessmentOptions {
+  assessmentTypeId?: number;
+  actorId?: number;
+}
+
 export type OrganisationRORSearchResult = {
   id: string;
   name: string;
@@ -67,12 +72,17 @@ export type OrganisationRORSearchParams = ApiAuthOptions & {
   page?: number;
 };
 
-export type ApiOptions = ApiAuthOptions & ApiPaginationOptions;
+export type ApiOptions = ApiAuthOptions &
+  ApiPaginationOptions &
+  ApiPublicAssessmentOptions;
 
 export type ApproveRejectProps = {
   toReject?: boolean;
   toApprove?: boolean;
 };
+
+// extra data options for custom table
+export type TableExtraDataOps = ApiPublicAssessmentOptions;
 
 export type AlertInfo = {
   enabled: boolean;

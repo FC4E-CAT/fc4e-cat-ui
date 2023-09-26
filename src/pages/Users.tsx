@@ -43,7 +43,7 @@ function Users() {
       <h3 className="cat-view-heading">
         <FaUsers /> users
       </h3>
-      <CustomTable columns={cols} data_source={useGetUsers} />
+      <CustomTable columns={cols} dataSource={useGetUsers} />
     </div>
   );
 }
