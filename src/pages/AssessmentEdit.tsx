@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import { AuthContext } from "@/auth";
 import {
   useGetTemplate,
@@ -49,22 +49,29 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   const [assessment, setAssessment] = useState<Assessment>();
   const [templateId, setTemplateID] = useState<number>();
   const [debug, setDebug] = useState<boolean>(false);
-
+  const [actor, setActor] = useState<{ id: number; name: string }>();
+  const [organisation, setOrganisation] = useState<{
+    id: string;
+    name: string;
+  }>();
+  const [templateData, setTemplateData] = useState<Assessment>();
   const { valID, asmtID } = useParams();
-  const [actorId, setActorId] = useState<number>();
+  // const [actorId, setActorId] = useState<number>();
   // for the time being get the only one assessment template supported
   // with templateId: 1 (pid policy) and actorId: 6 (for pid owner)
   // this will be replaced in time with dynamic code
 
+  const validationID = valID !== undefined ? valID : "";
+  const [vldid, setVldid] = useState<string>();
   const qValidation = useGetValidationDetails({
-    validation_id: valID!,
+    validation_id: vldid!,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
 
   const qTemplate = useGetTemplate(
     1,
-    qValidation.data?.actor_id || actorId,
+    qValidation.data?.actor_id || actor?.id,
     keycloak?.token || "",
     registered,
   );
@@ -87,6 +94,10 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     isRegistered: registered,
   });
 
+  // Control the disabled tabs on wizard
+  const [wizardTabActive, setWizardTabActive] = useState<boolean>(false);
+
+  // TODO: Get all available pages in an infinite scroll not all sequentially.
   useEffect(() => {
     if (data?.content) {
       setValidations((validations) => [...validations, ...data.content]);
@@ -97,13 +108,22 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     }
   }, [data, refetchGetValidationList]);
 
+  // After retrieving user's valitions we create a struct for the option boxes creation
   const [actorsOrgsMap, setActorsOrgsMap] = useState<
     ActorOrganisationMapping[]
   >([]);
   useEffect(() => {
-    // console.log(validations);
     const filt = validations
-      .filter((v: ValidationResponse) => v["status"] === "APPROVED")
+      // We only allow assessment creation for APPROVED validations and
+      // specific actors
+      .filter(
+        (v: ValidationResponse) =>
+          v["status"] === "APPROVED" &&
+          (v.actor_id === 2 ||
+            v.actor_id === 6 ||
+            v.actor_id === 9 ||
+            v.actor_id === 5),
+      )
       .map((filtered: ValidationResponse) => {
         return {
           actor_name: filtered.actor_name,
@@ -124,9 +144,9 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   );
 
   function handleCreateAssessment() {
-    if (templateId && valID && assessment) {
+    if (templateId && vldid && assessment) {
       mutationCreateAssessment.mutate({
-        validation_id: parseInt(valID),
+        validation_id: parseInt(vldid),
         template_id: templateId,
         assessment_doc: assessment,
       });
@@ -141,25 +161,6 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     }
   }
 
-  // load the assessment content
-  useEffect(() => {
-    // if assessment hasn't been set yet
-    if (!assessment) {
-      // if on creative mode load template
-      if (createMode && qTemplate.data) {
-        const data = qTemplate.data?.template_doc;
-        data.organisation.id = qValidation.data?.organisation_id || "";
-        data.organisation.name = qValidation.data?.organisation_name || "";
-        setAssessment(data);
-        setTemplateID(qTemplate.data.id);
-        // if not on create mode load assessment itself
-      } else if (createMode === false && qAssessment.data) {
-        const data = qAssessment.data.assessment_doc;
-        setAssessment(data);
-      }
-    }
-  }, [qTemplate.data, qValidation, assessment, createMode, qAssessment.data]);
-
   function handleNameChange(name: string) {
     if (assessment) {
       setAssessment({
@@ -169,29 +170,72 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     }
   }
 
-  function handleActorChange(
-    actor_name: string,
-    actor_id: number,
-    organisation_name: string,
-    organisation_id: string,
-  ) {
-    setActorId(actor_id);
-    if (assessment) {
-      console.log("Changing actor:");
-      console.log(organisation_name);
-      setAssessment({
-        ...assessment,
-        actor: {
-          name: actor_name,
-          id: actor_id,
-        },
-        organisation: {
-          name: organisation_name,
-          id: organisation_id,
-        },
-      });
+  // This is the callback to run upon Actor-Organisation option selection
+  const handleActorChange = useCallback(
+    (
+      actor_name: string,
+      actor_id: number,
+      organisation_name: string,
+      organisation_id: string,
+    ) => {
+      if (assessment) {
+        setAssessment({
+          ...assessment,
+          actor: {
+            name: actor_name,
+            id: actor_id,
+          },
+          organisation: {
+            name: organisation_name,
+            id: organisation_id,
+          },
+        });
+        setActor({ id: actor_id, name: actor_name });
+        setOrganisation({ id: organisation_id, name: organisation_name });
+      } else {
+        setActor({ id: actor_id, name: actor_name });
+        setOrganisation({ id: organisation_id, name: organisation_name });
+      }
+    },
+    [assessment],
+  );
+
+  useEffect(() => {
+    setAssessment({
+      ...templateData!,
+      actor: {
+        name: actor?.name || "",
+        id: actor?.id || 0,
+      },
+      organisation: {
+        name: organisation?.name || "",
+        id: organisation?.id || "",
+      },
+    });
+    setWizardTabActive(
+      (actor?.id && organisation?.id) ||
+        (templateData?.actor.id && templateData?.organisation.id)
+        ? true
+        : false,
+    );
+  }, [actor, organisation, templateData]);
+
+  // Handle the resetting of assessment templates
+  useEffect(() => {
+    if (createMode && qTemplate.data) {
+      const data = qTemplate.data?.template_doc;
+      data.organisation.id = qValidation.data?.organisation_id || "";
+      data.organisation.name = qValidation.data?.organisation_name || "";
+      // setAssessment(data);
+      setTemplateData(data);
+      setTemplateID(qTemplate.data.id);
+      // if not on create mode load assessment itself
+    } else if (createMode === false && qAssessment.data) {
+      const data = qAssessment.data.assessment_doc;
+      // setAssessment(data);
+      setTemplateData(data);
     }
-  }
+  }, [qTemplate.data, qValidation, createMode, qAssessment.data]);
 
   function handleSubjectChange(subject: AssessmentSubject) {
     if (assessment) {
@@ -221,7 +265,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     const optional: (number | null)[] = [];
 
     if (assessment) {
-      const newPrinciples = assessment.principles.map((principle) => {
+      const newPrinciples = assessment?.principles.map((principle) => {
         if (principle.id === principleID) {
           const newCriteria = principle.criteria.map((criterion) => {
             let resultCriterion: Criterion;
@@ -288,60 +332,80 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   // evaluate the assessment
   const evalResult = evalAssessment(assessment);
 
-  let actors_select_div = <></>;
-  actors_select_div = (
-    <Form.Group
-      id="actorRadio"
-      className="d-flex flex-column vh-100 overflow-scroll"
-    >
-      {actorsOrgsMap &&
-        actorsOrgsMap.map((t, i) => {
-          const checked =
-            assessment?.actor.id === t.actor_id &&
-            assessment?.organisation.name === t.organisation_name;
-          if ((valID || asmtID) && checked) {
-            return (
-              <Form.Check
-                key={`type-${i}`}
-                value={t.validation_id}
-                disabled={!checked}
-                type="radio"
-                aria-label={`radio-${i}`}
-                label={`${t.actor_name} at ${t.organisation_name}`}
-                onChange={() => {
-                  handleActorChange(
-                    t.actor_name,
-                    t.actor_id,
-                    t.organisation_name,
-                    t.organisation_id,
-                  );
-                }}
-                checked={checked}
-              />
-            );
-          } else if (!valID && !asmtID) {
-            return (
-              <Form.Check
-                key={`type-${i}`}
-                value={t.validation_id}
-                type="radio"
-                aria-label={`radio-${i}`}
-                label={`${t.actor_name} at ${t.organisation_name}`}
-                onChange={() => {
-                  handleActorChange(
-                    t.actor_name,
-                    t.actor_id,
-                    t.organisation_name,
-                    t.organisation_id,
-                  );
-                }}
-                checked={checked}
-              />
-            );
-          }
-        })}
-    </Form.Group>
-  );
+  // Callback that draws the option boxes component at assessment create
+  const actors_select_div = useCallback(() => {
+    let checked = false;
+    return (
+      <Form.Group
+        id="actorRadio"
+        className="d-flex flex-column vh-100 overflow-scroll"
+      >
+        {actorsOrgsMap &&
+          actorsOrgsMap.map((t, i) => {
+            if (actor?.id && organisation?.name) {
+              checked =
+                actor?.id === t.actor_id &&
+                organisation?.name === t.organisation_name;
+            } else {
+              checked =
+                templateData?.actor.id === t.actor_id &&
+                templateData?.organisation?.name === t.organisation_name;
+            }
+            if ((validationID || asmtID) && checked) {
+              return (
+                <Form.Check
+                  key={`type-${i}`}
+                  value={t.validation_id}
+                  disabled={!checked}
+                  type="radio"
+                  aria-label={`radio-${i}`}
+                  label={`${t.actor_name} at ${t.organisation_name}`}
+                  onChange={() => {
+                    setVldid(t.validation_id.toString());
+                    handleActorChange(
+                      t.actor_name,
+                      t.actor_id,
+                      t.organisation_name,
+                      t.organisation_id,
+                    );
+                  }}
+                  checked={checked}
+                />
+              );
+            } else if (!validationID && !asmtID) {
+              return (
+                <Form.Check
+                  key={`type-${i}`}
+                  value={t.validation_id}
+                  type="radio"
+                  aria-label={`radio-${i}`}
+                  label={`${t.actor_name} at ${t.organisation_name}`}
+                  onChange={() => {
+                    setVldid(t.validation_id.toString());
+                    handleActorChange(
+                      t.actor_name,
+                      t.actor_id,
+                      t.organisation_name,
+                      t.organisation_id,
+                    );
+                  }}
+                  checked={checked}
+                />
+              );
+            }
+          })}
+      </Form.Group>
+    );
+  }, [
+    actorsOrgsMap,
+    asmtID,
+    validationID,
+    templateData?.actor.id,
+    templateData?.organisation.name,
+    actor?.id,
+    organisation?.name,
+    handleActorChange,
+  ]);
 
   const [key, setKey] = useState("#actor");
   const handleSelect = (key: string | null) => {
@@ -350,23 +414,13 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     }
   };
 
+  // Create wizard tabs
   let current_tab = <></>;
   if (key === "#actor") {
     /* Display the Assessment header info */
     current_tab = (
       <>
-        <Row>
-          {actors_select_div}
-          {/* <InputGroup className="mb-3">
-              <InputGroup.Text id="label-info-actor">Actor:</InputGroup.Text>
-              <Form.Control
-                id="input-info-actor"
-                placeholder={assessment.actor.name}
-                aria-describedby="label-info-actor"
-                readOnly
-              />
-            </InputGroup> */}
-        </Row>
+        <Row>{actors_select_div()}</Row>
       </>
     );
   } else if (key === "#submission") {
@@ -376,7 +430,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
         id={assessment?.id}
         name={assessment?.name || ""}
         actor={assessment?.actor.name || ""}
-        type={assessment?.assessment_type.name || ""}
+        type={assessment?.assessment_type?.name || ""}
         org={assessment?.organisation.name || ""}
         orgId={assessment?.organisation.id || ""}
         subject={assessment?.subject || { id: "", name: "", type: "" }}
@@ -397,7 +451,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
               variant={
                 evalResult.mandatoryFilled !== evalResult.totalMandatory
                   ? "secondary"
-                  : assessment?.result.compliance
+                  : assessment?.result?.compliance
                   ? "success"
                   : "danger"
               }
@@ -410,7 +464,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                     {evalResult.mandatoryFilled !==
                     evalResult.totalMandatory ? (
                       <span className="badge bg-secondary ms-2">UNKNOWN</span>
-                    ) : assessment?.result.compliance ? (
+                    ) : assessment?.result?.compliance ? (
                       <span className="badge bg-success ms-2">PASS</span>
                     ) : (
                       <span className="badge bg-danger ms-2">FAIL</span>
@@ -422,7 +476,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                     <FaChartLine className="me-2" />
                     Ranking:
                   </span>{" "}
-                  {assessment?.result.ranking}
+                  {assessment?.result?.ranking}
                 </Col>
                 <Col></Col>
                 <Col xs={2}>
@@ -547,7 +601,10 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link href="#submission">
+                <Nav.Link
+                  href="#submission"
+                  {...{ disabled: !wizardTabActive }}
+                >
                   <span>
                     <PiNumberSquareTwoFill size="25px" className="me-1" />
                   </span>
@@ -555,7 +612,10 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link href="#assessment">
+                <Nav.Link
+                  href="#assessment"
+                  {...{ disabled: !wizardTabActive }}
+                >
                   <span>
                     <PiNumberSquareThreeFill size="25px" className="me-1" />
                   </span>

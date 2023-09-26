@@ -486,18 +486,6 @@ function Validations(props: ValidationProps) {
                     >
                       <FaList />
                     </Link>
-                    {props.row.original.status === "APPROVED" &&
-                      (props.row.original.actor_id === 6 ||
-                        props.row.original.actor_id === 2 ||
-                        props.row.original.actor_id === 9 ||
-                        props.row.original.actor_id === 5) && (
-                        <Link
-                          className="btn btn-secondary cat-action-approve-link btn-sm "
-                          to={`/assessments/create/${props.row.original.id}`}
-                        >
-                          <FaPlus /> Assessment
-                        </Link>
-                      )}
                   </div>
                 );
               }
