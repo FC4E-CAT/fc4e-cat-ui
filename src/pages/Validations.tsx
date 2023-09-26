@@ -639,9 +639,9 @@ function Validations(props: ValidationProps) {
         </Link>
       </div>
       {isAdmin.current && keycloak ? (
-        <CustomTable columns={cols} data_source={useAdminValidations} />
+        <CustomTable columns={cols} dataSource={useAdminValidations} />
       ) : (
-        <CustomTable columns={cols} data_source={useGetValidationList} />
+        <CustomTable columns={cols} dataSource={useGetValidationList} />
       )}
     </div>
   );

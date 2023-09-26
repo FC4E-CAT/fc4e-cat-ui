@@ -60,6 +60,10 @@ function App() {
                   <Route path="/assessments" element={<ProtectedRoute />}>
                     <Route index element={<AssessmentsList />} />
                   </Route>
+                  <Route
+                    path="/public-assessments"
+                    element={<AssessmentsList listPublic={true} />}
+                  />
                   <Route path="/profile" element={<ProtectedRoute />}>
                     <Route index element={<Profile />} />
                   </Route>

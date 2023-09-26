@@ -37,14 +37,16 @@ CustomToggle.displayName = "CustomToggle";
 function ActorCard({
   title,
   link,
-  link_text,
+  linkText,
   image,
+  description,
   disabled,
 }: {
   title: string;
   link: string;
-  link_text: string;
+  linkText: string;
   image: string;
+  description: string;
   disabled?: boolean;
 }) {
   const [flipped, setFlipped] = useState<boolean>(false);
@@ -83,7 +85,7 @@ function ActorCard({
           <div className="mt-2">
             <div className="d-flex justify-content-start align-items-center">
               <Link to={link} className="text-decoration-none me-1">
-                {link_text}{" "}
+                {linkText}{" "}
                 <span role="button">
                   <FaExternalLinkAlt />
                 </span>
@@ -107,22 +109,11 @@ function ActorCard({
         <div className="card-body overflow-scroll">
           <div className="d-flex justify-content-between align-items-center">
             <div>
-              <p className="card-text">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industrys standard dummy text
-                ever since the 1500s, when an unknown printer took a galley of
-                type and scrambled it to make a type specimen book. It has
-                survived not only five centuries, but also the leap into
-                electronic typesetting, remaining essentially unchanged. It was
-                popularised in the 1960s with the release of Letraset sheets
-                containing Lorem Ipsum passages, and more recently with desktop
-                publishing software like Aldus PageMaker including versions of
-                Lorem Ipsum.
-              </p>
+              <p className="card-text">{description}</p>
             </div>
           </div>
           <Link to={link} className="my-2">
-            {link_text}
+            {linkText}
           </Link>
         </div>
       </>
