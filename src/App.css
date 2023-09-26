@@ -165,3 +165,7 @@ footer a {
 .assessment-card .nav-link.active {
   color: #0b5ed7 !important;
 }
+
+.assessment-card .nav-link.disabled {
+  color: #ddd !important;
+}

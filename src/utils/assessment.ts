@@ -49,15 +49,17 @@ export function evalAssessment(
   const mandatory: (number | null)[] = [];
   const optional: (number | null)[] = [];
 
-  assessment.principles.forEach((principle) => {
-    principle.criteria.forEach((criterion) => {
-      if (criterion.imperative === CriterionImperative.Should) {
-        mandatory.push(criterion.metric.result);
-      } else {
-        optional.push(criterion.metric.result);
-      }
+  if (assessment.principles) {
+    assessment.principles.forEach((principle) => {
+      principle.criteria.forEach((criterion) => {
+        if (criterion.imperative === CriterionImperative.Should) {
+          mandatory.push(criterion.metric.result);
+        } else {
+          optional.push(criterion.metric.result);
+        }
+      });
     });
-  });
+  }
 
   const mandatoryFilledCount = mandatory.filter(
     (result) => result !== null,
