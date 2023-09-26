@@ -1,4 +1,3 @@
-import { ActorCard } from "@/components";
 import { FaCheckCircle, FaList, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import schemesImg from "@/assets/thumb_scheme.png";
@@ -7,6 +6,8 @@ import serviceImg from "@/assets/thumb_service.png";
 import manageImg from "@/assets/thumb_manage.png";
 import ownersImg from "@/assets/thumb_user.png";
 import { useGetPublicActors } from "@/api";
+import { Col, Row } from "react-bootstrap";
+import { ActorCard } from "./components/ActorCard";
 
 interface CardProps {
   id: number;
@@ -69,23 +70,23 @@ function Assessments() {
               to={`/assessments/create`}
               className="btn btn-light border-black mx-3"
             >
-              <FaPlus /> Create
+              <FaPlus /> Create New
             </Link>
             <Link to="/assessments" className="btn btn-light border-black mx-3">
-              <FaList /> View
+              <FaList /> View Your Assessments
             </Link>
           </div>
         </div>
       </>
       <>
         <h6>Read about different actors in the ecosystem before starting.</h6>
-        <div className="row g-4 mt-2">
+        <Row xs={2} sm={2} md={3} lg={4} xl={5} className="g-4 d-flex mt-2">
           {cardProps.map((c, index) => (
-            <div key={index} className="col">
+            <Col key={index}>
               <ActorCard key={index} {...c} />
-            </div>
+            </Col>
           ))}
-        </div>
+        </Row>
       </>
     </div>
   );

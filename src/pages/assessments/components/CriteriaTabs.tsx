@@ -14,10 +14,14 @@ import {
   MetricAlgorithm,
   Principle,
 } from "@/types";
-import { TestBinaryForm, TestValueForm } from "@/components/tests";
+import {
+  TestBinaryForm,
+  TestValueForm,
+} from "@/pages/assessments/components/tests";
 import { FaInfoCircle } from "react-icons/fa";
+import { useEffect, useState } from "react";
 
-type AssessmentTabsProps = {
+type CriteriaTabsProps = {
   principles: Principle[];
   onTestChange(
     principleId: string,
@@ -26,26 +30,31 @@ type AssessmentTabsProps = {
   ): void;
 };
 
-/** AssessmentTabs holds the tabs and test content for different criteria */
-export function AssessmentTabs(props: AssessmentTabsProps) {
+/** CriteriaTabs holds the tabs and test content for different criteria */
+export function CriteriaTabs(props: CriteriaTabsProps) {
   const navs: JSX.Element[] = [];
   const tabs: JSX.Element[] = [];
+  const [activeKey, setActiveKey] = useState("");
 
-  let firstCriterionId = "";
+  useEffect(() => {
+    if (
+      props.principles.length > 0 &&
+      props.principles[0].criteria.length > 0
+    ) {
+      const firstCriterion = props.principles[0].criteria[0].id;
+      setActiveKey(firstCriterion);
+    }
+  }, [props.principles]);
 
   props.principles.forEach((principle) => {
     // push principle lable to navigation list
     navs.push(
-      <span className="mb-2" key={principle.id}>
+      <span className="mt-2 text-muted" key={principle.id}>
         {principle.id} - {principle.name}:
       </span>,
     );
 
     principle.criteria.forEach((criterion) => {
-      // grab first criterion id to make it by default active
-      if (!firstCriterionId) {
-        firstCriterionId = criterion.id;
-      }
       navs.push(
         <Nav.Item key={criterion.id}>
           <Nav.Link eventKey={criterion.id}>
@@ -216,7 +225,11 @@ export function AssessmentTabs(props: AssessmentTabsProps) {
   });
 
   return (
-    <Tab.Container id="left-tabs-example" defaultActiveKey={firstCriterionId}>
+    <Tab.Container
+      id="left-tabs"
+      activeKey={activeKey}
+      onSelect={(key) => setActiveKey(key || "")}
+    >
       <Row>
         <Col sm={3}>
           <Nav variant="pills" className="flex-column">

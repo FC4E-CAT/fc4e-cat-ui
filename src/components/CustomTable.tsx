@@ -18,6 +18,9 @@ import {
 
 import { AuthContext } from "@/auth";
 import { TableExtraDataOps } from "@/types";
+import { Link } from "react-router-dom";
+import { Alert, Col, Row } from "react-bootstrap";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 function Filter({
   column,
@@ -128,10 +131,12 @@ function CustomTable<T>({
   columns,
   dataSource,
   extraDataOps,
+  goBackLoc,
 }: {
   columns: ColumnDef<T>[];
   dataSource: Function;
   extraDataOps?: TableExtraDataOps;
+  goBackLoc?: string;
 }) {
   const defaultData = React.useMemo(() => [], []);
   const { keycloak } = useContext(AuthContext)!;
@@ -257,40 +262,59 @@ function CustomTable<T>({
             })}
           </tbody>
         </table>
+        {data && data.content.length === 0 && (
+          <Alert variant="warning" className="text-center mx-auto">
+            <h3>
+              <FaExclamationTriangle />
+            </h3>
+            <h5>No data found...</h5>
+          </Alert>
+        )}
       </div>
       <div className="h-2" />
-      <nav aria-label="Page navigation example">
-        <ul className="pagination custom-pagination">
-          <li className="page-item">
-            <button
-              className="border rounded p-1"
-              onClick={() => setPagination({ pageIndex: 1, pageSize })}
-              disabled={pageIndex === 1}
-            >
-              {"<<"}
-            </button>
-          </li>
-          <li className="page-item">
-            <button
-              className="border rounded p-1"
-              onClick={() => table.previousPage()}
-              disabled={pageIndex === 1}
-            >
-              {"<"}
-            </button>
-          </li>
-          <li className="page-item">
-            <button
-              className="border rounded p-1"
-              onClick={() => {
-                setPagination({ pageIndex: pageIndex + 1, pageSize });
-              }}
-              disabled={pageIndex === data?.total_pages}
-            >
-              {">"}
-            </button>
-          </li>
-        </ul>
+      <nav aria-label="Page navigation">
+        <Row>
+          <Col>
+            <ul className="pagination custom-pagination">
+              <li className="page-item">
+                <button
+                  className="border rounded p-1"
+                  onClick={() => setPagination({ pageIndex: 1, pageSize })}
+                  disabled={pageIndex === 1}
+                >
+                  {"<<"}
+                </button>
+              </li>
+              <li className="page-item">
+                <button
+                  className="border rounded p-1"
+                  onClick={() => table.previousPage()}
+                  disabled={pageIndex === 1}
+                >
+                  {"<"}
+                </button>
+              </li>
+              <li className="page-item">
+                <button
+                  className="border rounded p-1"
+                  onClick={() => {
+                    setPagination({ pageIndex: pageIndex + 1, pageSize });
+                  }}
+                  disabled={pageIndex === data?.total_pages}
+                >
+                  {">"}
+                </button>
+              </li>
+            </ul>
+          </Col>
+          <Col className="text-end">
+            {goBackLoc && (
+              <Link className=" btn btn-secondary mx-3" to={goBackLoc}>
+                Back
+              </Link>
+            )}
+          </Col>
+        </Row>
       </nav>
     </div>
   );

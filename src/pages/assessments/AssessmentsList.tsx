@@ -104,13 +104,18 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         <CustomTable
           columns={cols}
           dataSource={useGetPublicAssessments}
+          goBackLoc="/assess"
           extraDataOps={{
             actorId: actorId,
             assessmentTypeId: assessmentTypeId,
           }}
         />
       ) : (
-        <CustomTable columns={cols} dataSource={useGetAssessments} />
+        <CustomTable
+          columns={cols}
+          dataSource={useGetAssessments}
+          goBackLoc="/assess"
+        />
       )}
     </div>
   );
