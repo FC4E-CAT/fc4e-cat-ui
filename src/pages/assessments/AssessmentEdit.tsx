@@ -225,12 +225,12 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     setAssessment({
       ...templateData!,
       actor: {
-        name: actor?.name || "",
-        id: actor?.id || 0,
+        name: actor?.name || templateData?.actor.name || "",
+        id: actor?.id || templateData?.actor.id || 0,
       },
       organisation: {
-        name: organisation?.name || "",
-        id: organisation?.id || "",
+        name: organisation?.name || templateData?.organisation.name || "",
+        id: organisation?.id || templateData?.organisation.id || "",
       },
     });
     setWizardTabActive(
@@ -253,7 +253,6 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       // if not on create mode load assessment itself
     } else if (createMode === false && qAssessment.data) {
       const data = qAssessment.data.assessment_doc;
-      // setAssessment(data);
       setTemplateData(data);
     }
   }, [qTemplate.data, qValidation, createMode, qAssessment.data]);
