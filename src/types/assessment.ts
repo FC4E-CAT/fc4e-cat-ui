@@ -166,6 +166,14 @@ export interface ResultStats {
   optional: number;
 }
 
+export type ActorOrganisationMapping = {
+  actor_name: string;
+  actor_id: number;
+  organisation_id: string;
+  organisation_name: string;
+  validation_id: number;
+};
+
 export interface AssessmentListItem {
   id: number;
   user_id: string;

@@ -3,8 +3,8 @@
  */
 
 import { InputGroup, Form, Col, Row, Accordion } from "react-bootstrap";
-import { AssessmentSubject } from "@/types";
-import { FaCog, FaLock, FaUserAlt } from "react-icons/fa";
+import { AssessmentSubject, UserProfile } from "@/types";
+import { FaCog, FaInfo, FaLock, FaOrcid, FaUserAlt } from "react-icons/fa";
 
 interface AssessmentInfoProps {
   id?: string;
@@ -15,6 +15,7 @@ interface AssessmentInfoProps {
   orgId: string;
   subject: AssessmentSubject;
   published: boolean;
+  profile?: UserProfile;
   onNameChange(name: string): void;
   onSubjectChange(subject: AssessmentSubject): void;
   onPublishedChange(published: boolean): void;
@@ -29,12 +30,12 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
   }
 
   return (
-    <Accordion defaultActiveKey="0">
-      <Accordion.Item eventKey="0">
+    <Accordion defaultActiveKey="acc-1">
+      <Accordion.Item eventKey="acc-1">
         <Accordion.Header>
           <span>
-            <FaUserAlt color="green" className="me-2" />
-            Submitter
+            <FaInfo color="blue" className="me-2" />
+            General Info
           </span>
         </Accordion.Header>
         <Accordion.Body>
@@ -62,6 +63,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                   id="input-info-type"
                   placeholder={props.type}
                   aria-describedby="label-info-type"
+                  className="bg-light text-secondary"
                   readOnly
                 />
               </InputGroup>
@@ -69,11 +71,81 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           </Row>
         </Accordion.Body>
       </Accordion.Item>
-      <Accordion.Item eventKey="1">
+      <Accordion.Item eventKey="acc-2">
+        <Accordion.Header>
+          <span>
+            <FaUserAlt color="green" className="me-2" />
+            Submitter
+          </span>
+        </Accordion.Header>
+        <Accordion.Body>
+          <Row className="m-2">
+            <Col>
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="label-info-submitter-fname">
+                  First Name:
+                </InputGroup.Text>
+                <Form.Control
+                  id="input-submitter-fname"
+                  value={props.profile?.name}
+                  aria-describedby="label-info-submitter-fname"
+                  readOnly
+                  className="bg-light text-secondary"
+                />
+              </InputGroup>
+            </Col>
+            <Col>
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="label-info-submitter-lname">
+                  Last Name:
+                </InputGroup.Text>
+                <Form.Control
+                  id="input-submitter-lname"
+                  value={props.profile?.surname}
+                  aria-describedby="label-info-submitter-lname"
+                  className="bg-light text-secondary"
+                  readOnly
+                />
+              </InputGroup>
+            </Col>
+          </Row>
+          <Row className="m-2">
+            <Col>
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="label-info-submitter-affiliation">
+                  Affiliation:
+                </InputGroup.Text>
+                <Form.Control
+                  id="input-submitter-affiliation"
+                  value={props.org}
+                  aria-describedby="label-info-submitter-affiliation"
+                  className="bg-light text-secondary"
+                  readOnly
+                />
+              </InputGroup>
+            </Col>
+            <Col>
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="abel-info-submitter-orcid">
+                  <FaOrcid className="me-1" color="#A7CF3A" /> ORCID id:
+                </InputGroup.Text>
+                <Form.Control
+                  id="input-submitter-orcid"
+                  value={props.profile?.orcid_id}
+                  aria-describedby="label-info-submitter-orcid"
+                  className="bg-light text-secondary"
+                  readOnly
+                />
+              </InputGroup>
+            </Col>
+          </Row>
+        </Accordion.Body>
+      </Accordion.Item>
+      <Accordion.Item eventKey="acc-3">
         <Accordion.Header>
           <span>
             <FaCog color="orange" className="me-2" />
-            Subject of assessment <em>Object, Entity or Service</em>:
+            Subject of assessment <em>(Object, Entity or Service)</em>
           </span>
         </Accordion.Header>
         <Accordion.Body>
@@ -132,26 +204,48 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           </Row>
         </Accordion.Body>
       </Accordion.Item>
-      <Accordion.Item eventKey="2">
+      <Accordion.Item eventKey="acc-4">
         <Accordion.Header>
           <span>
             <FaLock color="crimson" className="me-2" />
-            Rights, Licencing, or Re-use
+            Rights, Licencing or Re-use
           </span>
         </Accordion.Header>
         <Accordion.Body>
           <Row className="m-2">
-            <Col>
+            You can choose to make the assessment public - it is private by
+            deafult
+            <Form>
               <Form.Check
-                id="input-info-published"
-                label="This Assessment is Public and Licensed with CC 4.0 BY"
+                className={`mt-2 ${
+                  props.published ? "fw-bold text-success" : "text-muted"
+                }`}
+                type="radio"
+                label="The Assessment is Public and Licensed with CC 4.0 BY"
+                name="rights-public"
+                id="input-check-public"
+                value="public"
                 checked={props.published}
                 onChange={(e) => {
                   props.onPublishedChange(e.target.checked);
                 }}
-                className={`${props.published ? "text-success" : "text-muted"}`}
               />
-            </Col>
+
+              <Form.Check
+                className={`mt-2 text-muted ${
+                  !props.published ? "fw-bold" : ""
+                }`}
+                type="radio"
+                label="The Assessment is Private"
+                name="rights-private"
+                id="input-check-private"
+                value="private"
+                checked={!props.published}
+                onChange={(e) => {
+                  props.onPublishedChange(!e.target.checked);
+                }}
+              />
+            </Form>
           </Row>
         </Accordion.Body>
       </Accordion.Item>

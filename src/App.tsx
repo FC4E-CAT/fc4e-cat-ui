@@ -17,9 +17,9 @@ import {
 } from "@/pages";
 
 import "@/App.css";
-import AssessmentEdit from "@/pages/AssessmentEdit";
-import Assessments from "@/pages/Assessments";
-import AssessmentsList from "@/pages/AssessmentsList";
+import Assessments from "@/pages/assessments/Assessments";
+import AssessmentsList from "@/pages/assessments/AssessmentsList";
+import AssessmentEdit from "./pages/assessments/AssessmentEdit";
 
 const queryClient = new QueryClient();
 
