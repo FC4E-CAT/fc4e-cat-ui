@@ -27,61 +27,76 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     ? parseInt(assessmentTypeIdParam, 10)
     : -1;
 
-  const cols = useMemo<ColumnDef<AssessmentListItem>[]>(
-    () => [
-      {
-        header: " ",
-        columns: [
+  const cols = useMemo<ColumnDef<AssessmentListItem>[]>(() => {
+    return listPublic
+      ? [
           {
-            accessorKey: "id",
-            header: () => <span>ID</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
+            header: " ",
+            columns: [
+              {
+                accessorKey: "id",
+                header: () => <span>ID</span>,
+                cell: (info) => info.getValue(),
+                enableColumnFilter: false,
+              },
+              {
+                accessorFn: (row) => row.created_on,
+                id: "created_on",
+                cell: (info) => info.getValue(),
+                header: () => <span>Created On</span>,
+                enableColumnFilter: false,
+              },
+            ],
           },
+        ]
+      : [
           {
-            accessorFn: (row) => row.created_on,
-            id: "created_on",
-            cell: (info) => info.getValue(),
-            header: () => <span>Created On</span>,
-            enableColumnFilter: false,
+            header: " ",
+            columns: [
+              {
+                accessorKey: "id",
+                header: () => <span>ID</span>,
+                cell: (info) => info.getValue(),
+                enableColumnFilter: false,
+              },
+              {
+                accessorFn: (row) => row.created_on,
+                id: "created_on",
+                cell: (info) => info.getValue(),
+                header: () => <span>Created On</span>,
+                enableColumnFilter: false,
+              },
+              {
+                accessorFn: (row) => row.validation_id,
+                id: "validation_id",
+                cell: (info) => info.getValue(),
+                header: () => <span>Validation ID</span>,
+                enableColumnFilter: true,
+                show: !listPublic,
+              },
+              {
+                id: "action",
+                accessorFn: (row) => row.id,
+                enableColumnFilter: false,
+                header: () => <span>Actions</span>,
+                show: !listPublic,
+                cell: (info) => {
+                  return !listPublic ? (
+                    <div className="edit-buttons btn-group shadow">
+                      <Link
+                        className="btn btn-secondary cat-action-view-link btn-sm "
+                        to={`/assessments/${info.getValue()}`}
+                      >
+                        <FaEdit />
+                      </Link>
+                    </div>
+                  ) : null;
+                },
+              },
+            ],
           },
-          {
-            accessorFn: (row) => row.validation_id,
-            id: "validation_id",
-            cell: (info) => info.getValue(),
-            header: () => <span>Validation ID</span>,
-            enableColumnFilter: true,
-          },
-          {
-            accessorFn: (row) => row.template_id,
-            id: "template_id",
-            cell: (info) => info.getValue(),
-            header: () => <span>Template ID</span>,
-            enableColumnFilter: true,
-          },
-          {
-            id: "action",
-            accessorFn: (row) => row.id,
-            enableColumnFilter: false,
-            header: () => <span>Actions</span>,
-            cell: (info) => {
-              return !listPublic ? (
-                <div className="edit-buttons btn-group shadow">
-                  <Link
-                    className="btn btn-secondary cat-action-view-link btn-sm "
-                    to={`/assessments/${info.getValue()}`}
-                  >
-                    <FaEdit />
-                  </Link>
-                </div>
-              ) : null;
-            },
-          },
-        ],
-      },
-    ],
-    [listPublic],
-  );
+        ];
+  }, [listPublic]);
 
   return (
     <div className="mt-4">
@@ -93,7 +108,10 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           assessments
         </h3>
         {!listPublic && (
-          <Link to="/validations" className="btn btn-light border-black mx-3">
+          <Link
+            to="/assessments/create"
+            className="btn btn-light border-black mx-3"
+          >
             <FaPlus /> Create New
           </Link>
         )}
