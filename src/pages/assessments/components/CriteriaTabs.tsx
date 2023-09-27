@@ -38,13 +38,14 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
 
   useEffect(() => {
     if (
+      !activeKey &&
       props.principles.length > 0 &&
       props.principles[0].criteria.length > 0
     ) {
       const firstCriterion = props.principles[0].criteria[0].id;
       setActiveKey(firstCriterion);
     }
-  }, [props.principles]);
+  }, [props.principles, activeKey]);
 
   props.principles.forEach((principle) => {
     // push principle lable to navigation list
