@@ -5,7 +5,7 @@ import authImg from "@/assets/thumb_auth.png";
 import serviceImg from "@/assets/thumb_service.png";
 import manageImg from "@/assets/thumb_manage.png";
 import ownersImg from "@/assets/thumb_user.png";
-import { useGetPublicActors } from "@/api";
+import { useGetActors } from "@/api";
 import { Col, Row } from "react-bootstrap";
 import { ActorCard } from "./components/ActorCard";
 
@@ -20,7 +20,7 @@ interface CardProps {
 
 function Assessments() {
   // get the actors
-  const actorsData = useGetPublicActors({
+  const actorsData = useGetActors({
     size: 100,
     page: 1,
     sortBy: "asc",

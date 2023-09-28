@@ -69,11 +69,9 @@ function RequestValidation() {
   }, [profileData]);
 
   const { data: actorsData } = useGetActors({
-    size: 20,
+    size: 100,
     page: 1,
     sortBy: "asc",
-    token: keycloak?.token || "",
-    isRegistered: registered,
   });
 
   const [actors, setActors] = useState<Actor[]>();
