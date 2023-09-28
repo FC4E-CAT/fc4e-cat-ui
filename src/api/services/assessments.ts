@@ -85,7 +85,7 @@ export function useGetPublicAssessments({
     queryKey: ["public-owner-assessments", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient().get<AssessmentListResponse>(
-        `/public/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}&sortby=${sortBy}`,
+        `/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
     },
