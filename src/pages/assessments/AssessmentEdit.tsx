@@ -54,6 +54,11 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   // with templateId: 1 (pid policy) and actorId: 6 (for pid owner)
   // this will be replaced in time with dynamic code
 
+  // signal used in the third step of the wizard in order to trigger
+  // a refresh in the criteria sub-tab component and select the first
+  // criterion as an active sub-tab
+  const [resetCriterionTab, setResetCriterionTab] = useState(false);
+
   const validationID = valID !== undefined ? valID : "";
   const [vldid, setVldid] = useState<string>();
   const qValidation = useGetValidationDetails({
@@ -141,6 +146,10 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     asmtID,
   );
 
+  function handleResetCriterionTabComplete() {
+    setResetCriterionTab(false);
+  }
+
   function handleCreateAssessment() {
     if (templateId && vldid && assessment) {
       mutationCreateAssessment.mutate({
@@ -151,15 +160,27 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     }
   }
 
+  // handle tab changes in wizard
+  function handleChangeTab(tabKey: number) {
+    // if user selects the last step in the wizard (assessment)
+    // triger the reset criterion tab signal so as to select the first
+    // available criterion as the active sub-tab inside assessment
+    if (tabKey == 3) {
+      setResetCriterionTab(true);
+    }
+    // set the active tab in the wizard
+    setActiveTab(tabKey);
+  }
+
   function handleNextTab() {
     if (activeTab < 3) {
-      setActiveTab(activeTab + 1);
+      handleChangeTab(activeTab + 1);
     }
   }
 
   function handlePrevTab() {
     if (activeTab > 1) {
-      setActiveTab(activeTab - 1);
+      handleChangeTab(activeTab - 1);
     }
   }
 
@@ -366,8 +387,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
         activeKey={"step-" + activeTab.toString()}
         onSelect={(key) => {
           if (key) {
-            console.log(key);
-            setActiveTab(parseInt(key.replace("step-", "")) || 1);
+            handleChangeTab(parseInt(key.replace("step-", "")) || 1);
           }
         }}
       >
@@ -449,7 +469,9 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                 )}
                 <CriteriaTabs
                   principles={assessment?.principles || []}
+                  resetActiveTab={resetCriterionTab}
                   onTestChange={handleCriterionChange}
+                  onResetActiveTab={handleResetCriterionTabComplete}
                 />
               </Tab.Pane>
             </Tab.Content>

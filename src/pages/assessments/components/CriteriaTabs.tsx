@@ -23,6 +23,8 @@ import { useEffect, useState } from "react";
 
 type CriteriaTabsProps = {
   principles: Principle[];
+  resetActiveTab: boolean;
+  onResetActiveTab(): void;
   onTestChange(
     principleId: string,
     criterionId: string,
@@ -37,15 +39,20 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
   const [activeKey, setActiveKey] = useState("");
 
   useEffect(() => {
+    // if resetActiveTab signal is set to true try to find the first criterion
+    // and set it as an active tab
     if (
-      !activeKey &&
+      props.resetActiveTab &&
       props.principles.length > 0 &&
       props.principles[0].criteria.length > 0
     ) {
       const firstCriterion = props.principles[0].criteria[0].id;
+      console.log("active tab:", firstCriterion);
       setActiveKey(firstCriterion);
+      // when you set the active tab reset the signal to false
+      props.onResetActiveTab();
     }
-  }, [props.principles, activeKey]);
+  }, [props]);
 
   props.principles.forEach((principle) => {
     // push principle lable to navigation list
