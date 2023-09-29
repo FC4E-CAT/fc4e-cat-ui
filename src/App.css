@@ -127,3 +127,12 @@ footer a {
 .assessment-card .nav-link.disabled {
   color: #ddd !important;
 }
+
+.cat-full-date-info {
+  display: none;
+  color: rgb(187 187 187);
+}
+
+.cat-date-cell:hover .cat-full-date-info {
+  display: inline;
+}

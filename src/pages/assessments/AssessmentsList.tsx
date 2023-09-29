@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { CustomTable } from "@/components";
-import { FaCheckCircle, FaEdit, FaPlus } from "react-icons/fa";
+import { FaCheckCircle, FaEdit, FaInfoCircle, FaPlus } from "react-icons/fa";
 import { AssessmentListItem } from "@/types";
 import { useGetAssessments, useGetPublicAssessments } from "@/api";
 import { Link } from "react-router-dom";
@@ -34,15 +34,46 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             header: " ",
             columns: [
               {
-                accessorKey: "id",
-                header: () => <span>ID</span>,
+                accessorKey: "name",
+                header: () => <span>name</span>,
                 cell: (info) => info.getValue(),
                 enableColumnFilter: false,
               },
               {
+                accessorKey: "type",
+                header: () => <span>type</span>,
+                cell: (info) => info.getValue(),
+                enableColumnFilter: false,
+              },
+              {
+                accessorKey: "subject_name",
+                header: () => <span>subject name</span>,
+                cell: (info) => info.getValue(),
+                enableColumnFilter: false,
+              },
+              {
+                accessorKey: "subject_type",
+                header: () => <span>subject type</span>,
+                cell: (info) => info.getValue(),
+                enableColumnFilter: true,
+              },
+              {
+                accessorKey: "organisation",
+                header: () => <span>organisation</span>,
+                cell: (info) => info.getValue(),
+                enableColumnFilter: true,
+              },
+              {
                 accessorFn: (row) => row.created_on,
                 id: "created_on",
-                cell: (info) => info.getValue(),
+                cell: (info) => (
+                  <span className="cat-date-cell">
+                    {info.getValue().split(" ")[0]}
+                    <span className="ms-1 cat-full-date-info">
+                      <FaInfoCircle title={info.getValue()} />
+                    </span>
+                  </span>
+                ),
                 header: () => <span>Created On</span>,
                 enableColumnFilter: false,
               },
