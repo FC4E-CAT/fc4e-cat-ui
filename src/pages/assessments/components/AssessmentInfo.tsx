@@ -1,15 +1,15 @@
 /**
  * Component to display and edit the assessment info
  */
-
 import { InputGroup, Form, Col, Row, Accordion } from "react-bootstrap";
-import { AssessmentSubject, UserProfile } from "@/types";
+import { AssessmentSubject, UserProfile, AssessmentActor } from "@/types";
+import { AssessmentSelectSubject } from "./AssessmentSelectSubject";
 import { FaCog, FaInfo, FaLock, FaOrcid, FaUserAlt } from "react-icons/fa";
 
 interface AssessmentInfoProps {
   id?: string;
   name: string;
-  actor: string;
+  actor: AssessmentActor;
   type: string;
   org: string;
   orgId: string;
@@ -22,13 +22,6 @@ interface AssessmentInfoProps {
 }
 
 export const AssessmentInfo = (props: AssessmentInfoProps) => {
-  function handleSubjectChange(fieldName: string, value: string) {
-    return {
-      ...props.subject,
-      [fieldName]: value,
-    };
-  }
-
   return (
     <Accordion defaultActiveKey="acc-1">
       <Accordion.Item eventKey="acc-1">
@@ -150,57 +143,11 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
         </Accordion.Header>
         <Accordion.Body>
           <Row className="m-2">
-            <Col>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-subject-type">
-                  Subject Type:
-                </InputGroup.Text>
-                <Form.Control
-                  id="input-info-subject-type"
-                  value={props.subject.type}
-                  onChange={(e) => {
-                    props.onSubjectChange(
-                      handleSubjectChange("type", e.target.value),
-                    );
-                  }}
-                  aria-describedby="label-info-subject-type"
-                />
-              </InputGroup>
-            </Col>
-            <Col>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-subject-id">
-                  Subject Id:
-                </InputGroup.Text>
-                <Form.Control
-                  id="input-info-subject-id"
-                  value={props.subject.id}
-                  onChange={(e) => {
-                    props.onSubjectChange(
-                      handleSubjectChange("id", e.target.value),
-                    );
-                  }}
-                  aria-describedby="label-info-subject-id"
-                />
-              </InputGroup>
-            </Col>
-            <Col xs={6}>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-subject-name">
-                  Subject Name:
-                </InputGroup.Text>
-                <Form.Control
-                  id="input-info-subject-name"
-                  value={props.subject.name}
-                  onChange={(e) => {
-                    props.onSubjectChange(
-                      handleSubjectChange("name", e.target.value),
-                    );
-                  }}
-                  aria-describedby="label-info-subject-name"
-                />
-              </InputGroup>
-            </Col>
+            <AssessmentSelectSubject
+              actorId={props.actor?.id}
+              subject={props.subject}
+              onSubjectChange={props.onSubjectChange}
+            />
           </Row>
         </Accordion.Body>
       </Accordion.Item>

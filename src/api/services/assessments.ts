@@ -6,6 +6,7 @@ import {
   Assessment,
   AssessmentDetailsResponse,
   AssessmentListResponse,
+  AssessmentSubjectListResponse,
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
@@ -116,5 +117,30 @@ export function useGetAssessment({
       return handleBackendError(error);
     },
     enabled: !!token && isRegistered && id !== "",
+  });
+}
+
+export function useGetObjectsByActor({
+  size,
+  page,
+  sortBy,
+  token,
+  isRegistered,
+  actorId,
+}: ApiOptions) {
+  return useQuery({
+    queryKey: ["objects", { size, page, sortBy, actorId }],
+    queryFn: async () => {
+      const response = await APIClient(
+        token,
+      ).get<AssessmentSubjectListResponse>(
+        `/assessments/objects/by-actor/${actorId}?size=${size}&page=${page}&sortby=${sortBy}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered && actorId !== undefined,
   });
 }

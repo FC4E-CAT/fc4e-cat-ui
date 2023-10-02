@@ -451,12 +451,16 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                 <AssessmentInfo
                   id={assessment?.id}
                   name={assessment?.name || ""}
-                  actor={assessment?.actor.name || ""}
+                  actor={
+                    assessment?.actor ||
+                    templateData?.actor || { id: 0, name: "" }
+                  }
                   type={assessment?.assessment_type?.name || ""}
                   org={assessment?.organisation.name || ""}
                   orgId={assessment?.organisation.id || ""}
                   subject={
-                    assessment?.subject || { id: "", name: "", type: "" }
+                    assessment?.subject ||
+                    templateData?.subject || { id: "", name: "", type: "" }
                   }
                   profile={qProfile.data}
                   published={assessment?.published || false}
