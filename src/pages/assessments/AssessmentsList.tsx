@@ -7,6 +7,20 @@ import { useGetAssessments, useGetPublicAssessments } from "@/api";
 import { Link } from "react-router-dom";
 
 /**
+ * ComplianceBadge gets a compliance value (null, false, true) and renders
+ * a corresponding badge
+ */
+function ComplianceBadge({ compliance }: { compliance: boolean | null }) {
+  return compliance === null ? (
+    <span className="badge bg-secondary ms-2">UNKNOWN</span>
+  ) : compliance ? (
+    <span className="badge bg-success ms-2">PASS</span>
+  ) : (
+    <span className="badge bg-danger ms-2">FAIL</span>
+  );
+}
+
+/**
  * employ additional props so that the component can be used both for
  * displaying a user's assessment list and also a list of public
  * assessments
@@ -85,25 +99,73 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             header: " ",
             columns: [
               {
-                accessorKey: "id",
+                accessorKey: "name",
                 header: () => <span>ID</span>,
                 cell: (info) => info.getValue(),
                 enableColumnFilter: false,
               },
               {
-                accessorFn: (row) => row.created_on,
-                id: "created_on",
+                accessorKey: "type",
+                header: () => <span>type</span>,
                 cell: (info) => info.getValue(),
-                header: () => <span>Created On</span>,
                 enableColumnFilter: false,
               },
               {
-                accessorFn: (row) => row.validation_id,
-                id: "validation_id",
+                accessorKey: "compliance",
+                header: () => <span>compliance</span>,
+                cell: (info) => (
+                  <ComplianceBadge compliance={info.getValue()} />
+                ),
+                enableColumnFilter: false,
+              },
+              {
+                accessorKey: "ranking",
+                header: () => <span>ranking</span>,
+                cell: (info) => {
+                  return info.getValue() === null ? (
+                    <ComplianceBadge compliance={null} />
+                  ) : (
+                    info.getValue()
+                  );
+                },
+                enableColumnFilter: false,
+              },
+              {
+                accessorKey: "access",
+                header: () => <span>access</span>,
+                cell: (info) => {
+                  return info.getValue() === true ? "Public" : "Private";
+                },
+                enableColumnFilter: false,
+              },
+              {
+                accessorKey: "subject_name",
+                header: () => <span>subject name</span>,
                 cell: (info) => info.getValue(),
-                header: () => <span>Validation ID</span>,
                 enableColumnFilter: true,
-                show: !listPublic,
+              },
+              {
+                accessorKey: "subject_type",
+                header: () => <span>subject type</span>,
+                cell: (info) => info.getValue(),
+                enableColumnFilter: true,
+              },
+              {
+                accessorKey: "organisation",
+                header: () => <span>organisation</span>,
+                cell: (info) => info.getValue(),
+                enableColumnFilter: true,
+              },
+              {
+                accessorFn: (row) => row.created_on,
+                id: "created_on",
+                cell: (info) => (
+                  <span className="cat-date-cell" title={info.getValue()}>
+                    {info.getValue().split(" ")[0]}
+                  </span>
+                ),
+                header: () => <span>Created On</span>,
+                enableColumnFilter: false,
               },
               {
                 id: "action",
