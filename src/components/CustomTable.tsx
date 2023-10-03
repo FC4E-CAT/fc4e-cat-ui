@@ -60,7 +60,7 @@ function Filter({
       </span>
       <datalist id={column.id + "list"}>
         {sortedUniqueValues.slice(0, 5000).map((value: any) => (
-          <option value={value} key={value} />
+          <option value={value[0]} key={value} />
         ))}
       </datalist>
       <DebouncedInput
