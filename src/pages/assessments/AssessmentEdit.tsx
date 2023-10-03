@@ -32,6 +32,14 @@ import { AssessmentEvalStats } from "./components/AssessmentEvalStats";
 import { DebugJSON } from "./components/DebugJSON";
 import { AssessmentSelectActor } from "./components/AssessmentSelectActor";
 
+const allowedActors = {
+  PID_AUTHORITY: 2,
+  PID_SERVICE_PROVIDER: 3,
+  PID_MANAGER: 5,
+  PID_OWNER: 6,
+  PID_SCHEME: 9,
+};
+
 type AssessmentEditProps = {
   createMode?: boolean;
 };
@@ -122,10 +130,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       .filter(
         (v: ValidationResponse) =>
           v["status"] === "APPROVED" &&
-          (v.actor_id === 2 ||
-            v.actor_id === 6 ||
-            v.actor_id === 9 ||
-            v.actor_id === 5),
+          Object.values(allowedActors).includes(v["actor_id"]),
       )
       .map((filtered: ValidationResponse) => {
         return {
