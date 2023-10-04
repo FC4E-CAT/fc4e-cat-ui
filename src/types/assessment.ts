@@ -53,6 +53,8 @@ export interface AssessmentSubject {
   type: string;
 }
 
+export type AssessmentSubjectListResponse = ResponsePage<AssessmentSubject[]>;
+
 /** The status of an assesment wether it is public or private */
 export enum AssessmentStatus {
   Public = "PUBLIC",
@@ -192,3 +194,9 @@ export interface AssessmentDetailsResponse {
 
 /** Each assessment test will gonna have different types - right now only two types: binary/value test are supported  */
 export type AssessmentTest = TestValue | TestBinary;
+
+export interface ObjectListItem {
+  id: string;
+  name: string;
+  type: string;
+}
