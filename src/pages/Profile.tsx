@@ -136,7 +136,7 @@ function Profile() {
                     View List
                   </Link>
                   <Link
-                    to="/validations"
+                    to="/assessments/create"
                     className="btn btn-light border-black mx-3"
                   >
                     <FaPlus /> Create New
