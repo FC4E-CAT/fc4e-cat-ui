@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { useGetUsers } from "@/api";
+import { useGetAdminUsers } from "@/api";
 import { CustomTable } from "@/components";
 import { FaUsers } from "react-icons/fa";
 import { UserProfile } from "@/types";
@@ -40,7 +40,7 @@ function Users() {
         </h3>
         <h3 className="opacity-50">admin mode</h3>
       </div>
-      <CustomTable columns={cols} dataSource={useGetUsers} />
+      <CustomTable columns={cols} dataSource={useGetAdminUsers} />
     </div>
   );
 }

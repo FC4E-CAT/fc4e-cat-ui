@@ -20,7 +20,7 @@ export const useGetProfile = ({ token, isRegistered }: ApiOptions) =>
     enabled: isRegistered,
   });
 
-export const useGetUsers = ({
+export const useGetAdminUsers = ({
   size,
   page,
   sortBy,
@@ -31,7 +31,7 @@ export const useGetUsers = ({
     queryKey: ["users", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient(token).get<UserListResponse>(
-        `/users?size=${size}&page=${page}&sortby=${sortBy}`,
+        `/admin/users?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
     },
