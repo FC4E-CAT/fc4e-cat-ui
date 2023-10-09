@@ -195,7 +195,7 @@ function CustomTable<T>({
       <div className="h-2" />
       <div className="table-responsive">
         <table className="table table-striped table-hover">
-          <thead className="thead-dark">
+          <thead className="thead-dark border-top">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

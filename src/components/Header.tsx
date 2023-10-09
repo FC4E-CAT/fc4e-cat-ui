@@ -132,10 +132,10 @@ function Header() {
                   }
                   className="cat-nav-item"
                 >
-                  <NavDropdown.Item as={Link} to="/users">
+                  <NavDropdown.Item as={Link} to="/admin/users">
                     Users
                   </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to="/validations">
+                  <NavDropdown.Item as={Link} to="/admin/validations">
                     Validations
                   </NavDropdown.Item>
                 </NavDropdown>

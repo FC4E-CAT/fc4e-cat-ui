@@ -21,11 +21,9 @@ import {
   FaTimes,
   FaExclamationTriangle,
   FaPlus,
-  FaRegCheckSquare,
   FaGlasses,
   FaIdBadge,
 } from "react-icons/fa";
-import decode from "jwt-decode";
 import { CustomTable } from "@/components";
 import { Alert } from "@/components";
 import {
@@ -380,7 +378,6 @@ function Validations(props: ValidationProps) {
   const isAdmin = useRef<boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;
-  const jwt = JSON.stringify(decode(keycloak?.token || ""));
 
   const { mutateAsync: mutateValidationUpdateStatus } =
     useValidationStatusUpdate({
@@ -390,114 +387,116 @@ function Validations(props: ValidationProps) {
       isRegistered: registered,
     });
 
-  // FIXME: This is a naive approach, should reconsider
-  if (jwt.includes("admin")) {
+  if (props.admin) {
     isAdmin.current = true;
   }
 
-  const cols = useMemo<ColumnDef<ValidationResponse>[]>(
-    () => [
-      {
-        header: " ",
-        footer: (props) => props.column.id,
-        columns: [
-          {
-            accessorKey: "id",
-            header: () => <span>ID</span>,
-            cell: (info) => info.getValue(),
-            footer: (props) => props.column.id,
-            enableColumnFilter: false,
-          },
-          {
-            accessorFn: (row) => row.user_id,
-            id: "user_id",
-            cell: (info) => info.getValue(),
-            header: () => <span>User ID</span>,
-            footer: (props) => props.column.id,
-            enableColumnFilter: true,
-          },
-          {
-            accessorFn: (row) => row.organisation_name,
-            id: "organisation_name",
-            cell: (info) => info.getValue(),
-            header: () => <span>Organisation Name</span>,
-            footer: (props) => props.column.id,
-          },
-          {
-            accessorFn: (row) => row.organisation_role,
-            id: "organisation_role",
-            cell: (info) => info.getValue(),
-            header: () => <span>Organisation Role</span>,
-            footer: (props) => props.column.id,
-          },
-          {
-            accessorFn: (row) => row.actor_name,
-            id: "actor_name",
-            cell: (info) => info.getValue(),
-            header: () => <span>Actor</span>,
-            footer: (props) => props.column.id,
-            enableColumnFilter: true,
-          },
-          {
-            accessorFn: (row) => row.status,
-            id: "status",
-            cell: (info) => info.getValue(),
-            header: () => <span>Status</span>,
-            footer: (props) => props.column.id,
-          },
-          {
-            id: "action",
-            cell: (props) => {
-              if (isAdmin.current) {
-                return (
-                  <div className="edit-buttons btn-group shadow">
-                    <Link
-                      className="btn btn-secondary cat-action-view-link btn-sm "
-                      to={`/validations/${props.row.original.id}`}
-                    >
-                      <FaList />
-                    </Link>
-                    {props.row.original.status === "REVIEW" ? (
-                      <Link
-                        className="btn btn-secondary cat-action-approve-link btn-sm "
-                        to={`/validations/${props.row.original.id}/approve#alert-spot`}
-                      >
-                        <FaCheck />
-                      </Link>
-                    ) : null}
-                    {props.row.original.status === "REVIEW" ? (
-                      <Link
-                        className="btn btn-secondary cat-action-reject-link btn-sm "
-                        to={`/validations/${props.row.original.id}/reject/#alert-spot`}
-                      >
-                        <FaTimes />
-                      </Link>
-                    ) : null}
-                  </div>
-                );
-              } else {
-                return (
-                  <div className="edit-buttons btn-group shadow">
-                    <Link
-                      className="btn btn-secondary btn-sm "
-                      to={`/validations/${props.row.original.id}`}
-                    >
-                      <FaList />
-                    </Link>
-                  </div>
-                );
-              }
-            },
+  const cols = useMemo<ColumnDef<ValidationResponse>[]>(() => {
+    const setAdminPrefix = (url: string) => {
+      if (props.admin) {
+        return "/admin" + url;
+      }
+      return url;
+    };
 
-            header: () => <span>Actions</span>,
-            footer: null,
-            enableColumnFilter: false,
-          },
-        ],
+    return [
+      {
+        accessorKey: "id",
+        header: () => <span>ID</span>,
+        cell: (info) => info.getValue(),
+        footer: (props) => props.column.id,
+        enableColumnFilter: false,
       },
-    ],
-    [],
-  );
+      {
+        accessorFn: (row) => row.user_id,
+        id: "user_id",
+        cell: (info) => info.getValue(),
+        header: () => <span>User ID</span>,
+        footer: (props) => props.column.id,
+        enableColumnFilter: true,
+      },
+      {
+        accessorFn: (row) => row.organisation_name,
+        id: "organisation_name",
+        cell: (info) => info.getValue(),
+        header: () => <span>Organisation Name</span>,
+        footer: (props) => props.column.id,
+      },
+      {
+        accessorFn: (row) => row.organisation_role,
+        id: "organisation_role",
+        cell: (info) => info.getValue(),
+        header: () => <span>Organisation Role</span>,
+        footer: (props) => props.column.id,
+      },
+      {
+        accessorFn: (row) => row.actor_name,
+        id: "actor_name",
+        cell: (info) => info.getValue(),
+        header: () => <span>Actor</span>,
+        footer: (props) => props.column.id,
+        enableColumnFilter: true,
+      },
+      {
+        accessorFn: (row) => row.status,
+        id: "status",
+        cell: (info) => info.getValue(),
+        header: () => <span>Status</span>,
+        footer: (props) => props.column.id,
+      },
+      {
+        id: "action",
+        cell: (props) => {
+          if (isAdmin.current) {
+            return (
+              <div className="edit-buttons btn-group shadow">
+                <Link
+                  className="btn btn-secondary cat-action-view-link btn-sm "
+                  to={setAdminPrefix(`/validations/${props.row.original.id}`)}
+                >
+                  <FaList />
+                </Link>
+                {props.row.original.status === "REVIEW" ? (
+                  <Link
+                    className="btn btn-secondary cat-action-approve-link btn-sm "
+                    to={setAdminPrefix(
+                      `/validations/${props.row.original.id}/approve#alert-spot`,
+                    )}
+                  >
+                    <FaCheck />
+                  </Link>
+                ) : null}
+                {props.row.original.status === "REVIEW" ? (
+                  <Link
+                    className="btn btn-secondary cat-action-reject-link btn-sm "
+                    to={setAdminPrefix(
+                      `/validations/${props.row.original.id}/reject/#alert-spot`,
+                    )}
+                  >
+                    <FaTimes />
+                  </Link>
+                ) : null}
+              </div>
+            );
+          } else {
+            return (
+              <div className="edit-buttons btn-group shadow">
+                <Link
+                  className="btn btn-secondary btn-sm "
+                  to={setAdminPrefix(`/validations/${props.row.original.id}`)}
+                >
+                  <FaList />
+                </Link>
+              </div>
+            );
+          }
+        },
+
+        header: () => <span>Actions</span>,
+        enableColumnFilter: false,
+      },
+    ];
+  }, [props.admin]);
 
   let rejectCard = null;
   let approveCard = null;
@@ -613,16 +612,24 @@ function Validations(props: ValidationProps) {
       {alert.enabled && <Alert type={alert.type} message={alert.message} />}
       {rejectCard}
       {approveCard}
-      <div className="d-flex justify-content-between my-2 container">
-        <h3 className="cat-view-heading">
+      <div
+        className={`${
+          props.admin && "alert alert-primary"
+        } d-flex justify-content-between`}
+      >
+        <h3 className={`${!props.admin && "cat-view-heading"}`}>
           <FaIdBadge /> validation requests
         </h3>
-        <Link
-          to="/validations/request"
-          className="btn btn-light border-black mx-3"
-        >
-          <FaPlus /> Create New
-        </Link>
+        {props.admin ? (
+          <h3 className="opacity-50">admin mode</h3>
+        ) : (
+          <Link
+            to="/validations/request"
+            className="btn btn-light border-black mx-3"
+          >
+            <FaPlus /> Create New
+          </Link>
+        )}
       </div>
       {isAdmin.current && keycloak ? (
         <CustomTable columns={cols} dataSource={useAdminValidations} />
@@ -644,7 +651,6 @@ function ValidationDetails(props: ValidationProps) {
   const isAdmin = useRef<boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;
-  const jwt = JSON.stringify(decode(keycloak?.token || ""));
 
   const { mutateAsync: mutateValidationUpdateStatus } =
     useValidationStatusUpdate({
@@ -654,8 +660,7 @@ function ValidationDetails(props: ValidationProps) {
       isRegistered: registered,
     });
 
-  // FIXME: This is a naive approach, should reconsider
-  if (jwt.includes("admin")) {
+  if (props.admin) {
     isAdmin.current = true;
   }
 
@@ -708,14 +713,14 @@ function ValidationDetails(props: ValidationProps) {
                       message: "Error during validation rejection.",
                     });
                   })
-                  .finally(() => navigate("/validations"));
+                  .finally(() => navigate("/admin/validations"));
               }}
             >
               Reject
             </button>
             <button
               onClick={() => {
-                navigate(`/validations/${params.id}`);
+                navigate(`/admin/validations/${params.id}`);
               }}
               className="btn btn-dark mx-4"
             >
@@ -761,14 +766,14 @@ function ValidationDetails(props: ValidationProps) {
                       message: "Error during validation approval.",
                     });
                   })
-                  .finally(() => navigate("/validations"));
+                  .finally(() => navigate("/admin/validations"));
               }}
             >
               Approve
             </button>
             <button
               onClick={() => {
-                navigate(`/validations/${params.id}`);
+                navigate(`/admin/validations/${params.id}`);
               }}
               className="btn btn-dark mx-4"
             >
@@ -786,10 +791,28 @@ function ValidationDetails(props: ValidationProps) {
         {alert.enabled && <Alert type={alert.type} message={alert.message} />}
         {rejectCard}
         {approveCard}
-        <h3 className="cat-view-heading">
-          <FaRegCheckSquare /> Validation Request{" "}
-          <span className="badge bg-secondary">id: {validation?.id}</span>
-        </h3>
+        <div
+          className={`${
+            props.admin && "alert alert-primary"
+          } d-flex justify-content-between`}
+        >
+          <h3 className={`${!props.admin && "cat-view-heading"}`}>
+            <FaIdBadge /> Validation Request
+            <span className="ms-2 badge bg-secondary">
+              id: {validation?.id}
+            </span>
+          </h3>
+          {props.admin ? (
+            <h3 className="opacity-50">admin mode</h3>
+          ) : (
+            <Link
+              to="/validations/request"
+              className="btn btn-light border-black mx-3"
+            >
+              <FaPlus /> Create New
+            </Link>
+          )}
+        </div>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Requestor</header>
           <section className="col-9">

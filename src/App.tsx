@@ -70,7 +70,7 @@ function App() {
                   <Route path="/profile/update" element={<ProtectedRoute />}>
                     <Route index element={<ProfileUpdate />} />
                   </Route>
-                  <Route path="/users" element={<ProtectedRoute />}>
+                  <Route path="/admin/users" element={<ProtectedRoute />}>
                     <Route index element={<Users />} />
                   </Route>
                   <Route
@@ -84,6 +84,15 @@ function App() {
                   </Route>
                   <Route path="/validations/:id" element={<ProtectedRoute />}>
                     <Route index element={<ValidationDetails />} />
+                  </Route>
+                  <Route path="/admin/validations" element={<ProtectedRoute />}>
+                    <Route index element={<Validations admin={true} />} />
+                  </Route>
+                  <Route
+                    path="/admin/validations/:id"
+                    element={<ProtectedRoute />}
+                  >
+                    <Route index element={<ValidationDetails admin={true} />} />
                   </Route>
                   <Route
                     path="/validations/:id/reject"

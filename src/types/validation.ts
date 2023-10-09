@@ -48,4 +48,5 @@ export interface ValidationStatusUpdate {
 export type ValidationProps = {
   toReject?: boolean;
   toApprove?: boolean;
+  admin?: boolean;
 };
