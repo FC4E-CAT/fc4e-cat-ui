@@ -5,6 +5,7 @@ import {
   ApiOptions,
   Assessment,
   AssessmentDetailsResponse,
+  AssessmentFiltersType,
   AssessmentListResponse,
   AssessmentSubjectListResponse,
 } from "@/types";
@@ -59,13 +60,18 @@ export function useGetAssessments({
   sortBy,
   token,
   isRegistered,
-}: ApiOptions) {
+  ...filters
+}: ApiOptions & AssessmentFiltersType) {
+  let url = `/assessments?size=${size}&page=${page}&sortby=${sortBy}`;
+  Object.keys(filters).forEach((k: string) => {
+    if (filters[k as keyof typeof filters] !== "") {
+      url = url.concat(`&${k}=${filters[k as keyof typeof filters]}`);
+    }
+  });
   return useQuery({
-    queryKey: ["assessments", { size, page, sortBy }],
+    queryKey: ["assessments", { size, page, sortBy, ...filters }],
     queryFn: async () => {
-      const response = await APIClient(token).get<AssessmentListResponse>(
-        `/assessments?size=${size}&page=${page}&sortby=${sortBy}`,
-      );
+      const response = await APIClient(token).get<AssessmentListResponse>(url);
       return response.data;
     },
     onError: (error: AxiosError) => {

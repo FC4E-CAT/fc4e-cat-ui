@@ -136,3 +136,9 @@ footer a {
 .cat-date-cell:hover .cat-full-date-info {
   display: inline;
 }
+
+.filter-div {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+  text-align: center;
+}
