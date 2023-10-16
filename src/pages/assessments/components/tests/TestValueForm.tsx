@@ -33,10 +33,12 @@ export const TestValueForm = (props: AssessmentTestProps) => {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const newTest = { ...props.test };
+    // keep only number digits as input
+    const numberOnlyVal = event.target.value.replace(/[^0-9]/g, "");
     if (eventType === TestValueEventType.Value) {
-      newTest.value = parseInt(event.target.value);
+      newTest.value = parseInt(numberOnlyVal);
     } else {
-      newTest.threshold = parseInt(event.target.value);
+      newTest.threshold = parseInt(numberOnlyVal);
     }
 
     // evaluate result - benchmark till now supports only equal_greater_than
@@ -116,7 +118,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                 <Col xs={4}>
                   <Form.Control
                     value={props.test.value || ""}
-                    type="number"
+                    type="text"
                     id="input-value-control"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       handleValueChange(TestValueEventType.Value, e)
@@ -137,7 +139,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                     <Col xs={4}>
                       <Form.Control
                         value={props.test.threshold || ""}
-                        type="number"
+                        type="text"
                         id="input-value-control"
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleValueChange(TestValueEventType.Threshold, e)
