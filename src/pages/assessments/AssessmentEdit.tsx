@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useCallback } from "react";
+import { useEffect, useRef, useState, useContext, useCallback } from "react";
 
 import { AuthContext } from "@/auth";
 import {
@@ -15,6 +15,7 @@ import {
   Criterion,
   ValidationResponse,
   ActorOrganisationMapping,
+  AlertInfo,
 } from "@/types";
 import { useParams } from "react-router";
 import { Card, Nav, Tab, Button } from "react-bootstrap";
@@ -31,6 +32,8 @@ import { Link } from "react-router-dom";
 import { AssessmentEvalStats } from "./components/AssessmentEvalStats";
 import { DebugJSON } from "./components/DebugJSON";
 import { AssessmentSelectActor } from "./components/AssessmentSelectActor";
+
+import { toast } from "react-hot-toast";
 
 const allowedActors = {
   PID_AUTHORITY: 2,
@@ -55,6 +58,9 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     id: string;
     name: string;
   }>();
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
   const [templateData, setTemplateData] = useState<Assessment>();
   const { valID, asmtID } = useParams();
   // const [actorId, setActorId] = useState<number>();
@@ -157,10 +163,27 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
   function handleCreateAssessment() {
     if (templateId && vldid && assessment) {
-      mutationCreateAssessment.mutate({
-        validation_id: parseInt(vldid),
-        template_id: templateId,
-        assessment_doc: assessment,
+      const promise = mutationCreateAssessment
+        .mutateAsync({
+          validation_id: parseInt(vldid),
+          template_id: templateId,
+          assessment_doc: assessment,
+        })
+        .catch((err) => {
+          alert.current = {
+            message: "Error during assessment creation.",
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: "Assessment succesfully created.",
+          };
+        });
+      toast.promise(promise, {
+        loading: "Creating",
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
       });
     }
   }
@@ -191,8 +214,25 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
   function handleUpdateAssessment() {
     if (assessment && asmtID) {
-      mutationUpdateAssessment.mutate({
-        assessment_doc: assessment,
+      const promise = mutationUpdateAssessment
+        .mutateAsync({
+          assessment_doc: assessment,
+        })
+        .catch((err) => {
+          alert.current = {
+            message: "Error during assessment updating.",
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: "Assessment succesfully updated.",
+          };
+        });
+      toast.promise(promise, {
+        loading: "Updating",
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
       });
     }
   }

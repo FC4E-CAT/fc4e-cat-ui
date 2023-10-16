@@ -21,11 +21,40 @@ import Assessments from "@/pages/assessments/Assessments";
 import AssessmentsList from "@/pages/assessments/AssessmentsList";
 import AssessmentEdit from "./pages/assessments/AssessmentEdit";
 
+import { Toaster } from "react-hot-toast";
+
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <div className="App">
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName=""
+        containerStyle={{}}
+        toastOptions={{
+          // Define default options
+          className: " ",
+          duration: 2000,
+          position: "top-right",
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+          success: {
+            style: {
+              background: "green",
+            },
+          },
+          error: {
+            style: {
+              background: "red",
+            },
+          },
+        }}
+      />
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter basename="/">
