@@ -200,3 +200,11 @@ export interface ObjectListItem {
   name: string;
   type: string;
 }
+
+/**
+ * Type for Assessments available filters
+ */
+export interface AssessmentFiltersType {
+  subject_name: string;
+  subject_type: string;
+}

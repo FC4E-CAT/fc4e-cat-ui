@@ -140,7 +140,7 @@ function CustomTable<T>({
 }) {
   const defaultData = React.useMemo(() => [], []);
   const { keycloak } = useContext(AuthContext)!;
-
+  console.log(extraDataOps);
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
       pageIndex: 1,

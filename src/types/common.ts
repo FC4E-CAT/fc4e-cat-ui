@@ -1,5 +1,7 @@
 // Common or minor stuff here
 
+import { AssessmentFiltersType } from ".";
+
 export type ApiT = {
   base_url: string;
   version: string;
@@ -82,7 +84,9 @@ export type ApproveRejectProps = {
 };
 
 // extra data options for custom table
-export type TableExtraDataOps = ApiPublicAssessmentOptions;
+export type TableExtraDataOps =
+  | ApiPublicAssessmentOptions
+  | AssessmentFiltersType;
 
 export type AlertInfo = {
   enabled: boolean;

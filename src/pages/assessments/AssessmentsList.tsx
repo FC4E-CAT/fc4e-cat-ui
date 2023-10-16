@@ -1,8 +1,23 @@
-import { useMemo } from "react";
+import { useRef, useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { CustomTable } from "@/components";
-import { FaCheckCircle, FaEdit, FaInfoCircle, FaPlus } from "react-icons/fa";
-import { AssessmentListItem } from "@/types";
+import {
+  FaCheckCircle,
+  FaEdit,
+  FaInfoCircle,
+  FaPlus,
+  FaFilter,
+} from "react-icons/fa";
+import {
+  Collapse,
+  Button,
+  InputGroup,
+  Form,
+  Container,
+  Row,
+  Col,
+} from "react-bootstrap";
+import { AssessmentListItem, AssessmentFiltersType } from "@/types";
 import { useGetAssessments, useGetPublicAssessments } from "@/api";
 import { Link } from "react-router-dom";
 
@@ -40,6 +55,16 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const assessmentTypeId = assessmentTypeIdParam
     ? parseInt(assessmentTypeIdParam, 10)
     : -1;
+
+  const [filtersToggle, setFiltersToggle] = useState(false);
+  const formData = useRef<AssessmentFiltersType>({
+    subject_name: "",
+    subject_type: "",
+  });
+  const [filters, setFilters] = useState<AssessmentFiltersType>({
+    subject_name: "",
+    subject_type: "",
+  });
 
   const cols = useMemo<ColumnDef<AssessmentListItem>[]>(() => {
     return listPublic
@@ -191,6 +216,12 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         ];
   }, [listPublic]);
 
+  const formSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Test");
+    setFilters({ ...filters, ...formData.current });
+  };
+
   return (
     <div className="mt-4">
       <div className="d-flex justify-content-between my-2 container">
@@ -200,16 +231,83 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           {listPublic && actorName && <span>{actorName} </span>}
           assessments
         </h3>
-        {!listPublic && (
-          <Link
-            to="/assessments/create"
-            className="btn btn-light border-black mx-3"
-          >
-            <FaPlus /> Create New
-          </Link>
-        )}
+        <div>
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setFiltersToggle(!filtersToggle)}
+              aria-controls="filter-collapse-div"
+              aria-expanded={filtersToggle}
+            >
+              <FaFilter className="me-2" />
+              Filter
+            </Button>
+          </>
+          {!listPublic && (
+            <Link
+              to="/assessments/create"
+              className="btn btn-light border-black mx-3"
+            >
+              <FaPlus /> Create New
+            </Link>
+          )}
+        </div>
       </div>
-
+      <div>
+        <Collapse in={filtersToggle} className="bg-light">
+          <Container className="p-2">
+            <Row>
+              <Col className="filter-div">
+                <FaFilter size={50} className="me-2" />
+              </Col>
+              <Col xs={10} id="filter-collapse-div">
+                <Form
+                  onSubmit={(e: React.FormEvent<HTMLFormElement>) =>
+                    formSubmit(e)
+                  }
+                >
+                  <InputGroup className="mb-3">
+                    <InputGroup.Text id="subject-name-input">
+                      Subject Name
+                    </InputGroup.Text>
+                    <Form.Control
+                      aria-label="Default"
+                      aria-describedby="inputGroup-sizing-default"
+                      onChange={(e) => {
+                        formData.current = {
+                          ...formData.current,
+                          subject_name: e.target.value,
+                        };
+                      }}
+                    />
+                  </InputGroup>
+                  <InputGroup className="mb-3">
+                    <InputGroup.Text id="subject-type-input">
+                      Subject Type
+                    </InputGroup.Text>
+                    <Form.Control
+                      aria-label="Default"
+                      aria-describedby="inputGroup-sizing-default"
+                      onChange={(e) => {
+                        formData.current = {
+                          ...formData.current,
+                          subject_type: e.target.value,
+                        };
+                      }}
+                    />
+                  </InputGroup>
+                  <Button
+                    className="btn btn-primary btn-large centerButton"
+                    type="submit"
+                  >
+                    Apply
+                  </Button>
+                </Form>
+              </Col>
+            </Row>
+          </Container>
+        </Collapse>
+      </div>
       {/* if list public call the Custom table with extra properties and the correct data function */}
       {listPublic ? (
         <CustomTable
@@ -225,6 +323,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         <CustomTable
           columns={cols}
           dataSource={useGetAssessments}
+          extraDataOps={filters}
           goBackLoc="/assess"
         />
       )}
