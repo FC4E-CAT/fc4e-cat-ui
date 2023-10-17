@@ -95,7 +95,7 @@ function App() {
                     <Route index element={<ValidationDetails admin={true} />} />
                   </Route>
                   <Route
-                    path="/validations/:id/reject"
+                    path="/admin/validations/:id/reject"
                     element={<ProtectedRoute />}
                   >
                     <Route
@@ -104,7 +104,7 @@ function App() {
                     />
                   </Route>
                   <Route
-                    path="/validations/:id/approve"
+                    path="/admin/validations/:id/approve"
                     element={<ProtectedRoute />}
                   >
                     <Route

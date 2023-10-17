@@ -542,7 +542,7 @@ function Validations(props: ValidationProps) {
             </button>
             <button
               onClick={() => {
-                navigate("/validations");
+                navigate("/admin/validations");
               }}
               className="btn btn-dark"
             >
@@ -595,7 +595,7 @@ function Validations(props: ValidationProps) {
             </button>
             <button
               onClick={() => {
-                navigate("/validations");
+                navigate("/admin/validations");
               }}
               className="btn btn-dark"
             >
@@ -945,7 +945,10 @@ function ValidationDetails(props: ValidationProps) {
             </div>
           )}
 
-        <Link className="btn btn-secondary my-4" to={`/validations`}>
+        <Link
+          className="btn btn-secondary my-4"
+          to={`${isAdmin.current ? "/admin" : ""}/validations`}
+        >
           Back
         </Link>
 
