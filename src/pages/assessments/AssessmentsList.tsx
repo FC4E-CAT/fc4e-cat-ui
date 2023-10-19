@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState } from "react";
+import { useRef, useMemo, useState, useCallback, useContext } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { CustomTable } from "@/components";
 import {
@@ -16,9 +16,18 @@ import {
   Container,
   Row,
   Col,
+  FloatingLabel,
+  OverlayTrigger,
+  Tooltip,
 } from "react-bootstrap";
 import { AssessmentListItem, AssessmentFiltersType } from "@/types";
-import { useGetAssessments, useGetPublicAssessments } from "@/api";
+import {
+  useGetAssessments,
+  useGetPublicAssessments,
+  useGetObjects,
+} from "@/api";
+import { AuthContext } from "@/auth";
+import { getUniqueValuesForKey } from "@/utils";
 import { Link } from "react-router-dom";
 
 /**
@@ -45,6 +54,7 @@ interface AssessmentListProps {
 }
 
 function AssessmentsList({ listPublic = false }: AssessmentListProps) {
+  const { keycloak } = useContext(AuthContext)!;
   // get the extra url parameters when in public list mode from url
   const urlParams = new URLSearchParams(location.search);
   const actorName = urlParams.get("actor-name");
@@ -65,6 +75,20 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     subject_name: "",
     subject_type: "",
   });
+
+  const { data: userObjects } = useGetObjects({
+    size: 100,
+    page: 1,
+    token: keycloak?.token || "",
+  });
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleReset = () => {
+    if (formRef && formRef.current) {
+      formRef.current.reset();
+    }
+  };
 
   const cols = useMemo<ColumnDef<AssessmentListItem>[]>(() => {
     return listPublic
@@ -94,13 +118,13 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 accessorKey: "subject_type",
                 header: () => <span>subject type</span>,
                 cell: (info) => info.getValue(),
-                enableColumnFilter: true,
+                enableColumnFilter: false,
               },
               {
                 accessorKey: "organisation",
                 header: () => <span>organisation</span>,
                 cell: (info) => info.getValue(),
-                enableColumnFilter: true,
+                enableColumnFilter: false,
               },
               {
                 accessorFn: (row) => row.created_on,
@@ -167,19 +191,19 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 accessorKey: "subject_name",
                 header: () => <span>subject name</span>,
                 cell: (info) => info.getValue(),
-                enableColumnFilter: true,
+                enableColumnFilter: false,
               },
               {
                 accessorKey: "subject_type",
                 header: () => <span>subject type</span>,
                 cell: (info) => info.getValue(),
-                enableColumnFilter: true,
+                enableColumnFilter: false,
               },
               {
                 accessorKey: "organisation",
                 header: () => <span>organisation</span>,
                 cell: (info) => info.getValue(),
-                enableColumnFilter: true,
+                enableColumnFilter: false,
               },
               {
                 accessorFn: (row) => row.created_on,
@@ -218,9 +242,28 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
 
   const formSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Test");
     setFilters({ ...filters, ...formData.current });
   };
+
+  const renderSubjectNameOptions = useCallback(() => {
+    if (userObjects?.content !== undefined) {
+      return getUniqueValuesForKey(userObjects?.content, "name").map((v, i) => (
+        <option key={`option-subject-name` + i} value={v}>
+          {v}
+        </option>
+      ));
+    }
+  }, [userObjects]);
+
+  const renderSubjectTypeOptions = useCallback(() => {
+    if (userObjects?.content !== undefined) {
+      return getUniqueValuesForKey(userObjects?.content, "type").map((v, i) => (
+        <option key={`option-subject-type` + i} value={v}>
+          {v}
+        </option>
+      ));
+    }
+  }, [userObjects]);
 
   return (
     <div className="mt-4">
@@ -255,57 +298,118 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       </div>
       <div>
         <Collapse in={filtersToggle} className="bg-light">
-          <Container className="p-2">
-            <Row>
-              <Col className="filter-div">
-                <FaFilter size={50} className="me-2" />
-              </Col>
-              <Col xs={10} id="filter-collapse-div">
-                <Form
-                  onSubmit={(e: React.FormEvent<HTMLFormElement>) =>
-                    formSubmit(e)
-                  }
-                >
+          <Form
+            onSubmit={(e: React.FormEvent<HTMLFormElement>) => formSubmit(e)}
+            ref={formRef}
+          >
+            <Container className="p-2">
+              <Row>
+                <Col xs={5}>
                   <InputGroup className="mb-3">
-                    <InputGroup.Text id="subject-name-input">
-                      Subject Name
-                    </InputGroup.Text>
-                    <Form.Control
-                      aria-label="Default"
-                      aria-describedby="inputGroup-sizing-default"
-                      onChange={(e) => {
-                        formData.current = {
-                          ...formData.current,
-                          subject_name: e.target.value,
-                        };
-                      }}
-                    />
+                    <OverlayTrigger
+                      key="top"
+                      placement="top"
+                      overlay={
+                        <Tooltip id={`tooltip-top`}>
+                          The name of the Subject the assessment will be done
+                          for
+                        </Tooltip>
+                      }
+                    >
+                      <InputGroup.Text id="subject-type-input">
+                        <FaInfoCircle className="me-2" /> Subject Name
+                      </InputGroup.Text>
+                    </OverlayTrigger>
+                    <FloatingLabel
+                      controlId="floatingSelectSubjectName"
+                      label="The name of the Subject the assessment will be done for."
+                    >
+                      <Form.Select
+                        aria-label="Floating label select example"
+                        onChange={(e) => {
+                          formData.current = {
+                            ...formData.current,
+                            subject_name: e.target.value,
+                          };
+                        }}
+                        defaultValue={""}
+                      >
+                        <option disabled value={""}>
+                          Select Subject Name
+                        </option>
+                        {renderSubjectNameOptions()}
+                      </Form.Select>
+                    </FloatingLabel>
+                  </InputGroup>
+                </Col>
+                <Col xs={5}>
+                  <InputGroup className="mb-3">
+                    <OverlayTrigger
+                      key="top"
+                      placement="top"
+                      overlay={
+                        <Tooltip id={`tooltip-top`}>
+                          The type of object (such as a web resource identified
+                          by the Owner) or a service provided by an Authority,
+                          Provider, or Manager, the assessment will be done for.
+                        </Tooltip>
+                      }
+                    >
+                      <InputGroup.Text id="subject-type-input">
+                        <FaInfoCircle className="me-2" /> Subject Type
+                      </InputGroup.Text>
+                    </OverlayTrigger>
+                    <FloatingLabel
+                      controlId="floatingSelectSubjectType"
+                      label="The type of object the assessment will  be done for."
+                    >
+                      <Form.Select
+                        aria-label="Floating label select example"
+                        onChange={(e) => {
+                          formData.current = {
+                            ...formData.current,
+                            subject_type: e.target.value,
+                          };
+                        }}
+                        defaultValue={formData.current["subject_type"]}
+                      >
+                        <option disabled value="">
+                          Select Subject Type
+                        </option>
+                        {renderSubjectTypeOptions()}
+                      </Form.Select>
+                    </FloatingLabel>
+                  </InputGroup>
+                </Col>
+                <Col className="d-flex justify-content-end">
+                  <InputGroup className="mb-3">
+                    <Button
+                      className="btn btn-primary btn centerButton"
+                      type="submit"
+                    >
+                      Apply
+                    </Button>
                   </InputGroup>
                   <InputGroup className="mb-3">
-                    <InputGroup.Text id="subject-type-input">
-                      Subject Type
-                    </InputGroup.Text>
-                    <Form.Control
-                      aria-label="Default"
-                      aria-describedby="inputGroup-sizing-default"
-                      onChange={(e) => {
+                    <Button
+                      className="btn btn-primary btn centerButton"
+                      type="submit"
+                      onClick={() => {
                         formData.current = {
                           ...formData.current,
-                          subject_type: e.target.value,
+                          subject_type: "",
+                          subject_name: "",
                         };
+                        handleReset();
                       }}
-                    />
+                    >
+                      Clear
+                    </Button>
                   </InputGroup>
-                  <Button
-                    className="btn btn-primary btn-large centerButton"
-                    type="submit"
-                  >
-                    Apply
-                  </Button>
-                </Form>
-              </Col>
-            </Row>
-          </Container>
+                </Col>
+              </Row>
+            </Container>
+          </Form>
         </Collapse>
       </div>
       {/* if list public call the Custom table with extra properties and the correct data function */}

@@ -150,3 +150,21 @@ export function useGetObjectsByActor({
     enabled: !!token && isRegistered && actorId !== undefined,
   });
 }
+
+export function useGetObjects({ size, page, token, isRegistered }: ApiOptions) {
+  return useQuery({
+    queryKey: ["objects", { size, page }],
+    queryFn: async () => {
+      const response = await APIClient(
+        token,
+      ).get<AssessmentSubjectListResponse>(
+        `/assessments/objects?size=${size}&page=${page}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered,
+  });
+}
