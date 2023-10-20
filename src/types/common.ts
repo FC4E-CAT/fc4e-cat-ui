@@ -89,7 +89,5 @@ export type TableExtraDataOps =
   | AssessmentFiltersType;
 
 export type AlertInfo = {
-  enabled: boolean;
-  type: string;
   message: string;
 };

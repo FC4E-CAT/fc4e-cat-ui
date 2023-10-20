@@ -25,7 +25,6 @@ import {
   FaIdBadge,
 } from "react-icons/fa";
 import { CustomTable } from "@/components";
-import { Alert } from "@/components";
 import {
   UserProfile,
   Actor,
@@ -35,10 +34,7 @@ import {
   ValidationProps,
 } from "@/types";
 
-const enum AlertType {
-  SUCCESS = "success",
-  DANGER = "danger",
-}
+import { toast } from "react-hot-toast";
 
 const enum ValidationStatus {
   APPROVED = "APPROVED",
@@ -58,8 +54,6 @@ function RequestValidation() {
 
   const [userProfile, setUserProfile] = useState<UserProfile>();
   const alert = useRef<AlertInfo>({
-    enabled: false,
-    type: AlertType.SUCCESS,
     message: "",
   });
   useEffect(() => {
@@ -135,22 +129,24 @@ function RequestValidation() {
     setOrganisationName(data.organisation_name);
     setOrganisationWebsite(data.organisation_website);
     setActorID(data.actor_id);
-    refetchValidationRequest()
+    const promise = refetchValidationRequest()
+      .catch((err) => {
+        alert.current = {
+          message: "Error during validation request submission.",
+        };
+        throw err; // throw again after you catch
+      })
       .then(() => {
         alert.current = {
-          enabled: true,
-          type: AlertType.SUCCESS,
           message: "Validation request succesfully submitted.",
         };
       })
-      .catch(() => {
-        alert.current = {
-          enabled: true,
-          type: AlertType.DANGER,
-          message: "Error during validation request submission.",
-        };
-      })
       .finally(() => navigate("/validations"));
+    toast.promise(promise, {
+      loading: "Submitting",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
   };
 
   const renderOptions = () => {
@@ -187,7 +183,6 @@ function RequestValidation() {
         className={`form-select ${errors.actor_id ? "is-invalid" : ""}`}
         id="actor_id"
         {...register("actor_id", {
-          // onChange: (e) => { actor_id.current = e.target.value; },
           required: true,
         })}
       >
@@ -213,9 +208,6 @@ function RequestValidation() {
 
   return (
     <div className="mt-4">
-      {alert.current.enabled && (
-        <Alert type={alert.current.type} message={alert.current.message} />
-      )}
       <h3 className="cat-view-heading">
         <FaIdBadge /> create new validation request
       </h3>
@@ -247,7 +239,6 @@ function RequestValidation() {
             id="organisation_role"
             aria-describedby="organisation_role_help"
             {...register("organisation_role", {
-              // onChange: (e) => { setOrganisationRole(e.target.value) },
               required: {
                 value: true,
                 message: "Organisation Role is required",
@@ -368,9 +359,7 @@ function RequestValidation() {
 
 function Validations(props: ValidationProps) {
   const navigate = useNavigate();
-  const [alert, setAlert] = useState<AlertInfo>({
-    enabled: false,
-    type: AlertType.SUCCESS,
+  const alert = useRef<AlertInfo>({
     message: "",
   });
   const params = useParams();
@@ -520,22 +509,24 @@ function Validations(props: ValidationProps) {
               className="btn btn-danger mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.REJECTED);
-                mutateValidationUpdateStatus()
-                  .then(() => {
-                    setAlert({
-                      enabled: true,
-                      type: AlertType.SUCCESS,
-                      message: "Validation succesfully rejected.",
-                    });
-                  })
-                  .catch(() => {
-                    setAlert({
-                      enabled: true,
-                      type: AlertType.DANGER,
+                const promise = mutateValidationUpdateStatus()
+                  .catch((err) => {
+                    alert.current = {
                       message: "Error during validation rejection.",
-                    });
+                    };
+                    throw err;
+                  })
+                  .then(() => {
+                    alert.current = {
+                      message: "Validation succesfully rejected.",
+                    };
                   })
                   .finally(() => navigate("/validations"));
+                toast.promise(promise, {
+                  loading: "Rejecting",
+                  success: () => `${alert.current.message}`,
+                  error: () => `${alert.current.message}`,
+                });
               }}
             >
               Reject
@@ -572,23 +563,25 @@ function Validations(props: ValidationProps) {
             <button
               className="btn btn-success mr-2"
               onClick={() => {
-                setReviewStatus(ValidationStatus.APPROVED);
-                mutateValidationUpdateStatus()
-                  .then(() => {
-                    setAlert({
-                      enabled: true,
-                      type: AlertType.SUCCESS,
-                      message: "Validation succesfully approved.",
-                    });
-                  })
-                  .catch(() => {
-                    setAlert({
-                      enabled: true,
-                      type: AlertType.DANGER,
+                setReviewStatus(ValidationStatus.REJECTED);
+                const promise = mutateValidationUpdateStatus()
+                  .catch((err) => {
+                    alert.current = {
                       message: "Error during validation approval.",
-                    });
+                    };
+                    throw err;
+                  })
+                  .then(() => {
+                    alert.current = {
+                      message: "Validation succesfully approved.",
+                    };
                   })
                   .finally(() => navigate("/validations"));
+                toast.promise(promise, {
+                  loading: "Approving",
+                  success: () => `${alert.current.message}`,
+                  error: () => `${alert.current.message}`,
+                });
               }}
             >
               Approve
@@ -609,7 +602,6 @@ function Validations(props: ValidationProps) {
 
   return (
     <div className="mt-4">
-      {alert.enabled && <Alert type={alert.type} message={alert.message} />}
       {rejectCard}
       {approveCard}
       <div
@@ -643,9 +635,7 @@ function Validations(props: ValidationProps) {
 function ValidationDetails(props: ValidationProps) {
   const params = useParams();
   const navigate = useNavigate();
-  const [alert, setAlert] = useState<AlertInfo>({
-    enabled: false,
-    type: AlertType.SUCCESS,
+  const alert = useRef<AlertInfo>({
     message: "",
   });
   const isAdmin = useRef<boolean>(false);
@@ -698,22 +688,24 @@ function ValidationDetails(props: ValidationProps) {
               className="btn btn-danger mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.REJECTED);
-                mutateValidationUpdateStatus()
-                  .then(() => {
-                    setAlert({
-                      enabled: true,
-                      type: AlertType.SUCCESS,
-                      message: "Validation succesfully rejected.",
-                    });
-                  })
-                  .catch(() => {
-                    setAlert({
-                      enabled: true,
-                      type: AlertType.DANGER,
+                const promise = mutateValidationUpdateStatus()
+                  .catch((err) => {
+                    alert.current = {
                       message: "Error during validation rejection.",
-                    });
+                    };
+                    throw err;
+                  })
+                  .then(() => {
+                    alert.current = {
+                      message: "Validation succesfully rejected.",
+                    };
                   })
                   .finally(() => navigate("/admin/validations"));
+                toast.promise(promise, {
+                  loading: "Rejecting",
+                  success: () => `${alert.current.message}`,
+                  error: () => `${alert.current.message}`,
+                });
               }}
             >
               Reject
@@ -751,22 +743,24 @@ function ValidationDetails(props: ValidationProps) {
               className="btn btn-success mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.APPROVED);
-                mutateValidationUpdateStatus()
-                  .then(() => {
-                    setAlert({
-                      enabled: true,
-                      type: AlertType.SUCCESS,
-                      message: "Validation succesfully approved.",
-                    });
-                  })
-                  .catch(() => {
-                    setAlert({
-                      enabled: true,
-                      type: AlertType.DANGER,
+                const promise = mutateValidationUpdateStatus()
+                  .catch((err) => {
+                    alert.current = {
                       message: "Error during validation approval.",
-                    });
+                    };
+                    throw err;
+                  })
+                  .then(() => {
+                    alert.current = {
+                      message: "Validation succesfully approved.",
+                    };
                   })
                   .finally(() => navigate("/admin/validations"));
+                toast.promise(promise, {
+                  loading: "Approving",
+                  success: () => `${alert.current.message}`,
+                  error: () => `${alert.current.message}`,
+                });
               }}
             >
               Approve
@@ -788,7 +782,6 @@ function ValidationDetails(props: ValidationProps) {
   if (keycloak?.token) {
     return (
       <div className="mt-4">
-        {alert.enabled && <Alert type={alert.type} message={alert.message} />}
         {rejectCard}
         {approveCard}
         <div
