@@ -51,7 +51,7 @@ export const AssessmentSelectSubject = (
       <Row className="mb-2">
         <div className="input-group mb-3">
           <label className="input-group-text" htmlFor="inputGroupSelect01">
-            Subject
+            * Subject
           </label>
           <select
             className="form-select"
@@ -86,8 +86,13 @@ export const AssessmentSelectSubject = (
               })}
           </select>
           <button
-            className="btn btn-outline-danger"
+            className={
+              selected !== "-1"
+                ? "btn btn-outline-danger"
+                : "btn btn-outline-danger disabled"
+            }
             type="button"
+            disabled={selected === "-1" ? true : false}
             onClick={() => {
               setSelected("-1");
               props.onSubjectChange({
@@ -105,7 +110,7 @@ export const AssessmentSelectSubject = (
         <Row>
           <InputGroup className="mb-3">
             <InputGroup.Text id="label-info-subject-id">
-              Subject Id:
+              * Subject Id:
             </InputGroup.Text>
             <Form.Control
               disabled={selected != "-1"}
@@ -124,7 +129,7 @@ export const AssessmentSelectSubject = (
         <Row>
           <InputGroup className="mb-3">
             <InputGroup.Text id="label-info-subject-name">
-              Subject Name:
+              * Subject Name:
             </InputGroup.Text>
             <Form.Control
               disabled={selected != "-1"}
@@ -143,7 +148,7 @@ export const AssessmentSelectSubject = (
         <Row>
           <InputGroup className="mb-3">
             <InputGroup.Text id="label-info-subject-type">
-              Subject Type:
+              * Subject Type:
             </InputGroup.Text>
             <Form.Control
               disabled={selected != "-1"}
