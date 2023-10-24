@@ -32,21 +32,23 @@ export function ProtectedRoute() {
     const initializeKeycloak = async () => {
       const keycloakInstance = new Keycloak(KeycloakConfig);
       try {
-        const authenticated = await keycloakInstance.init({
-          scope: "openid voperson_id",
-          onLoad: "login-required",
-          checkLoginIframe: false,
-          pkceMethod: "S256",
-        });
-        setKeycloak(keycloakInstance);
-        setAuthenticated(authenticated);
+        if (!authenticated) {
+          const authenticated = await keycloakInstance.init({
+            scope: "openid voperson_id",
+            onLoad: "login-required",
+            checkLoginIframe: false,
+            pkceMethod: "S256",
+          });
+          setKeycloak(keycloakInstance);
+          setAuthenticated(authenticated);
+        }
       } catch (error) {
         console.error("Failed to initialize Keycloak:", error);
       }
     };
 
     initializeKeycloak();
-  }, [setAuthenticated, setKeycloak]);
+  }, [authenticated, setAuthenticated, setKeycloak]);
 
   useEffect(() => {
     if (keycloak?.token) {
