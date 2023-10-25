@@ -17,3 +17,19 @@ export function handleBackendError(error: AxiosError) {
     return error.response.data as ApiServiceErr;
   }
 }
+
+export function getUniqueValuesForKey<T>(
+  jsonData: T[],
+  key: keyof T,
+): Array<T[keyof T]> {
+  console.log(jsonData);
+  const uniqueValuesSet = new Set<T[keyof T]>();
+  if (jsonData !== undefined && jsonData != null) {
+    for (const item of jsonData) {
+      if (Object.prototype.hasOwnProperty.call(item, key)) {
+        uniqueValuesSet.add(item[key]);
+      }
+    }
+  }
+  return Array.from(uniqueValuesSet.values());
+}

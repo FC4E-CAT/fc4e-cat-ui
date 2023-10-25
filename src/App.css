@@ -142,3 +142,14 @@ footer a {
   margin-bottom: auto !important;
   text-align: center;
 }
+
+@media (width < 1200px) {
+  .form-floating > label {
+    display: none;
+  }
+
+  .form-floating > .form-select {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
