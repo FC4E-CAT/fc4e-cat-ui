@@ -35,6 +35,7 @@ import {
 } from "@/types";
 
 import { toast } from "react-hot-toast";
+import { Row, Col, InputGroup } from "react-bootstrap";
 
 const enum ValidationStatus {
   APPROVED = "APPROVED",
@@ -211,139 +212,150 @@ function RequestValidation() {
       <h3 className="cat-view-heading">
         <FaIdBadge /> create new validation request
       </h3>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="organization_name" className="form-label fw-bold">
-            Organization Name (*)
-          </label>
-          <Select
-            className="basic-single"
-            classNamePrefix="select"
-            onInputChange={(value) => setInputValue(value)}
-            onChange={(s) => updateForm(s)}
-            isSearchable={true}
-            name="organisation_name"
-            options={renderOptions()}
-            filterOption={() => true}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="organization_role" className="form-label fw-bold">
-            Organization Role (*)
-          </label>
-          <input
-            type="text"
-            className={`form-control ${
-              errors.organisation_role ? "is-invalid" : ""
-            }`}
-            id="organisation_role"
-            aria-describedby="organisation_role_help"
-            {...register("organisation_role", {
-              required: {
-                value: true,
-                message: "Organisation Role is required",
-              },
-            })}
-          />
-          <ErrorMessage
-            errors={errors}
-            name="organisation_role"
-            render={({ message }) => <p>{message}</p>}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="organization_source" className="form-label fw-bold">
-            Organization Source (*)
-          </label>
-          <input
-            type="text"
-            className={`form-control ${
-              errors.organisation_source ? "is-invalid" : ""
-            }`}
-            id="organisation_source"
-            aria-describedby="organisation_source_help"
-            disabled={true}
-            {...register("organisation_source", {
-              required: {
-                value: true,
-                message: "Organisation Source is required",
-              },
-              minLength: { value: 3, message: "Minimum length is 3" },
-            })}
-          />
-          <ErrorMessage
-            errors={errors}
-            name="organisation_source"
-            render={({ message }) => <p>{message}</p>}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="organization_website" className="form-label fw-bold">
-            Organization Website (*)
-          </label>
-          <input
-            type="text"
-            className={`form-control ${
-              errors.organisation_website ? "is-invalid" : ""
-            }`}
-            id="organisation_website"
-            aria-describedby="organisation_website_help"
-            disabled={true}
-            {...register("organisation_website", {
-              required: {
-                value: true,
-                message: "Organisation Website is required",
-              },
-            })}
-          />
-          <ErrorMessage
-            errors={errors}
-            name="organisation_website"
-            render={({ message }) => <p>{message}</p>}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          {actors && actors.length > 0 ? actors_select_div : null}
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="user_name" className="form-label fw-bold">
-            User Name
-          </label>
-          <input
-            type="text"
-            className={`form-control`}
-            id="user_name"
-            aria-describedby="user_name_help"
-            disabled={true}
-            value={userProfile?.name || ""}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="user_surname" className="form-label fw-bold">
-            User Surname
-          </label>
-          <input
-            type="text"
-            className={`form-control`}
-            id="user_surname"
-            aria-describedby="user_surname_help"
-            disabled={true}
-            value={userProfile?.surname || ""}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="user_email" className="form-label fw-bold">
-            User Email
-          </label>
-          <input
-            type="text"
-            className={`form-control`}
-            id="user_email"
-            aria-describedby="user_email_help"
-            disabled={true}
-            value={userProfile?.email || ""}
-          />
-        </div>
+      <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
+        <Row>
+          <Col className="mt-3" xs={12} md={6}>
+            <label htmlFor="organization_name" className="form-label fw-bold">
+              Organization Name (*)
+            </label>
+            <Select
+              className="basic-single"
+              classNamePrefix="select"
+              onInputChange={(value) => setInputValue(value)}
+              onChange={(s) => updateForm(s)}
+              isSearchable={true}
+              name="organisation_name"
+              options={renderOptions()}
+              filterOption={() => true}
+            />
+          </Col>
+          <Col className="mt-3" xs={12} md={3}>
+            <label htmlFor="organization_source" className="form-label fw-bold">
+              Organization Source (*)
+            </label>
+            <input
+              type="text"
+              className={`form-control ${
+                errors.organisation_source ? "is-invalid" : ""
+              }`}
+              id="organisation_source"
+              aria-describedby="organisation_source_help"
+              disabled={true}
+              {...register("organisation_source", {
+                required: {
+                  value: true,
+                  message: "Organisation Source is required",
+                },
+                minLength: { value: 3, message: "Minimum length is 3" },
+              })}
+            />
+            <ErrorMessage
+              errors={errors}
+              name="organisation_source"
+              render={({ message }) => <p>{message}</p>}
+            />
+          </Col>
+          <Col className="mt-3" xs={12} md={3}>
+            <label
+              htmlFor="organization_website"
+              className="form-label fw-bold"
+            >
+              Organization Website (*)
+            </label>
+            <input
+              type="text"
+              className={`form-control ${
+                errors.organisation_website ? "is-invalid" : ""
+              }`}
+              id="organisation_website"
+              aria-describedby="organisation_website_help"
+              disabled={true}
+              {...register("organisation_website", {
+                required: {
+                  value: true,
+                  message: "Organisation Website is required",
+                },
+              })}
+            />
+            <ErrorMessage
+              errors={errors}
+              name="organisation_website"
+              render={({ message }) => <p>{message}</p>}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col className="mt-3" xs={12} md={6}>
+            <label htmlFor="organization_role" className="form-label fw-bold">
+              Organization Role (*)
+            </label>
+            <input
+              type="text"
+              className={`form-control ${
+                errors.organisation_role ? "is-invalid" : ""
+              }`}
+              id="organisation_role"
+              aria-describedby="organisation_role_help"
+              {...register("organisation_role", {
+                required: {
+                  value: true,
+                  message: "Organisation Role is required",
+                },
+              })}
+            />
+            <ErrorMessage
+              errors={errors}
+              name="organisation_role"
+              render={({ message }) => <p>{message}</p>}
+            />
+          </Col>
+          <Col className="mt-3" xs={12} md={6}>
+            {actors && actors.length > 0 ? actors_select_div : null}
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <span className="form-label fw-bold">User Details (*)</span>
+          <Col sm={12} md={4}>
+            <InputGroup className="mb-2">
+              <InputGroup.Text>Name: </InputGroup.Text>
+              <input
+                type="text"
+                className={`form-control`}
+                id="user_name"
+                aria-describedby="user_name_help"
+                disabled={true}
+                value={userProfile?.name || ""}
+              />
+            </InputGroup>
+          </Col>
+          <Col sm={12} md={4}>
+            <InputGroup className="mb-2">
+              <InputGroup.Text>Surname: </InputGroup.Text>
+              <input
+                type="text"
+                className={`form-control`}
+                id="user_name"
+                aria-describedby="user_name_help"
+                disabled={true}
+                value={userProfile?.surname || ""}
+              />
+            </InputGroup>
+          </Col>
+          <Col sm={12} md={4}>
+            <InputGroup className="mb-2">
+              <InputGroup.Text>Email: </InputGroup.Text>
+              <input
+                type="text"
+                className={`form-control`}
+                id="user_name"
+                aria-describedby="user_name_help"
+                disabled={true}
+                value={userProfile?.email || ""}
+              />
+            </InputGroup>
+          </Col>
+        </Row>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <button className="btn btn-light border-black" type="submit">
             Submit
