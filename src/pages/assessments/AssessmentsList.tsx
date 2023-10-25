@@ -180,7 +180,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 enableColumnFilter: false,
               },
               {
-                accessorKey: "access",
+                accessorKey: "published",
                 header: () => <span>access</span>,
                 cell: (info) => {
                   return info.getValue() === true ? "Public" : "Private";

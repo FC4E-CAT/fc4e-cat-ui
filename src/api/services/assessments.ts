@@ -34,7 +34,6 @@ export function useUpdateAssessment(
   assessmentID: string | undefined,
 ) {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   return useMutation({
     mutationFn: (putData: { assessment_doc: Assessment }) => {
       return APIClient(token).put(`/assessments/${assessmentID}`, putData);
@@ -49,7 +48,6 @@ export function useUpdateAssessment(
     // for the time being redirect to assessment list
     onSuccess: () => {
       queryClient.invalidateQueries(["assessment", { assessmentID }]);
-      navigate("/assessments");
     },
   });
 }

@@ -28,7 +28,7 @@ import {
   useGetAssessment,
   useUpdateAssessment,
 } from "@/api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AssessmentEvalStats } from "./components/AssessmentEvalStats";
 import { DebugJSON } from "./components/DebugJSON";
 import { AssessmentSelectActor } from "./components/AssessmentSelectActor";
@@ -63,6 +63,8 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   });
   const [templateData, setTemplateData] = useState<Assessment>();
   const { valID, asmtID } = useParams();
+
+  const navigate = useNavigate();
   // const [actorId, setActorId] = useState<number>();
   // for the time being get the only one assessment template supported
   // with templateId: 1 (pid policy) and actorId: 6 (for pid owner)
@@ -152,6 +154,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   }, [validations]);
 
   const mutationCreateAssessment = useCreateAssessment(keycloak?.token || "");
+
   const mutationUpdateAssessment = useUpdateAssessment(
     keycloak?.token || "",
     asmtID,
@@ -212,7 +215,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     }
   }
 
-  function handleUpdateAssessment() {
+  function handleUpdateAssessment(exit: boolean) {
     if (assessment && asmtID) {
       const promise = mutationUpdateAssessment
         .mutateAsync({
@@ -228,6 +231,9 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
           alert.current = {
             message: "Assessment succesfully updated.",
           };
+          if (exit) {
+            navigate("/assessments");
+          }
         });
       toast.promise(promise, {
         loading: "Updating",
@@ -551,21 +557,47 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
             </div>
             {/* Add SAVE button here and cancel */}
             <div>
-              <Button
-                disabled={!wizardTabActive}
-                className="ms-5 btn btn-success px-5"
-                onClick={() => {
-                  if (createMode) {
+              {createMode ? (
+                <Button
+                  disabled={!wizardTabActive}
+                  className="ms-5 btn btn-success px-5"
+                  onClick={() => {
                     handleCreateAssessment();
-                  } else {
-                    handleUpdateAssessment();
-                  }
-                }}
-              >
-                Save
-              </Button>
+                  }}
+                >
+                  Create
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    disabled={!wizardTabActive}
+                    className="ms-2 btn btn-success px-5"
+                    onClick={() => {
+                      handleUpdateAssessment(false);
+                    }}
+                  >
+                    Save
+                  </Button>
+
+                  <Button
+                    disabled={
+                      !(
+                        assessment &&
+                        assessment.result &&
+                        assessment.result.compliance !== null
+                      )
+                    }
+                    className="ms-2 btn btn-success px-5"
+                    onClick={() => {
+                      handleUpdateAssessment(true);
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </>
+              )}
               <Link
-                className="btn btn-secondary ms-2 px-4"
+                className="btn btn-secondary ms-5 px-4"
                 to={createMode ? "/assess" : "/assessments"}
               >
                 Cancel
