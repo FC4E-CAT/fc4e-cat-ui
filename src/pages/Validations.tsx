@@ -177,7 +177,7 @@ function RequestValidation() {
   const actors_select_div = (
     <>
       <label htmlFor="actors" className="form-label fw-bold">
-        Actor
+        * Actor
       </label>
       <select
         className={`form-select ${errors.actor_id ? "is-invalid" : ""}`}
@@ -214,7 +214,7 @@ function RequestValidation() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="organization_name" className="form-label fw-bold">
-            Organization Name
+            * Organization Name
           </label>
           <Select
             className="basic-single"
@@ -229,7 +229,7 @@ function RequestValidation() {
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="organization_role" className="form-label fw-bold">
-            Organization Role
+            * Organization Role
           </label>
           <input
             type="text"
@@ -253,7 +253,7 @@ function RequestValidation() {
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="organization_source" className="form-label fw-bold">
-            Organization Source
+            * Organization Source
           </label>
           <input
             type="text"
@@ -279,7 +279,7 @@ function RequestValidation() {
         </div>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
           <label htmlFor="organization_website" className="form-label fw-bold">
-            Organization Website
+            * Organization Website
           </label>
           <input
             type="text"

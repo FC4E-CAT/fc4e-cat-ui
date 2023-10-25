@@ -35,7 +35,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           <Row>
             <Col>
               <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-name">Name:</InputGroup.Text>
+                <InputGroup.Text id="label-info-name">* Name:</InputGroup.Text>
                 <Form.Control
                   id="input-info-name"
                   value={props.name}
