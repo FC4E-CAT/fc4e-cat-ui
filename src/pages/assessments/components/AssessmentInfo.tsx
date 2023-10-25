@@ -1,10 +1,25 @@
 /**
  * Component to display and edit the assessment info
  */
-import { InputGroup, Form, Col, Row, Accordion } from "react-bootstrap";
+import {
+  InputGroup,
+  Form,
+  Col,
+  Row,
+  Accordion,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
 import { AssessmentSubject, UserProfile, AssessmentActor } from "@/types";
 import { AssessmentSelectSubject } from "./AssessmentSelectSubject";
-import { FaCog, FaInfo, FaLock, FaOrcid, FaUserAlt } from "react-icons/fa";
+import {
+  FaCog,
+  FaInfo,
+  FaLock,
+  FaOrcid,
+  FaUserAlt,
+  FaInfoCircle,
+} from "react-icons/fa";
 
 interface AssessmentInfoProps {
   id?: string;
@@ -35,9 +50,23 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           <Row>
             <Col>
               <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-name">* Name:</InputGroup.Text>
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>
+                      A unique name for the assessment. Give a distinguishing
+                      name for this assessment and any possible future versions
+                    </Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-info-name">
+                    <FaInfoCircle className="me-2" /> Name (*)
+                  </InputGroup.Text>
+                </OverlayTrigger>
                 <Form.Control
                   id="input-info-name"
+                  placeholder="A unique name for the assessment"
                   value={props.name}
                   onChange={(e) => {
                     props.onNameChange(e.target.value);
@@ -51,7 +80,19 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           <Row>
             <Col>
               <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-type">Type:</InputGroup.Text>
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>
+                      The type of assessment (e.g. PID Policy)
+                    </Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-info-type">
+                    <FaInfoCircle className="me-2" /> Type
+                  </InputGroup.Text>
+                </OverlayTrigger>
                 <Form.Control
                   id="input-info-type"
                   placeholder={props.type}
@@ -160,8 +201,10 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
         </Accordion.Header>
         <Accordion.Body>
           <Row className="m-2">
-            You can choose to make the assessment public - it is private by
-            deafult
+            If you are not yet ready to share an assessment result or it is
+            being done for internal purposes only, keep it set to ‘private’.
+            Only the results of ‘public’ assessments are visible to others. - it
+            is private by deafult
             <Form>
               <Form.Check
                 className={`mt-2 ${
