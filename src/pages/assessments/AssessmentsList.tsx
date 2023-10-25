@@ -109,14 +109,14 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 enableColumnFilter: false,
               },
               {
-                accessorKey: "subject_name",
-                header: () => <span>subject name</span>,
+                accessorKey: "subject_type",
+                header: () => <span>subject type</span>,
                 cell: (info) => info.getValue(),
                 enableColumnFilter: false,
               },
               {
-                accessorKey: "subject_type",
-                header: () => <span>subject type</span>,
+                accessorKey: "subject_name",
+                header: () => <span>subject name</span>,
                 cell: (info) => info.getValue(),
                 enableColumnFilter: false,
               },
@@ -188,14 +188,14 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 enableColumnFilter: false,
               },
               {
-                accessorKey: "subject_name",
-                header: () => <span>subject name</span>,
+                accessorKey: "subject_type",
+                header: () => <span>subject type</span>,
                 cell: (info) => info.getValue(),
                 enableColumnFilter: false,
               },
               {
-                accessorKey: "subject_type",
-                header: () => <span>subject type</span>,
+                accessorKey: "subject_name",
+                header: () => <span>subject name</span>,
                 cell: (info) => info.getValue(),
                 enableColumnFilter: false,
               },
@@ -311,47 +311,10 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       placement="top"
                       overlay={
                         <Tooltip id={`tooltip-top`}>
-                          The name of the Subject the assessment will be done
-                          for
-                        </Tooltip>
-                      }
-                    >
-                      <InputGroup.Text id="subject-type-input">
-                        <FaInfoCircle className="me-2" /> Subject Name
-                      </InputGroup.Text>
-                    </OverlayTrigger>
-                    <FloatingLabel
-                      controlId="floatingSelectSubjectName"
-                      label="The name of the Subject the assessment will be done for."
-                    >
-                      <Form.Select
-                        aria-label="Floating label select example"
-                        onChange={(e) => {
-                          formData.current = {
-                            ...formData.current,
-                            subject_name: e.target.value,
-                          };
-                        }}
-                        defaultValue={""}
-                      >
-                        <option disabled value={""}>
-                          Select Subject Name
-                        </option>
-                        {renderSubjectNameOptions()}
-                      </Form.Select>
-                    </FloatingLabel>
-                  </InputGroup>
-                </Col>
-                <Col xs={5}>
-                  <InputGroup className="mb-3">
-                    <OverlayTrigger
-                      key="top"
-                      placement="top"
-                      overlay={
-                        <Tooltip id={`tooltip-top`}>
-                          The type of object (such as a web resource identified
-                          by the Owner) or a service provided by an Authority,
-                          Provider, or Manager, the assessment will be done for.
+                          The type of the Subject (such as a web resource
+                          identified by the Owner) or a service provided by an
+                          Authority, Provider, or Manager, the assessment will
+                          be done for.
                         </Tooltip>
                       }
                     >
@@ -361,7 +324,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     </OverlayTrigger>
                     <FloatingLabel
                       controlId="floatingSelectSubjectType"
-                      label="The type of object the assessment will  be done for."
+                      label="The type of the Subject of the issued assessment"
                     >
                       <Form.Select
                         aria-label="Floating label select example"
@@ -381,10 +344,48 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     </FloatingLabel>
                   </InputGroup>
                 </Col>
-                <Col className="d-flex justify-content-end">
+                <Col xs={5}>
+                  <InputGroup className="mb-3">
+                    <OverlayTrigger
+                      key="top"
+                      placement="top"
+                      overlay={
+                        <Tooltip id={`tooltip-top`}>
+                          The name of the Subject the assessment will be done
+                          for
+                        </Tooltip>
+                      }
+                    >
+                      <InputGroup.Text id="subject-type-input">
+                        <FaInfoCircle className="me-2" /> Subject Name
+                      </InputGroup.Text>
+                    </OverlayTrigger>
+                    <FloatingLabel
+                      controlId="floatingSelectSubjectName"
+                      label="The name of the Subject for the issued assessment"
+                    >
+                      <Form.Select
+                        aria-label="Floating label select example"
+                        onChange={(e) => {
+                          formData.current = {
+                            ...formData.current,
+                            subject_name: e.target.value,
+                          };
+                        }}
+                        defaultValue={""}
+                      >
+                        <option disabled value={""}>
+                          Select Subject Name
+                        </option>
+                        {renderSubjectNameOptions()}
+                      </Form.Select>
+                    </FloatingLabel>
+                  </InputGroup>
+                </Col>
+                <Col className="d-flex justify-content-end filter-div">
                   <InputGroup className="mb-3">
                     <Button
-                      className="btn btn-primary btn centerButton"
+                      className="btn btn-success btn centerButton"
                       type="submit"
                     >
                       Apply
@@ -421,6 +422,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           extraDataOps={{
             actorId: actorId,
             assessmentTypeId: assessmentTypeId,
+            ...filters,
           }}
         />
       ) : (

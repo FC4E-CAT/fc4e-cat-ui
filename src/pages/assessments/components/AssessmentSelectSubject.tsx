@@ -3,7 +3,14 @@
  * as a basis for a new assessment
  */
 import { useContext, useEffect, useState } from "react";
-import { InputGroup, Form, Row } from "react-bootstrap";
+import {
+  InputGroup,
+  Form,
+  Row,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
+import { FaInfoCircle } from "react-icons/fa";
 import { AuthContext } from "@/auth";
 import { AssessmentSubject } from "@/types";
 import { useGetObjectsByActor } from "@/api";
@@ -51,7 +58,7 @@ export const AssessmentSelectSubject = (
       <Row className="mb-2">
         <div className="input-group mb-3">
           <label className="input-group-text" htmlFor="inputGroupSelect01">
-            * Subject
+            Subject (*)
           </label>
           <select
             className="form-select"
@@ -109,13 +116,25 @@ export const AssessmentSelectSubject = (
       <Row>
         <Row>
           <InputGroup className="mb-3">
-            <InputGroup.Text id="label-info-subject-id">
-              * Subject Id:
-            </InputGroup.Text>
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id={`tooltip-top`}>
+                  A unique identifier for the current subject - this can be a
+                  URL, a string representing the service or organisation being
+                  assessed, or the PID of a resource owned by you.
+                </Tooltip>
+              }
+            >
+              <InputGroup.Text id="label-info-subject-id">
+                <FaInfoCircle className="me-2" /> Subject ID (*)
+              </InputGroup.Text>
+            </OverlayTrigger>
             <Form.Control
               disabled={selected != "-1"}
               id="input-info-subject-id"
-              placeholder="Fill custom subject id"
+              placeholder="A unique identifier for the current subject"
               value={props.subject?.id || ""}
               onChange={(e) => {
                 props.onSubjectChange(
@@ -128,13 +147,23 @@ export const AssessmentSelectSubject = (
         </Row>
         <Row>
           <InputGroup className="mb-3">
-            <InputGroup.Text id="label-info-subject-name">
-              * Subject Name:
-            </InputGroup.Text>
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id={`tooltip-top`}>
+                  The name of the subject of the assessment as identified above
+                </Tooltip>
+              }
+            >
+              <InputGroup.Text id="label-info-subject-name">
+                <FaInfoCircle className="me-2" /> Subject Name (*)
+              </InputGroup.Text>
+            </OverlayTrigger>
             <Form.Control
               disabled={selected != "-1"}
               id="input-info-subject-name"
-              placeholder="Fill custom subject name"
+              placeholder="The name of the subject of the assessment as identified above"
               value={props.subject?.name || ""}
               onChange={(e) => {
                 props.onSubjectChange(
@@ -147,13 +176,25 @@ export const AssessmentSelectSubject = (
         </Row>
         <Row>
           <InputGroup className="mb-3">
-            <InputGroup.Text id="label-info-subject-type">
-              * Subject Type:
-            </InputGroup.Text>
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id={`tooltip-top`}>
+                  The type of object (such as a web resource identified by the
+                  owner) or service provided by an authority, provider, or
+                  manager, for which the assessment will be completed.
+                </Tooltip>
+              }
+            >
+              <InputGroup.Text id="label-info-subject-type">
+                <FaInfoCircle className="me-2" /> Subject Type (*)
+              </InputGroup.Text>
+            </OverlayTrigger>
             <Form.Control
               disabled={selected != "-1"}
               id="input-info-subject-type"
-              placeholder="Fill custom subject type"
+              placeholder="The type of object for which the assessment will  be completed"
               value={props.subject?.type || ""}
               onChange={(e) => {
                 props.onSubjectChange(

@@ -72,7 +72,7 @@ export default function ProfileUpdate() {
         <Row className="mb-2">
           <Col>
             <Form.Group>
-              <label htmlFor="inputName">* Name:</label>
+              <label htmlFor="inputName">Name (*):</label>
               <input
                 {...register("name", {
                   required: { value: true, message: "Name is required" },
@@ -90,7 +90,7 @@ export default function ProfileUpdate() {
 
           <Col>
             <Form.Group>
-              <label htmlFor="inputSurname">* Surname:</label>
+              <label htmlFor="inputSurname">Surname (*):</label>
               <input
                 {...register("surname", {
                   required: { value: true, message: "Surname is required" },
@@ -108,7 +108,7 @@ export default function ProfileUpdate() {
         </Row>
 
         <Form.Group>
-          <label htmlFor="inputEmail">* Email address:</label>
+          <label htmlFor="inputEmail">Email address (*):</label>
           <input
             {...register("email", {
               required: { value: true, message: "Email is required" },

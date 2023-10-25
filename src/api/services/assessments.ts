@@ -85,13 +85,18 @@ export function useGetPublicAssessments({
   sortBy,
   assessmentTypeId,
   actorId,
+  ...filters
 }: ApiOptions) {
+  let url = `/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}&sortby=${sortBy}`;
+  Object.keys(filters).forEach((k: string) => {
+    if (filters[k as keyof typeof filters] !== "") {
+      url = url.concat(`&${k}=${filters[k as keyof typeof filters]}`);
+    }
+  });
   return useQuery({
-    queryKey: ["public-owner-assessments", { size, page, sortBy }],
+    queryKey: ["public-owner-assessments", { size, page, sortBy, ...filters }],
     queryFn: async () => {
-      const response = await APIClient().get<AssessmentListResponse>(
-        `/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}&sortby=${sortBy}`,
-      );
+      const response = await APIClient().get<AssessmentListResponse>(url);
       return response.data;
     },
     onError: (error: AxiosError) => {
