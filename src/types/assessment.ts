@@ -177,12 +177,13 @@ export type ActorOrganisationMapping = {
 };
 
 export interface AssessmentListItem {
-  id: number;
+  id: string;
   user_id: string;
   validation_id: number;
   created_on: number;
   updated_on: string;
   template_id: number;
+  published: boolean;
 }
 
 export type AssessmentListResponse = ResponsePage<AssessmentListItem[]>;

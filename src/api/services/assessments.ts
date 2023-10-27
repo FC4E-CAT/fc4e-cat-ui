@@ -29,6 +29,19 @@ export function useCreateAssessment(token: string) {
   });
 }
 
+export function useDeleteAssessment(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assessmentId: string) => {
+      return APIClient(token).delete(`/assessments/${assessmentId}`);
+    },
+    // on success refresh assessments query (so that the deleted assessment dissapears from list)
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessments"]);
+    },
+  });
+}
+
 export function useUpdateAssessment(
   token: string,
   assessmentID: string | undefined,
