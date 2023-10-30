@@ -7,6 +7,7 @@ import {
   FaInfoCircle,
   FaPlus,
   FaFilter,
+  FaTimes,
 } from "react-icons/fa";
 import {
   Collapse,
@@ -20,15 +21,19 @@ import {
   OverlayTrigger,
   Tooltip,
 } from "react-bootstrap";
-import { AssessmentListItem, AssessmentFiltersType } from "@/types";
+import { AssessmentListItem, AssessmentFiltersType, AlertInfo } from "@/types";
 import {
   useGetAssessments,
   useGetPublicAssessments,
   useGetObjects,
+  useDeleteAssessment,
 } from "@/api";
 import { AuthContext } from "@/auth";
 import { getUniqueValuesForKey } from "@/utils";
 import { Link } from "react-router-dom";
+import { DeleteModal } from "@/components/DeleteModal";
+
+import { toast } from "react-hot-toast";
 
 /**
  * ComplianceBadge gets a compliance value (null, false, true) and renders
@@ -53,6 +58,14 @@ interface AssessmentListProps {
   listPublic?: boolean;
 }
 
+interface DeleteModalConfig {
+  show: boolean;
+  title: string;
+  message: string;
+  itemId: string;
+  itemName: string;
+}
+
 function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const { keycloak } = useContext(AuthContext)!;
   // get the extra url parameters when in public list mode from url
@@ -60,6 +73,21 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const actorName = urlParams.get("actor-name");
   const actorIdParam = urlParams.get("actor-id");
   const assessmentTypeIdParam = urlParams.get("assessment-type-id");
+
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+
+  // Modal
+  const [deleteModalConfig, setDeleteModalConfig] = useState<DeleteModalConfig>(
+    {
+      show: false,
+      title: "Delete Assessment",
+      message: "Are you sure you want to delete the following assessment?",
+      itemId: "",
+      itemName: "",
+    },
+  );
 
   const actorId = actorIdParam ? parseInt(actorIdParam, 10) : -1;
   const assessmentTypeId = assessmentTypeIdParam
@@ -90,7 +118,47 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     }
   };
 
+  const mutationDeleteAssessment = useDeleteAssessment(keycloak?.token || "");
+
+  const handleDeleteConfirmed = () => {
+    if (deleteModalConfig.itemId) {
+      const promise = mutationDeleteAssessment
+        .mutateAsync(deleteModalConfig.itemId)
+        .catch((err) => {
+          alert.current = {
+            message: "Error during assessment deletion!",
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: "Assessment succesfully deleted.",
+          };
+          setDeleteModalConfig({
+            ...deleteModalConfig,
+            show: false,
+            itemId: "",
+            itemName: "",
+          });
+        });
+      toast.promise(promise, {
+        loading: "Deleting...",
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
+      });
+    }
+  };
+
   const cols = useMemo<ColumnDef<AssessmentListItem>[]>(() => {
+    const handleDeleteOpenModal = (item: AssessmentListItem) => {
+      setDeleteModalConfig({
+        ...deleteModalConfig,
+        show: true,
+        itemId: item.id,
+        itemName: "test",
+      });
+    };
+
     return listPublic
       ? [
           {
@@ -218,27 +286,38 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
               },
               {
                 id: "action",
-                accessorFn: (row) => row.id,
+                accessorFn: (row) => row,
                 enableColumnFilter: false,
                 header: () => <span>Actions</span>,
                 show: !listPublic,
                 cell: (info) => {
+                  const item: AssessmentListItem = info.getValue();
                   return !listPublic ? (
-                    <div className="edit-buttons btn-group shadow">
-                      <Link
-                        className="btn btn-secondary cat-action-view-link btn-sm "
-                        to={`/assessments/${info.getValue()}`}
-                      >
-                        <FaEdit />
-                      </Link>
-                    </div>
+                    <>
+                      <div className="edit-buttons btn-group shadow">
+                        <Link
+                          className="btn btn-secondary cat-action-view-link btn-sm "
+                          to={`/assessments/${item.id}`}
+                        >
+                          <FaEdit />
+                        </Link>
+                        <Button
+                          className="btn btn-secondary cat-action-reject-link btn-sm "
+                          onClick={() => {
+                            handleDeleteOpenModal(item);
+                          }}
+                        >
+                          <FaTimes />
+                        </Button>
+                      </div>
+                    </>
                   ) : null;
                 },
               },
             ],
           },
         ];
-  }, [listPublic]);
+  }, [listPublic, deleteModalConfig]);
 
   const formSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -267,6 +346,17 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
 
   return (
     <div className="mt-4">
+      <DeleteModal
+        show={deleteModalConfig.show}
+        title={deleteModalConfig.title}
+        message={deleteModalConfig.message}
+        itemId={deleteModalConfig.itemId}
+        itemName={deleteModalConfig.itemName}
+        onHide={() => {
+          setDeleteModalConfig({ ...deleteModalConfig, show: false });
+        }}
+        onDelete={handleDeleteConfirmed}
+      />
       <div className="d-flex justify-content-between my-2 container">
         <h3 className="cat-view-heading">
           <FaCheckCircle className="me-2" />
