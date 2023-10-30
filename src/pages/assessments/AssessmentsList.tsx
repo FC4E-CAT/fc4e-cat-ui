@@ -108,6 +108,8 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     size: 100,
     page: 1,
     token: keycloak?.token || "",
+    assessmentTypeId: assessmentTypeId,
+    actorId: actorId,
   });
 
   const formRef = useRef<HTMLFormElement>(null);

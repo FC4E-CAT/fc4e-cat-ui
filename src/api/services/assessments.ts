@@ -167,20 +167,31 @@ export function useGetObjectsByActor({
   });
 }
 
-export function useGetObjects({ size, page, token, isRegistered }: ApiOptions) {
+export function useGetObjects({
+  size,
+  page,
+  token,
+  assessmentTypeId,
+  actorId,
+}: ApiOptions) {
+  let url = "/assessments";
+  if (actorId && actorId > 0) {
+    url = url.concat(
+      `/public-objects/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`,
+    );
+  } else {
+    url = url.concat(`/objects?size=${size}&page=${page}`);
+  }
+  console.log(url);
   return useQuery({
-    queryKey: ["objects", { size, page }],
+    queryKey: ["objects", { size, page, actorId }],
     queryFn: async () => {
-      const response = await APIClient(
-        token,
-      ).get<AssessmentSubjectListResponse>(
-        `/assessments/objects?size=${size}&page=${page}`,
-      );
+      const response =
+        await APIClient(token).get<AssessmentSubjectListResponse>(url);
       return response.data;
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
-    enabled: !!token && isRegistered,
   });
 }
