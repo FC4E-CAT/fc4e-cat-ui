@@ -164,159 +164,149 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     return listPublic
       ? [
           {
-            header: " ",
-            columns: [
-              {
-                accessorKey: "name",
-                header: () => <span>name</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "type",
-                header: () => <span>type</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "subject_type",
-                header: () => <span>subject type</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "subject_name",
-                header: () => <span>subject name</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "organisation",
-                header: () => <span>organisation</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorFn: (row) => row.created_on,
-                id: "created_on",
-                cell: (info) => (
-                  <span className="cat-date-cell">
-                    {info.getValue().split(" ")[0]}
-                    <span className="ms-1 cat-full-date-info">
-                      <FaInfoCircle title={info.getValue()} />
-                    </span>
-                  </span>
-                ),
-                header: () => <span>Created On</span>,
-                enableColumnFilter: false,
-              },
-            ],
+            accessorKey: "name",
+            header: () => <span>name</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "type",
+            header: () => <span>type</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "subject_type",
+            header: () => <span>subject type</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "subject_name",
+            header: () => <span>subject name</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "organisation",
+            header: () => <span>organisation</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "created_on",
+            cell: (info) => (
+              <span className="cat-date-cell">
+                {String(info.getValue()).split(" ")[0]}
+                <span className="ms-1 cat-full-date-info">
+                  <FaInfoCircle title={info.getValue()} />
+                </span>
+              </span>
+            ),
+            header: () => <span>Created On</span>,
+            enableColumnFilter: false,
           },
         ]
       : [
           {
-            header: " ",
-            columns: [
-              {
-                accessorKey: "name",
-                header: () => <span>ID</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "type",
-                header: () => <span>type</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "compliance",
-                header: () => <span>compliance</span>,
-                cell: (info) => (
-                  <ComplianceBadge compliance={info.getValue()} />
-                ),
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "ranking",
-                header: () => <span>ranking</span>,
-                cell: (info) => {
-                  return info.getValue() === null ? (
-                    <ComplianceBadge compliance={null} />
-                  ) : (
-                    info.getValue()
-                  );
-                },
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "published",
-                header: () => <span>access</span>,
-                cell: (info) => {
-                  return info.getValue() === true ? "Public" : "Private";
-                },
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "subject_type",
-                header: () => <span>subject type</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "subject_name",
-                header: () => <span>subject name</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorKey: "organisation",
-                header: () => <span>organisation</span>,
-                cell: (info) => info.getValue(),
-                enableColumnFilter: false,
-              },
-              {
-                accessorFn: (row) => row.created_on,
-                id: "created_on",
-                cell: (info) => (
-                  <span className="cat-date-cell" title={info.getValue()}>
-                    {info.getValue().split(" ")[0]}
-                  </span>
-                ),
-                header: () => <span>Created On</span>,
-                enableColumnFilter: false,
-              },
-              {
-                id: "action",
-                accessorFn: (row) => row,
-                enableColumnFilter: false,
-                header: () => <span>Actions</span>,
-                show: !listPublic,
-                cell: (info) => {
-                  const item: AssessmentListItem = info.getValue();
-                  return !listPublic ? (
-                    <>
-                      <div className="edit-buttons btn-group shadow">
-                        <Link
-                          className="btn btn-secondary cat-action-view-link btn-sm "
-                          to={`/assessments/${item.id}`}
-                        >
-                          <FaEdit />
-                        </Link>
-                        <Button
-                          className="btn btn-secondary cat-action-reject-link btn-sm "
-                          onClick={() => {
-                            handleDeleteOpenModal(item);
-                          }}
-                        >
-                          <FaTimes />
-                        </Button>
-                      </div>
-                    </>
-                  ) : null;
-                },
-              },
-            ],
+            accessorKey: "name",
+            header: () => <span>ID</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "type",
+            header: () => <span>type</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "compliance",
+            header: () => <span>compliance</span>,
+            cell: (info) => (
+              <ComplianceBadge compliance={Boolean(info.getValue())} />
+            ),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "ranking",
+            header: () => <span>ranking</span>,
+            cell: (info) => {
+              return info.getValue() === null ? (
+                <ComplianceBadge compliance={null} />
+              ) : (
+                info.getValue()
+              );
+            },
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "published",
+            header: () => <span>access</span>,
+            cell: (info) => {
+              return info.getValue() === true ? "Public" : "Private";
+            },
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "subject_type",
+            header: () => <span>subject type</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "subject_name",
+            header: () => <span>subject name</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: "organisation",
+            header: () => <span>organisation</span>,
+            cell: (info) => info.getValue(),
+            enableColumnFilter: false,
+          },
+          {
+            accessorFn: (row) => row.created_on,
+            id: "created_on",
+            cell: (info) => (
+              <span className="cat-date-cell" title={String(info.getValue())}>
+                {String(info.getValue()).split(" ")[0]}
+              </span>
+            ),
+            header: () => <span>Created On</span>,
+            enableColumnFilter: false,
+          },
+          {
+            id: "action",
+            accessorFn: (row) => row,
+            enableColumnFilter: false,
+            header: () => <span>Actions</span>,
+            show: !listPublic,
+            cell: (info) => {
+              const item: AssessmentListItem =
+                info.getValue() as AssessmentListItem;
+              return !listPublic ? (
+                <>
+                  <div className="edit-buttons btn-group shadow">
+                    <Link
+                      className="btn btn-secondary cat-action-view-link btn-sm "
+                      to={`/assessments/${item.id}`}
+                    >
+                      <FaEdit />
+                    </Link>
+                    <Button
+                      className="btn btn-secondary cat-action-reject-link btn-sm "
+                      onClick={() => {
+                        handleDeleteOpenModal(item);
+                      }}
+                    >
+                      <FaTimes />
+                    </Button>
+                  </div>
+                </>
+              ) : null;
+            },
           },
         ];
   }, [listPublic, deleteModalConfig]);
