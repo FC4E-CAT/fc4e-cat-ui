@@ -600,7 +600,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                 className="btn btn-secondary ms-5 px-4"
                 to={createMode ? "/assess" : "/assessments"}
               >
-                Cancel
+                Close
               </Link>
             </div>
           </Card.Footer>
