@@ -40,20 +40,23 @@ function Profile() {
           <header className="col-3 h4 text-muted">Account</header>
           <section className="col-9">
             <div>
-              <strong>id:</strong> {userProfile?.id}
+              <strong>id: </strong>
+              <span id="user-id">{userProfile?.id}</span>
             </div>
             <div>
               <strong>type:</strong>
               {userProfile?.user_type === "Identified" && (
-                <span className="m-2">{userProfile?.user_type}</span>
+                <span id="identified" className="m-2">
+                  {userProfile?.user_type}
+                </span>
               )}
               {userProfile?.user_type === "Validated" && (
-                <span className="badge bg-success m-2">
+                <span id="validated" className="badge bg-success m-2">
                   <FaCheckCircle /> {userProfile?.user_type}
                 </span>
               )}
               {userProfile?.user_type === "Admin" && (
-                <span className="badge bg-primary m-2">
+                <span id="admin" className="badge bg-primary m-2">
                   <FaShieldAlt /> {userProfile?.user_type}
                 </span>
               )}
@@ -67,21 +70,22 @@ function Profile() {
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Personal Details</header>
           <section className="col-9">
-            <div>
+            <div id="name">
               <strong>Name:</strong> {userProfile?.name}
             </div>
-            <div>
+            <div id="surname">
               <strong>Surname:</strong> {userProfile?.surname}
             </div>
-            <div>
+            <div id="email">
               <strong>Email:</strong> {userProfile?.email}
             </div>
             {userProfile?.orcid_id && (
-              <div>
+              <div id="orcid">
                 <strong>ORCID:</strong> {userProfile?.orcid_id}
               </div>
             )}
             <Link
+              id="profile-update-button"
               to="/profile/update"
               className="btn btn-light border-black mt-4"
             >
@@ -93,7 +97,11 @@ function Profile() {
           <header className="col-3 h4 text-muted">Validation Requests</header>
           <section className="col-9 disabled">
             {!hasDetails && (
-              <div className="alert alert-warning" role="alert">
+              <div
+                id={"validation-alert-warning"}
+                className="alert alert-warning"
+                role="alert"
+              >
                 <FaLock /> You should update your personal details in order to
                 be able to create validation requests
               </div>
