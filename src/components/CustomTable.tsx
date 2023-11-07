@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useContext } from "react";
 import {
-  PaginationState,
   useReactTable,
   getCoreRowModel,
   Table,
   Column,
   ColumnDef,
   ColumnFiltersState,
-  getPaginationRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   flexRender,
@@ -140,37 +138,95 @@ function CustomTable<T>({
 }) {
   const defaultData = React.useMemo(() => [], []);
   const { keycloak } = useContext(AuthContext)!;
-  console.log(extraDataOps);
-  const [{ pageIndex, pageSize }, setPagination] =
-    React.useState<PaginationState>({
-      pageIndex: 1,
-      pageSize: 10,
-    });
+
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const pagination = React.useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize],
-  );
 
-  // create the data options to pass to the datasource function
-  // if extra data options are available add them to the mix
-  const dataOpts = {
+  const [pagination, setPagination] = useState<{
+    current_page_idx: number;
+    next_page_idx: number;
+    first_page_idx: number;
+    last_page_idx: number;
+    total_pages: number;
+    page_size: number;
+    total_elements?: number;
+  }>({
+    current_page_idx: 1,
+    next_page_idx: 1,
+    first_page_idx: 1,
+    last_page_idx: 1,
+    total_pages: 1,
+    page_size: 10,
+    total_elements: 10,
+  });
+
+  const { data } = dataSource({
     ...{
-      size: pageSize,
-      page: pageIndex,
+      size: 10,
+      page: pagination.current_page_idx,
       sortBy: "asc",
       token: keycloak?.token,
     },
     ...(extraDataOps || {}),
-  };
+  });
 
-  // call the defined datasource with the designated data options
-  const { data } = dataSource(dataOpts);
+  useEffect(() => {
+    let pagin = {
+      current_page_idx: 1,
+      next_page_idx: 1,
+      first_page_idx: 1,
+      last_page_idx: 1,
+      total_pages: 1,
+      page_size: 10,
+      total_elements: 10,
+    };
+
+    if (data) {
+      pagin = {
+        ...pagin,
+        page_size: data["size_of_page"],
+        total_elements: data["total_elements"],
+        total_pages: data["total_pages"],
+        next_page_idx: data["total_pages"],
+      };
+    }
+    if (data) {
+      if (data?.links.length > 0) {
+        data?.links.forEach((l: { href: string; rel: string }) => {
+          const url = new URL(l["href"]);
+          if (l["rel"] === "last") {
+            pagin = {
+              ...pagin,
+              last_page_idx: parseInt(url.searchParams.get("page") || ""),
+            };
+          } else if (l["rel"] === "next") {
+            pagin = {
+              ...pagin,
+              next_page_idx: parseInt(url.searchParams.get("page") || ""),
+            };
+          } else if (l["rel"] === "self") {
+            pagin = {
+              ...pagin,
+              current_page_idx: parseInt(url.searchParams.get("page") || ""),
+            };
+          } else if (l["rel"] === "first") {
+            pagin = {
+              ...pagin,
+              first_page_idx: parseInt(url.searchParams.get("page") || ""),
+            };
+          }
+        });
+        setPagination(pagin);
+      } else {
+        pagin = {
+          ...pagin,
+          current_page_idx: data["total_pages"],
+        };
+        setPagination(pagin);
+      }
+    }
+  }, [data]);
 
   const table = useReactTable({
     data: data?.content ?? defaultData,
@@ -178,17 +234,107 @@ function CustomTable<T>({
     pageCount: data?.total_pages ?? -1,
     state: {
       columnFilters,
-      pagination,
     },
-    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    manualPagination: true,
-    getPaginationRowModel: getPaginationRowModel(),
     debugTable: false,
   });
+
+  const renderPagination = useCallback(() => {
+    return (
+      <Row>
+        <Col>
+          <ul className="pagination custom-pagination">
+            <li className="page-item">
+              <button
+                className={
+                  pagination?.current_page_idx === 1
+                    ? "page-link disabled"
+                    : "page-link"
+                }
+                onClick={() => {
+                  setPagination({
+                    ...pagination,
+                    current_page_idx: 1,
+                  });
+                }}
+              >
+                {"<<"}
+              </button>
+            </li>
+            <li className="page-item">
+              <button
+                className={
+                  pagination?.current_page_idx === 1
+                    ? "page-link disabled"
+                    : "page-link"
+                }
+                onClick={() => {
+                  setPagination({
+                    ...pagination,
+                    current_page_idx: pagination.current_page_idx - 1,
+                  });
+                }}
+              >
+                {"<"}
+              </button>
+            </li>
+            <li className="page-item">
+              <button
+                className="w-max-content page-link text-center text-secondary"
+                disabled
+              >{`${pagination.current_page_idx.toString()} of ${
+                pagination.total_pages
+              }`}</button>
+            </li>
+            <li className="page-item">
+              <button
+                className={
+                  pagination?.current_page_idx === pagination?.last_page_idx
+                    ? "page-link disabled"
+                    : "page-link"
+                }
+                onClick={() => {
+                  setPagination({
+                    ...pagination,
+                    current_page_idx: pagination?.next_page_idx,
+                  });
+                }}
+              >
+                {">"}
+              </button>
+            </li>
+            <li className="page-item">
+              <button
+                className={
+                  pagination.current_page_idx >= pagination?.last_page_idx
+                    ? "page-link disabled"
+                    : "page-link"
+                }
+                onClick={() => {
+                  setPagination({
+                    ...pagination,
+                    current_page_idx: pagination?.last_page_idx,
+                  });
+                }}
+              >
+                {">>"}
+              </button>
+            </li>
+          </ul>
+        </Col>
+        <Col className="text-end">
+          {goBackLoc && (
+            <Link className=" btn btn-secondary mx-3" to={goBackLoc}>
+              Back
+            </Link>
+          )}
+        </Col>
+      </Row>
+    );
+  }, [pagination, goBackLoc]);
 
   return (
     <div className="p-2">
@@ -271,51 +417,11 @@ function CustomTable<T>({
           </Alert>
         )}
       </div>
-      <div className="h-2" />
-      <nav aria-label="Page navigation">
-        <Row>
-          <Col>
-            <ul className="pagination custom-pagination">
-              <li className="page-item">
-                <button
-                  className="border rounded p-1"
-                  onClick={() => setPagination({ pageIndex: 1, pageSize })}
-                  disabled={pageIndex === 1}
-                >
-                  {"<<"}
-                </button>
-              </li>
-              <li className="page-item">
-                <button
-                  className="border rounded p-1"
-                  onClick={() => table.previousPage()}
-                  disabled={pageIndex === 1}
-                >
-                  {"<"}
-                </button>
-              </li>
-              <li className="page-item">
-                <button
-                  className="border rounded p-1"
-                  onClick={() => {
-                    setPagination({ pageIndex: pageIndex + 1, pageSize });
-                  }}
-                  disabled={pageIndex === data?.total_pages}
-                >
-                  {">"}
-                </button>
-              </li>
-            </ul>
-          </Col>
-          <Col className="text-end">
-            {goBackLoc && (
-              <Link className=" btn btn-secondary mx-3" to={goBackLoc}>
-                Back
-              </Link>
-            )}
-          </Col>
-        </Row>
-      </nav>
+      <div className="d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+          {pagination && renderPagination()}
+        </nav>
+      </div>
     </div>
   );
 }

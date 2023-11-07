@@ -48,12 +48,9 @@ export default function ProfileUpdate() {
         `/users/profile`,
         data,
       );
-      console.log(response);
       if (response.status === 200) {
         // if all good go back to profile
         navigate("/profile");
-      } else {
-        console.log(response.status);
       }
     } catch (error) {
       const err = error as AxiosError;
