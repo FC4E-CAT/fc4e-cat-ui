@@ -27,7 +27,7 @@ export const AssessmentSelectSubject = (
   const { keycloak, registered } = useContext(AuthContext)!;
   const { data: objectsByActor, refetch: refetchObjectsByActor } =
     useGetObjectsByActor({
-      actorId: props.actorId,
+      actorId: props.actorId <= 0 ? undefined : props.actorId,
       size: 100,
       page: 1,
       sortBy: "asc",

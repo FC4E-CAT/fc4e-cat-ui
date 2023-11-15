@@ -107,7 +107,10 @@ export function useGetPublicAssessments({
     }
   });
   return useQuery({
-    queryKey: ["public-owner-assessments", { size, page, sortBy, ...filters }],
+    queryKey: [
+      "public-owner-assessments",
+      { size, page, sortBy, assessmentTypeId, actorId, ...filters },
+    ],
     queryFn: async () => {
       const response = await APIClient().get<AssessmentListResponse>(url);
       return response.data;
@@ -115,6 +118,7 @@ export function useGetPublicAssessments({
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
+    enabled: !!actorId && actorId > 0,
   });
 }
 
@@ -153,17 +157,19 @@ export function useGetObjectsByActor({
   return useQuery({
     queryKey: ["objects", { size, page, sortBy, actorId }],
     queryFn: async () => {
-      const response = await APIClient(
-        token,
-      ).get<AssessmentSubjectListResponse>(
-        `/assessments/objects/by-actor/${actorId}?size=${size}&page=${page}&sortby=${sortBy}`,
-      );
-      return response.data;
+      if (actorId && actorId > 0) {
+        const response = await APIClient(
+          token,
+        ).get<AssessmentSubjectListResponse>(
+          `/assessments/objects/by-actor/${actorId}?size=${size}&page=${page}&sortby=${sortBy}`,
+        );
+        return response.data;
+      } else return { content: [] };
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
-    enabled: !!token && isRegistered && actorId !== undefined,
+    enabled: !!token && isRegistered && !!actorId && actorId > 0,
   });
 }
 
@@ -184,7 +190,7 @@ export function useGetObjects({
   }
   console.log(url);
   return useQuery({
-    queryKey: ["objects", { size, page, actorId }],
+    queryKey: ["objects", { size, page, assessmentTypeId, actorId }],
     queryFn: async () => {
       const response =
         await APIClient(token).get<AssessmentSubjectListResponse>(url);
@@ -193,5 +199,6 @@ export function useGetObjects({
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
+    enabled: !!actorId && actorId > 0,
   });
 }

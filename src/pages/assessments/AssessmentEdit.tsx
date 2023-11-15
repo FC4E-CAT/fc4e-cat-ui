@@ -294,8 +294,9 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   );
 
   useEffect(() => {
-    setAssessment({
+    setAssessment((prev_assessment) => ({
       ...templateData!,
+      ...prev_assessment!,
       actor: {
         name: actor?.name || templateData?.actor.name || "",
         id: actor?.id || templateData?.actor.id || 0,
@@ -304,7 +305,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
         name: organisation?.name || templateData?.organisation.name || "",
         id: organisation?.id || templateData?.organisation.id || "",
       },
-    });
+    }));
     setWizardTabActive(
       (actor?.id && organisation?.id) ||
         (templateData?.actor.id && templateData?.organisation.id)
