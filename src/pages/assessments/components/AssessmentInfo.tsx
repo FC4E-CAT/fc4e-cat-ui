@@ -12,14 +12,7 @@ import {
 } from "react-bootstrap";
 import { AssessmentSubject, UserProfile, AssessmentActor } from "@/types";
 import { AssessmentSelectSubject } from "./AssessmentSelectSubject";
-import {
-  FaCog,
-  FaInfo,
-  FaLock,
-  FaOrcid,
-  FaUserAlt,
-  FaInfoCircle,
-} from "react-icons/fa";
+import { FaCog, FaInfo, FaLock, FaUserAlt, FaInfoCircle } from "react-icons/fa";
 
 interface AssessmentInfoProps {
   id?: string;
@@ -116,9 +109,17 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           <Row className="m-2">
             <Col>
               <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-submitter-fname">
-                  First Name:
-                </InputGroup.Text>
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>The user’s name</Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-info-name">
+                    <FaInfoCircle className="me-2" /> Name
+                  </InputGroup.Text>
+                </OverlayTrigger>
                 <Form.Control
                   id="input-submitter-fname"
                   value={props.profile?.name}
@@ -130,9 +131,17 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
             </Col>
             <Col>
               <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-submitter-lname">
-                  Last Name:
-                </InputGroup.Text>
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>The user’s surname</Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-info-name">
+                    <FaInfoCircle className="me-2" /> Surname
+                  </InputGroup.Text>
+                </OverlayTrigger>
                 <Form.Control
                   id="input-submitter-lname"
                   value={props.profile?.surname}
@@ -146,9 +155,17 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           <Row className="m-2">
             <Col>
               <InputGroup className="mb-3">
-                <InputGroup.Text id="label-info-submitter-affiliation">
-                  Affiliation:
-                </InputGroup.Text>
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>The user’s affiliation</Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-info-name">
+                    <FaInfoCircle className="me-2" /> Affiliation
+                  </InputGroup.Text>
+                </OverlayTrigger>
                 <Form.Control
                   id="input-submitter-affiliation"
                   value={props.org}
@@ -160,9 +177,17 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
             </Col>
             <Col>
               <InputGroup className="mb-3">
-                <InputGroup.Text id="abel-info-submitter-orcid">
-                  <FaOrcid className="me-1" color="#A7CF3A" /> ORCID id:
-                </InputGroup.Text>
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>The user’s ORCID ID</Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-info-name">
+                    <FaInfoCircle className="me-2" /> ORCID ID
+                  </InputGroup.Text>
+                </OverlayTrigger>
                 <Form.Control
                   id="input-submitter-orcid"
                   value={props.profile?.orcid_id}

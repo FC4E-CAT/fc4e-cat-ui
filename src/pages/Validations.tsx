@@ -23,6 +23,7 @@ import {
   FaPlus,
   FaGlasses,
   FaIdBadge,
+  FaInfoCircle,
 } from "react-icons/fa";
 import { CustomTable } from "@/components";
 import {
@@ -35,7 +36,7 @@ import {
 } from "@/types";
 
 import { toast } from "react-hot-toast";
-import { Row, Col, InputGroup } from "react-bootstrap";
+import { Row, Col, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const enum ValidationStatus {
   APPROVED = "APPROVED",
@@ -177,28 +178,41 @@ function RequestValidation() {
 
   const actors_select_div = (
     <>
-      <label htmlFor="actors" className="form-label fw-bold">
-        Actor (*)
-      </label>
-      <select
-        className={`form-select ${errors.actor_id ? "is-invalid" : ""}`}
-        id="actor_id"
-        {...register("actor_id", {
-          required: true,
-        })}
+      <label
+        htmlFor="actors"
+        className="d-flex align-items-center form-label fw-bold"
       >
-        <option disabled value={-1}>
-          Select Actor
-        </option>
-        {actors &&
-          actors.map((t, i) => {
-            return (
-              <option key={`type-${i}`} value={t.id}>
-                {t.name}
-              </option>
-            );
+        <FaInfoCircle className="me-2" /> Actor (*)
+      </label>
+      <OverlayTrigger
+        key="top"
+        placement="top"
+        overlay={
+          <Tooltip id={`tooltip-top`}>
+            The organisation’s role (actor) as defined in the EOSC PID Policy
+          </Tooltip>
+        }
+      >
+        <select
+          className={`form-select ${errors.actor_id ? "is-invalid" : ""}`}
+          id="actor_id"
+          {...register("actor_id", {
+            required: true,
           })}
-      </select>
+        >
+          <option disabled value={-1}>
+            Select Actor
+          </option>
+          {actors &&
+            actors.map((t, i) => {
+              return (
+                <option key={`type-${i}`} value={t.id}>
+                  {t.name}
+                </option>
+              );
+            })}
+        </select>
+      </OverlayTrigger>
       <ErrorMessage
         errors={errors}
         name="actor_id"
@@ -215,40 +229,63 @@ function RequestValidation() {
       <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
         <Row>
           <Col className="mt-3" xs={12} md={6}>
-            <label htmlFor="organization_name" className="form-label fw-bold">
-              Organization Name (*)
+            <label
+              htmlFor="organization_name"
+              className="d-flex align-items-center form-label fw-bold"
+            >
+              <FaInfoCircle className="me-2" /> Organization Name (*)
             </label>
-            <Select
-              className="basic-single"
-              classNamePrefix="select"
-              onInputChange={(value) => setInputValue(value)}
-              onChange={(s) => updateForm(s)}
-              isSearchable={true}
-              name="organisation_name"
-              options={renderOptions()}
-              filterOption={() => true}
-            />
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={<Tooltip id={`tooltip-top`}>The user’s name</Tooltip>}
+            >
+              <Select
+                className="basic-single"
+                classNamePrefix="select"
+                onInputChange={(value) => setInputValue(value)}
+                onChange={(s) => updateForm(s)}
+                isSearchable={true}
+                name="organisation_name"
+                options={renderOptions()}
+                filterOption={() => true}
+              />
+            </OverlayTrigger>
           </Col>
           <Col className="mt-3" xs={12} md={3}>
-            <label htmlFor="organization_source" className="form-label fw-bold">
-              Organization Source (*)
+            <label
+              htmlFor="organization_source"
+              className="d-flex align-items-center form-label fw-bold"
+            >
+              <FaInfoCircle className="me-2" /> Organization Source (*)
             </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.organisation_source ? "is-invalid" : ""
-              }`}
-              id="organisation_source"
-              aria-describedby="organisation_source_help"
-              disabled={true}
-              {...register("organisation_source", {
-                required: {
-                  value: true,
-                  message: "Organisation Source is required",
-                },
-                minLength: { value: 3, message: "Minimum length is 3" },
-              })}
-            />
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id={`tooltip-top`}>
+                  Source of a persistent identifier representing the
+                  organisation (ROR)
+                </Tooltip>
+              }
+            >
+              <input
+                type="text"
+                className={`form-control ${
+                  errors.organisation_source ? "is-invalid" : ""
+                }`}
+                id="organisation_source"
+                aria-describedby="organisation_source_help"
+                disabled={true}
+                {...register("organisation_source", {
+                  required: {
+                    value: true,
+                    message: "Organisation Source is required",
+                  },
+                  minLength: { value: 3, message: "Minimum length is 3" },
+                })}
+              />
+            </OverlayTrigger>
             <ErrorMessage
               errors={errors}
               name="organisation_source"
@@ -258,25 +295,33 @@ function RequestValidation() {
           <Col className="mt-3" xs={12} md={3}>
             <label
               htmlFor="organization_website"
-              className="form-label fw-bold"
+              className="d-flex align-items-center form-label fw-bold"
             >
-              Organization Website (*)
+              <FaInfoCircle className="me-2" /> Organization Website (*)
             </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.organisation_website ? "is-invalid" : ""
-              }`}
-              id="organisation_website"
-              aria-describedby="organisation_website_help"
-              disabled={true}
-              {...register("organisation_website", {
-                required: {
-                  value: true,
-                  message: "Organisation Website is required",
-                },
-              })}
-            />
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id={`tooltip-top`}>The organization’s website</Tooltip>
+              }
+            >
+              <input
+                type="text"
+                className={`form-control ${
+                  errors.organisation_website ? "is-invalid" : ""
+                }`}
+                id="organisation_website"
+                aria-describedby="organisation_website_help"
+                disabled={true}
+                {...register("organisation_website", {
+                  required: {
+                    value: true,
+                    message: "Organisation Website is required",
+                  },
+                })}
+              />
+            </OverlayTrigger>
             <ErrorMessage
               errors={errors}
               name="organisation_website"
@@ -286,23 +331,36 @@ function RequestValidation() {
         </Row>
         <Row>
           <Col className="mt-3" xs={12} md={6}>
-            <label htmlFor="organization_role" className="form-label fw-bold">
-              Organization Role (*)
+            <label
+              htmlFor="organization_role"
+              className="d-flex align-items-center form-label fw-bold"
+            >
+              <FaInfoCircle className="me-2" /> Organization Role (*)
             </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.organisation_role ? "is-invalid" : ""
-              }`}
-              id="organisation_role"
-              aria-describedby="organisation_role_help"
-              {...register("organisation_role", {
-                required: {
-                  value: true,
-                  message: "Organisation Role is required",
-                },
-              })}
-            />
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id={`tooltip-top`}>
+                  The user’s role in the organization
+                </Tooltip>
+              }
+            >
+              <input
+                type="text"
+                className={`form-control ${
+                  errors.organisation_role ? "is-invalid" : ""
+                }`}
+                id="organisation_role"
+                aria-describedby="organisation_role_help"
+                {...register("organisation_role", {
+                  required: {
+                    value: true,
+                    message: "Organisation Role is required",
+                  },
+                })}
+              />
+            </OverlayTrigger>
             <ErrorMessage
               errors={errors}
               name="organisation_role"
