@@ -131,7 +131,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   useEffect(() => {
     if (qAssessment.data) {
       const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-        JSON.stringify(qAssessment.data),
+        JSON.stringify(qAssessment.data, null, 2),
       )}`;
       const link = document.createElement("a");
       link.href = jsonString;
