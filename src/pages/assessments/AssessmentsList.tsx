@@ -48,7 +48,11 @@ import { toast } from "react-hot-toast";
  * ComplianceBadge gets a compliance value (null, false, true) and renders
  * a corresponding badge
  */
-function ComplianceBadge({ compliance }: { compliance: boolean | null }) {
+function ComplianceBadge({
+  compliance,
+}: {
+  compliance: boolean | null | unknown;
+}) {
   return compliance === null ? (
     <span className="badge bg-secondary ms-2">UNKNOWN</span>
   ) : compliance ? (
@@ -290,9 +294,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           {
             accessorKey: "compliance",
             header: () => <span>compliance</span>,
-            cell: (info) => (
-              <ComplianceBadge compliance={Boolean(info.getValue())} />
-            ),
+            cell: (info) => <ComplianceBadge compliance={info.getValue()} />,
             enableColumnFilter: false,
           },
           {
