@@ -144,6 +144,10 @@ footer a {
   text-align: center;
 }
 
+.w-max-content {
+  width: max-content;
+}
+
 @media (width < 1600px) {
   .form-floating > label {
     display: none;

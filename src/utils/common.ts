@@ -12,7 +12,7 @@ export function trimProfileID(id: string): string {
 }
 
 export function handleBackendError(error: AxiosError) {
-  console.log("Backend error", error);
+  console.error("Backend error", error);
   if (error.response) {
     return error.response.data as ApiServiceErr;
   }
@@ -22,7 +22,6 @@ export function getUniqueValuesForKey<T>(
   jsonData: T[],
   key: keyof T,
 ): Array<T[keyof T]> {
-  console.log(jsonData);
   const uniqueValuesSet = new Set<T[keyof T]>();
   if (jsonData !== undefined && jsonData != null) {
     for (const item of jsonData) {

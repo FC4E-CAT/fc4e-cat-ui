@@ -47,7 +47,6 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       props.principles[0].criteria.length > 0
     ) {
       const firstCriterion = props.principles[0].criteria[0].id;
-      console.log("active tab:", firstCriterion);
       setActiveKey(firstCriterion);
       // when you set the active tab reset the signal to false
       props.onResetActiveTab();
