@@ -128,21 +128,27 @@ export function useGetAssessment({
   isRegistered,
 }: {
   id: string;
-  token: string;
-  isRegistered: boolean;
+  token?: string;
+  isRegistered?: boolean;
 }) {
   return useQuery({
     queryKey: ["assessment", id],
     queryFn: async () => {
+      let path = "";
+      if (token && isRegistered) {
+        path = "assessments";
+      } else {
+        path = "public";
+      }
       const response = await APIClient(token).get<AssessmentDetailsResponse>(
-        `/assessments/${id}`,
+        `/${path}/${id}`,
       );
       return response.data;
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
-    enabled: !!token && isRegistered && id !== "",
+    enabled: (!!token && isRegistered && id !== "") || id !== "",
   });
 }
 

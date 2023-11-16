@@ -1,4 +1,11 @@
-import { useRef, useMemo, useState, useCallback, useContext } from "react";
+import {
+  useRef,
+  useMemo,
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+} from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { CustomTable } from "@/components";
 import {
@@ -8,6 +15,7 @@ import {
   FaPlus,
   FaFilter,
   FaTimes,
+  FaDownload,
 } from "react-icons/fa";
 import {
   Collapse,
@@ -27,6 +35,7 @@ import {
   useGetPublicAssessments,
   useGetObjects,
   useDeleteAssessment,
+  useGetAssessment,
 } from "@/api";
 import { AuthContext } from "@/auth";
 import { getUniqueValuesForKey } from "@/utils";
@@ -67,7 +76,7 @@ interface DeleteModalConfig {
 }
 
 function AssessmentsList({ listPublic = false }: AssessmentListProps) {
-  const { keycloak } = useContext(AuthContext)!;
+  const { keycloak, registered } = useContext(AuthContext)!;
   // get the extra url parameters when in public list mode from url
   const urlParams = new URLSearchParams(location.search);
   const actorName = urlParams.get("actor-name");
@@ -111,6 +120,26 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     assessmentTypeId: assessmentTypeId,
     actorId: actorId,
   });
+
+  const [asmtNumID, setAsmtNumID] = useState<string>("");
+  const qAssessment = useGetAssessment({
+    id: asmtNumID,
+    token: keycloak?.token || "",
+    isRegistered: registered || false,
+  });
+
+  useEffect(() => {
+    if (qAssessment.data) {
+      const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+        JSON.stringify(qAssessment.data),
+      )}`;
+      const link = document.createElement("a");
+      link.href = jsonString;
+      link.download = `${qAssessment.data?.id}.json`;
+
+      link.click();
+    }
+  }, [qAssessment]);
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -206,6 +235,44 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             header: () => <span>Created On</span>,
             enableColumnFilter: false,
           },
+          {
+            id: "action",
+            accessorFn: (row) => row,
+            enableColumnFilter: false,
+            header: () => <span>Actions</span>,
+            show: !listPublic,
+            cell: (info) => {
+              const item: AssessmentListItem =
+                info.getValue() as AssessmentListItem;
+              return !listPublic ? (
+                <>
+                  <div className="edit-buttons btn-group shadow">
+                    <Button
+                      className="btn btn-secondary cat-action-reject-link btn-sm "
+                      onClick={() => {
+                        setAsmtNumID(item["id"]);
+                      }}
+                    >
+                      <FaDownload />
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="edit-buttons btn-group shadow">
+                    <Button
+                      className="btn btn-secondary cat-action-reject-link btn-sm "
+                      onClick={() => {
+                        setAsmtNumID(item["id"]);
+                      }}
+                    >
+                      <FaDownload />
+                    </Button>
+                  </div>
+                </>
+              );
+            },
+          },
         ]
       : [
           {
@@ -298,6 +365,14 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     <Button
                       className="btn btn-secondary cat-action-reject-link btn-sm "
                       onClick={() => {
+                        setAsmtNumID(item["id"]);
+                      }}
+                    >
+                      <FaDownload />
+                    </Button>
+                    <Button
+                      className="btn btn-secondary cat-action-reject-link btn-sm "
+                      onClick={() => {
                         handleDeleteOpenModal(item);
                       }}
                     >
@@ -305,7 +380,20 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     </Button>
                   </div>
                 </>
-              ) : null;
+              ) : (
+                <>
+                  <div className="edit-buttons btn-group shadow">
+                    <Button
+                      className="btn btn-secondary cat-action-reject-link btn-sm "
+                      onClick={() => {
+                        setAsmtNumID(item["id"]);
+                      }}
+                    >
+                      <FaDownload />
+                    </Button>
+                  </div>
+                </>
+              );
             },
           },
         ];
