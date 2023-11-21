@@ -305,6 +305,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
         name: organisation?.name || templateData?.organisation.name || "",
         id: organisation?.id || templateData?.organisation.id || "",
       },
+      principles: templateData?.principles || prev_assessment?.principles || [],
     }));
     setWizardTabActive(
       (actor?.id && organisation?.id) ||
