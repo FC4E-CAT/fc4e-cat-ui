@@ -22,6 +22,7 @@ import AssessmentsList from "@/pages/assessments/AssessmentsList";
 import AssessmentEdit from "./pages/assessments/AssessmentEdit";
 
 import { Toaster } from "react-hot-toast";
+import Subjects from "./pages/Subjects";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +108,9 @@ function App() {
                     element={<ProtectedRoute />}
                   >
                     <Route index element={<RequestValidation />} />
+                  </Route>
+                  <Route path="/objects" element={<ProtectedRoute />}>
+                    <Route index element={<Subjects />} />
                   </Route>
                   <Route path="/validations" element={<ProtectedRoute />}>
                     <Route index element={<Validations />} />

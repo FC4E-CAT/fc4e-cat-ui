@@ -91,3 +91,10 @@ export type TableExtraDataOps =
 export type AlertInfo = {
   message: string;
 };
+
+export type Subject = {
+  id?: number;
+  subject_id: string;
+  name: string;
+  type: string;
+};
