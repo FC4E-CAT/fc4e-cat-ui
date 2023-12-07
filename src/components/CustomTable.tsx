@@ -346,7 +346,11 @@ function CustomTable<T>({
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <th key={header.id} colSpan={header.colSpan}>
+                    <th
+                      style={{ verticalAlign: "top" }}
+                      key={header.id}
+                      colSpan={header.colSpan}
+                    >
                       {header.isPlaceholder ? null : (
                         <>
                           {header.column.getCanFilter() ? (
@@ -367,13 +371,6 @@ function CustomTable<T>({
                                     },
                                   )}
                               </span>
-                              <div className="flex space-x-2">
-                                <input
-                                  disabled
-                                  type="none"
-                                  className="invisible form-control mt-1"
-                                ></input>
-                              </div>
                             </>
                           )}
                         </>
