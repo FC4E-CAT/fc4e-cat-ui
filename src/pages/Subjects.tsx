@@ -102,6 +102,9 @@ export function SubjectModal(props: SubjectModalProps) {
         </Form>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
+        <Button className="btn-secondary" onClick={() => props.onHide()}>
+          Cancel
+        </Button>
         <Button
           className="btn-success me-4"
           onClick={() => {
@@ -109,9 +112,6 @@ export function SubjectModal(props: SubjectModalProps) {
           }}
         >
           {props.editMode ? "Update" : "Create"}
-        </Button>
-        <Button className="btn-secondary" onClick={() => props.onHide()}>
-          Cancel
         </Button>
       </Modal.Footer>
     </Modal>
