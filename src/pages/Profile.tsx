@@ -146,6 +146,28 @@ function Profile() {
             )}
           </section>
         </div>
+        <div className="row border-top py-3 mt-4 mb-4">
+          <header className="col-3 h4 text-muted">My Objects</header>
+          <section className="col-9 disabled">
+            {(userProfile?.user_type === "Validated" ||
+              userProfile?.user_type === "Admin") && (
+              <>
+                <div>View and manage your current objects</div>
+                <div className="mt-4">
+                  <Link to="/objects" className="btn btn-light border-black">
+                    View List
+                  </Link>
+                  <Link
+                    to="/objects?create"
+                    className="btn btn-light border-black mx-3"
+                  >
+                    <FaPlus /> Create New
+                  </Link>
+                </div>
+              </>
+            )}
+          </section>
+        </div>
       </div>
     );
   } else {
