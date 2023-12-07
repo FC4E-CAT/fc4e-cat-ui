@@ -7,6 +7,7 @@ import { useCreateSubject, useGetSubjects } from "@/api/services/subjects";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 
 // Basic configuration for subject modal
 type SubjectModalBasicConfig = {
@@ -123,6 +124,13 @@ function Subjects() {
     message: "",
   });
 
+  // This is used to check at the end of url for a ?create param
+  // if present, open the modal for the creation of a new object
+  // This works with the Create new link at the profile page
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const doCreate = searchParams.has("create");
+
   // mutation hook for creating a new subject
   const { keycloak } = useContext(AuthContext)!;
   const mutationCreateSubject = useCreateSubject(keycloak?.token || "");
@@ -160,6 +168,13 @@ function Subjects() {
     ],
     [],
   );
+
+  // if ?create at the end of the url, show immediately the create new modal
+  useEffect(() => {
+    if (doCreate) {
+      setSubjectModalConfig((prevConfig) => ({ ...prevConfig, show: true }));
+    }
+  }, [doCreate]);
 
   const handleCreateSubject = (item: Subject) => {
     const promise = mutationCreateSubject
