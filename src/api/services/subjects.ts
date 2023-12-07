@@ -26,7 +26,7 @@ export const useGetSubjects = ({
     enabled: !!token && isRegistered,
   });
 
-// hooke to create new subject
+// hook to create new subject
 export function useCreateSubject(token: string) {
   const queryClient = useQueryClient();
   return useMutation({
