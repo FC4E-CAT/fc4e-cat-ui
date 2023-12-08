@@ -109,7 +109,7 @@ function App() {
                   >
                     <Route index element={<RequestValidation />} />
                   </Route>
-                  <Route path="/objects" element={<ProtectedRoute />}>
+                  <Route path="/subjects" element={<ProtectedRoute />}>
                     <Route index element={<Subjects />} />
                   </Route>
                   <Route path="/validations" element={<ProtectedRoute />}>

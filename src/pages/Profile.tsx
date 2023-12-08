@@ -147,18 +147,18 @@ function Profile() {
           </section>
         </div>
         <div className="row border-top py-3 mt-4 mb-4">
-          <header className="col-3 h4 text-muted">My Objects</header>
+          <header className="col-3 h4 text-muted">Subjects</header>
           <section className="col-9 disabled">
             {(userProfile?.user_type === "Validated" ||
               userProfile?.user_type === "Admin") && (
               <>
-                <div>View and manage your current objects</div>
+                <div>View and manage your current Assessment Subjects</div>
                 <div className="mt-4">
-                  <Link to="/objects" className="btn btn-light border-black">
+                  <Link to="/subjects" className="btn btn-light border-black">
                     View List
                   </Link>
                   <Link
-                    to="/objects?create"
+                    to="/subjects?create"
                     className="btn btn-light border-black mx-3"
                   >
                     <FaPlus /> Create New
