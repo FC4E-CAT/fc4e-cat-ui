@@ -1,9 +1,22 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { CustomTable } from "@/components";
-import { FaCubes, FaInfoCircle, FaPlus, FaPlusCircle } from "react-icons/fa";
+import {
+  FaCubes,
+  FaEdit,
+  FaInfoCircle,
+  FaPlus,
+  FaPlusCircle,
+  FaTimes,
+} from "react-icons/fa";
 import { AlertInfo, Subject } from "@/types";
-import { useCreateSubject, useGetSubjects } from "@/api/services/subjects";
+import {
+  useCreateSubject,
+  useDeleteSubject,
+  useGetSubject,
+  useGetSubjects,
+  useUpdateSubject,
+} from "@/api/services/subjects";
 import {
   Button,
   Form,
@@ -17,9 +30,16 @@ import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 
+// Modes under which SubjectModal operates
+enum SubjectModalMode {
+  Create,
+  Update,
+  Delete,
+}
+
 // Basic configuration for subject modal
 type SubjectModalBasicConfig = {
-  editMode: boolean;
+  mode: SubjectModalMode;
   id: number;
   show: boolean;
 };
@@ -29,6 +49,7 @@ type SubjectModalProps = SubjectModalBasicConfig & {
   onHide: () => void;
   onCreate: (item: Subject) => void;
   onUpdate: (item: Subject) => void;
+  onDelete: (id: number) => void;
 };
 
 // Creates a modal with a small form to create/edit a subject
@@ -39,11 +60,23 @@ export function SubjectModal(props: SubjectModalProps) {
     type: "",
   });
 
+  const { keycloak, registered } = useContext(AuthContext)!;
+
+  const qAssessment = useGetSubject({
+    id: props.id,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
   useEffect(() => {
-    if (props.show && !props.editMode) {
+    if (props.mode == SubjectModalMode.Create) {
       setData({ subject_id: "", name: "", type: "" });
+    } else if (qAssessment.data) {
+      // when updating or deleting a specific subject (this not creating)
+      // get the subject details based on it's id
+      setData(qAssessment.data);
     }
-  }, [props.editMode, props.show]);
+  }, [props.mode, props.show, props.id, qAssessment.data]);
 
   const handleChangeData = (field: string, value: string) => {
     setData((prevData) => ({
@@ -59,10 +92,32 @@ export function SubjectModal(props: SubjectModalProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-light" closeButton>
+      <Modal.Header
+        className={
+          props.mode == SubjectModalMode.Delete
+            ? "bg-danger text-white"
+            : "bg-light"
+        }
+        closeButton
+      >
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaPlusCircle className="me-2" />
-          {`${props.editMode ? "Edit" : "Create new"} Subject`}
+          {props.mode == SubjectModalMode.Create && (
+            <span>
+              <FaPlusCircle className="me-2" /> Create new subject
+            </span>
+          )}
+          {props.mode == SubjectModalMode.Update && (
+            <span>
+              <FaEdit className="me-2" /> Edit subject
+              <small className="ms-2 badge bg-secondary">id: {data.id}</small>
+            </span>
+          )}
+          {props.mode == SubjectModalMode.Delete && (
+            <span>
+              <FaTimes className="me-2" /> Delete subject
+              <small className="ms-2 badge bg-secondary">id: {data.id}</small>
+            </span>
+          )}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -92,6 +147,7 @@ export function SubjectModal(props: SubjectModalProps) {
                   handleChangeData("subject_id", e.target.value);
                 }}
                 aria-describedby="label-info-subject-id"
+                disabled={props.mode == SubjectModalMode.Delete}
               />
             </InputGroup>
           </Row>
@@ -119,6 +175,7 @@ export function SubjectModal(props: SubjectModalProps) {
                   handleChangeData("name", e.target.value);
                 }}
                 aria-describedby="label-info-subject-name"
+                disabled={props.mode == SubjectModalMode.Delete}
               />
             </InputGroup>
           </Row>
@@ -147,23 +204,54 @@ export function SubjectModal(props: SubjectModalProps) {
                   handleChangeData("type", e.target.value);
                 }}
                 aria-describedby="label-info-subject-type"
+                disabled={props.mode == SubjectModalMode.Delete}
               />
             </InputGroup>
           </Row>
         </Form>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
-        <Button className="btn-secondary" onClick={() => props.onHide()}>
-          Cancel
-        </Button>
-        <Button
-          className="btn-success"
-          onClick={() => {
-            props.editMode ? props.onUpdate(data) : props.onCreate(data);
-          }}
-        >
-          {props.editMode ? "Update" : "Create"}
-        </Button>
+        {props.mode == SubjectModalMode.Create && (
+          <>
+            <Button className="btn-secondary" onClick={() => props.onHide()}>
+              Cancel
+            </Button>
+            <Button
+              className="btn-success"
+              onClick={() => props.onCreate(data)}
+            >
+              Create
+            </Button>
+          </>
+        )}
+        {props.mode == SubjectModalMode.Update && (
+          <>
+            <Button className="btn-secondary" onClick={() => props.onHide()}>
+              Cancel
+            </Button>
+            <Button
+              className="btn-success"
+              onClick={() => props.onUpdate(data)}
+            >
+              Update
+            </Button>
+          </>
+        )}
+        {props.mode == SubjectModalMode.Delete && (
+          <>
+            <Button
+              className="btn-danger"
+              onClick={() => {
+                if (data.id) props.onDelete(data.id);
+              }}
+            >
+              Delete
+            </Button>
+            <Button className="btn-secondary" onClick={() => props.onHide()}>
+              Cancel
+            </Button>
+          </>
+        )}
       </Modal.Footer>
     </Modal>
   );
@@ -184,14 +272,18 @@ function Subjects() {
 
   // mutation hook for creating a new subject
   const { keycloak } = useContext(AuthContext)!;
-  const mutationCreateSubject = useCreateSubject(keycloak?.token || "");
 
   const [subjectModalConfig, setSubjectModalConfig] =
     useState<SubjectModalBasicConfig>({
-      editMode: false,
+      mode: SubjectModalMode.Create,
       show: false,
       id: -1,
     });
+
+  // hooks for handling subjects in through the backend
+  const mutationCreateSubject = useCreateSubject(keycloak?.token || "");
+  const mutationUpdateSubject = useUpdateSubject(keycloak?.token || "");
+  const mutationDeleteSubject = useDeleteSubject(keycloak?.token || "");
 
   const cols = useMemo<ColumnDef<Subject>[]>(
     () => [
@@ -215,6 +307,49 @@ function Subjects() {
         cell: (info) => info.getValue(),
         header: () => <span>Subject Type</span>,
         enableColumnFilter: false,
+      },
+      {
+        id: "action",
+        accessorFn: (row) => row,
+        enableColumnFilter: false,
+        header: () => <span>Actions</span>,
+        cell: (info) => {
+          const item: Subject = info.getValue() as Subject;
+          return (
+            <>
+              <div className="edit-buttons btn-group shadow">
+                <Button
+                  className="btn btn-secondary cat-action-reject-link btn-sm "
+                  onClick={() => {
+                    if (item.id) {
+                      setSubjectModalConfig({
+                        id: item.id,
+                        mode: SubjectModalMode.Update,
+                        show: true,
+                      });
+                    }
+                  }}
+                >
+                  <FaEdit />
+                </Button>
+                <Button
+                  className="btn btn-secondary cat-action-reject-link btn-sm "
+                  onClick={() => {
+                    if (item.id) {
+                      setSubjectModalConfig({
+                        id: item.id,
+                        mode: SubjectModalMode.Delete,
+                        show: true,
+                      });
+                    }
+                  }}
+                >
+                  <FaTimes />
+                </Button>
+              </div>
+            </>
+          );
+        },
       },
     ],
     [],
@@ -244,7 +379,53 @@ function Subjects() {
         setSubjectModalConfig((prevConfig) => ({ ...prevConfig, show: false }));
       });
     toast.promise(promise, {
-      loading: "Creating",
+      loading: "Creating...",
+      success: () => `${toastAlert.current.message}`,
+      error: () => `${toastAlert.current.message}`,
+    });
+  };
+
+  const handleUpdateSubject = (item: Subject) => {
+    const promise = mutationUpdateSubject
+      .mutateAsync(item)
+      .catch((err) => {
+        toastAlert.current = {
+          message: "Error during subject update.",
+        };
+        throw err;
+      })
+      .then(() => {
+        toastAlert.current = {
+          message: "Subject succesfully updated.",
+        };
+        // close the modal
+        setSubjectModalConfig((prevConfig) => ({ ...prevConfig, show: false }));
+      });
+    toast.promise(promise, {
+      loading: "Updating...",
+      success: () => `${toastAlert.current.message}`,
+      error: () => `${toastAlert.current.message}`,
+    });
+  };
+
+  const handleDeleteSubject = (id: number) => {
+    const promise = mutationDeleteSubject
+      .mutateAsync(id)
+      .catch((err) => {
+        toastAlert.current = {
+          message: "Error during subject deletion.",
+        };
+        throw err;
+      })
+      .then(() => {
+        toastAlert.current = {
+          message: "Subject succesfully deleted.",
+        };
+        // close the modal
+        setSubjectModalConfig((prevConfig) => ({ ...prevConfig, show: false }));
+      });
+    toast.promise(promise, {
+      loading: "Deleting...",
       success: () => `${toastAlert.current.message}`,
       error: () => `${toastAlert.current.message}`,
     });
@@ -258,7 +439,8 @@ function Subjects() {
           setSubjectModalConfig({ ...subjectModalConfig, show: false })
         }
         onCreate={handleCreateSubject}
-        onUpdate={() => console.log(`update`)}
+        onUpdate={handleUpdateSubject}
+        onDelete={handleDeleteSubject}
       />
       <div className={"d-flex justify-content-between container"}>
         <h3 className="cat-view-heading">
@@ -269,7 +451,11 @@ function Subjects() {
           variant="light"
           className="border-black"
           onClick={() =>
-            setSubjectModalConfig({ id: -1, editMode: false, show: true })
+            setSubjectModalConfig({
+              id: -1,
+              mode: SubjectModalMode.Create,
+              show: true,
+            })
           }
         >
           <FaPlus /> Create New
