@@ -359,18 +359,10 @@ function CustomTable<T>({
                             </div>
                           ) : (
                             <>
-                              <span>
-                                {header.column.id
-                                  .split("_")
-                                  .join(" ")
-                                  .toLowerCase()
-                                  .replace(
-                                    /\b[a-z](?=[a-z])/g,
-                                    function (letter) {
-                                      return letter.toUpperCase();
-                                    },
-                                  )}
-                              </span>
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                             </>
                           )}
                         </>
