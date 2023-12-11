@@ -281,25 +281,25 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       : [
           {
             accessorKey: "name",
-            header: () => <span>ID</span>,
+            header: () => <span>Id</span>,
             cell: (info) => info.getValue(),
             enableColumnFilter: false,
           },
           {
             accessorKey: "type",
-            header: () => <span>type</span>,
+            header: () => <span>Type</span>,
             cell: (info) => info.getValue(),
             enableColumnFilter: false,
           },
           {
             accessorKey: "compliance",
-            header: () => <span>compliance</span>,
+            header: () => <span>Compliance</span>,
             cell: (info) => <ComplianceBadge compliance={info.getValue()} />,
             enableColumnFilter: false,
           },
           {
             accessorKey: "ranking",
-            header: () => <span>ranking</span>,
+            header: () => <span>Ranking</span>,
             cell: (info) => {
               return info.getValue() === null ? (
                 <ComplianceBadge compliance={null} />
@@ -311,7 +311,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           },
           {
             accessorKey: "published",
-            header: () => <span>access</span>,
+            header: () => <span>Access</span>,
             cell: (info) => {
               return info.getValue() === true ? "Public" : "Private";
             },
@@ -319,19 +319,19 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           },
           {
             accessorKey: "subject_type",
-            header: () => <span>subject type</span>,
+            header: () => <span>Subject Type</span>,
             cell: (info) => info.getValue(),
             enableColumnFilter: false,
           },
           {
             accessorKey: "subject_name",
-            header: () => <span>subject name</span>,
+            header: () => <span>Subject Name</span>,
             cell: (info) => info.getValue(),
             enableColumnFilter: false,
           },
           {
             accessorKey: "organisation",
-            header: () => <span>organisation</span>,
+            header: () => <span>Organisation</span>,
             cell: (info) => info.getValue(),
             enableColumnFilter: false,
           },
