@@ -195,6 +195,7 @@ export function useGetObjects({
     url = url.concat(`/objects?size=${size}&page=${page}`);
   }
   console.log(url);
+  console.log(actorId);
   return useQuery({
     queryKey: ["objects", { size, page, assessmentTypeId, actorId }],
     queryFn: async () => {
@@ -205,6 +206,6 @@ export function useGetObjects({
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
-    enabled: !!actorId && actorId > 0,
+    enabled: !!actorId,
   });
 }
