@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { ActorListResponse, ApiOptions, Subject } from "@/types";
+import { ApiOptions, Subject, SubjectListResponse } from "@/types";
 import { APIClient } from "@/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
@@ -15,7 +15,7 @@ export const useGetSubjects = ({
   useQuery({
     queryKey: ["subjects"],
     queryFn: async () => {
-      const response = await APIClient(token).get<ActorListResponse>(
+      const response = await APIClient(token).get<SubjectListResponse>(
         `/subjects?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;

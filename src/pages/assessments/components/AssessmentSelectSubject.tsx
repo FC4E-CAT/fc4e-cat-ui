@@ -2,7 +2,7 @@
  * Component to that displays a list of validated actor roles in organisations and allows the user to select one
  * as a basis for a new assessment
  */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
   InputGroup,
   Form,
@@ -13,10 +13,9 @@ import {
 import { FaInfoCircle } from "react-icons/fa";
 import { AuthContext } from "@/auth";
 import { AssessmentSubject } from "@/types";
-import { useGetObjectsByActor } from "@/api";
+import { useGetSubjects } from "@/api/services/subjects";
 
 type AssessmentSelectSubjectProps = {
-  actorId: number;
   subject: AssessmentSubject;
   onSubjectChange(subject: AssessmentSubject): void;
 };
@@ -25,20 +24,15 @@ export const AssessmentSelectSubject = (
   props: AssessmentSelectSubjectProps,
 ) => {
   const { keycloak, registered } = useContext(AuthContext)!;
-  const { data: objectsByActor, refetch: refetchObjectsByActor } =
-    useGetObjectsByActor({
-      actorId: props.actorId <= 0 ? undefined : props.actorId,
-      size: 100,
-      page: 1,
-      sortBy: "asc",
-      token: keycloak?.token || "",
-      isRegistered: registered,
-    });
+  const { data } = useGetSubjects({
+    size: 100,
+    page: 1,
+    sortBy: "asc",
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
 
   const [selected, setSelected] = useState(props.subject.id || "-1");
-  useEffect(() => {
-    refetchObjectsByActor();
-  }, [props.actorId, refetchObjectsByActor]);
 
   function handleSubjectChange(fieldName: string, value: string) {
     return {
@@ -62,19 +56,20 @@ export const AssessmentSelectSubject = (
           </label>
           <select
             className="form-select"
-            id="actor_id"
+            id="subject_id"
             value={selected}
             onChange={(e) => {
-              const objct = objectsByActor?.content
-                .filter((t) => t.id === e.target.value)
+              const subject = data?.content
+                .filter((t) => t.id === parseInt(e.target.value))
                 .map((t) => {
                   return t;
                 });
-              if (objct !== undefined) {
+              if (subject !== undefined) {
                 props.onSubjectChange({
-                  id: objct[0].id,
-                  name: objct[0].name,
-                  type: objct[0].type,
+                  db_id: subject[0].id,
+                  name: subject[0].name,
+                  type: subject[0].type,
+                  id: subject[0].subject_id,
                 });
                 setSelected(e.target.value);
               }
@@ -83,11 +78,11 @@ export const AssessmentSelectSubject = (
             <option disabled value={-1}>
               Select Object
             </option>
-            {objectsByActor?.content &&
-              objectsByActor?.content.map((t, i) => {
+            {data?.content &&
+              data?.content.map((t, i) => {
                 return (
                   <option key={`type-${i}`} value={t.id}>
-                    {t.id}-{t.name}-{t.type}
+                    {t.name}-{t.type}-{t.subject_id}
                   </option>
                 );
               })}
