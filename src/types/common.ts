@@ -28,6 +28,7 @@ export interface Actor {
 }
 
 export type ActorListResponse = ResponsePage<Actor[]>;
+export type SubjectListResponse = ResponsePage<Subject[]>;
 
 export type ApiServiceErr = {
   code: string;

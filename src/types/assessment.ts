@@ -51,6 +51,7 @@ export interface AssessmentSubject {
   id: string;
   name: string;
   type: string;
+  db_id?: number;
 }
 
 export type AssessmentSubjectListResponse = ResponsePage<AssessmentSubject[]>;

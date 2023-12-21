@@ -210,7 +210,6 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
         <Accordion.Body>
           <Row className="m-2">
             <AssessmentSelectSubject
-              actorId={props.actor?.id}
               subject={props.subject}
               onSubjectChange={props.onSubjectChange}
             />
