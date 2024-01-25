@@ -43,7 +43,7 @@ function Header() {
 
         {/* login button */}
         {!authenticated && (
-          <Link to="/login" className="btn btn-primary my-2">
+          <Link id="login-button" to="/login" className="btn btn-primary my-2">
             Login
           </Link>
         )}
