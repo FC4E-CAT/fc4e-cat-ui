@@ -536,6 +536,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
           <Card.Footer className="d-flex justify-content-between p-2">
             <div>
               <Button
+                id="prev-button"
                 disabled={activeTab < 2}
                 className={`me-2 px-5 border-black ${
                   activeTab < 2 ? "opacity-25" : ""
@@ -547,6 +548,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
               </Button>
 
               <Button
+                id="next-button"
                 disabled={activeTab > 2 || !wizardTabActive}
                 className={`me-2 px-5 border-black ${
                   activeTab > 2 || !wizardTabActive ? "opacity-25" : ""
