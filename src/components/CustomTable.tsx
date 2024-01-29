@@ -1,20 +1,24 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
+import React, { useCallback, useEffect, useState } from "react";
 import { useContext } from "react";
 import {
-  PaginationState,
   useReactTable,
   getCoreRowModel,
   Table,
   Column,
   ColumnDef,
   ColumnFiltersState,
-  getPaginationRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
 
-import { AuthContext } from "../auth/AuthContext";
+import { AuthContext } from "@/auth";
+import { TableExtraDataOps } from "@/types";
+import { Link } from "react-router-dom";
+import { Alert, Col, Row } from "react-bootstrap";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 function Filter({
   column,
@@ -32,18 +36,14 @@ function Filter({
     columnFilterValue = "";
   }
 
-  const sortedUniqueValues = React.useMemo(
-    () => {
-      if (typeof firstValue === "number") {
-        return [];
-      }
-      else {
-        const uniq = column.getFacetedUniqueValues();
-        return Array.from(uniq).sort()
-      }
-    },
-    [column, firstValue]
-  );
+  const sortedUniqueValues = React.useMemo(() => {
+    if (typeof firstValue === "number") {
+      return [];
+    } else {
+      const uniq = column.getFacetedUniqueValues();
+      return Array.from(uniq).sort();
+    }
+  }, [column, firstValue]);
 
   return (
     <div className={column.id === "user_id" ? "limited" : ""}>
@@ -58,7 +58,7 @@ function Filter({
       </span>
       <datalist id={column.id + "list"}>
         {sortedUniqueValues.slice(0, 5000).map((value: any) => (
-          <option value={value} key={value} />
+          <option value={value[0]} key={value} />
         ))}
       </datalist>
       <DebouncedInput
@@ -127,36 +127,106 @@ function DebouncedInput({
 
 function CustomTable<T>({
   columns,
-  data_source,
+  dataSource,
+  extraDataOps,
+  goBackLoc,
 }: {
   columns: ColumnDef<T>[];
-  data_source: Function;
+  dataSource: Function;
+  extraDataOps?: TableExtraDataOps;
+  goBackLoc?: string;
 }) {
   const defaultData = React.useMemo(() => [], []);
   const { keycloak } = useContext(AuthContext)!;
 
-  const [{ pageIndex, pageSize }, setPagination] =
-    React.useState<PaginationState>({
-      pageIndex: 1,
-      pageSize: 10,
-    });
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const pagination = React.useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize]
+    [],
   );
 
-  const { data } = data_source({
-    size: pageSize,
-    page: pageIndex,
-    sortBy: "asc",
-    token: keycloak?.token,
+  const [pagination, setPagination] = useState<{
+    current_page_idx: number;
+    next_page_idx: number;
+    first_page_idx: number;
+    last_page_idx: number;
+    total_pages: number;
+    page_size: number;
+    total_elements?: number;
+  }>({
+    current_page_idx: 1,
+    next_page_idx: 1,
+    first_page_idx: 1,
+    last_page_idx: 1,
+    total_pages: 1,
+    page_size: 10,
+    total_elements: 10,
   });
+
+  const { data } = dataSource({
+    ...{
+      size: 10,
+      page: pagination.current_page_idx,
+      sortBy: "asc",
+      token: keycloak?.token,
+    },
+    ...(extraDataOps || {}),
+  });
+
+  useEffect(() => {
+    let pagin = {
+      current_page_idx: 1,
+      next_page_idx: 1,
+      first_page_idx: 1,
+      last_page_idx: 1,
+      total_pages: 1,
+      page_size: 10,
+      total_elements: 10,
+    };
+
+    if (data) {
+      pagin = {
+        ...pagin,
+        page_size: data["size_of_page"],
+        total_elements: data["total_elements"],
+        total_pages: data["total_pages"],
+        next_page_idx: data["total_pages"],
+      };
+    }
+    if (data) {
+      if (data?.links.length > 0) {
+        data?.links.forEach((l: { href: string; rel: string }) => {
+          const url = new URL(l["href"]);
+          if (l["rel"] === "last") {
+            pagin = {
+              ...pagin,
+              last_page_idx: parseInt(url.searchParams.get("page") || ""),
+            };
+          } else if (l["rel"] === "next") {
+            pagin = {
+              ...pagin,
+              next_page_idx: parseInt(url.searchParams.get("page") || ""),
+            };
+          } else if (l["rel"] === "self") {
+            pagin = {
+              ...pagin,
+              current_page_idx: parseInt(url.searchParams.get("page") || ""),
+            };
+          } else if (l["rel"] === "first") {
+            pagin = {
+              ...pagin,
+              first_page_idx: parseInt(url.searchParams.get("page") || ""),
+            };
+          }
+        });
+        setPagination(pagin);
+      } else {
+        pagin = {
+          ...pagin,
+          current_page_idx: data["total_pages"],
+        };
+        setPagination(pagin);
+      }
+    }
+  }, [data]);
 
   const table = useReactTable({
     data: data?.content ?? defaultData,
@@ -164,29 +234,123 @@ function CustomTable<T>({
     pageCount: data?.total_pages ?? -1,
     state: {
       columnFilters,
-      pagination,
     },
-    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    manualPagination: true,
-    getPaginationRowModel: getPaginationRowModel(),
     debugTable: false,
   });
+
+  const renderPagination = useCallback(() => {
+    return (
+      <Row>
+        <Col>
+          <ul className="pagination custom-pagination">
+            <li className="page-item">
+              <button
+                className={
+                  pagination?.current_page_idx === 1
+                    ? "page-link disabled"
+                    : "page-link"
+                }
+                onClick={() => {
+                  setPagination({
+                    ...pagination,
+                    current_page_idx: 1,
+                  });
+                }}
+              >
+                {"<<"}
+              </button>
+            </li>
+            <li className="page-item">
+              <button
+                className={
+                  pagination?.current_page_idx === 1
+                    ? "page-link disabled"
+                    : "page-link"
+                }
+                onClick={() => {
+                  setPagination({
+                    ...pagination,
+                    current_page_idx: pagination.current_page_idx - 1,
+                  });
+                }}
+              >
+                {"<"}
+              </button>
+            </li>
+            <li className="page-item">
+              <button
+                className="w-max-content page-link text-center text-secondary"
+                disabled
+              >{`${pagination.current_page_idx.toString()} of ${
+                pagination.total_pages
+              }`}</button>
+            </li>
+            <li className="page-item">
+              <button
+                className={
+                  pagination?.current_page_idx === pagination?.last_page_idx
+                    ? "page-link disabled"
+                    : "page-link"
+                }
+                onClick={() => {
+                  setPagination({
+                    ...pagination,
+                    current_page_idx: pagination?.next_page_idx,
+                  });
+                }}
+              >
+                {">"}
+              </button>
+            </li>
+            <li className="page-item">
+              <button
+                className={
+                  pagination.current_page_idx >= pagination?.last_page_idx
+                    ? "page-link disabled"
+                    : "page-link"
+                }
+                onClick={() => {
+                  setPagination({
+                    ...pagination,
+                    current_page_idx: pagination?.last_page_idx,
+                  });
+                }}
+              >
+                {">>"}
+              </button>
+            </li>
+          </ul>
+        </Col>
+        <Col className="text-end">
+          {goBackLoc && (
+            <Link className=" btn btn-secondary mx-3" to={goBackLoc}>
+              Back
+            </Link>
+          )}
+        </Col>
+      </Row>
+    );
+  }, [pagination, goBackLoc]);
 
   return (
     <div className="p-2">
       <div className="h-2" />
       <div className="table-responsive">
         <table className="table table-striped table-hover">
-          <thead className="thead-dark">
+          <thead className="thead-dark border-top">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <th key={header.id} colSpan={header.colSpan}>
+                    <th
+                      style={{ verticalAlign: "top" }}
+                      key={header.id}
+                      colSpan={header.colSpan}
+                    >
                       {header.isPlaceholder ? null : (
                         <>
                           {header.column.getCanFilter() ? (
@@ -195,26 +359,10 @@ function CustomTable<T>({
                             </div>
                           ) : (
                             <>
-                              <span
-                              >
-                                {header.column.id
-                                  .split("_")
-                                  .join(" ")
-                                  .toLowerCase()
-                                  .replace(
-                                    /\b[a-z](?=[a-z])/g,
-                                    function (letter) {
-                                      return letter.toUpperCase();
-                                    }
-                                  )}
-                              </span>
-                              <div className="flex space-x-2">
-                                <input
-                                  disabled
-                                  type="none"
-                                  className="invisible form-control mt-1"
-                                ></input>
-                              </div>
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                             </>
                           )}
                         </>
@@ -229,56 +377,40 @@ function CustomTable<T>({
             {table.getRowModel().rows.map((row) => {
               return (
                 <tr key={row.id}>
-                  {row.getVisibleCells().map(cell => {
+                  {row.getVisibleCells().map((cell) => {
                     return (
-                      <td key={cell.id} className={cell.column.id === "user_id" ? "limited" : ""}>
+                      <td
+                        key={cell.id}
+                        className={
+                          cell.column.id === "user_id" ? "limited" : ""
+                        }
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </td>
-                    )
+                    );
                   })}
                 </tr>
               );
             })}
           </tbody>
         </table>
+        {data && data.content.length === 0 && (
+          <Alert variant="warning" className="text-center mx-auto">
+            <h3>
+              <FaExclamationTriangle />
+            </h3>
+            <h5>No data found...</h5>
+          </Alert>
+        )}
       </div>
-      <div className="h-2" />
-      <nav aria-label="Page navigation example">
-        <ul className="pagination custom-pagination">
-          <li className="page-item">
-            <button
-              className="border rounded p-1"
-              onClick={() => setPagination({ pageIndex: 1, pageSize })}
-              disabled={pageIndex === 1}
-            >
-              {"<<"}
-            </button>
-          </li>
-          <li className="page-item">
-            <button
-              className="border rounded p-1"
-              onClick={() => table.previousPage()}
-              disabled={pageIndex === 1}
-            >
-              {"<"}
-            </button>
-          </li>
-          <li className="page-item">
-            <button
-              className="border rounded p-1"
-              onClick={() => {
-                setPagination({ pageIndex: pageIndex + 1, pageSize });
-              }}
-              disabled={pageIndex === data?.total_pages}
-            >
-              {">"}
-            </button>
-          </li>
-        </ul>
-      </nav>
+      <div className="d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+          {pagination && renderPagination()}
+        </nav>
+      </div>
     </div>
   );
 }

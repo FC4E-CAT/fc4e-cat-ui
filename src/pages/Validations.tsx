@@ -1,51 +1,72 @@
-import { useMemo, useContext, useState, useEffect, useRef} from 'react';
-import Select, { SingleValue } from 'react-select';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { ErrorMessage } from '@hookform/error-message';
-import { UserAPI, ValidationAPI, OrganisationAPI, ActorAPI } from '../api';
-import { AuthContext } from '../auth/AuthContext';
+import { useMemo, useContext, useState, useEffect, useRef } from "react";
+import Select, { SingleValue } from "react-select";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
 import {
-  ColumnDef,
-} from '@tanstack/react-table'
+  useAdminValidations,
+  useGetActors,
+  useGetProfile,
+  useGetValidationDetails,
+  useGetValidationList,
+  useOrganisationRORSearch,
+  useValidationRequest,
+  useValidationStatusUpdate,
+} from "@/api";
+import { AuthContext } from "@/auth";
+import { ColumnDef } from "@tanstack/react-table";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
-  FaCheck, FaList, FaTimes, FaExclamationTriangle, FaPlus,
-  FaRegCheckSquare, FaGlasses, FaIdBadge
-} from 'react-icons/fa';
-import decode from 'jwt-decode';
-import { CustomTable } from '../components/CustomTable';
-import { Alert } from '../components/Alert';
-import { UserProfile, Actor, OrganisationRORSearchResultModified, ValidationResponse, AlertInfo, ValidationProps } from '../types';
+  FaCheck,
+  FaList,
+  FaTimes,
+  FaExclamationTriangle,
+  FaPlus,
+  FaGlasses,
+  FaIdBadge,
+  FaInfoCircle,
+} from "react-icons/fa";
+import { CustomTable } from "@/components";
+import {
+  UserProfile,
+  Actor,
+  OrganisationRORSearchResultModified,
+  ValidationResponse,
+  AlertInfo,
+  ValidationProps,
+} from "@/types";
 
-const enum AlertType {
-  SUCCESS = "success",
-  DANGER = "danger"
-}
+import { toast } from "react-hot-toast";
+import { Row, Col, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const enum ValidationStatus {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
-  REVIEW = "REVIEW"
+  REVIEW = "REVIEW",
 }
 
 function RequestValidation() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { keycloak, registered } = useContext(AuthContext)!;
 
-  const { data: profileData } = UserAPI.useGetProfile(
-    { token: keycloak?.token, isRegistered: registered }
-  );
+  const { data: profileData } = useGetProfile({
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
 
   const [userProfile, setUserProfile] = useState<UserProfile>();
-  const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
   useEffect(() => {
     setUserProfile(profileData);
   }, [profileData]);
 
-  const { data: actorsData } = ActorAPI.useGetActors(
-    { size: 20, page: 1, sortBy: "asc", token: keycloak?.token, isRegistered: registered }
-  );
+  const { data: actorsData } = useGetActors({
+    size: 100,
+    page: 1,
+    sortBy: "asc",
+  });
 
   const [actors, setActors] = useState<Actor[]>();
   useEffect(() => {
@@ -69,75 +90,84 @@ function RequestValidation() {
   const [organisation_website, setOrganisationWebsite] = useState("");
   const [inputValue, setInputValue] = useState("");
 
-  const { register, setValue, handleSubmit, formState: { errors } } = useForm<FormValues>(
-    {
-      defaultValues: {
-        organisation_role: organisation_role,
-        organisation_id: organisation_id,
-        organisation_source: organisation_source,
-        organisation_name: organisation_name,
-        organisation_website: organisation_website,
-        actor_id: actor_id
-      }
-    }
-  );
-
-  const { mutateAsync: refetchValidationRequest } = ValidationAPI.useValidationRequest(
-    {
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
       organisation_role: organisation_role,
       organisation_id: organisation_id,
       organisation_source: organisation_source,
       organisation_name: organisation_name,
       organisation_website: organisation_website,
       actor_id: actor_id,
-      token: keycloak?.token,
-      isRegistered: registered
-    }
-  );
+    },
+  });
 
-  const { data: organisations } = OrganisationAPI.useOrganisationRORSearch(
-    {
-      name: inputValue,
-      page: 1,
-      token: keycloak?.token,
-      isRegistered: registered
-    }
-  );
+  const { mutateAsync: refetchValidationRequest } = useValidationRequest({
+    organisation_role: organisation_role,
+    organisation_id: organisation_id,
+    organisation_source: organisation_source,
+    organisation_name: organisation_name,
+    organisation_website: organisation_website,
+    actor_id: actor_id,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
 
-  const onSubmit: SubmitHandler<FormValues> = data => {
+  const { data: organisations } = useOrganisationRORSearch({
+    name: inputValue,
+    page: 1,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
     setOrganisationRole(data.organisation_role);
     setOrganisationID(data.organisation_id);
     setOrganisationSource(data.organisation_source);
     setOrganisationName(data.organisation_name);
     setOrganisationWebsite(data.organisation_website);
     setActorID(data.actor_id);
-    refetchValidationRequest().then(r => {
-      setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation request succesfully submitted." });
-    }).catch(error => {
-      setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation request submission." });
-    }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
-
+    const promise = refetchValidationRequest()
+      .catch((err) => {
+        alert.current = {
+          message: "Error during validation request submission.",
+        };
+        throw err; // throw again after you catch
+      })
+      .then(() => {
+        alert.current = {
+          message: "Validation request succesfully submitted.",
+        };
+      })
+      .finally(() => navigate("/validations"));
+    toast.promise(promise, {
+      loading: "Submitting",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
   };
 
   const renderOptions = () => {
     let tmp = [];
-    let result: OrganisationRORSearchResultModified[] = [];
+    const result: OrganisationRORSearchResultModified[] = [];
     if (organisations?.content) {
       tmp = organisations?.content;
-      var i;
-      for (i = 0; i < tmp.length; i++) {
-        let t: OrganisationRORSearchResultModified = {
+      for (let i = 0; i < tmp.length; i++) {
+        const t: OrganisationRORSearchResultModified = {
           value: tmp[i]["name"],
           label: tmp[i]["name"],
           website: tmp[i]["website"],
           id: tmp[i]["id"],
-          acronym: tmp[i]["acronym"]
+          acronym: tmp[i]["acronym"],
         };
         result.push(t);
       }
       return result;
-    }
-    else return [];
+    } else return [];
   };
 
   const updateForm = (s: SingleValue<OrganisationRORSearchResultModified>) => {
@@ -148,29 +178,41 @@ function RequestValidation() {
 
   const actors_select_div = (
     <>
-      <label htmlFor="actors" className="form-label fw-bold">
-        Actor
+      <label
+        htmlFor="actors"
+        className="d-flex align-items-center form-label fw-bold"
+      >
+        <FaInfoCircle className="me-2" /> Actor (*)
       </label>
-      <select
-        className={`form-select ${errors.actor_id ? "is-invalid" : ""}`}
-        id="actor_id"
-        {...register("actor_id",
-          {
-            // onChange: (e) => { actor_id.current = e.target.value; },
-            required: true
-          })}>
-        <option disabled value={-1}>
-          Select Actor
-        </option>
-        {actors &&
-          actors.map((t, i) => {
-            return (
-              <option key={`type-${i}`} value={t.id}>
-                {t.name}
-              </option>
-            );
+      <OverlayTrigger
+        key="top"
+        placement="top"
+        overlay={
+          <Tooltip id={`tooltip-top`}>
+            The organisation’s role (actor) as defined in the EOSC PID Policy
+          </Tooltip>
+        }
+      >
+        <select
+          className={`form-select ${errors.actor_id ? "is-invalid" : ""}`}
+          id="actor_id"
+          {...register("actor_id", {
+            required: true,
           })}
-      </select>
+        >
+          <option disabled value={-1}>
+            Select Actor
+          </option>
+          {actors &&
+            actors.map((t, i) => {
+              return (
+                <option key={`type-${i}`} value={t.id}>
+                  {t.name}
+                </option>
+              );
+            })}
+        </select>
+      </OverlayTrigger>
       <ErrorMessage
         errors={errors}
         name="actor_id"
@@ -181,127 +223,201 @@ function RequestValidation() {
 
   return (
     <div className="mt-4">
-      {alert.enabled &&
-        <Alert type={alert.type} message={alert.message} />
-      }
-      <h3 className="cat-view-heading"><FaIdBadge/> create new validation request</h3>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <h3 className="cat-view-heading">
+        <FaIdBadge /> create new validation request
+      </h3>
+      <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
+        <Row>
+          <Col className="mt-3" xs={12} md={6}>
+            <label
+              htmlFor="organization_name"
+              className="d-flex align-items-center form-label fw-bold"
+            >
+              <FaInfoCircle className="me-2" /> Organization Name (*)
+            </label>
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={<Tooltip id={`tooltip-top`}>The user’s name</Tooltip>}
+            >
+              <Select
+                className="basic-single"
+                classNamePrefix="select"
+                onInputChange={(value) => setInputValue(value)}
+                onChange={(s) => updateForm(s)}
+                isSearchable={true}
+                name="organisation_name"
+                options={renderOptions()}
+                filterOption={() => true}
+              />
+            </OverlayTrigger>
+          </Col>
+          <Col className="mt-3" xs={12} md={3}>
+            <label
+              htmlFor="organization_source"
+              className="d-flex align-items-center form-label fw-bold"
+            >
+              <FaInfoCircle className="me-2" /> Organization Source (*)
+            </label>
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id={`tooltip-top`}>
+                  Source of a persistent identifier representing the
+                  organisation (ROR)
+                </Tooltip>
+              }
+            >
+              <input
+                type="text"
+                className={`form-control ${
+                  errors.organisation_source ? "is-invalid" : ""
+                }`}
+                id="organisation_source"
+                aria-describedby="organisation_source_help"
+                disabled={true}
+                {...register("organisation_source", {
+                  required: {
+                    value: true,
+                    message: "Organisation Source is required",
+                  },
+                  minLength: { value: 3, message: "Minimum length is 3" },
+                })}
+              />
+            </OverlayTrigger>
+            <ErrorMessage
+              errors={errors}
+              name="organisation_source"
+              render={({ message }) => <p>{message}</p>}
+            />
+          </Col>
+          <Col className="mt-3" xs={12} md={3}>
+            <label
+              htmlFor="organization_website"
+              className="d-flex align-items-center form-label fw-bold"
+            >
+              <FaInfoCircle className="me-2" /> Organization Website (*)
+            </label>
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id={`tooltip-top`}>The organization’s website</Tooltip>
+              }
+            >
+              <input
+                type="text"
+                className={`form-control ${
+                  errors.organisation_website ? "is-invalid" : ""
+                }`}
+                id="organisation_website"
+                aria-describedby="organisation_website_help"
+                disabled={true}
+                {...register("organisation_website", {
+                  required: {
+                    value: true,
+                    message: "Organisation Website is required",
+                  },
+                })}
+              />
+            </OverlayTrigger>
+            <ErrorMessage
+              errors={errors}
+              name="organisation_website"
+              render={({ message }) => <p>{message}</p>}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col className="mt-3" xs={12} md={6}>
+            <label
+              htmlFor="organization_role"
+              className="d-flex align-items-center form-label fw-bold"
+            >
+              <FaInfoCircle className="me-2" /> Organization Role (*)
+            </label>
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id={`tooltip-top`}>
+                  The user’s role in the organization
+                </Tooltip>
+              }
+            >
+              <input
+                type="text"
+                className={`form-control ${
+                  errors.organisation_role ? "is-invalid" : ""
+                }`}
+                id="organisation_role"
+                aria-describedby="organisation_role_help"
+                {...register("organisation_role", {
+                  required: {
+                    value: true,
+                    message: "Organisation Role is required",
+                  },
+                })}
+              />
+            </OverlayTrigger>
+            <ErrorMessage
+              errors={errors}
+              name="organisation_role"
+              render={({ message }) => <p>{message}</p>}
+            />
+          </Col>
+          <Col className="mt-3" xs={12} md={6}>
+            {actors && actors.length > 0 ? actors_select_div : null}
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <span className="form-label fw-bold">User Details (*)</span>
+          <Col sm={12} md={4}>
+            <InputGroup className="mb-2">
+              <InputGroup.Text>Name: </InputGroup.Text>
+              <input
+                type="text"
+                className={`form-control`}
+                id="user_name"
+                aria-describedby="user_name_help"
+                disabled={true}
+                value={userProfile?.name || ""}
+              />
+            </InputGroup>
+          </Col>
+          <Col sm={12} md={4}>
+            <InputGroup className="mb-2">
+              <InputGroup.Text>Surname: </InputGroup.Text>
+              <input
+                type="text"
+                className={`form-control`}
+                id="user_name"
+                aria-describedby="user_name_help"
+                disabled={true}
+                value={userProfile?.surname || ""}
+              />
+            </InputGroup>
+          </Col>
+          <Col sm={12} md={4}>
+            <InputGroup className="mb-2">
+              <InputGroup.Text>Email: </InputGroup.Text>
+              <input
+                type="text"
+                className={`form-control`}
+                id="user_name"
+                aria-describedby="user_name_help"
+                disabled={true}
+                value={userProfile?.email || ""}
+              />
+            </InputGroup>
+          </Col>
+        </Row>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="organization_name" className="form-label fw-bold">
-            Organization Name
-          </label>
-          <Select
-            className="basic-single"
-            classNamePrefix="select"
-            onInputChange={(value, _) => setInputValue(value)}
-            onChange={(s) => updateForm(s)}
-            isSearchable={true}
-            name="organisation_name"
-            options={renderOptions()}
-            filterOption={() => true}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="organization_role" className="form-label fw-bold">
-            Organization Role
-          </label>
-          <input
-            type="text"
-            className={`form-control ${errors.organisation_role ? "is-invalid" : ""}`}
-            id="organisation_role"
-            aria-describedby="organisation_role_help"
-            {...register("organisation_role", {
-              // onChange: (e) => { setOrganisationRole(e.target.value) },
-              required: { value: true, message: "Organisation Role is required" }
-            })} />
-          <ErrorMessage
-            errors={errors}
-            name="organisation_role"
-            render={({ message }) => <p>{message}</p>}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="organization_source" className="form-label fw-bold">
-            Organization Source
-          </label>
-          <input
-            type="text"
-            className={`form-control ${errors.organisation_source ? "is-invalid" : ""}`}
-            id="organisation_source"
-            aria-describedby="organisation_source_help"
-            disabled={true}
-            {...register("organisation_source", {
-              required: { value: true, message: "Organisation Source is required" },
-              minLength: { value: 3, message: "Minimum length is 3" }
-            })} />
-          <ErrorMessage
-            errors={errors}
-            name="organisation_source"
-            render={({ message }) => <p>{message}</p>}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="organization_website" className="form-label fw-bold">
-            Organization Website
-          </label>
-          <input
-            type="text"
-            className={`form-control ${errors.organisation_website ? "is-invalid" : ""}`}
-            id="organisation_website"
-            aria-describedby="organisation_website_help"
-            disabled={true}
-            {...register("organisation_website", {
-              required: { value: true, message: "Organisation Website is required" }
-            })} />
-          <ErrorMessage
-            errors={errors}
-            name="organisation_website"
-            render={({ message }) => <p>{message}</p>}
-          />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          {actors && actors.length > 0
-            ? actors_select_div
-            : null}
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="user_name" className="form-label fw-bold">
-            User Name
-          </label>
-          <input
-            type="text"
-            className={`form-control`}
-            id="user_name"
-            aria-describedby="user_name_help"
-            disabled={true}
-            value={userProfile?.name || ""} />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="user_surname" className="form-label fw-bold">
-            User Surname
-          </label>
-          <input
-            type="text"
-            className={`form-control`}
-            id="user_surname"
-            aria-describedby="user_surname_help"
-            disabled={true}
-            value={userProfile?.surname || ""} />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <label htmlFor="user_email" className="form-label fw-bold">
-            User Email
-          </label>
-          <input
-            type="text"
-            className={`form-control`}
-            id="user_email"
-            aria-describedby="user_email_help"
-            disabled={true}
-            value={userProfile?.email || ""} />
-        </div>
-        <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <button className="btn btn-light border-black" type="submit">Submit</button>
+          <button className="btn btn-light border-black" type="submit">
+            Submit
+          </button>
           <Link to="/validations" className="my-2 btn btn-secondary mx-3">
             <span>Cancel</span>
           </Link>
@@ -312,138 +428,134 @@ function RequestValidation() {
 }
 
 function Validations(props: ValidationProps) {
-  let navigate = useNavigate();
-  const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
-  let params = useParams();
+  const navigate = useNavigate();
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+  const params = useParams();
 
-  const isAdmin = useRef<Boolean>(false);
+  const isAdmin = useRef<boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;
-  const jwt = JSON.stringify(decode(keycloak.token));
 
-  const { mutateAsync: mutateValidationUpdateStatus } = ValidationAPI.useValidationStatusUpdate(
-    {
+  const { mutateAsync: mutateValidationUpdateStatus } =
+    useValidationStatusUpdate({
       validation_id: params.id!,
       status: reviewStatus,
-      token: keycloak?.token,
-      isRegistered: registered
-    }
-  );
+      token: keycloak?.token || "",
+      isRegistered: registered,
+    });
 
-  // FIXME: This is a naive approach, should reconsider
-  if (jwt.includes("admin")) {
+  if (props.admin) {
     isAdmin.current = true;
   }
 
-  const cols = useMemo<ColumnDef<ValidationResponse>[]>(
-    () => [
-      {
-        header: ' ',
-        footer: props => props.column.id,
-        columns: [
-          {
-            accessorKey: 'id',
-            header: () => <span>ID</span>,
-            cell: info => info.getValue(),
-            footer: props => props.column.id,
-            enableColumnFilter: false
-          },
-          {
-            accessorFn: row => row.user_id,
-            id: 'user_id',
-            cell: info => info.getValue(),
-            header: () => <span>User ID</span>,
-            footer: props => props.column.id,
-            enableColumnFilter: true
-          },
-          {
-            accessorFn: row => row.organisation_name,
-            id: 'organisation_name',
-            cell: info => info.getValue(),
-            header: () => <span>Organisation Name</span>,
-            footer: props => props.column.id,
-          },
-          {
-            accessorFn: row => row.organisation_role,
-            id: 'organisation_role',
-            cell: info => info.getValue(),
-            header: () => <span>Organisation Role</span>,
-            footer: props => props.column.id,
-          },
-          {
-            accessorFn: row => row.actor_name,
-            id: 'actor_name',
-            cell: info => info.getValue(),
-            header: () => <span>Actor</span>,
-            footer: props => props.column.id,
-            enableColumnFilter: true
-          },
-          {
-            accessorFn: row => row.status,
-            id: 'status',
-            cell: info => info.getValue(),
-            header: () => <span>Status</span>,
-            footer: props => props.column.id,
-          },
-          {
-            id: "action",
-            cell: (props) => {
-              if (isAdmin.current) {
-                return (
-                  <div className="edit-buttons btn-group shadow">
-                    <Link
-                      className="btn btn-secondary cat-action-view-link btn-sm "
-                      to={`/validations/${props.row.original.id}`}>
-                      <FaList />
-                    </Link>
-                    {props.row.original.status === "REVIEW" ?
-                      <Link
-                        className="btn btn-secondary cat-action-approve-link btn-sm "
-                        to={`/validations/${props.row.original.id}/approve#alert-spot`}>
-                        <FaCheck />
-                      </Link>
-                      :
-                      null
-                    }
-                    {props.row.original.status === "REVIEW" ?
-                      <Link
-                        className="btn btn-secondary cat-action-reject-link btn-sm "
-                        to={`/validations/${props.row.original.id}/reject/#alert-spot`}>
-                        <FaTimes />
-                      </Link>
-                      : null}
-                  </div>
-                )
-              }
-              else {
-                return (
-                  <div className="edit-buttons btn-group shadow">
-                  <Link
-                    className="btn btn-secondary btn-sm "
-                    to={`/validations/${props.row.original.id}`}>
-                    <FaList />
-                  </Link>
-                  {props.row.original.status === "APPROVED" && (props.row.original.actor_id === 6 || props.row.original.actor_id === 2) &&
-                      <Link
-                        className="btn btn-secondary cat-action-approve-link btn-sm "
-                        to={`/assessments/create/${props.row.original.id}`}>
-                        <FaPlus /> Assessment
-                      </Link>
-                  }
-                  </div>
-                )
-              }
-            },
+  const cols = useMemo<ColumnDef<ValidationResponse>[]>(() => {
+    const setAdminPrefix = (url: string) => {
+      if (props.admin) {
+        return "/admin" + url;
+      }
+      return url;
+    };
 
-            header: () => <span>Actions</span>,
-            footer: null,
-            enableColumnFilter: false
-          }
-        ],
+    return [
+      {
+        accessorKey: "id",
+        header: () => <span>ID</span>,
+        cell: (info) => info.getValue(),
+        footer: (props) => props.column.id,
+        enableColumnFilter: false,
       },
-    ],
-    []
-  )
+      {
+        accessorFn: (row) => row.user_id,
+        id: "user_id",
+        cell: (info) => info.getValue(),
+        header: () => <span>User ID</span>,
+        footer: (props) => props.column.id,
+        enableColumnFilter: true,
+      },
+      {
+        accessorFn: (row) => row.organisation_name,
+        id: "organisation_name",
+        cell: (info) => info.getValue(),
+        header: () => <span>Organisation Name</span>,
+        footer: (props) => props.column.id,
+      },
+      {
+        accessorFn: (row) => row.organisation_role,
+        id: "organisation_role",
+        cell: (info) => info.getValue(),
+        header: () => <span>Organisation Role</span>,
+        footer: (props) => props.column.id,
+      },
+      {
+        accessorFn: (row) => row.actor_name,
+        id: "actor_name",
+        cell: (info) => info.getValue(),
+        header: () => <span>Actor</span>,
+        footer: (props) => props.column.id,
+        enableColumnFilter: true,
+      },
+      {
+        accessorFn: (row) => row.status,
+        id: "status",
+        cell: (info) => info.getValue(),
+        header: () => <span>Status</span>,
+        footer: (props) => props.column.id,
+      },
+      {
+        id: "action",
+        cell: (props) => {
+          if (isAdmin.current) {
+            return (
+              <div className="edit-buttons btn-group shadow">
+                <Link
+                  className="btn btn-secondary cat-action-view-link btn-sm "
+                  to={setAdminPrefix(`/validations/${props.row.original.id}`)}
+                >
+                  <FaList />
+                </Link>
+                {props.row.original.status === "REVIEW" ? (
+                  <Link
+                    className="btn btn-secondary cat-action-approve-link btn-sm "
+                    to={setAdminPrefix(
+                      `/validations/${props.row.original.id}/approve#alert-spot`,
+                    )}
+                  >
+                    <FaCheck />
+                  </Link>
+                ) : null}
+                {props.row.original.status === "REVIEW" ? (
+                  <Link
+                    className="btn btn-secondary cat-action-reject-link btn-sm "
+                    to={setAdminPrefix(
+                      `/validations/${props.row.original.id}/reject/#alert-spot`,
+                    )}
+                  >
+                    <FaTimes />
+                  </Link>
+                ) : null}
+              </div>
+            );
+          } else {
+            return (
+              <div className="edit-buttons btn-group shadow">
+                <Link
+                  className="btn btn-secondary btn-sm "
+                  to={setAdminPrefix(`/validations/${props.row.original.id}`)}
+                >
+                  <FaList />
+                </Link>
+              </div>
+            );
+          }
+        },
+
+        header: () => <span>Actions</span>,
+        enableColumnFilter: false,
+      },
+    ];
+  }, [props.admin]);
 
   let rejectCard = null;
   let approveCard = null;
@@ -459,26 +571,42 @@ function Validations(props: ValidationProps) {
             </h5>
           </div>
           <div className=" card-body border-danger text-center">
-            Are you sure you want to reject validation with ID: <strong>{params.id}</strong> ?
+            Are you sure you want to reject validation with ID:{" "}
+            <strong>{params.id}</strong> ?
           </div>
           <div className="card-footer border-danger text-danger text-center">
             <button
               className="btn btn-danger mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.REJECTED);
-                mutateValidationUpdateStatus().then(r => {
-                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
-                }).catch(error => {
-                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
-                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
-              }}>
+                const promise = mutateValidationUpdateStatus()
+                  .catch((err) => {
+                    alert.current = {
+                      message: "Error during validation rejection.",
+                    };
+                    throw err;
+                  })
+                  .then(() => {
+                    alert.current = {
+                      message: "Validation succesfully rejected.",
+                    };
+                  })
+                  .finally(() => navigate("/validations"));
+                toast.promise(promise, {
+                  loading: "Rejecting",
+                  success: () => `${alert.current.message}`,
+                  error: () => `${alert.current.message}`,
+                });
+              }}
+            >
               Reject
             </button>
             <button
               onClick={() => {
-                navigate("/validations");
+                navigate("/admin/validations");
               }}
-              className="btn btn-dark">
+              className="btn btn-dark"
+            >
               Cancel
             </button>
           </div>
@@ -498,26 +626,42 @@ function Validations(props: ValidationProps) {
             </h5>
           </div>
           <div className=" card-body border-info text-center">
-            Are you sure you want to approve validation with ID: <strong>{params.id}</strong> ?
+            Are you sure you want to approve validation with ID:{" "}
+            <strong>{params.id}</strong> ?
           </div>
           <div className="card-footer border-success text-success text-center">
             <button
               className="btn btn-success mr-2"
               onClick={() => {
-                setReviewStatus(ValidationStatus.APPROVED);
-                mutateValidationUpdateStatus().then(r => {
-                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
-                }).catch(error => {
-                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
-                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
-              }}>
+                setReviewStatus(ValidationStatus.REJECTED);
+                const promise = mutateValidationUpdateStatus()
+                  .catch((err) => {
+                    alert.current = {
+                      message: "Error during validation approval.",
+                    };
+                    throw err;
+                  })
+                  .then(() => {
+                    alert.current = {
+                      message: "Validation succesfully approved.",
+                    };
+                  })
+                  .finally(() => navigate("/validations"));
+                toast.promise(promise, {
+                  loading: "Approving",
+                  success: () => `${alert.current.message}`,
+                  error: () => `${alert.current.message}`,
+                });
+              }}
+            >
               Approve
             </button>
             <button
               onClick={() => {
-                navigate("/validations");
+                navigate("/admin/validations");
               }}
-              className="btn btn-dark">
+              className="btn btn-dark"
+            >
               Cancel
             </button>
           </div>
@@ -528,52 +672,65 @@ function Validations(props: ValidationProps) {
 
   return (
     <div className="mt-4">
-      {alert.enabled &&
-        <Alert type={alert.type} message={alert.message} />
-      }
       {rejectCard}
       {approveCard}
-      <div className="d-flex justify-content-between my-2 container">
-        <h3 className="cat-view-heading"><FaIdBadge/> validation requests</h3>
-        <Link to="/validations/request" className="btn btn-light border-black mx-3" ><FaPlus /> Create New</Link>
+      <div
+        className={`${
+          props.admin && "alert alert-primary"
+        } d-flex justify-content-between`}
+      >
+        <h3 className={`${!props.admin && "cat-view-heading"}`}>
+          <FaIdBadge /> validation requests
+        </h3>
+        {props.admin ? (
+          <h3 className="opacity-50">admin mode</h3>
+        ) : (
+          <Link
+            to="/validations/request"
+            className="btn btn-light border-black mx-3"
+          >
+            <FaPlus /> Create New
+          </Link>
+        )}
       </div>
-      {isAdmin.current && keycloak ?
-        <CustomTable columns={cols} data_source={ValidationAPI.useAdminValidations} />
-        :
-        <CustomTable columns={cols} data_source={ValidationAPI.useGetValidationList} />
-      }
+      {isAdmin.current && keycloak ? (
+        <CustomTable columns={cols} dataSource={useAdminValidations} />
+      ) : (
+        <CustomTable columns={cols} dataSource={useGetValidationList} />
+      )}
     </div>
   );
 }
 
 function ValidationDetails(props: ValidationProps) {
-  let params = useParams();
-  let navigate = useNavigate();
-  const [alert, setAlert] = useState<AlertInfo>({ enabled: false, type: AlertType.SUCCESS, message: "" });
-  const isAdmin = useRef<Boolean>(false);
+  const params = useParams();
+  const navigate = useNavigate();
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+  const isAdmin = useRef<boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;
-  const jwt = JSON.stringify(decode(keycloak.token));
 
-  const { mutateAsync: mutateValidationUpdateStatus } = ValidationAPI.useValidationStatusUpdate(
-    {
+  const { mutateAsync: mutateValidationUpdateStatus } =
+    useValidationStatusUpdate({
       validation_id: params.id!,
       status: reviewStatus,
-      token: keycloak?.token,
-      isRegistered: registered
-    }
-  );
+      token: keycloak?.token || "",
+      isRegistered: registered,
+    });
 
-  // FIXME: This is a naive approach, should reconsider
-  if (jwt.includes("admin")) {
+  if (props.admin) {
     isAdmin.current = true;
   }
 
   const [validation, setValidation] = useState<ValidationResponse>();
 
-  const { data: validationData } = ValidationAPI.useGetValidationDetails(
-    { validation_id: params.id!, token: keycloak?.token, isRegistered: registered }
-  );
+  const { data: validationData } = useGetValidationDetails({
+    validation_id: params.id!,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
 
   useEffect(() => {
     setValidation(validationData);
@@ -581,7 +738,6 @@ function ValidationDetails(props: ValidationProps) {
 
   let rejectCard = null;
   let approveCard = null;
-
 
   if (props.toReject) {
     rejectCard = (
@@ -594,26 +750,42 @@ function ValidationDetails(props: ValidationProps) {
             </h5>
           </div>
           <div className=" card-body border-danger text-center">
-            Are you sure you want to reject validation with ID: <strong>{params.id}</strong> ?
+            Are you sure you want to reject validation with ID:{" "}
+            <strong>{params.id}</strong> ?
           </div>
           <div className="card-footer border-danger text-danger text-center">
             <button
               className="btn btn-danger mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.REJECTED);
-                mutateValidationUpdateStatus().then(r => {
-                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully rejected." });
-                }).catch(error => {
-                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation rejection." });
-                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
-              }}>
+                const promise = mutateValidationUpdateStatus()
+                  .catch((err) => {
+                    alert.current = {
+                      message: "Error during validation rejection.",
+                    };
+                    throw err;
+                  })
+                  .then(() => {
+                    alert.current = {
+                      message: "Validation succesfully rejected.",
+                    };
+                  })
+                  .finally(() => navigate("/admin/validations"));
+                toast.promise(promise, {
+                  loading: "Rejecting",
+                  success: () => `${alert.current.message}`,
+                  error: () => `${alert.current.message}`,
+                });
+              }}
+            >
               Reject
             </button>
             <button
               onClick={() => {
-                navigate(`/validations/${params.id}`);
+                navigate(`/admin/validations/${params.id}`);
               }}
-              className="btn btn-dark mx-4">
+              className="btn btn-dark mx-4"
+            >
               Cancel
             </button>
           </div>
@@ -633,26 +805,42 @@ function ValidationDetails(props: ValidationProps) {
             </h5>
           </div>
           <div className=" card-body border-info text-center">
-            Are you sure you want to approve validation with ID: <strong>{params.id}</strong> ?
+            Are you sure you want to approve validation with ID:{" "}
+            <strong>{params.id}</strong> ?
           </div>
           <div className="card-footer border-success text-success text-center">
             <button
               className="btn btn-success mr-2"
               onClick={() => {
                 setReviewStatus(ValidationStatus.APPROVED);
-                mutateValidationUpdateStatus().then(r => {
-                  setAlert({ enabled: true, type: AlertType.SUCCESS, message: "Validation succesfully approved." });
-                }).catch(error => {
-                  setAlert({ enabled: true, type: AlertType.DANGER, message: "Error during validation approval." });
-                }).finally(() => setTimeout(() => { navigate("/validations") }, 3000));
-              }}>
+                const promise = mutateValidationUpdateStatus()
+                  .catch((err) => {
+                    alert.current = {
+                      message: "Error during validation approval.",
+                    };
+                    throw err;
+                  })
+                  .then(() => {
+                    alert.current = {
+                      message: "Validation succesfully approved.",
+                    };
+                  })
+                  .finally(() => navigate("/admin/validations"));
+                toast.promise(promise, {
+                  loading: "Approving",
+                  success: () => `${alert.current.message}`,
+                  error: () => `${alert.current.message}`,
+                });
+              }}
+            >
               Approve
             </button>
             <button
               onClick={() => {
-                navigate(`/validations/${params.id}`);
+                navigate(`/admin/validations/${params.id}`);
               }}
-              className="btn btn-dark mx-4">
+              className="btn btn-dark mx-4"
+            >
               Cancel
             </button>
           </div>
@@ -664,99 +852,166 @@ function ValidationDetails(props: ValidationProps) {
   if (keycloak?.token) {
     return (
       <div className="mt-4">
-        {alert.enabled &&
-          <Alert type={alert.type} message={alert.message} />
-        }
-        <h3 className="cat-view-heading"><FaRegCheckSquare /> Validation Request <span className="badge bg-secondary">id: {validation?.id}</span></h3>
+        {rejectCard}
+        {approveCard}
+        <div
+          className={`${
+            props.admin && "alert alert-primary"
+          } d-flex justify-content-between`}
+        >
+          <h3 className={`${!props.admin && "cat-view-heading"}`}>
+            <FaIdBadge /> Validation Request
+            <span className="ms-2 badge bg-secondary">
+              id: {validation?.id}
+            </span>
+          </h3>
+          {props.admin ? (
+            <h3 className="opacity-50">admin mode</h3>
+          ) : (
+            <Link
+              to="/validations/request"
+              className="btn btn-light border-black mx-3"
+            >
+              <FaPlus /> Create New
+            </Link>
+          )}
+        </div>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Requestor</header>
           <section className="col-9">
-            <div><strong>User id:</strong> {validation?.user_id}</div>
-            <div><strong>User name:</strong> {validation?.user_name}</div>
-            <div><strong>User surname:</strong> {validation?.user_surname}</div>
-            <div><strong>User email:</strong> {validation?.user_email}</div>
+            <div>
+              <strong>User id:</strong> {validation?.user_id}
+            </div>
+            <div>
+              <strong>User name:</strong> {validation?.user_name}
+            </div>
+            <div>
+              <strong>User surname:</strong> {validation?.user_surname}
+            </div>
+            <div>
+              <strong>User email:</strong> {validation?.user_email}
+            </div>
           </section>
         </div>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Organisation</header>
           <section className="col-9">
-            <div><strong>Id: </strong>
-              {validation?.organisation_source === "ROR"
-                ? <><span className="text-muted">ror.org/</span><a target="_blank" rel="noreferrer" href={"http://ror.org/" + validation?.organisation_id}>{validation?.organisation_id}</a></>
-                : <><span>{validation?.organisation_id}</span><small>({validation?.organisation_source})</small></>
-              }
+            <div>
+              <strong>Id: </strong>
+              {validation?.organisation_source === "ROR" ? (
+                <>
+                  <span className="text-muted">ror.org/</span>
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href={"http://ror.org/" + validation?.organisation_id}
+                  >
+                    {validation?.organisation_id}
+                  </a>
+                </>
+              ) : (
+                <>
+                  <span>{validation?.organisation_id}</span>
+                  <small>({validation?.organisation_source})</small>
+                </>
+              )}
             </div>
-            <div><strong>Name:</strong> {validation?.organisation_name}</div>
-            <div><strong>Website:</strong> <a target="_blank" rel="noreferrer" href={validation?.organisation_website}>{validation?.organisation_website}</a></div>
-
+            <div>
+              <strong>Name:</strong> {validation?.organisation_name}
+            </div>
+            <div>
+              <strong>Website:</strong>{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href={validation?.organisation_website}
+              >
+                {validation?.organisation_website}
+              </a>
+            </div>
           </section>
         </div>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Roles</header>
           <section className="col-9">
-            <div><strong>User role in organisation:</strong> {validation?.organisation_role}</div>
-            <div><strong>User requests as Actor with:</strong> {validation?.actor_name}</div>
+            <div>
+              <strong>User role in organisation:</strong>{" "}
+              {validation?.organisation_role}
+            </div>
+            <div>
+              <strong>User requests as Actor with:</strong>{" "}
+              {validation?.actor_name}
+            </div>
           </section>
         </div>
-
 
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Status</header>
           <section className="col-9">
-            <div><strong>Created on:</strong> {validation?.createdOn}</div>
-            {validation?.status === "REVIEW" &&
+            <div>
+              <strong>Created on:</strong> {validation?.created_on}
+            </div>
+            {validation?.status === "REVIEW" && (
               <div className="alert alert-info mt-4" role="alert">
                 <FaGlasses /> PENDING FOR REVIEW
               </div>
-            }
-            {validation?.status === ValidationStatus.REJECTED &&
+            )}
+            {validation?.status === ValidationStatus.REJECTED && (
               <>
                 <div className="alert alert-danger mt-4" role="alert">
                   <FaTimes /> REJECTED
                 </div>
-                <div><strong>Rejected on:</strong> {validation?.validated_on}</div>
-                <div><strong>Rejected by:</strong> {validation?.validatedBy}</div>
+                <div>
+                  <strong>Rejected on:</strong> {validation?.validated_on}
+                </div>
+                <div>
+                  <strong>Rejected by:</strong> {validation?.validated_by}
+                </div>
               </>
-            }
-            {validation?.status === ValidationStatus.APPROVED &&
+            )}
+            {validation?.status === ValidationStatus.APPROVED && (
               <>
                 <div className="alert alert-success mt-4" role="alert">
                   <FaCheck /> APPROVED
                 </div>
-                <div><strong>Approved on:</strong> {validation?.validated_on}</div>
-                <div><strong>Approved by:</strong> {validation?.validatedBy}</div>
+                <div>
+                  <strong>Approved on:</strong> {validation?.validated_on}
+                </div>
+                <div>
+                  <strong>Approved by:</strong> {validation?.validated_by}
+                </div>
               </>
-            }
+            )}
           </section>
         </div>
 
-        {rejectCard}
-        {approveCard}
-
-        {validation?.status === ValidationStatus.REVIEW && isAdmin?.current &&
-          <div className="row border-top py-3 mt-4">
-            <header className="col-3 h4 text-muted">Actions</header>
-            <section className="col-9">
-              <Link
-                className="btn btn-light border-black text-success"
-                to={`/validations/${params.id}/approve#alert-spot`}>
-                <FaCheck /> Approve
-              </Link>
-              <Link
-                className="btn btn-light mx-4 text-danger border-black"
-                to={`/validations/${params.id}/reject#alert-spot`}>
-                <FaTimes /> Reject
-              </Link>
-
-            </section>
-          </div>
-
-        }
-
+        {validation?.status === ValidationStatus.REVIEW &&
+          isAdmin?.current &&
+          !props.toApprove &&
+          !props.toReject && (
+            <div className="row border-top py-3 mt-4">
+              <header className="col-3 h4 text-muted">Actions</header>
+              <section className="col-9">
+                <Link
+                  className="btn btn-light border-black text-success"
+                  to={`/validations/${params.id}/approve#alert-spot`}
+                >
+                  <FaCheck /> Approve
+                </Link>
+                <Link
+                  className="btn btn-light mx-4 text-danger border-black"
+                  to={`/validations/${params.id}/reject#alert-spot`}
+                >
+                  <FaTimes /> Reject
+                </Link>
+              </section>
+            </div>
+          )}
 
         <Link
           className="btn btn-secondary my-4"
-          to={`/validations`}>
+          to={`${isAdmin.current ? "/admin" : ""}/validations`}
+        >
           Back
         </Link>
 

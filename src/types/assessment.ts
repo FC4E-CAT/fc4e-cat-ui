@@ -37,7 +37,6 @@ export interface Assessment {
   published: boolean;
 }
 
-
 /** Reference with numerical id */
 export interface RefNumID {
   id: number;
@@ -45,19 +44,22 @@ export interface RefNumID {
 }
 
 export interface AssessmentActor extends RefNumID {}
-export interface AssessmentType extends RefNumID{}
+export interface AssessmentType extends RefNumID {}
 
 /** Assessment subject */
 export interface AssessmentSubject {
   id: string;
   name: string;
-  type: string
+  type: string;
+  db_id?: number;
 }
+
+export type AssessmentSubjectListResponse = ResponsePage<AssessmentSubject[]>;
 
 /** The status of an assesment wether it is public or private */
 export enum AssessmentStatus {
   Public = "PUBLIC",
-  Private = "PRIVATE"
+  Private = "PRIVATE",
 }
 
 /** An assessment is done on behalf of a specific organisation */
@@ -68,15 +70,15 @@ export interface AssessmentOrg {
 
 /** An assessment has a definite result wether compliance is met or not and a ranking score */
 export interface AssessmentResult {
-  compliance: boolean| null;
+  compliance: boolean | null;
   ranking: number | null;
 }
 
 /** An assessment contains a list of principles */
 export interface Principle {
-  id: string
+  id: string;
   name: string;
-  criteria: Criterion[]
+  criteria: Criterion[];
   description: string;
 }
 
@@ -84,7 +86,7 @@ export interface Principle {
 export interface Criterion {
   id: string;
   name: string;
-  imperative: CriterionImperative
+  imperative: CriterionImperative;
   metric: Metric;
   description?: string;
 }
@@ -92,14 +94,14 @@ export interface Criterion {
 /** Each criterion can be either mandatory or optional */
 export enum CriterionImperative {
   May = "may",
-  Should = "should"
+  Should = "should",
 }
 
 /** Each criterion includes a SINGLE metric */
 export interface Metric {
   type: MetricType;
   algorithm: MetricAlgorithm;
-  benchmark: Benchmark
+  benchmark: Benchmark;
   value: number | null;
   result: number | null;
   tests: AssessmentTest[];
@@ -107,41 +109,41 @@ export interface Metric {
 
 /** Each metric has a type. For now, we only deal with type: number  */
 export enum MetricType {
-  Number = "number"
+  Number = "number",
 }
 
 /** Each metric has an algorithm. For now, we only deal with algorithms: single and sum  */
 export enum MetricAlgorithm {
   Sum = "sum",
-  Single = "single"
+  Single = "single",
 }
 
 /** Each metric includes a benchmark. For now, we only deal with equal than greater kind  */
 export interface BenchmarkEqualGreaterThan {
-  equal_greater_than: number | string
+  equal_greater_than: number | string;
 }
 
 /** Each benchmark will gonna have different types - right now only one type is supported  */
-export type Benchmark = BenchmarkEqualGreaterThan
+export type Benchmark = BenchmarkEqualGreaterThan;
 
 /** Each metric has a list of tests. Test can be of different kinds */
 export interface TestBinary {
   id: string;
-  name: string
+  name: string;
   description?: string;
-  guidance? :Guidance; 
+  guidance?: Guidance;
   type: "binary";
   text: string;
   result: number | null;
   value: boolean | null;
-  evidence_url?: string[]
+  evidence_url?: string[];
 }
 
 export interface TestValue {
   id: string;
-  name: string
+  name: string;
   description?: string;
-  guidance? :Guidance; 
+  guidance?: Guidance;
   type: "value";
   text: string;
   result: number | null;
@@ -149,41 +151,62 @@ export interface TestValue {
   threshold?: number | null;
   value_name: string;
   threshold_name?: string;
-  benchmark: Benchmark
-  evidence_url?: string[]
+  benchmark: Benchmark;
+  evidence_url?: string[];
 }
 
-export interface Guidance{
+export interface Guidance {
   id: string;
   description: string;
 }
 
-
-
 export interface ResultStats {
-  totalMandatory: number,
-  totalOptional: number,
-  mandatoryFilled: number,
-  optionalFilled: number,
-  mandatory: number,
-  optional: number
+  totalMandatory: number;
+  totalOptional: number;
+  mandatoryFilled: number;
+  optionalFilled: number;
+  mandatory: number;
+  optional: number;
 }
 
+export type ActorOrganisationMapping = {
+  actor_name: string;
+  actor_id: number;
+  organisation_id: string;
+  organisation_name: string;
+  validation_id: number;
+};
+
 export interface AssessmentListItem {
-  id: number,
-  user_id: string,
-  validation_id: number
-  created_on: number,
-  updated_on: string,
-  template_id: number,
+  id: string;
+  user_id: string;
+  validation_id: number;
+  created_on: number;
+  updated_on: string;
+  template_id: number;
+  published: boolean;
 }
 
 export type AssessmentListResponse = ResponsePage<AssessmentListItem[]>;
 
 export interface AssessmentDetailsResponse {
-  id: number
-  assessment_doc: Assessment
+  id: number;
+  assessment_doc: Assessment;
 }
 
 /** Each assessment test will gonna have different types - right now only two types: binary/value test are supported  */
-export type AssessmentTest = (TestValue | TestBinary)
+export type AssessmentTest = TestValue | TestBinary;
+
+export interface ObjectListItem {
+  id: string;
+  name: string;
+  type: string;
+}
+
+/**
+ * Type for Assessments available filters
+ */
+export interface AssessmentFiltersType {
+  subject_name: string;
+  subject_type: string;
+}

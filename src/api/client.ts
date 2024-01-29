@@ -1,14 +1,17 @@
 import axios from "axios";
-import { API } from "../config";
+import { API } from "@/config";
 
-const Client = (token: string) => {
-  const client = axios.create({
-    baseURL: `${API.base_url}/${API.version}/`,
-    headers: {'Authorization': `Bearer ${token}`}
-  });
+export const APIClient = (token?: string) => {
+  // if token is provided create a client with auth header
+  const client = token
+    ? axios.create({
+        baseURL: `${API.base_url}/${API.version}/`,
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    : axios.create({
+        baseURL: `${API.base_url}/${API.version}/`,
+      });
 
-  client.defaults.headers.common['Content-Type'] = 'application/json';
+  client.defaults.headers.common["Content-Type"] = "application/json";
   return client;
-}
-
-export default Client;
+};

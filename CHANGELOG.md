@@ -2,43 +2,117 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v1.0.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.0.0) (2024-01-26)
+
+### Added:
+
+- CAT-129 Create a custom card component for actors ([#66](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/66))
+- Enable assessments for more actors ([#67](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/67))
+- Set timestamp field on assessments ([#69](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/69))
+- CAT-126 Assessment steps ([#71](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/71))
+- CAT-192 CAT-193 CAT-194 CAT-195 Display list of public assessments fo… ([#82](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/82))
+- CAT-211 Support List of objects in assessment wizard ([#90](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/90))
+- CAT-222 Introduce api filters on assessment table ([#97](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/97))
+- CAT-223 Introduce notification toasts on validations ([#98](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/98))
+- Required assess metadata ([#104](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/104))
+- CAT-230 Save/Submit functionality in assessment ([#105](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/105))
+- CAT-226 Implement delete assessment ([#108](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/108))
+- Support filtering on public assessments ([#109](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/109))
+- Added Cypress to fc4e-cat-ui ([#112](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/112))
+- CAT-237 Export assessment ([#115](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/115))
+- CAT-239 Add descriptions to input types ([#116](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/116))
+- CAT-265 CAT-266 Create object. List objects ([#123](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/123))
+- CAT-256 Fix: Add profile link ([#124](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/124))
+- CAT-267 Edit/Delete subjects ([#128](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/128))
+
+### Changed:
+
+- CAT-177 Minimize waiting time before redirecting ([#61](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/61))
+- CAT-161 Revisit routing and keycloak login component ([#62](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/62))
+- Bump @adobe/css-tools from 4.2.0 to 4.3.1 ([#63](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/63))
+- Bump semver from 6.3.0 to 6.3.1 ([#64](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/64))
+- Bump word-wrap from 1.2.3 to 1.2.5 ([#65](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/65))
+- CAT-170 migrate to vite ([#72](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/72))
+- CAT-149 Use ts alias for cleaner imports ([#75](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/75))
+- CAT-199 Allow to save the assessment at any time ([#76](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/76))
+- CAT-201 Add prettier ([#78](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/78))
+- CAT-193 CAT-197 CAT-198 Update assessment view ([#79](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/79))
+- CAT-202 Add stylelint ([#80](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/80))
+- Refactor assessment creation view ([#81](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/81))
+- CAT-208 update ui with new backend paths for public assessments and a… ([#88](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/88))
+- CAT-212 Public assessment table fields ([#89](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/89))
+- CAT-140 Update fields in user's assessment view table ([#91](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/91))
+- Allow Service Provider actor in the assessment creation ([#92](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/92))
+- CAT-216 Organise admin views ([#95](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/95))
+- CAT-219 Update api path in users list backend call ([#96](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/96))
+- CAT-224 Update validations approve/reject routes ([#99](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/99))
+- CAT-225 Restrict test value input boxes to numbers ([#100](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/100))
+- Bump @babel/traverse from 7.22.5 to 7.23.2 ([#101](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/101))
+- Redesign assessment filters ([#102](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/102))
+- Add various UI/UX refinements ([#106](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/106))
+- CAT-234 Rearrange create validation request form ([#107](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/107))
+- CAT-249 Assessment edit: change cancel button to close ([#111](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/111))
+- CAT-248 Revisit pagination ([#113](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/113))
+- Bump axios from 1.4.0 to 1.6.0 ([#114](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/114))
+- CAT-257 update axios, postcss and babel/traverse deps ([#118](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/118))
+- CAT-258 Format exported JSON ([#119](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/119))
+- Bump @adobe/css-tools from 4.2.0 to 4.3.2 ([#122](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/122))
+- CAT-256 Fix: Change order of buttons in create modal ([#125](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/125))
+- Refactor objects view to subjects ([#126](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/126))
+- CAT-283 Refactor handling of table headers ([#127](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/127))
+- CAT-272 Update subject list in step2 of assessment creation ([#130](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/130))
+- Bump follow-redirects from 1.15.2 to 1.15.4 ([#131](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/131))
+
+### Fixed:
+
+- Fix bug with assessment id on edit ([#68](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/68))
+- CAT-184 Fix typos on validation view page ([#73](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/73))
+- CAT-187 Add linting and corresponding fixes ([#74](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/74))
+- CAT-200 Fix assessment update regression due to changes in assessment id ([#77](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/77))
+- CAT-203 Assess and Assessment Wizard reorganisation and cleanup ([#83](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/83))
+- CAT-204 Fix interaction issue in criteria tabs ([#84](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/84))
+- CAT-205 Fix assessment edit bug ([#85](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/85))
+- CAT-206 Fix public assessment table columns. Fix create new button ([#86](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/86))
+- CAT-207 Fix select first criterion tab as active in assessment wizard ([#87](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/87))
+- Fix hint on table filters ([#93](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/93))
+- Fix link on create new assessment button ([#94](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/94))
+- Fix multiple calls on keycloak init ([#103](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/103))
+- CAT-236 Fix double headers in tables ([#110](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/110))
+- CAT-233 Fix input field reset on assessment create view ([#117](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/117))
+- CAT-259 Fix compliance badge in assessment list ([#120](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/120))
+- CAT-260 Elaborate on faulty actor changes in the assessment ([#121](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/121))
+- CAT-271 Fix Filters in assessment list views ([#129](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/129))
 
 ## [v0.2.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v0.2.0) (2023-09-04)
 
-
 ### Added
 
-- CAT-62 CAT-73 Add Alert messages and Validation enumeration ([#34](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/34)
-- CAT-93 Create foundation for Assessment UI View ([#35](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/35)
-- CAT-83 CAT-107 Introduce filtering on table columns ([#37](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/37)
-- CAT-98 Display assessment header information ([#39](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/39)
-- CAT-99 Implement Binary Test Component ([#40](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/40)
-- CAT-150 Add subject and published fields in Assessment Info header ([#46](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/46)
-- CAT-101 Display dynamically principles, criteria and metrics in the assessment form ([#49](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/49)
-- CAT-138 Add ORCID to user data ([#51](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/51)
-- CAT-155 Add dynamic evaluation of assessment and provide statistics ([#52](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/52)
-- CAT-103 Add functionality to store/update an assessment. ([#53](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/53)
-- CAT-164 Support new type of test: TestValue. Support template for actor: Pid Authority ([#57](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/57)
-
+- CAT-62 CAT-73 Add Alert messages and Validation enumeration ([#34](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/34))
+- CAT-93 Create foundation for Assessment UI View ([#35](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/35))
+- CAT-83 CAT-107 Introduce filtering on table columns ([#37](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/37))
+- CAT-98 Display assessment header information ([#39](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/39))
+- CAT-99 Implement Binary Test Component ([#40](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/40))
+- CAT-150 Add subject and published fields in Assessment Info header ([#46](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/46))
+- CAT-101 Display dynamically principles, criteria and metrics in the assessment form ([#49](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/49))
+- CAT-138 Add ORCID to user data ([#51](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/51))
+- CAT-155 Add dynamic evaluation of assessment and provide statistics ([#52](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/52))
+- CAT-103 Add functionality to store/update an assessment. ([#53](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/53))
+- CAT-164 Support new type of test: TestValue. Support template for actor: Pid Authority ([#57](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/57))
 
 ### Changed
 
-- CAT-115 reorganise ts type declarations in ui ([#36](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/36)
-- CAT-152 update assessment actor/assessment_type field schemas to use both ids and names ([#47](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/47)
-- CAT-153 Update labels information and grouping of fields on assessmenent ([#48](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/48)
-- CAT-162 Update assessment fields to snake_case ([#56](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/56)
-
+- CAT-115 reorganise ts type declarations in ui ([#36](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/36))
+- CAT-152 update assessment actor/assessment_type field schemas to use both ids and names ([#47](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/47))
+- CAT-153 Update labels information and grouping of fields on assessmenent ([#48](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/48))
+- CAT-162 Update assessment fields to snake_case ([#56](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/56))
 
 ### Fixed
 
-- CAT-119 Fix ROR abbreviations on search ([#38](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/38)
+- CAT-119 Fix ROR abbreviations on search ([#38](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/38))
 - CAT-118 Check if user is already registered when trying to register ([#41](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/41)
-- CAT-121 Fix uncontrolled component in validation request form ([#43](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/43)
-- CAT-125 Fix ror search call([#45] (https://github.com/FC4E-CAT/fc4e-cat-ui/pull/45)
-- CAT-154 Fix Profile Update Form not connected warning ([#50](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/50)
-
-
-
+- CAT-121 Fix uncontrolled component in validation request form ([#43](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/43))
+- CAT-125 Fix ror search call([#45](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/45))
+- CAT-154 Fix Profile Update Form not connected warning ([#50](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/50))
 
 ## [v0.1.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v0.1.0) (2023-07-07)
 
@@ -64,7 +138,6 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-80 Display more user and actor information on validation details ([#28](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/28))
 - CAT-85 Add version and build info ([#31](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/31))
 
-
 ### Changed
 
 - CAT-46 Remove token related info from profile page ([#13](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/13))
@@ -79,4 +152,3 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-79 Fix redirection upon a successful validation request ([#27](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/27))
 - CAT-81 Minor UI fixes on validations, profile and footer ([#29](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/29))
 - CAT-81 Fix admin buttons in validation ([#30](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/30))
-
