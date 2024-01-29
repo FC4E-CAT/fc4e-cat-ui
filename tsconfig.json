@@ -7,7 +7,8 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@support/*": ["cypress/support/*"]
     },
 
     /* Bundler mode */
@@ -24,6 +25,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src", "cypress"],
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    {"path":  "./cypress/tsconfig.json"}
+  ]
 }
