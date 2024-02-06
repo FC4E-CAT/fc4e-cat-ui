@@ -1,11 +1,11 @@
 describe("/assessments/create", () => {
   before(() => {
-    cy.setupValidation("bob");
+    cy.setupValidation("identified");
   });
 
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin("bob").as("bobTokens");
+    cy.kcLogin("identified").as("identifiedTokens");
     cy.visit("/assessments/create");
   });
 
@@ -76,13 +76,13 @@ describe("/assessments/create", () => {
       "Can you provide evidence that the relation between PIDs and entities, as maintained by the PID manager, conforms to the Authority requirements.";
     const T35 =
       "Given the percentage f of resolved PIDs that result in a viable entity, compared to a community expectation p. Please provide values for f and p.";
-    const subjectId = "bob_test_subject_id";
-    const subjectName = "bob_test_subject_name";
-    const subjectType = "bob_test_subject_type";
+    const subjectId = "identified_test_subject_id";
+    const subjectName = "identified_test_subject_name";
+    const subjectType = "identified_test_subject_type";
     cy.get("#radio-0").click();
     cy.get(".btn-success").should("not.have.attr", "disabled");
     cy.get("#assessment-wizard-tab-step-2").click();
-    cy.get("#input-info-name").type("bob_test_assessment");
+    cy.get("#input-info-name").type("identified_test_assessment");
     cy.get("#accordion_subject").click();
     cy.get("#input-info-subject-id").type(subjectId);
     cy.get("#input-info-subject-name").type(subjectName);
