@@ -10,15 +10,6 @@ interface UserData {
   };
 }
 
-interface OrgData {
-  organisation_role: string;
-  organisation_id: string;
-  organisation_source: string;
-  organisation_name: string;
-  organisation_website: string;
-  actor_id: string;
-}
-
 interface ProfileData {
   name: string;
   surname: string;
@@ -34,8 +25,6 @@ interface KcTokens {
 
 declare namespace Cypress {
   interface Chainable<Subject> {
-    loginBob(): Chainable<void>;
-    loginAdmin(): Chainable<void>;
     updateProfile(authToken: string): Chainable<void>;
     createValidation(authToken: string): Chainable<void>;
     approveValidation(authToken: string): Chainable<void>;
