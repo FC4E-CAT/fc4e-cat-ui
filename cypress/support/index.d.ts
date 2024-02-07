@@ -25,11 +25,11 @@ interface KcTokens {
 
 declare namespace Cypress {
   interface Chainable<Subject> {
-    updateProfile(authToken: string): Chainable<void>;
-    createValidation(authToken: string): Chainable<void>;
-    approveValidation(authToken: string): Chainable<void>;
-    setupValidation(user: string): Chainable<void>;
+    updateProfile(authToken: string): Chainable<Subject>;
+    createValidation(authToken: string): Chainable<Subject>;
+    approveValidation(authToken: string): Chainable<Subject>;
+    setupValidation(user: string): Chainable<Subject>;
     kcLogin(user: string): Chainable<KcTokens>;
-    kcLogout(): Chainable<any>;
+    kcLogout(): Chainable<Response<void>>;
   }
 }
