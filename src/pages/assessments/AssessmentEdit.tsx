@@ -81,6 +81,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     validation_id: vldid!,
     token: keycloak?.token || "",
     isRegistered: registered,
+    adminMode: false,
   });
 
   const qTemplate = useGetTemplate(
