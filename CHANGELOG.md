@@ -2,6 +2,12 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v1.0.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.0.1) (2024-02-12)
+
+### Fixed:
+
+CAT-310 Fix validation details requests for admin and non-admin views ([#141](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/141))
+
 ## [v1.0.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.0.0) (2024-01-26)
 
 ### Added:
