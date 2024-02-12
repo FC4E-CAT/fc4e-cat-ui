@@ -730,6 +730,7 @@ function ValidationDetails(props: ValidationProps) {
     validation_id: params.id!,
     token: keycloak?.token || "",
     isRegistered: registered,
+    adminMode: props.admin || false,
   });
 
   useEffect(() => {
@@ -865,16 +866,7 @@ function ValidationDetails(props: ValidationProps) {
               id: {validation?.id}
             </span>
           </h3>
-          {props.admin ? (
-            <h3 className="opacity-50">admin mode</h3>
-          ) : (
-            <Link
-              to="/validations/request"
-              className="btn btn-light border-black mx-3"
-            >
-              <FaPlus /> Create New
-            </Link>
-          )}
+          {props.admin ? <h3 className="opacity-50">admin mode</h3> : null}
         </div>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Requestor</header>

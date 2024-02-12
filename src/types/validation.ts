@@ -32,6 +32,7 @@ export interface ValidationRequest {
 
 export interface ValidationDetailsRequest {
   validation_id: string;
+  adminMode: boolean;
 }
 
 export type ValidationRequestParams = ApiAuthOptions & ValidationRequest;

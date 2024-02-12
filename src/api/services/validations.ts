@@ -1,5 +1,4 @@
 import { APIClient } from "@/api";
-import decode from "jwt-decode";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { ApiOptions } from "@/types";
 import {
@@ -60,13 +59,13 @@ export const useGetValidationDetails = ({
   validation_id,
   token,
   isRegistered,
+  adminMode,
 }: ValidationDetailsRequestParams) =>
   useQuery({
     queryKey: ["validation_details", validation_id],
     queryFn: async () => {
-      const jwt = JSON.stringify(decode(token));
       let response = null;
-      if (jwt.includes("admin")) {
+      if (adminMode) {
         response = await APIClient(token).get<ValidationResponse>(
           `/admin/validations/${validation_id}`,
         );
@@ -75,6 +74,7 @@ export const useGetValidationDetails = ({
           `/validations/${validation_id}`,
         );
       }
+
       return response.data;
     },
     onError: (error: AxiosError) => {
