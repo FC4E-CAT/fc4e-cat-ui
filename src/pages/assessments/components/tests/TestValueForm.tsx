@@ -140,7 +140,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                       <Form.Control
                         value={props.test.threshold || ""}
                         type="text"
-                        id="input-value-control"
+                        id="input-value-community"
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleValueChange(TestValueEventType.Threshold, e)
                         }
