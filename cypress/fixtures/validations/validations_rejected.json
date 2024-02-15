@@ -1,0 +1,27 @@
+{
+  "size_of_page": 1,
+  "number_of_page": 1,
+  "total_elements": 1,
+  "total_pages": 1,
+  "content": [
+    {
+      "id": 1,
+      "user_id": "identified_ui_voperson_id",
+      "user_name": "Identified",
+      "user_surname": "Test",
+      "user_email": "identified@example.com",
+      "organisation_role": "Team Manager",
+      "organisation_id": "05n2x7017",
+      "organisation_source": "ROR",
+      "organisation_name": "Oxford Fertility",
+      "organisation_website": null,
+      "actor_id": 1,
+      "actor_name": "PID Standards Body",
+      "status": "REJECTED",
+      "created_on": "2023-12-20T15:30:40.782+01:00",
+      "validated_on": "2023-12-20T17:04:15.076+01:00",
+      "validated_by": "admin_ui_voperson_id"
+    }
+  ],
+  "links": []
+}
