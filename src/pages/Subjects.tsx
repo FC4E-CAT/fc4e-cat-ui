@@ -323,7 +323,7 @@ function Subjects() {
             <>
               <div className="edit-buttons btn-group shadow">
                 <Button
-                  id={`edit-button-${info.getValue().id}`}
+                  id={`edit-button-${item.id}`}
                   className="btn btn-secondary cat-action-reject-link btn-sm "
                   onClick={() => {
                     if (item.id) {
@@ -338,7 +338,7 @@ function Subjects() {
                   <FaEdit />
                 </Button>
                 <Button
-                  id={`delete-button-${info.getValue().id}`}
+                  id={`delete-button-${item.id}`}
                   className="btn btn-secondary cat-action-reject-link btn-sm "
                   onClick={() => {
                     if (item.id) {
