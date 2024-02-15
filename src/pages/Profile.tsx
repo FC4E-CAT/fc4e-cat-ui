@@ -113,12 +113,14 @@ function Profile() {
                 </div>
                 <div className="mt-4">
                   <Link
+                    id="view_validations_button"
                     to="/validations"
                     className="btn btn-light border-black"
                   >
                     View List
                   </Link>
                   <Link
+                    id="create_validation_button"
                     to="/validations/request"
                     className="btn btn-light border-black mx-3"
                   >
@@ -130,20 +132,22 @@ function Profile() {
           </section>
         </div>
         <div className="row border-top py-3 mt-4 mb-4">
-          <header className="col-3 h4 text-muted">Assesments</header>
-          <section className="col-9 disabled">
+          <header className="col-3 h4 text-muted">Assessments</header>
+          <section id="assessments_section" className="col-9 disabled">
             {(userProfile?.user_type === "Validated" ||
               userProfile?.user_type === "Admin") && (
               <>
                 <div>View your current assessments or create a new one.</div>
                 <div className="mt-4">
                   <Link
+                    id="view_assessments_button"
                     to="/assessments"
                     className="btn btn-light border-black"
                   >
                     View List
                   </Link>
                   <Link
+                    id="create_assessment_button"
                     to="/assessments/create"
                     className="btn btn-light border-black mx-3"
                   >
@@ -156,16 +160,21 @@ function Profile() {
         </div>
         <div className="row border-top py-3 mt-4 mb-4">
           <header className="col-3 h4 text-muted">Subjects</header>
-          <section className="col-9 disabled">
+          <section id="subjects_section" className="col-9 disabled">
             {(userProfile?.user_type === "Validated" ||
               userProfile?.user_type === "Admin") && (
               <>
                 <div>View and manage your current Assessment Subjects</div>
                 <div className="mt-4">
-                  <Link to="/subjects" className="btn btn-light border-black">
+                  <Link
+                    id="view_subjects_button"
+                    to="/subjects"
+                    className="btn btn-light border-black"
+                  >
                     View List
                   </Link>
                   <Link
+                    id="create_subject_button"
                     to="/subjects?create"
                     className="btn btn-light border-black mx-3"
                   >
