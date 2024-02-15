@@ -51,3 +51,9 @@ export type ValidationProps = {
   toApprove?: boolean;
   admin?: boolean;
 };
+
+export const enum ValidationStatus {
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  REVIEW = "REVIEW",
+}
