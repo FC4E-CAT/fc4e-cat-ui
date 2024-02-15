@@ -10,7 +10,7 @@ import {
   Home,
   Profile,
   RequestValidation,
-  Validations,
+  ValidationList,
   Users,
   ProfileUpdate,
   ValidationDetails,
@@ -113,13 +113,13 @@ function App() {
                     <Route index element={<Subjects />} />
                   </Route>
                   <Route path="/validations" element={<ProtectedRoute />}>
-                    <Route index element={<Validations />} />
+                    <Route index element={<ValidationList />} />
                   </Route>
                   <Route path="/validations/:id" element={<ProtectedRoute />}>
                     <Route index element={<ValidationDetails />} />
                   </Route>
                   <Route path="/admin/validations" element={<ProtectedRoute />}>
-                    <Route index element={<Validations admin={true} />} />
+                    <Route index element={<ValidationList admin={true} />} />
                   </Route>
                   <Route
                     path="/admin/validations/:id"
