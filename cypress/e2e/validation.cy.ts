@@ -21,6 +21,9 @@ describe("/validations/request", () => {
     cy.get("#create_validation").click();
     cy.wait(["@getValidations"]);
     cy.url().should("contain", "/validations");
+    cy.contains("Validation request succesfully submitted.").should(
+      "be.visible",
+    );
   });
 
   it("requires an organization role", () => {
