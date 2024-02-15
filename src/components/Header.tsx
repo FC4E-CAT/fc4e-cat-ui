@@ -125,6 +125,7 @@ function Header() {
             {authenticated && userProfile?.user_type === "Admin" && (
               <Nav>
                 <NavDropdown
+                  id="admin_nav"
                   title={
                     <span className="text-dark">
                       <FaShieldAlt /> ADMIN
@@ -135,7 +136,11 @@ function Header() {
                   <NavDropdown.Item as={Link} to="/admin/users">
                     Users
                   </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to="/admin/validations">
+                  <NavDropdown.Item
+                    id="admin_validation"
+                    as={Link}
+                    to="/admin/validations"
+                  >
                     Validations
                   </NavDropdown.Item>
                 </NavDropdown>
