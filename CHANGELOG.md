@@ -2,6 +2,12 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v1.0.2](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.0.2) (2024-02-16)
+
+### Added:
+
+CAT-319 Update UI validation to support custom organisation source ([#144](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/144))
+
 ## [v1.0.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.0.1) (2024-02-12)
 
 ### Fixed:
