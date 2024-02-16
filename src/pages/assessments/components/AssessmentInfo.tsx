@@ -32,7 +32,7 @@ interface AssessmentInfoProps {
 export const AssessmentInfo = (props: AssessmentInfoProps) => {
   return (
     <Accordion defaultActiveKey="acc-1">
-      <Accordion.Item eventKey="acc-1">
+      <Accordion.Item eventKey="acc-1" id="accordion_general">
         <Accordion.Header>
           <span>
             <FaInfo color="blue" className="me-2" />
@@ -98,7 +98,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           </Row>
         </Accordion.Body>
       </Accordion.Item>
-      <Accordion.Item eventKey="acc-2">
+      <Accordion.Item eventKey="acc-2" id="accordion_submitter">
         <Accordion.Header>
           <span>
             <FaUserAlt color="green" className="me-2" />
@@ -200,7 +200,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           </Row>
         </Accordion.Body>
       </Accordion.Item>
-      <Accordion.Item eventKey="acc-3">
+      <Accordion.Item eventKey="acc-3" id="accordion_subject">
         <Accordion.Header>
           <span>
             <FaCog color="orange" className="me-2" />
@@ -216,7 +216,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
           </Row>
         </Accordion.Body>
       </Accordion.Item>
-      <Accordion.Item eventKey="acc-4">
+      <Accordion.Item eventKey="acc-4" id="accordion_license">
         <Accordion.Header>
           <span>
             <FaLock color="crimson" className="me-2" />
