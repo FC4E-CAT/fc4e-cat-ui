@@ -25,7 +25,7 @@ describe("/assess", () => {
       "href",
       "/assessments",
     );
-    cy.get("#create_assessment_button").should(
+    cy.get("#assessment_form_button").should(
       "have.attr",
       "href",
       "/assessments/create",

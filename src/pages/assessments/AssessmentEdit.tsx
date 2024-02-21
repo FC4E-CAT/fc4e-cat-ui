@@ -570,6 +570,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
             <div>
               {createMode ? (
                 <Button
+                  id="create_assessment_button"
                   disabled={!wizardTabActive}
                   className="ms-5 btn btn-success px-5"
                   onClick={() => {
@@ -581,6 +582,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
               ) : (
                 <>
                   <Button
+                    id="save_assessment_button"
                     disabled={!wizardTabActive}
                     className="ms-2 btn btn-success px-5"
                     onClick={() => {
@@ -591,6 +593,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                   </Button>
 
                   <Button
+                    id="submit_assessment_button"
                     disabled={
                       !(
                         assessment &&
