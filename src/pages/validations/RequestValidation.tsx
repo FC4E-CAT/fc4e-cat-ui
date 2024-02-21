@@ -430,7 +430,11 @@ function RequestValidation() {
           </Col>
         </Row>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <button className="btn btn-light border-black" type="submit">
+          <button
+            id="create_validation"
+            className="btn btn-light border-black"
+            type="submit"
+          >
             Submit
           </button>
           <Link to="/validations" className="my-2 btn btn-secondary mx-3">
