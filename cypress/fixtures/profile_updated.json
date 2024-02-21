@@ -1,0 +1,12 @@
+{
+  "id": "identified_ui_voperson_id",
+  "registered_on": "2024-01-03T15:39:23.000+01:00",
+  "user_type": "Identified",
+  "name": "Identified",
+  "surname": "Test",
+  "email": "identified@example.com",
+  "orcid_id": "0000-0002-0255-5101",
+  "updated_on": "2024-01-03T17:07:50.478+01:00",
+  "roles": ["identified"],
+  "banned": false
+}
