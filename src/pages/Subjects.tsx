@@ -213,7 +213,11 @@ export function SubjectModal(props: SubjectModalProps) {
       <Modal.Footer className="d-flex justify-content-between">
         {props.mode == SubjectModalMode.Create && (
           <>
-            <Button className="btn-secondary" onClick={() => props.onHide()}>
+            <Button
+              id="modal-cancel-button"
+              className="btn-secondary"
+              onClick={() => props.onHide()}
+            >
               Cancel
             </Button>
             <Button
@@ -319,6 +323,7 @@ function Subjects() {
             <>
               <div className="edit-buttons btn-group shadow">
                 <Button
+                  id={`edit-button-${item.id}`}
                   className="btn btn-secondary cat-action-reject-link btn-sm "
                   onClick={() => {
                     if (item.id) {
@@ -333,6 +338,7 @@ function Subjects() {
                   <FaEdit />
                 </Button>
                 <Button
+                  id={`delete-button-${item.id}`}
                   className="btn btn-secondary cat-action-reject-link btn-sm "
                   onClick={() => {
                     if (item.id) {
