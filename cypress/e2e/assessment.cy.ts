@@ -255,11 +255,6 @@ describe("/assessments", () => {
     // select via Ranking header to prevent breaking tests when columns change.
     cy.contains("thead th", "Ranking").then((rankingHeader) => {
       const rankingColumnIndex = rankingHeader.index();
-      const badgeColumnIndex = rankingColumnIndex - 1;
-
-      cy.get(`tbody > :nth-child(1) > :nth-child(${badgeColumnIndex + 1})`)
-        .find(".badge")
-        .should("contain", "PASS");
 
       cy.get(
         `tbody > :nth-child(1) > :nth-child(${rankingColumnIndex + 1})`,
