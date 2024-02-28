@@ -133,7 +133,9 @@ function App() {
                   >
                     <Route
                       index
-                      element={<ValidationDetails toReject={true} />}
+                      element={
+                        <ValidationDetails admin={true} toReject={true} />
+                      }
                     />
                   </Route>
                   <Route
@@ -142,7 +144,9 @@ function App() {
                   >
                     <Route
                       index
-                      element={<ValidationDetails toApprove={true} />}
+                      element={
+                        <ValidationDetails admin={true} toApprove={true} />
+                      }
                     />
                   </Route>
                   <Route path="/login" element={<ProtectedRoute />}>
