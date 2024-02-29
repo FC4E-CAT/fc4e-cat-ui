@@ -120,13 +120,19 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   // TODO: Get all available pages in an infinite scroll not all sequentially.
   useEffect(() => {
     if (data?.content) {
-      setValidations((validations) => [...validations, ...data.content]);
+      // if we are on the first page replace previous content
+      if (page === 1) {
+        setValidations(data.content);
+      } else {
+        setValidations((validations) => [...validations, ...data.content]);
+      }
+
       if (data?.number_of_page < data?.total_pages) {
         setPage((page) => page + 1);
         refetchGetValidationList();
       }
     }
-  }, [data, refetchGetValidationList]);
+  }, [data, refetchGetValidationList, page, validations]);
 
   // After retrieving user's valitions we create a struct for the option boxes creation
   const [actorsOrgsMap, setActorsOrgsMap] = useState<
