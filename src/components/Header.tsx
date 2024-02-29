@@ -12,7 +12,7 @@ import logo from "@/logo.svg";
 import { useGetProfile } from "@/api";
 import { trimProfileID } from "@/utils";
 import { AuthContext } from "@/auth";
-import { FaUser, FaCog, FaShieldAlt } from "react-icons/fa";
+import { FaUser, FaShieldAlt } from "react-icons/fa";
 import { UserProfile } from "@/types";
 
 function Header() {
@@ -84,42 +84,26 @@ function Header() {
           {/* Collapsible part that holds navigation links */}
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <NavItem>
-                <Link to="/" className="cat-nav-link">
-                  HOME
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link to="/" className="cat-nav-link cat-text-faded">
-                  SEARCH
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link to="/assess" className="cat-nav-link">
-                  ASSESS
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link to="#" className="cat-nav-link cat-text-faded">
-                  RESOURCES
-                </Link>
-              </NavItem>
-
               {authenticated && userProfile?.id && (
                 <>
                   <NavItem>
                     <Link to="/profile" className="cat-nav-link">
-                      <FaUser />
+                      <FaUser /> PROFILE
                     </Link>
                   </NavItem>
-
                   <NavItem>
-                    <Link to="/" className="cat-nav-link cat-text-faded">
-                      <FaCog />
+                    <Link to="/validations" className="cat-nav-link">
+                      VALIDATIONS
                     </Link>
                   </NavItem>
                 </>
               )}
+
+              <NavItem>
+                <Link to="/assess" className="cat-nav-link">
+                  ASSESSMENTS
+                </Link>
+              </NavItem>
             </Nav>
 
             {authenticated && userProfile?.user_type === "Admin" && (
@@ -128,7 +112,7 @@ function Header() {
                   id="admin_nav"
                   title={
                     <span className="text-dark">
-                      <FaShieldAlt /> ADMIN
+                      <FaShieldAlt /> ADMIN MODE
                     </span>
                   }
                   className="cat-nav-item"

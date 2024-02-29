@@ -8,6 +8,8 @@ import ownersImg from "@/assets/thumb_user.png";
 import { useGetActors } from "@/api";
 import { Col, Row } from "react-bootstrap";
 import { ActorCard } from "./components/ActorCard";
+import { AuthContext } from "@/auth";
+import { useContext } from "react";
 
 interface CardProps {
   id: number;
@@ -25,6 +27,8 @@ function Assessments() {
     page: 1,
     sortBy: "asc",
   });
+
+  const { authenticated } = useContext(AuthContext)!;
 
   const cardProps: CardProps[] = [];
 
@@ -65,17 +69,22 @@ function Assessments() {
               <FaCheckCircle className="me-1" /> assessments
             </h3>
           </div>
-          <div className="d-flex justify-content-end my-2">
-            <Link
-              to={`/assessments/create`}
-              className="btn btn-light border-black mx-3"
-            >
-              <FaPlus /> Create New
-            </Link>
-            <Link to="/assessments" className="btn btn-light border-black mx-3">
-              <FaList /> View Your Assessments
-            </Link>
-          </div>
+          {authenticated && (
+            <div className="d-flex justify-content-end my-2">
+              <Link
+                to={`/assessments/create`}
+                className="btn btn-light border-black mx-3"
+              >
+                <FaPlus /> Create New
+              </Link>
+              <Link
+                to="/assessments"
+                className="btn btn-light border-black mx-3"
+              >
+                <FaList /> View Your Assessments
+              </Link>
+            </div>
+          )}
         </div>
       </>
       <>
