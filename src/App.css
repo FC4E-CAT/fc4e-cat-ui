@@ -13,31 +13,51 @@
 }
 
 .cat-crit-sidebar {
-  background-color: rgb(226 227 229);
+  background-color: rgb(240 240 240);
+}
+
+.assessment-card .nav-link {
+  color: #3b3b3b;
 }
 
 .cat-crit-tab .nav-link {
   color: black;
-}
-
-.assessment-card .nav-link {
-  color: #3b3b3b !important;
+  border: 1px solid rgb(222 226 230);
 }
 
 .cat-crit-tab .nav-link:hover {
+  color: rgb(187 155 53);
   background: white;
+}
+
+.cat-tab-inner {
+  border-left: 8px solid rgb(240 240 240);
+}
+
+.nav-link:hover .cat-tab-inner {
+  border-left: 8px solid rgb(248 206 71);
+}
+
+.nav-link.active .cat-tab-inner {
+  border-left: 8px solid rgb(248 206 71);
 }
 
 .active {
   color: red;
 }
 
-.cat-crit-tab .active {
+.cat-crit-tab .nav-link.active {
+  color: rgb(187 155 53);
   background: white;
+  border-right: 1px solid white;
+}
+
+.navlink.active .cat-tab-inner {
+  border-right: 3px solid yellow;
 }
 
 .cat-view-heading {
-  color: #00bcd4;
+  color: hsl(187deg 100% 42%);
 }
 
 .cat-logo-sm {

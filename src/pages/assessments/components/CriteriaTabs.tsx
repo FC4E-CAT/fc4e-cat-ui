@@ -18,7 +18,7 @@ import {
   TestBinaryForm,
   TestValueForm,
 } from "@/pages/assessments/components/tests";
-import { FaInfoCircle } from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 
 type CriteriaTabsProps = {
@@ -64,8 +64,23 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
     principle.criteria.forEach((criterion) => {
       navs.push(
         <Nav.Item key={criterion.id} className="cat-crit-tab">
-          <Nav.Link eventKey={criterion.id}>
-            {criterion.id} - {criterion.name}
+          <Nav.Link eventKey={criterion.id} className="p-0">
+            <div className="cat-tab-inner p-3">
+              {criterion.imperative === "should" && (
+                <small className="text-muted">*Required</small>
+              )}
+              <h6>
+                {" "}
+                {criterion.id} - {criterion.name}
+                {criterion.metric.result === 0 && (
+                  <FaTimesCircle className="ms-2 text-danger" />
+                )}
+                {criterion.metric.result === 1 && (
+                  <FaCheckCircle className="ms-2 text-success" />
+                )}
+              </h6>
+              <small className="text-secondary">{criterion.description}</small>
+            </div>
           </Nav.Link>
         </Nav.Item>,
       );
@@ -241,7 +256,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
     >
       <Row className="border p-0">
         <Col sm={3} className="cat-crit-sidebar p-0">
-          <Nav className="flex-column mt-4 ms-4 cat-asmt-nav">{navs}</Nav>
+          <Nav className="flex-column cat-asmt-nav">{navs}</Nav>
         </Col>
         <Col sm={9}>
           <Tab.Content>{tabs}</Tab.Content>
