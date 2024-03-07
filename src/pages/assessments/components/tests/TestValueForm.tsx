@@ -73,9 +73,9 @@ export const TestValueForm = (props: AssessmentTestProps) => {
     <div className="mt-4">
       <Row>
         <Col>
-          <h5>
+          <h6>
             Test {props.test.id}: {props.test.name}{" "}
-          </h5>
+          </h6>
         </Col>
         <Col xs={3} className="text-end">
           <Button
@@ -104,11 +104,8 @@ export const TestValueForm = (props: AssessmentTestProps) => {
       <Row>
         <Col>
           <Form>
-            <div className="border rounded p-4 shadow-sm">
-              <h5 className="mb-4">
-                <strong className="me-2">Question: </strong>
-                {props.test.text}
-              </h5>
+            <div>
+              <h5 className="mb-4">{props.test.text}</h5>
               <Row>
                 <Col xs={1} className="text-right">
                   <span className="h5 me-4">

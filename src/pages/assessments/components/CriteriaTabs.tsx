@@ -54,16 +54,16 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
   }, [props]);
 
   props.principles.forEach((principle) => {
-    // push principle lable to navigation list
-    navs.push(
-      <span className="mt-2 text-muted" key={principle.id}>
-        {principle.id} - {principle.name}:
-      </span>,
-    );
+    // comment to not push principle lable to navigation list
+    // navs.push(
+    //   <span className="mt-2 text-muted" key={principle.id}>
+    //     {principle.id} - {principle.name}:
+    //   </span>,
+    // );
 
     principle.criteria.forEach((criterion) => {
       navs.push(
-        <Nav.Item key={criterion.id}>
+        <Nav.Item key={criterion.id} className="cat-crit-tab">
           <Nav.Link eventKey={criterion.id}>
             {criterion.id} - {criterion.name}
           </Nav.Link>
@@ -108,14 +108,16 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
           eventKey={criterion.id}
         >
           {/* add a principle info box before criterion content */}
-          <Alert variant="light">
-            <h6>
-              Principle {principle.id}: {principle.name}
-            </h6>
-            <small className="text-small">{principle.description}</small>
-          </Alert>
+
           <div>
-            <Alert variant="light">
+            <Alert variant="light mt-4">
+              <Row>
+                <h6>
+                  Principle {principle.id}: {principle.name}
+                </h6>
+                <small className="text-small">{principle.description}</small>
+              </Row>
+              <hr />
               <Row>
                 <Col>
                   <h5>
@@ -224,7 +226,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                 </Col>
               </Row>
             </Alert>
-            <ListGroup>{testList}</ListGroup>
+            <ListGroup className="mb-4">{testList}</ListGroup>
           </div>
         </Tab.Pane>,
       );
@@ -237,11 +239,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       activeKey={activeKey}
       onSelect={(key) => setActiveKey(key || "")}
     >
-      <Row>
-        <Col sm={3}>
-          <Nav variant="pills" className="flex-column">
-            {navs}
-          </Nav>
+      <Row className="border p-0">
+        <Col sm={3} className="cat-crit-sidebar p-0">
+          <Nav className="flex-column mt-4 ms-4 cat-asmt-nav">{navs}</Nav>
         </Col>
         <Col sm={9}>
           <Tab.Content>{tabs}</Tab.Content>

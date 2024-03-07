@@ -12,6 +12,30 @@
   border-bottom: solid 2px #919191;
 }
 
+.cat-crit-sidebar {
+  background-color: rgb(226 227 229);
+}
+
+.cat-crit-tab .nav-link {
+  color: black;
+}
+
+.assessment-card .nav-link {
+  color: #3b3b3b !important;
+}
+
+.cat-crit-tab .nav-link:hover {
+  background: white;
+}
+
+.active {
+  color: red;
+}
+
+.cat-crit-tab .active {
+  background: white;
+}
+
 .cat-view-heading {
   color: #00bcd4;
 }
@@ -83,10 +107,6 @@ footer a {
   padding: 15px;
 }
 
-.active {
-  color: red;
-}
-
 .custom-pagination input {
   display: inline-block;
   float: left;
@@ -114,10 +134,6 @@ footer a {
 .disabled-div {
   pointer-events: none; /* Prevent mouse interactions */
   opacity: 0.5; /* Reduce opacity to make it appear disabled */
-}
-
-.assessment-card .nav-link {
-  color: #3b3b3b !important;
 }
 
 .assessment-card .nav-link.active {
