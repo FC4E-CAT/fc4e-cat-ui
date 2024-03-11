@@ -40,29 +40,31 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
   };
 
   return (
-    <div className="mt-4 mb-3">
-      <h6>
+    <div className="mt-4">
+      <small>
         <strong>Evidence:</strong>
-      </h6>
-      <em>Please enter a list of URLs providing evidence of your claim:</em>
-      <ul className="list-group mt-2">
-        {urlList.map((item, index) => (
-          <li className="list-group-item py-1" key={index}>
-            <small>
-              <FaLink />{" "}
-              <a className="ms-2" href={item}>
-                {item}
-              </a>{" "}
-              <span
-                className="btn btn-sm btn-light border ms-4"
-                onClick={() => handleRemoveURL(index)}
-              >
-                remove
-              </span>
-            </small>
-          </li>
-        ))}
-      </ul>
+      </small>
+
+      {urlList.length > 0 && (
+        <ul className="list-group mt-2">
+          {urlList.map((item, index) => (
+            <li className="list-group-item py-1" key={index}>
+              <small>
+                <FaLink />{" "}
+                <a className="ms-2" href={item}>
+                  {item}
+                </a>{" "}
+                <span
+                  className="btn btn-sm btn-light border ms-4"
+                  onClick={() => handleRemoveURL(index)}
+                >
+                  remove
+                </span>
+              </small>
+            </li>
+          ))}
+        </ul>
+      )}
       <InputGroup className="mt-2" size="sm">
         <InputGroup.Text id="label-add-url">URL:</InputGroup.Text>
         <Form.Control
@@ -73,6 +75,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
             setError("");
           }}
           aria-describedby="label-add-url"
+          placeholder="Please enter and add a valid url to support your claim"
         />
         <span className="btn btn-primary btn-sm" onClick={handleAddURL}>
           Add

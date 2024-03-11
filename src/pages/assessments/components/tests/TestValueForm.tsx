@@ -3,7 +3,7 @@
  */
 
 // import { useState } from "react"
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { AssessmentTest, TestValue } from "@/types";
 import { useState } from "react";
@@ -70,11 +70,14 @@ export const TestValueForm = (props: AssessmentTestProps) => {
   }
 
   return (
-    <div className="mt-4">
+    <div>
       <Row>
         <Col>
           <h6>
-            Test {props.test.id}: {props.test.name}{" "}
+            <small className="text-muted badge badge-pill border bg-light m">
+              <span className="me-4">{props.test.id}</span>
+              {props.test.name}
+            </small>
           </h6>
         </Col>
         <Col xs={3} className="text-end">
@@ -105,43 +108,41 @@ export const TestValueForm = (props: AssessmentTestProps) => {
         <Col>
           <Form>
             <div>
-              <h5 className="mb-4">{props.test.text}</h5>
+              <h5 className="mt-4">{props.test.text}</h5>
               <Row>
-                <Col xs={1} className="text-right">
-                  <span className="h5 me-4">
-                    <strong>{props.test.value_name}: </strong>
-                  </span>
-                </Col>
-                <Col xs={4}>
-                  <Form.Control
-                    value={props.test.value || ""}
-                    type="text"
-                    id="input-value-control"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleValueChange(TestValueEventType.Value, e)
-                    }
-                  />
+                <Col xs={2}>
+                  <InputGroup className="mt-1">
+                    <InputGroup.Text id="label-first-value">
+                      {props.test.value_name}:
+                    </InputGroup.Text>
+                    <Form.Control
+                      value={props.test.value || ""}
+                      type="text"
+                      id="input-value-control"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleValueChange(TestValueEventType.Value, e)
+                      }
+                    />
+                  </InputGroup>
                 </Col>
               </Row>
               {props.test.threshold !== undefined && (
                 <>
-                  <Row className="mt-2">
-                    <Col xs={1} className="text-right">
-                      <span className="h5 me-4">
-                        <strong>
+                  <Row className="mt-1">
+                    <Col xs={2}>
+                      <InputGroup className="mt-2">
+                        <InputGroup.Text id="label-second-value">
                           {props.test.threshold_name || "Threshold"}:{" "}
-                        </strong>
-                      </span>
-                    </Col>
-                    <Col xs={4}>
-                      <Form.Control
-                        value={props.test.threshold || ""}
-                        type="text"
-                        id="input-value-community"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          handleValueChange(TestValueEventType.Threshold, e)
-                        }
-                      />
+                        </InputGroup.Text>
+                        <Form.Control
+                          value={props.test.threshold || ""}
+                          type="text"
+                          id="input-value-community"
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleValueChange(TestValueEventType.Threshold, e)
+                          }
+                        />
+                      </InputGroup>
                     </Col>
                   </Row>
                 </>
@@ -155,7 +156,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
               />
             )}
 
-            <div className="text-muted mt-2 border-top align-right">
+            {/* <div className="text-muted mt-2 border-top align-right">
               <small>
                 <em>Test Result: </em>
                 {props.test.result !== null ? (
@@ -166,7 +167,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                   </span>
                 )}
               </small>
-            </div>
+            </div> */}
           </Form>
         </Col>
 

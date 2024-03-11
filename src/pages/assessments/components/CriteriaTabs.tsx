@@ -1,17 +1,17 @@
 import {
-  Alert,
+  // Alert,
   Col,
   ListGroup,
   Nav,
-  OverlayTrigger,
+  // OverlayTrigger,
   Row,
   Tab,
-  Tooltip,
+  // Tooltip,
 } from "react-bootstrap";
 import {
   AssessmentTest,
   CriterionImperative,
-  MetricAlgorithm,
+  // MetricAlgorithm,
   Principle,
 } from "@/types";
 import {
@@ -20,6 +20,7 @@ import {
 } from "@/pages/assessments/components/tests";
 import { FaCheckCircle, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { CriterionProgress } from "./CriterionProgress";
 
 type CriteriaTabsProps = {
   principles: Principle[];
@@ -66,12 +67,12 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
         <Nav.Item key={criterion.id} className="cat-crit-tab">
           <Nav.Link eventKey={criterion.id} className="p-0">
             <div className="cat-tab-inner p-3">
-              {criterion.imperative === "should" && (
-                <small className="text-muted">*Required</small>
-              )}
-              <h6>
+              <h6
+                className={criterion.imperative === "should" ? "fw-bold" : ""}
+              >
                 {" "}
                 {criterion.id} - {criterion.name}
+                {criterion.imperative === "should" && <span> *</span>}
                 {criterion.metric.result === 0 && (
                   <FaTimesCircle className="ms-2 text-danger" />
                 )}
@@ -79,7 +80,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   <FaCheckCircle className="ms-2 text-success" />
                 )}
               </h6>
-              <small className="text-secondary">{criterion.description}</small>
+              <p className="text-secondary lh-sm m-0">
+                <small>{criterion.description}</small>
+              </p>
             </div>
           </Nav.Link>
         </Nav.Item>,
@@ -92,25 +95,29 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       criterion.metric.tests.forEach((test) => {
         if (test.type === "binary") {
           testList.push(
-            <ListGroup.Item key={test.id}>
-              <TestBinaryForm
-                test={test}
-                onTestChange={props.onTestChange}
-                criterionId={criterion.id}
-                principleId={principle.id}
-              />
-            </ListGroup.Item>,
+            <div className="border mt-4">
+              <div className="cat-test-div" key={test.id}>
+                <TestBinaryForm
+                  test={test}
+                  onTestChange={props.onTestChange}
+                  criterionId={criterion.id}
+                  principleId={principle.id}
+                />
+              </div>
+            </div>,
           );
         } else if (test.type === "value") {
           testList.push(
-            <ListGroup.Item key={test.id}>
-              <TestValueForm
-                test={test}
-                onTestChange={props.onTestChange}
-                criterionId={criterion.id}
-                principleId={principle.id}
-              />
-            </ListGroup.Item>,
+            <div className="border mt-4">
+              <div className="cat-test-div" key={test.id}>
+                <TestValueForm
+                  test={test}
+                  onTestChange={props.onTestChange}
+                  criterionId={criterion.id}
+                  principleId={principle.id}
+                />
+              </div>
+            </div>,
           );
         }
       });
@@ -124,8 +131,44 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
         >
           {/* add a principle info box before criterion content */}
 
-          <div>
-            <Alert variant="light mt-4">
+          <div className="p-4">
+            <Row>
+              <Col sm={9}>
+                <div className="">
+                  <span className="h4 align-middle">
+                    {criterion.id}: {criterion.name}
+                  </span>
+
+                  {criterion.imperative === CriterionImperative.Should ? (
+                    <span className="badge bg-success bg-small ms-4 align-middle">
+                      Required
+                    </span>
+                  ) : (
+                    <span className="badge bg-warning bg-small ms-4 align-middle">
+                      Optional
+                    </span>
+                  )}
+                  <p className="text-muted lh-sm mt-2 mb-2">
+                    {criterion.description}
+                  </p>
+                  <div className="cat-view-heading">
+                    <span className="align-middle">
+                      part of principle {principle.id}: {principle.name}{" "}
+                    </span>
+
+                    <FaInfoCircle
+                      title={principle.description}
+                      className="text-secondary opacity-50 align-middle"
+                    />
+                  </div>
+                </div>
+              </Col>
+              <Col sm={3}>
+                <CriterionProgress metric={criterion.metric} />
+              </Col>
+            </Row>
+
+            {/* <Alert variant="light mt-4">
               <Row>
                 <h6>
                   Principle {principle.id}: {principle.name}
@@ -240,7 +283,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   </div>
                 </Col>
               </Row>
-            </Alert>
+            </Alert> */}
             <ListGroup className="mb-4">{testList}</ListGroup>
           </div>
         </Tab.Pane>,
@@ -255,10 +298,10 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       onSelect={(key) => setActiveKey(key || "")}
     >
       <Row className="border p-0">
-        <Col sm={3} className="cat-crit-sidebar p-0">
+        <Col sm={4} className="cat-crit-sidebar p-0">
           <Nav className="flex-column cat-asmt-nav">{navs}</Nav>
         </Col>
-        <Col sm={9}>
+        <Col sm={8}>
           <Tab.Content>{tabs}</Tab.Content>
         </Col>
       </Row>

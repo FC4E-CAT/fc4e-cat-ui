@@ -41,11 +41,14 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
   }
 
   return (
-    <div className="mt-4">
+    <div>
       <Row>
         <Col>
           <h6>
-            Test {props.test.id}: {props.test.name}{" "}
+            <small className="text-muted badge badge-pill border bg-light">
+              <span className="me-4">{props.test.id}</span>
+              {props.test.name}
+            </small>
           </h6>
         </Col>
         <Col xs={3} className="text-end">
@@ -76,7 +79,7 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
         <Col>
           <Form>
             <div className="">
-              <h5 className="mb-4">{props.test.text}</h5>
+              <h5 className="pt-4">{props.test.text}</h5>
               <Form.Check
                 inline
                 label="Yes"
@@ -105,19 +108,6 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
                 onListChange={onURLChange}
               />
             )}
-
-            <div className="text-muted mt-2 border-top align-right">
-              <small>
-                <em>Test Result: </em>
-                {props.test.result !== null ? (
-                  <strong>{props.test.result}</strong>
-                ) : (
-                  <span>
-                    <strong>Unknown</strong> - Please answer the question above
-                  </span>
-                )}
-              </small>
-            </div>
           </Form>
         </Col>
 

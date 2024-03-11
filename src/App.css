@@ -20,6 +20,11 @@
   color: #3b3b3b;
 }
 
+.cat-test-div {
+  padding: 1rem;
+  border-left: 0.8rem solid rgb(240 240 240);
+}
+
 .cat-crit-tab .nav-link {
   color: black;
   border: 1px solid rgb(222 226 230);
