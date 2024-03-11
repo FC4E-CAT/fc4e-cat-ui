@@ -72,14 +72,14 @@ function Assessments() {
           {authenticated && (
             <div className="d-flex justify-content-end my-2">
               <Link
-                  id="assessment_form_button"
+                id="assessment_form_button"
                 to={`/assessments/create`}
                 className="btn btn-light border-black mx-3"
               >
                 <FaPlus /> Create New
               </Link>
               <Link
-                  id="view_assessments_button"
+                id="view_assessments_button"
                 to="/assessments"
                 className="btn btn-light border-black mx-3"
               >
