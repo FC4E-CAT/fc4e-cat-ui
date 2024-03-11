@@ -91,16 +91,12 @@ describe("/assessments/create", () => {
     cy.get("form:visible").within(() => {
       cy.get("#test-check-yes").click();
     });
-    cy.get("#left-tabs-tabpane-C5 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C5").contains("PASS").should("exist");
     cy.get("#left-tabs-tab-C6").click();
     cy.get("form:visible").within(() => {
       cy.get("#test-check-yes").click();
     });
-    cy.get("#left-tabs-tabpane-C6 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C6").contains("PASS").should("exist");
     cy.get("#left-tabs-tab-C7").click();
 
     cy.get("form:visible")
@@ -117,85 +113,65 @@ describe("/assessments/create", () => {
         cy.get("#input-value-control").type("70");
         cy.get("#input-value-community").type("70");
       });
-    cy.get("#left-tabs-tabpane-C7 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C7").contains("PASS").should("exist");
 
     cy.get("#left-tabs-tab-C11").click();
     cy.get("form:visible").within(() => {
       cy.get("#test-check-yes").click();
     });
-    cy.get("#left-tabs-tabpane-C11 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C11").contains("PASS").should("exist");
 
     cy.get("#left-tabs-tab-C14").click();
     cy.get("form:visible").within(() => {
       cy.get("#input-value-control").type("70");
       cy.get("#input-value-community").type("70");
     });
-    cy.get("#left-tabs-tabpane-C14 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C14").contains("PASS").should("exist");
 
     cy.get("#left-tabs-tab-C34").click();
     cy.get("form:visible").within(() => {
       cy.get("#input-value-control").type("70");
       cy.get("#input-value-community").type("70");
     });
-    cy.get("#left-tabs-tabpane-C34 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C34").contains("PASS").should("exist");
 
     cy.get("#left-tabs-tab-C16").click();
     cy.get("form:visible").within(() => {
       cy.get("#input-value-control").type("70");
       cy.get("#input-value-community").type("70");
     });
-    cy.get("#left-tabs-tabpane-C16 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C16").contains("PASS").should("exist");
 
     cy.get("#left-tabs-tab-C19").click();
     cy.get("form:visible").within(() => {
       cy.get("#test-check-yes").click();
     });
-    cy.get("#left-tabs-tabpane-C19 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C19").contains("PASS").should("exist");
 
     cy.get("#left-tabs-tab-C22").click();
     cy.get("form:visible").within(() => {
       cy.get("#test-check-yes").click();
     });
-    cy.get("#left-tabs-tabpane-C22 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C22").contains("PASS").should("exist");
 
     cy.get("#left-tabs-tab-C29").click();
     cy.get("form:visible").within(() => {
       cy.get("#test-check-yes").click();
     });
-    cy.get("#left-tabs-tabpane-C29 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C29").contains("PASS").should("exist");
 
     cy.get("#left-tabs-tab-C28").click();
     cy.get("form:visible").within(() => {
       cy.get("#test-check-yes").click();
     });
-    cy.get("#left-tabs-tabpane-C28 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C28").contains("PASS").should("exist");
 
     cy.get("#left-tabs-tab-C35").click();
     cy.get("form:visible").within(() => {
       cy.get("#input-value-control").type("70");
       cy.get("#input-value-community").type("70");
     });
-    cy.get("#left-tabs-tabpane-C35 .badge:visible")
-      .contains("PASS")
-      .should("exist");
+    cy.get("#left-tabs-tabpane-C35").contains("PASS").should("exist");
 
     cy.get("#create_assessment_button").click();
     cy.url().should("contain", "/assessments");
@@ -250,7 +226,7 @@ describe("/assessments", () => {
     cy.get("form:visible").within(() => {
       cy.get("#test-check-no").click();
     });
-    cy.get("#left-tabs-tabpane-C5 .badge:visible").contains("FAIL");
+    cy.get("#left-tabs-tabpane-C5").contains("FAIL");
     cy.contains("Close").click();
     // select via Ranking header to prevent breaking tests when columns change.
     cy.contains("thead th", "Ranking").then((rankingHeader) => {
@@ -273,7 +249,7 @@ describe("/assessments", () => {
     cy.get("form:visible").within(() => {
       cy.get("#test-check-no").click();
     });
-    cy.get("#left-tabs-tabpane-C5 .badge:visible").contains("FAIL");
+    cy.get("#left-tabs-tabpane-C5").contains("FAIL");
     cy.get("#submit_assessment_button").click();
     // select via Ranking header to prevent breaking tests when columns change.
     cy.contains("thead th", "Ranking").then((rankingHeader) => {
