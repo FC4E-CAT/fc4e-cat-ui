@@ -1,9 +1,7 @@
 import { Metric } from "@/types";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 export function CriterionProgress({ metric }: { metric: Metric }) {
   const tests = metric.tests;
-  const total = tests.length;
   let filled = 0;
   const testMarkers = [];
 
@@ -46,33 +44,22 @@ export function CriterionProgress({ metric }: { metric: Metric }) {
 
   return (
     <div>
-      <div className="d-flex">{testMarkers}</div>
-      <div>
-        {metric.result === null ? (
-          <div>
-            <small>
-              in progress: {filled}/{total} tests
-            </small>
-          </div>
-        ) : (
-          <>
-            <div>
-              <small>
-                complete - result:
-                {metric.result === 1 ? (
-                  <span>
-                    <FaCheckCircle className="text-success mx-2" /> PASS{" "}
-                  </span>
-                ) : (
-                  <span>
-                    <FaTimesCircle className="text-danger mx-2" /> FAIL{" "}
-                  </span>
-                )}
-              </small>
-            </div>
-          </>
-        )}
-      </div>
+      {testMarkers}
+      <small className="ms-2">
+        <strong>
+          {metric.result === null ? (
+            <span className="text-secondary">Progress</span>
+          ) : (
+            <>
+              {metric.result === 1 ? (
+                <span className="text-success">Pass</span>
+              ) : (
+                <span className="text-danger">Fail</span>
+              )}
+            </>
+          )}
+        </strong>
+      </small>
     </div>
   );
 }
