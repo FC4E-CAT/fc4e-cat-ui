@@ -108,7 +108,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
         <Col>
           <Form>
             <div>
-              <h5 className="mt-4">{props.test.text}</h5>
+              <h5>{props.test.text}</h5>
               <Row>
                 <Col xs={2}>
                   <InputGroup className="mt-1">
