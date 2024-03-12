@@ -66,20 +66,31 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       navs.push(
         <Nav.Item key={criterion.id} className="cat-crit-tab">
           <Nav.Link eventKey={criterion.id} className="p-0">
-            <div className="cat-tab-inner p-3">
-              <h6
-                className={criterion.imperative === "should" ? "fw-bold" : ""}
-              >
-                {" "}
-                {criterion.id} - {criterion.name}
-                {criterion.imperative === "should" && <span> *</span>}
-                {criterion.metric.result === 0 && (
-                  <FaTimesCircle className="ms-2 text-danger" />
+            <div className="cat-tab-inner p-3 ">
+              <div className="d-flex">
+                <h6
+                  className={criterion.imperative === "should" ? "fw-bold" : ""}
+                >
+                  {" "}
+                  {criterion.id} - {criterion.name}
+                  {criterion.metric.result === 0 && (
+                    <FaTimesCircle className="ms-2 text-danger" />
+                  )}
+                  {criterion.metric.result === 1 && (
+                    <FaCheckCircle className="ms-2 text-success" />
+                  )}
+                </h6>
+                {criterion.imperative === "should" && (
+                  <div>
+                    <small
+                      style={{ fontSize: "0.6rem" }}
+                      className="ms-2 badge mb-2 rounded-pill text-bg-light text-secondary border align-middle"
+                    >
+                      required
+                    </small>
+                  </div>
                 )}
-                {criterion.metric.result === 1 && (
-                  <FaCheckCircle className="ms-2 text-success" />
-                )}
-              </h6>
+              </div>
               <p className="text-secondary lh-sm m-0">
                 <small>{criterion.description}</small>
               </p>
@@ -132,158 +143,39 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
           {/* add a principle info box before criterion content */}
 
           <div className="p-4">
-            <Row>
-              <Col sm={9}>
-                <div className="">
-                  <span className="h4 align-middle">
-                    {criterion.id}: {criterion.name}
+            <div className="d-flex justify-content-end">
+              <CriterionProgress metric={criterion.metric} />
+            </div>
+            <div>
+              <div className="">
+                <span className="h4 align-middle">
+                  {criterion.id}: {criterion.name}
+                </span>
+
+                {criterion.imperative === CriterionImperative.Should ? (
+                  <span className="badge bg-success bg-small ms-4 align-middle">
+                    Required
+                  </span>
+                ) : (
+                  <span className="badge bg-warning bg-small ms-4 align-middle">
+                    Optional
+                  </span>
+                )}
+                <p className="text-muted lh-sm mt-2 mb-2">
+                  {criterion.description}
+                </p>
+                <div className="cat-view-heading">
+                  <span className="align-middle">
+                    part of principle {principle.id}: {principle.name}{" "}
                   </span>
 
-                  {criterion.imperative === CriterionImperative.Should ? (
-                    <span className="badge bg-success bg-small ms-4 align-middle">
-                      Required
-                    </span>
-                  ) : (
-                    <span className="badge bg-warning bg-small ms-4 align-middle">
-                      Optional
-                    </span>
-                  )}
-                  <p className="text-muted lh-sm mt-2 mb-2">
-                    {criterion.description}
-                  </p>
-                  <div className="cat-view-heading">
-                    <span className="align-middle">
-                      part of principle {principle.id}: {principle.name}{" "}
-                    </span>
-
-                    <FaInfoCircle
-                      title={principle.description}
-                      className="text-secondary opacity-50 align-middle"
-                    />
-                  </div>
+                  <FaInfoCircle
+                    title={principle.description}
+                    className="text-secondary opacity-50 align-middle"
+                  />
                 </div>
-              </Col>
-              <Col sm={3}>
-                <CriterionProgress metric={criterion.metric} />
-              </Col>
-            </Row>
-
-            {/* <Alert variant="light mt-4">
-              <Row>
-                <h6>
-                  Principle {principle.id}: {principle.name}
-                </h6>
-                <small className="text-small">{principle.description}</small>
-              </Row>
-              <hr />
-              <Row>
-                <Col>
-                  <h5>
-                    Criterion {criterion.id}: {criterion.name}
-                    {criterion.imperative === CriterionImperative.Should ? (
-                      <span className="badge bg-success bg-small ms-2">
-                        Should
-                      </span>
-                    ) : (
-                      <span className="badge bg-warning bg-small ms-2">
-                        May
-                      </span>
-                    )}
-                  </h5>
-                  <p>{criterion.description}</p>
-                </Col>
-                <Col xs={3}>
-                  <div className="text-end">
-                    Metric:
-                    {criterion.metric.result === null ? (
-                      <span className="badge bg-secondary ms-2">UNKNOWN</span>
-                    ) : criterion.metric.result > 0 ? (
-                      <span className="badge bg-success ms-2">PASS</span>
-                    ) : (
-                      <span className="badge bg-danger ms-2">FAIL</span>
-                    )}
-                    <OverlayTrigger
-                      overlay={
-                        <Tooltip
-                          className="cat-metric-tooltip"
-                          id="info-metric"
-                        >
-                          <p>
-                            The final <em>result</em> of this metric is a{" "}
-                            <code>{criterion.metric.type}</code>.
-                            {criterion.metric.type === "number" && (
-                              <>
-                                <br />- <em>result</em> of <code>1</code>{" "}
-                                indicates a{" "}
-                                <span className="text-success">PASS</span>.
-                                <br />- <em>result</em> of <code>0</code>{" "}
-                                indicates a{" "}
-                                <span className="text-danger">FAIL</span>.
-                                <br />
-                              </>
-                            )}
-                            {criterion.metric.algorithm ===
-                              MetricAlgorithm.Single && (
-                              <>
-                                The <em>result</em> is based on the{" "}
-                                <em>value</em> of the single test.
-                                <br />
-                              </>
-                            )}
-                            {criterion.metric.algorithm ===
-                              MetricAlgorithm.Sum && (
-                              <>
-                                The <em>result</em> is based on the{" "}
-                                <strong>value</strong> calculated from summing
-                                the result values of all included tests.
-                                <br />
-                              </>
-                            )}
-                            {"equal_greater_than" in
-                              criterion.metric.benchmark && (
-                              <>
-                                This <em>value</em> should be{" "}
-                                <code>
-                                  &gt;={" "}
-                                  {
-                                    criterion.metric.benchmark[
-                                      "equal_greater_than"
-                                    ]
-                                  }{" "}
-                                </code>
-                                <br />
-                              </>
-                            )}
-                          </p>
-                        </Tooltip>
-                      }
-                    >
-                      <span>
-                        <FaInfoCircle className="ms-2" title="tootltip" />
-                      </span>
-                    </OverlayTrigger>
-                  </div>
-                  <div className="text-end">
-                    <div>
-                      <small>
-                        tests:{" "}
-                        {
-                          criterion.metric.tests.filter(
-                            (item) => item.result !== null,
-                          ).length
-                        }
-                        /{criterion.metric.tests.length}
-                      </small>
-                    </div>
-                    {criterion.metric.result !== null && (
-                      <div>
-                        <small>result: {criterion.metric.result}</small>
-                      </div>
-                    )}
-                  </div>
-                </Col>
-              </Row>
-            </Alert> */}
+              </div>
+            </div>
             <ListGroup className="mb-4">{testList}</ListGroup>
           </div>
         </Tab.Pane>,
