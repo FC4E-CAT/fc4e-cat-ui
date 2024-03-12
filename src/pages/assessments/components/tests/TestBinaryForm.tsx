@@ -79,7 +79,7 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
         <Col>
           <Form>
             <div className="">
-              <h5 className="pt-4">{props.test.text}</h5>
+              <h5>{props.test.text}</h5>
               <Form.Check
                 inline
                 label="Yes"
