@@ -23,4 +23,5 @@ export const useGetTemplate = (
       return handleBackendError(error);
     },
     enabled: !!token && isRegistered && actorId !== undefined,
+    refetchOnWindowFocus: false,
   });
