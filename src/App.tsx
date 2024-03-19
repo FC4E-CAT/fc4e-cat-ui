@@ -23,6 +23,7 @@ import AssessmentEdit from "./pages/assessments/AssessmentEdit";
 
 import { Toaster } from "react-hot-toast";
 import Subjects from "./pages/Subjects";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ function App() {
               <Container>
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
                   <Route
                     path="/assessments/create/:valID"
                     element={<ProtectedRoute />}

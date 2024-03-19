@@ -12,6 +12,14 @@
   border-bottom: solid 2px #919191;
 }
 
+.cat-list-bullet-image {
+  list-style: url("fclogo.png");
+}
+
+.cat-list-bullet-image li {
+  padding: 0.6rem;
+}
+
 .cat-crit-sidebar {
   background-color: rgb(240 240 240);
 }
