@@ -134,14 +134,8 @@ export function useGetAssessment({
   return useQuery({
     queryKey: ["assessment", id],
     queryFn: async () => {
-      let path = "";
-      if (token && isRegistered) {
-        path = "assessments";
-      } else {
-        path = "public";
-      }
       const response = await APIClient(token).get<AssessmentDetailsResponse>(
-        `/${path}/${id}`,
+        `/assessments/${id}`,
       );
       return response.data;
     },
