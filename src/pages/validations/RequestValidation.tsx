@@ -203,8 +203,6 @@ function RequestValidation() {
     </>
   );
 
-  console.log(watchOrgSource);
-
   return (
     <div className="mt-4">
       <h3 className="cat-view-heading">

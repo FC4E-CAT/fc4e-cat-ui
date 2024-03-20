@@ -18,6 +18,7 @@ import { useGetSubjects } from "@/api/services/subjects";
 type AssessmentSelectSubjectProps = {
   subject: AssessmentSubject;
   onSubjectChange(subject: AssessmentSubject): void;
+  reqFields: string[];
 };
 
 export const AssessmentSelectSubject = (
@@ -110,7 +111,7 @@ export const AssessmentSelectSubject = (
       </Row>
       <Row>
         <Row>
-          <InputGroup className="mb-3">
+          <InputGroup className="mb-1">
             <OverlayTrigger
               key="top"
               placement="top"
@@ -137,11 +138,17 @@ export const AssessmentSelectSubject = (
                 );
               }}
               aria-describedby="label-info-subject-id"
+              className={
+                props.reqFields.includes("subject_id") ? "is-invalid" : ""
+              }
             />
           </InputGroup>
+          {props.reqFields.includes("subject_id") && (
+            <p className="text-danger text-end">Subject id required</p>
+          )}
         </Row>
         <Row>
-          <InputGroup className="mb-3">
+          <InputGroup className="mb-1 mt-2">
             <OverlayTrigger
               key="top"
               placement="top"
@@ -166,11 +173,17 @@ export const AssessmentSelectSubject = (
                 );
               }}
               aria-describedby="label-info-subject-name"
+              className={
+                props.reqFields.includes("subject_name") ? "is-invalid" : ""
+              }
             />
           </InputGroup>
+          {props.reqFields.includes("subject_name") && (
+            <p className="text-danger text-end">The subject name is required</p>
+          )}
         </Row>
         <Row>
-          <InputGroup className="mb-3">
+          <InputGroup className="mb-1 mt-2">
             <OverlayTrigger
               key="top"
               placement="top"
@@ -197,8 +210,14 @@ export const AssessmentSelectSubject = (
                 );
               }}
               aria-describedby="label-info-subject-type"
+              className={
+                props.reqFields.includes("subject_type") ? "is-invalid" : ""
+              }
             />
           </InputGroup>
+          {props.reqFields.includes("subject_type") && (
+            <p className="text-danger text-end">The subject type is required</p>
+          )}
         </Row>
       </Row>
     </>
