@@ -5,8 +5,6 @@ export function CriterionProgress({ metric }: { metric: Metric }) {
   let filled = 0;
   const testMarkers = [];
 
-  console.log(tests);
-
   for (const item of tests) {
     if (item.result !== null) {
       if (item.result === 0) {

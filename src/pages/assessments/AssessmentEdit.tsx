@@ -20,7 +20,7 @@ import {
 import { useParams } from "react-router";
 import { Card, Nav, Tab, Button } from "react-bootstrap";
 import { AssessmentInfo, CriteriaTabs } from "@/pages/assessments/components";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { evalAssessment, evalMetric } from "@/utils";
 
 import {
@@ -49,6 +49,7 @@ type AssessmentEditProps = {
 
 /** AssessmentEdit page that holds the main body of an assessment */
 const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
+  const [reqFields, setReqFields] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState(1);
   const { keycloak, registered } = useContext(AuthContext)!;
   const [assessment, setAssessment] = useState<Assessment>();
@@ -171,8 +172,24 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     setResetCriterionTab(false);
   }
 
+  // function that checks if the required fields are empty
+  function checkRequiredFields(assessment: Assessment): boolean {
+    const result: string[] = [];
+    if (assessment.name === "") result.push("name");
+    if (assessment.subject.name === "") result.push("subject_name");
+    if (assessment.subject.id === "") result.push("subject_id");
+    if (assessment.subject.type === "") result.push("subject_type");
+    if (assessment.actor.name === "") result.push("actor");
+    setReqFields(result);
+    if (result.length > 0) {
+      setActiveTab(2);
+      return false;
+    }
+    return true;
+  }
+
   function handleCreateAssessment() {
-    if (templateId && vldid && assessment) {
+    if (templateId && vldid && assessment && checkRequiredFields(assessment)) {
       const promise = mutationCreateAssessment
         .mutateAsync({
           validation_id: parseInt(vldid),
@@ -181,7 +198,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
         })
         .catch((err) => {
           alert.current = {
-            message: "Error during assessment creation.",
+            message: `Error during assessment creation:\n${err.response.data.message}`,
           };
           throw err;
         })
@@ -223,7 +240,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   }
 
   function handleUpdateAssessment(exit: boolean) {
-    if (assessment && asmtID) {
+    if (assessment && asmtID && checkRequiredFields(assessment)) {
       const promise = mutationUpdateAssessment
         .mutateAsync({
           assessment_doc: assessment,
@@ -472,6 +489,9 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                     Step 2.
                   </span>{" "}
                   Submission
+                  {reqFields.length > 0 && (
+                    <FaExclamationCircle className="ms-2 text-danger rounded-circle bg-white" />
+                  )}
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item
@@ -522,6 +542,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                   onNameChange={handleNameChange}
                   onPublishedChange={handlePublishedChange}
                   onSubjectChange={handleSubjectChange}
+                  reqFields={reqFields}
                 />
               </Tab.Pane>
               <Tab.Pane className="text-black" eventKey="step-3">

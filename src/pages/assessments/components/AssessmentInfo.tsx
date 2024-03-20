@@ -12,7 +12,15 @@ import {
 } from "react-bootstrap";
 import { AssessmentSubject, UserProfile, AssessmentActor } from "@/types";
 import { AssessmentSelectSubject } from "./AssessmentSelectSubject";
-import { FaCog, FaInfo, FaLock, FaUserAlt, FaInfoCircle } from "react-icons/fa";
+import {
+  FaCog,
+  FaInfo,
+  FaLock,
+  FaUserAlt,
+  FaInfoCircle,
+  FaExclamationCircle,
+} from "react-icons/fa";
+import { useState, useEffect } from "react";
 
 interface AssessmentInfoProps {
   id?: string;
@@ -24,25 +32,53 @@ interface AssessmentInfoProps {
   subject: AssessmentSubject;
   published: boolean;
   profile?: UserProfile;
+  reqFields: string[];
   onNameChange(name: string): void;
   onSubjectChange(subject: AssessmentSubject): void;
   onPublishedChange(published: boolean): void;
 }
 
 export const AssessmentInfo = (props: AssessmentInfoProps) => {
+  const [accKeys, setAccKeys] = useState<string[]>([]);
+
+  const toggleAccKey = (name: string) => {
+    if (accKeys.includes(name)) {
+      setAccKeys(accKeys.filter((item) => item !== name));
+    } else {
+      setAccKeys([...accKeys, name]);
+    }
+  };
+
+  // call use effect to react to required field changes
+  useEffect(() => {
+    setAccKeys((keys) => {
+      const subjectErrors = ["subject_name", "subject_id", "subject_type"].some(
+        (item) => props.reqFields.includes(item),
+      );
+      const newKeys: string[] = [];
+      if (subjectErrors && !keys.includes("acc-3")) newKeys.push("acc-3");
+      if (props.reqFields.includes("name") && !keys.includes("acc-1"))
+        newKeys.push("acc-1");
+      return [...keys, ...newKeys];
+    });
+  }, [props.reqFields]);
+
   return (
-    <Accordion defaultActiveKey="acc-1">
+    <Accordion defaultActiveKey={["acc-1"]} activeKey={accKeys} alwaysOpen>
       <Accordion.Item eventKey="acc-1" id="accordion_general">
-        <Accordion.Header>
+        <Accordion.Header onClick={() => toggleAccKey("acc-1")}>
           <span>
             <FaInfo color="blue" className="me-2" />
             General Info
+            {props.reqFields.includes("name") && (
+              <FaExclamationCircle className="ms-2 text-danger rounded-circle bg-white" />
+            )}
           </span>
         </Accordion.Header>
         <Accordion.Body>
           <Row>
             <Col>
-              <InputGroup className="mb-3">
+              <InputGroup className="mb-1">
                 <OverlayTrigger
                   key="top"
                   placement="top"
@@ -65,14 +101,22 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                     props.onNameChange(e.target.value);
                   }}
                   aria-describedby="label-info-name"
+                  className={
+                    props.reqFields.includes("name") ? "is-invalid" : ""
+                  }
                 />
               </InputGroup>
+              {props.reqFields.includes("name") && (
+                <p className="text-danger text-end">
+                  A unique name for the assessment is required
+                </p>
+              )}
             </Col>
           </Row>
 
           <Row>
             <Col>
-              <InputGroup className="mb-3">
+              <InputGroup className="mt-2">
                 <OverlayTrigger
                   key="top"
                   placement="top"
@@ -99,7 +143,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
         </Accordion.Body>
       </Accordion.Item>
       <Accordion.Item eventKey="acc-2" id="accordion_submitter">
-        <Accordion.Header>
+        <Accordion.Header onClick={() => toggleAccKey("acc-2")}>
           <span>
             <FaUserAlt color="green" className="me-2" />
             Submitter
@@ -201,10 +245,15 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
         </Accordion.Body>
       </Accordion.Item>
       <Accordion.Item eventKey="acc-3" id="accordion_subject">
-        <Accordion.Header>
+        <Accordion.Header onClick={() => toggleAccKey("acc-3")}>
           <span>
             <FaCog color="orange" className="me-2" />
             Subject of assessment <em>(Object, Entity or Service)</em>
+            {["subject_name", "subject_id", "subject_type"].some((item) =>
+              props.reqFields.includes(item),
+            ) && (
+              <FaExclamationCircle className="ms-2 text-danger rounded-circle bg-white" />
+            )}
           </span>
         </Accordion.Header>
         <Accordion.Body>
@@ -212,12 +261,13 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
             <AssessmentSelectSubject
               subject={props.subject}
               onSubjectChange={props.onSubjectChange}
+              reqFields={props.reqFields}
             />
           </Row>
         </Accordion.Body>
       </Accordion.Item>
       <Accordion.Item eventKey="acc-4" id="accordion_license">
-        <Accordion.Header>
+        <Accordion.Header onClick={() => toggleAccKey("acc-4")}>
           <span>
             <FaLock color="crimson" className="me-2" />
             Rights, Licencing or Re-use
