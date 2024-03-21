@@ -19,6 +19,7 @@ export interface UserProfile {
   surname: string;
   email: string;
   updated_on: string;
+  banned: boolean;
 }
 
 export type UserResponse = UserProfile;

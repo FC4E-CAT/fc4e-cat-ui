@@ -99,3 +99,8 @@ export type Subject = {
   name: string;
   type: string;
 };
+
+export type UserAccess = {
+  user_id: string;
+  reason?: string;
+};
