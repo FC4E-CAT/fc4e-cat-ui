@@ -1,7 +1,7 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { APIClient } from "@/api";
-import { ApiOptions } from "@/types";
+import { ApiOptions, UserAccess } from "@/types";
 import { UserResponse, UserListResponse } from "@/types";
 import { handleBackendError } from "@/utils";
 
@@ -66,3 +66,47 @@ export const useUserRegister = () =>
       },
     },
   );
+
+export function useBanUser(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (data: UserAccess) => {
+      const response = await APIClient(token).put<UserAccess>(
+        "/admin/users/deny-access",
+        data,
+      );
+      if (response.status == 200) {
+        queryClient.invalidateQueries(["users"]);
+        queryClient.invalidateQueries(["users", data.user_id]);
+      }
+      return response.data;
+    },
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+    },
+  );
+}
+
+export function useUnbanUser(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (data: UserAccess) => {
+      const response = await APIClient(token).put<UserAccess>(
+        "/admin/users/permit-access",
+        data,
+      );
+      if (response.status == 200) {
+        queryClient.invalidateQueries(["users"]);
+        queryClient.invalidateQueries(["users", data.user_id]);
+      }
+      return response.data;
+    },
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+    },
+  );
+}
