@@ -1,4 +1,4 @@
-import { useContext, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useGetAdminUsers, useUnbanUser, useBanUser } from "@/api";
 import { CustomTable } from "@/components";
@@ -24,13 +24,21 @@ type UserModalBasicConfig = {
 // Props for subject modal
 type UserModalProps = UserModalBasicConfig & {
   onHide: () => void;
-  onUnban: (id: string) => void;
-  onBan: (id: string, reason: string) => void;
+  handleUnban: (id: string, reason: string) => void;
+  handleBan: (id: string, reason: string) => void;
 };
 
 // Creates a modal with a small form to create/edit a subject
 export function UserModal(props: UserModalProps) {
   const [reason, setReason] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (props.show) {
+      setReason("");
+      setError(false);
+    }
+  }, [props.show]);
 
   return (
     <Modal
@@ -43,7 +51,7 @@ export function UserModal(props: UserModalProps) {
         className={
           props.mode == UserModalMode.Ban
             ? "bg-danger text-white"
-            : "bg-green text-white"
+            : "bg-success text-white"
         }
         closeButton
       >
@@ -51,13 +59,11 @@ export function UserModal(props: UserModalProps) {
           {props.mode == UserModalMode.Ban && (
             <span>
               <FaLock className="me-2" /> Ban user
-              <small className="ms-2 badge bg-secondary">id: {props.id}</small>
             </span>
           )}
           {props.mode == UserModalMode.Unban && (
             <span>
               <FaUnlock className="me-2" /> Unban user
-              <small className="ms-2 badge bg-secondary">id: {props.id}</small>
             </span>
           )}
         </Modal.Title>
@@ -69,12 +75,17 @@ export function UserModal(props: UserModalProps) {
             <strong>{props.id}</strong> ?
           </p>
           <Form.Group className="mb-3" controlId="input-ban-user-reason">
-            <Form.Label>Reason</Form.Label>
+            <Form.Label>
+              <strong>Reason (*)</strong>
+            </Form.Label>
             <Form.Control
+              className={error ? "is-invalid" : ""}
               as="textarea"
-              rows={3}
+              rows={2}
+              value={reason}
               onChange={(e) => setReason(e.target.value)}
             />
+            {error && <p className="text-danger">You must specify a reason</p>}
           </Form.Group>
         </Form>
       </Modal.Body>
@@ -85,7 +96,13 @@ export function UserModal(props: UserModalProps) {
         {props.mode == UserModalMode.Ban && (
           <Button
             className="btn-danger"
-            onClick={() => props.onBan(props.id, reason)}
+            onClick={() => {
+              if (reason === "") {
+                setError(true);
+              } else {
+                props.handleBan(props.id, reason);
+              }
+            }}
           >
             Ban
           </Button>
@@ -94,7 +111,13 @@ export function UserModal(props: UserModalProps) {
           <Button
             className="btn-sucess"
             onClick={() => {
-              props.onUnban(props.id);
+              {
+                if (reason === "") {
+                  setError(true);
+                } else {
+                  props.handleUnban(props.id, reason);
+                }
+              }
             }}
           >
             Unban
@@ -123,9 +146,9 @@ function Users() {
   const mutationBanUser = useBanUser(keycloak?.token || "");
   const mutationUnbanUser = useUnbanUser(keycloak?.token || "");
 
-  const handleUnban = (id: string) => {
+  const handleUnban = (id: string, reason: string) => {
     const promise = mutationUnbanUser
-      .mutateAsync({ user_id: id })
+      .mutateAsync({ user_id: id, reason: reason })
       .catch((err) => {
         toastAlert.current = {
           message: "Error during user unban.",
@@ -178,6 +201,12 @@ function Users() {
         // footer: props => props.column.id,
       },
       {
+        accessorKey: "email",
+        header: () => <span>Email</span>,
+        cell: (info) => info.getValue(),
+        // footer: props => props.column.id,
+      },
+      {
         accessorFn: (row) => row.user_type,
         id: "user_type",
         cell: (info) => info.getValue(),
@@ -194,41 +223,48 @@ function Users() {
       {
         accessorFn: (row) => row,
         enableColumnFilter: false,
-        id: "Account Status",
+        id: "Status",
         cell: (info) => {
           const item: UserProfile = info.getValue() as UserProfile;
           return item.banned ? (
-            <div>
-              <span className="badge bg-danger">banned</span>
-              <span
-                className="ms-4 btn btn-sm btn-outline-success"
-                onClick={() => {
-                  setUserModalConfig({
-                    id: item.id,
-                    mode: UserModalMode.Unban,
-                    show: true,
-                  });
-                }}
-              >
-                <FaLockOpen />
-              </span>
-            </div>
+            <span className="badge bg-danger">banned</span>
           ) : (
-            <div>
-              <span className="badge bg-success">active</span>
-              <span
-                className="ms-4 btn btn-sm btn-outline-danger"
-                onClick={() => {
-                  setUserModalConfig({
-                    id: item.id,
-                    mode: UserModalMode.Ban,
-                    show: true,
-                  });
-                }}
-              >
-                <FaLock />
-              </span>
-            </div>
+            <span className="badge bg-success">active</span>
+          );
+        },
+      },
+      {
+        accessorFn: (row) => row,
+        enableColumnFilter: false,
+        id: "Action",
+        cell: (info) => {
+          const item: UserProfile = info.getValue() as UserProfile;
+          return item.banned ? (
+            <span
+              className="ms-4 btn btn-sm btn-outline-success"
+              onClick={() => {
+                setUserModalConfig({
+                  id: item.id,
+                  mode: UserModalMode.Unban,
+                  show: true,
+                });
+              }}
+            >
+              <FaLockOpen />
+            </span>
+          ) : (
+            <span
+              className="ms-4 btn btn-sm btn-outline-danger"
+              onClick={() => {
+                setUserModalConfig({
+                  id: item.id,
+                  mode: UserModalMode.Ban,
+                  show: true,
+                });
+              }}
+            >
+              <FaLock />
+            </span>
           );
         },
       },
@@ -241,8 +277,8 @@ function Users() {
       <UserModal
         {...userModalConfig}
         onHide={() => setUserModalConfig({ ...userModalConfig, show: false })}
-        onBan={handleBan}
-        onUnban={handleUnban}
+        handleBan={handleBan}
+        handleUnban={handleUnban}
       />
       <div className={"alert alert-primary d-flex justify-content-between"}>
         <h3>

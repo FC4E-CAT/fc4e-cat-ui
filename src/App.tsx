@@ -40,7 +40,7 @@ function App() {
           // Define default options
           className: " ",
           duration: 2000,
-          position: "top-right",
+          position: "top-center",
           style: {
             background: "#363636",
             color: "#fff",
