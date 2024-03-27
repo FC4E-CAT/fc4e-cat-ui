@@ -17,6 +17,9 @@ export function ActorCard({
   description: string;
   disabled?: boolean;
 }) {
+  // Sanitize the title to remove characters not suitable for HTML IDs
+  const sanitizedTitle = title.replace(/[^\w\s]/gi, "").replace(/\s+/g, "_");
+
   // if card is flipped it displays the help text and not the front content
   const [flipped, setFlipped] = useState<boolean>(false);
   const handleFlip = () => {
@@ -25,6 +28,7 @@ export function ActorCard({
 
   return (
     <Card
+      id={`actorCard_${sanitizedTitle}`}
       className="p-2 border-grey shadow-sm mb-2"
       style={{ height: "350px" }}
     >
@@ -43,6 +47,7 @@ export function ActorCard({
               <Card.Title className="d-flex justify-content-between">
                 {title}
                 <span
+                  id={`frontButton_${sanitizedTitle}`}
                   role="button"
                   onClick={handleFlip}
                   className="text-end mb-1"
@@ -55,7 +60,7 @@ export function ActorCard({
             <Card.Footer className="bg-transparent border-0">
               <Link to={link} className="text-decoration-none">
                 <span className="me-2">{linkText}</span>
-                <span role="button">
+                <span role="button" id={`assessmentButton_${sanitizedTitle}`}>
                   <FaExternalLinkAlt />
                 </span>
               </Link>
@@ -68,6 +73,7 @@ export function ActorCard({
               <Card.Title className="d-flex justify-content-between">
                 {title}
                 <span
+                  id={`backButton_${sanitizedTitle}`}
                   role="button"
                   onClick={handleFlip}
                   className="text-end mb-1"
