@@ -359,12 +359,14 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 <>
                   <div className="edit-buttons btn-group shadow">
                     <Link
+                      id={`edit-button-${item.id}`}
                       className="btn btn-secondary cat-action-view-link btn-sm "
                       to={`/assessments/${item.id}`}
                     >
                       <FaEdit />
                     </Link>
                     <Button
+                      id={`download-button-${item.id}`}
                       className="btn btn-secondary cat-action-reject-link btn-sm "
                       onClick={() => {
                         setAsmtNumID(item["id"]);
@@ -373,6 +375,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       <FaDownload />
                     </Button>
                     <Button
+                      id={`delete-button-${item.id}`}
                       className="btn btn-secondary cat-action-reject-link btn-sm "
                       onClick={() => {
                         handleDeleteOpenModal(item);
@@ -557,6 +560,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 <Col className="d-flex justify-content-end filter-div">
                   <InputGroup className="mb-3">
                     <Button
+                      id="apply_filter_button"
                       className="btn btn-success btn centerButton"
                       type="submit"
                     >
@@ -565,6 +569,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   </InputGroup>
                   <InputGroup className="mb-3">
                     <Button
+                      id="clear_filter_button"
                       className="btn btn-primary btn centerButton"
                       type="submit"
                       onClick={() => {
