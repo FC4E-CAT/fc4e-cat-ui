@@ -1,12 +1,12 @@
 /// <reference types="cypress" />
 
 import { getAuthCodeFromLocation } from "./utils";
-
+const backendURL = Cypress.env("backend_url");
 Cypress.Commands.add("updateProfile", (authToken) => {
   cy.fixture("profile").then((profileData: ProfileData) => {
     cy.request({
       method: "PUT",
-      url: "http://localhost:8080/v1/users/profile",
+      url: `${backendURL}/v1/users/profile`,
       body: profileData,
       headers: {
         Accept: "application/json",
@@ -23,7 +23,7 @@ Cypress.Commands.add("createValidation", (authToken) => {
   cy.fixture("validations/validation").then((orgData) => {
     cy.request({
       method: "POST",
-      url: "http://localhost:8080/v1/validations",
+      url: `${backendURL}/v1/validations`,
       body: orgData,
       headers: {
         Accept: "application/json",
@@ -51,7 +51,7 @@ Cypress.Commands.add("approveValidation", (authToken) => {
 
   cy.request({
     method: "PUT",
-    url: `http://localhost:8080/v1/admin/validations/1/update-status`,
+    url: `${backendURL}/v1/admin/validations/1/update-status`,
     body: approveRequestBody,
     headers: {
       Accept: "application/json",

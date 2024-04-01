@@ -1,0 +1,133 @@
+version: "3.8"
+
+services:
+  cypress:
+    image: cypress/base:latest
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ../:/tmp/app
+    command: >
+      /bin/bash -c '
+        cp -r /tmp/app /app
+        cd /app 
+        npm install 
+        cp ./docker-compose/files/cypress/cypress.config.ts ./
+        npm install
+        npx cypress run
+      '
+
+  frontend:
+    image: node:latest
+    depends_on:
+      backend:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ../:/tmp/app
+    command: >
+      /bin/bash -c '
+        cp -r /tmp/app /app
+        cd /app 
+        npm install 
+        cp ./docker-compose/files/frontend/config.json ./src/config.json
+        cp ./docker-compose/files/frontend/keycloak.json ./src/keycloak.json 
+        npm run dev -- --host 0.0.0.0 --port 3000
+      '
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://frontend:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  backend:
+    image: argo.registry:5000/rocky-java-mvn-git
+    environment:
+      QUARKUS_HTTP_CORS_ORIGINS: "http://frontend:3000,http://backend:8080"
+      QUARKUS_OIDC_AUTH_SERVER_URL: http://keycloak:58080/realms/quarkus
+      QUARKUS_OIDC_CREDENTIALS_SECRET: secret
+      QUARKUS_OIDC_CLIENT_ID: backend-service
+      QUARKUS_KEYCLOAK_ADMIN_CLIENT_SERVER_URL: http://keycloak:58080
+      QUARKUS_KEYCLOAK_ADMIN_CLIENT_REALM: quarkus
+      QUARKUS_KEYCLOAK_ADMIN_CLIENT_CLIENT_ID: admin-cli
+      QUARKUS_KEYCLOAK_ADMIN_CLIENT_CLIENT_SECRET: jzm0zlNllvrH4QqJ7dF330n7yNC7wA0b
+      QUARKUS_KEYCLOAK_ADMIN_CLIENT_GRANT_TYPE: CLIENT_CREDENTIALS
+      KEYCLOAK_ADMIN_CLIENT_SEARCH_USER_BY_ATTRIBUTE: voperson_id
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://mysql:3306/cat
+      QUARKUS_DATASOURCE_USERNAME: cat
+      QUARKUS_DATASOURCE_PASSWORD: cat
+      HTML_KEYCLOAK_SERVER_URL: http://keycloak:58080
+      HTML_KEYCLOAK_SERVER_REALM: quarkus
+      HTML_KEYCLOAK_SERVER_CLIENT_ID: frontend-service
+      HTML_KEYCLOAK_SERVER_JAVASCRIPT_ADAPTER: http://keycloak:58080/js/keycloak.js
+      HTML_CAT_OIDC_CLIENT_URL: http://backend:8080/oidc-client
+      HTML_CAT_API_DOCUMENTATION: http://backend:8080/swagger-ui
+    volumes:
+      - $HOME/.m2:/root/.m2
+    command: >
+      /bin/bash -c '
+        git clone -b devel https://github.com/fc4e-cat/fc4e-cat-api
+        cd fc4e-cat-api
+        mvn clean package -Dquarkus.package.type=uber-jar -DskipTests=true
+        java -jar ./api/target/cat-api*.jar
+      '
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:8080 || exit 1"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 30
+      start_period: 40s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.5
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: ["start-dev", "--http-port=58080", "--import-realm"]
+    volumes:
+      - ./files/keycloak:/opt/keycloak/data/import
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "cat /proc/net/tcp | grep '00000000:E2E0 00000000:0000' || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 40s
+
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=cat
+      - MYSQL_USER=cat
+      - MYSQL_PASSWORD=cat
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysql -h localhost -u root -proot -e 'SHOW DATABASES' || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 40s

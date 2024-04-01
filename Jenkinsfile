@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent any
     options {
         checkoutToSubdirectory('cat-ui')
         newContainerPerStage()
@@ -23,8 +23,27 @@ pipeline {
                     '''
             }
         }
+        stage ('ui testing') {
+            steps {
+                echo 'Run docker compose'
+                sh """
+                    cd $WORKSPACE/$PROJECT_DIR
+                    cd docker-compose
+                    docker-compose up --abort-on-container-exit --exit-code-from cypress
+                """
+                
+            }
+        }
     }
     post {
+        always {
+
+            sh '''
+               cd $WORKSPACE/$PROJECT_DIR
+               ls
+            '''
+            junit '**/test-results-*.xml'
+        }
         success {
             script{
                 if ( env.BRANCH_NAME == 'devel' ) {

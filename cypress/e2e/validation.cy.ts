@@ -1,6 +1,7 @@
 /// <reference types="cypress"/>
 
 describe("/validations/request", () => {
+  const backendURL = Cypress.env("backend_url");
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin("identified").as("identifiedTokens");
@@ -8,7 +9,7 @@ describe("/validations/request", () => {
   });
 
   it("creates a validation", () => {
-    cy.intercept("POST", "http://localhost:8080/v1/validations", {
+    cy.intercept("POST", `${backendURL}/v1/validations`, {
       fixture: "validations/validation_review.json",
     }).as("getValidations");
     cy.get(".select__input").click().type("Oxford");
@@ -27,7 +28,7 @@ describe("/validations/request", () => {
   });
 
   it("creates a validation with a custom organisation", () => {
-    cy.intercept("POST", "http://localhost:8080/v1/validations", {
+    cy.intercept("POST", `${backendURL}/v1/validations`, {
       fixture: "validations/validation_review.json",
     }).as("getValidations");
     cy.get("#organisation_source").select("Custom");

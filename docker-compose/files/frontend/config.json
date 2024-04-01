@@ -1,0 +1,6 @@
+{
+  "api": {
+    "base_url": "http://backend:8080",
+    "version": "v1"
+  }
+}

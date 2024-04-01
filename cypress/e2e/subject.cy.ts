@@ -1,4 +1,5 @@
 describe("/subjects", () => {
+  const backendURL = Cypress.env("backend_url");
   before(() => {
     cy.setupValidation("identified");
   });
@@ -6,16 +7,12 @@ describe("/subjects", () => {
     cy.kcLogout();
     cy.kcLogin("identified");
     cy.visit("/subjects");
-    cy.intercept(
-      "GET",
-      "http://localhost:8080/v1/subjects?size=10&page=1&sortby=asc",
-      {
-        fixture: "subjects/subjects",
-      },
-    ).as("getSubjects");
+    cy.intercept("GET", `${backendURL}/v1/subjects?size=10&page=1&sortby=asc`, {
+      fixture: "subjects/subjects",
+    }).as("getSubjects");
   });
   it("deletes a subject", () => {
-    cy.intercept("GET", "http://localhost:8080/v1/subjects/9", {
+    cy.intercept("GET", `${backendURL}/v1/subjects/9`, {
       fixture: "subjects/subject",
     }).as("getSubject");
     cy.get("table")
@@ -34,7 +31,7 @@ describe("/subjects", () => {
     cy.contains("Subject succesfully deleted.").should("be.visible");
   });
   it("edits a subject", () => {
-    cy.intercept("GET", "http://localhost:8080/v1/subjects/9", {
+    cy.intercept("GET", `${backendURL}/v1/subjects/9`, {
       fixture: "subjects/subject",
     }).as("getSubject");
     cy.get("table")
@@ -53,6 +50,7 @@ describe("/subjects", () => {
 });
 
 describe("/subjects?create", () => {
+  const backendURL = Cypress.env("backend_url");
   before(() => {
     cy.setupValidation("identified");
   });
@@ -73,7 +71,7 @@ describe("/subjects?create", () => {
   });
 
   it("creates a subject", () => {
-    cy.intercept("POST", "http://localhost:8080/v1/subjects", {
+    cy.intercept("POST", `${backendURL}/v1/subjects`, {
       fixture: "subjects/subject",
     }).as("postSubject");
     cy.get("#input-info-subject-id").type("subject_test_id");

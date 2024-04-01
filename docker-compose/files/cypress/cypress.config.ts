@@ -14,13 +14,13 @@ export default defineConfig({
     },
   },
   env: {
-    auth_base_url: "http://localhost:58080/",
+    auth_base_url: "http://keycloak:58080/",
     auth_realm: "quarkus",
     auth_client_id: "frontend-service",
-    backend_url: "http://localhost:8080",
+    backend_url: "http://backend:8080",
   },
 
   e2e: {
-    baseUrl: "http://localhost:3000",
+    baseUrl: "http://frontend:3000",
   },
 });

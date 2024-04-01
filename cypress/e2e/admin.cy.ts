@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 describe("admin", () => {
+  const backendURL = Cypress.env("backend_url");
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin("admin").as("admin");
@@ -9,12 +10,12 @@ describe("admin", () => {
   it("accept a validation request", () => {
     cy.intercept(
       "GET",
-      "http://localhost:8080/v1/admin/validations?size=10&page=1&sortby=asc",
+      `${backendURL}/v1/admin/validations?size=10&page=1&sortby=asc`,
       {
         fixture: "validations/validations.json",
       },
     ).as("getValidations");
-    cy.intercept("GET", "http://localhost:8080/v1/admin/validations/1", {
+    cy.intercept("GET", `${backendURL}/v1/admin/validations/1`, {
       fixture: "validations/validation.json",
     });
     // Navigate to validations list for admins
@@ -28,15 +29,11 @@ describe("admin", () => {
     cy.get(".cat-action-approve-link").click();
     // Click the approve button on the validation's page.
     cy.get(".btn-success").click();
+    cy.intercept("PUT", `${backendURL}/v1/admin/validations/1/update-status`, {
+      fixture: "validations/validation_approved.json",
+    }).as("updateStatus");
     cy.intercept(
-      "PUT",
-      "http://localhost:8080/v1/admin/validations/1/update-status",
-      {
-        fixture: "validations/validation_approved.json",
-      },
-    ).as("updateStatus");
-    cy.intercept(
-      "http://localhost:8080/v1/admin/validations?size=10&page=1&sortby=asc",
+      `${backendURL}/v1/admin/validations?size=10&page=1&sortby=asc`,
       {
         fixture: "validations/validations_approved.json",
       },
@@ -50,7 +47,7 @@ describe("admin", () => {
     cy.intercept(
       {
         method: "GET",
-        url: "http://localhost:8080/v1/admin/validations?size=10&page=1&sortby=asc",
+        url: `${backendURL}/v1/admin/validations?size=10&page=1&sortby=asc`,
       },
       (req) => {
         if (req.alias === "rejectedValidations") {
@@ -71,11 +68,9 @@ describe("admin", () => {
     cy.get(".cat-action-reject-link").click();
     // Click the approve button on the validation's page.
     cy.get(".btn-danger").click();
-    cy.intercept(
-      "PUT",
-      "http://localhost:8080/v1/admin/validations/1/update-status",
-      { fixture: "validations/validations_rejected.json" },
-    );
+    cy.intercept("PUT", `${backendURL}/v1/admin/validations/1/update-status`, {
+      fixture: "validations/validations_rejected.json",
+    });
 
     cy.contains("Validation successfully rejected.");
     cy.url().should("include", "/validations");
