@@ -205,7 +205,6 @@ function ValidationDetails(props: ValidationProps) {
               <strong>Id: </strong>
               {validation?.organisation_source === "ROR" ? (
                 <>
-                  <span className="text-muted">ror.org/</span>
                   <a
                     target="_blank"
                     rel="noreferrer"
@@ -213,6 +212,7 @@ function ValidationDetails(props: ValidationProps) {
                   >
                     {validation?.organisation_id}
                   </a>
+                  <span> - [ROR]</span>
                 </>
               ) : (
                 <>
