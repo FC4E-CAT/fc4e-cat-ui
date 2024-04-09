@@ -210,3 +210,9 @@ export interface AssessmentFiltersType {
   subject_name: string;
   subject_type: string;
 }
+
+export enum AssessmentEditMode {
+  Create = "create",
+  Edit = "edit",
+  Import = "import",
+}
