@@ -24,6 +24,7 @@ import AssessmentEdit from "./pages/assessments/AssessmentEdit";
 import { Toaster } from "react-hot-toast";
 import Subjects from "./pages/Subjects";
 import About from "./pages/About";
+import { AssessmentEditMode } from "./types";
 
 const queryClient = new QueryClient();
 
@@ -70,22 +71,46 @@ function App() {
                     path="/assessments/create/:valID"
                     element={<ProtectedRoute />}
                   >
-                    <Route index element={<AssessmentEdit />} />
+                    <Route
+                      index
+                      element={
+                        <AssessmentEdit mode={AssessmentEditMode.Create} />
+                      }
+                    />
+                  </Route>
+                  <Route
+                    path="/assessments/import"
+                    element={<ProtectedRoute />}
+                  >
+                    {/* Use AssessmentEdit component with mode = import */}
+                    <Route
+                      index
+                      element={
+                        <AssessmentEdit mode={AssessmentEditMode.Import} />
+                      }
+                    />
                   </Route>
                   <Route
                     path="/assessments/create/"
                     element={<ProtectedRoute />}
                   >
-                    <Route index element={<AssessmentEdit />} />
+                    <Route
+                      index
+                      element={
+                        <AssessmentEdit mode={AssessmentEditMode.Create} />
+                      }
+                    />
                   </Route>
                   <Route
                     path="/assessments/:asmtID"
                     element={<ProtectedRoute />}
                   >
-                    {/* Use AssessmentEdit component with create mode = false to configure the view for update */}
+                    {/* Use AssessmentEdit component with mode = edit */}
                     <Route
                       index
-                      element={<AssessmentEdit createMode={false} />}
+                      element={
+                        <AssessmentEdit mode={AssessmentEditMode.Edit} />
+                      }
                     />
                   </Route>
                   <Route path="/assess" element={<Assessments />} />

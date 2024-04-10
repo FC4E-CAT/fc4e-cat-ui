@@ -16,6 +16,7 @@ import {
   FaFilter,
   FaTimes,
   FaDownload,
+  FaFileImport,
 } from "react-icons/fa";
 import {
   Collapse,
@@ -462,12 +463,20 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             </Button>
           </>
           {!listPublic && (
-            <Link
-              to="/assessments/create"
-              className="btn btn-light border-black mx-3"
-            >
-              <FaPlus /> Create New
-            </Link>
+            <>
+              <Link
+                to="/assessments/create"
+                className="btn btn-light border-black ms-3"
+              >
+                <FaPlus /> Create New
+              </Link>
+              <Link
+                to="/assessments/import"
+                className="btn btn-light border-black ms-3"
+              >
+                <FaFileImport /> Import
+              </Link>
+            </>
           )}
         </div>
       </div>

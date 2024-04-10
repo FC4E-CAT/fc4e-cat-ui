@@ -16,11 +16,16 @@ import {
   ValidationResponse,
   ActorOrganisationMapping,
   AlertInfo,
+  AssessmentEditMode,
 } from "@/types";
 import { useParams } from "react-router";
-import { Card, Nav, Tab, Button } from "react-bootstrap";
+import { Card, Nav, Tab, Button, Form } from "react-bootstrap";
 import { AssessmentInfo, CriteriaTabs } from "@/pages/assessments/components";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaExclamationCircle,
+  FaFileImport,
+} from "react-icons/fa";
 import { evalAssessment, evalMetric } from "@/utils";
 
 import {
@@ -44,11 +49,13 @@ const allowedActors = {
 };
 
 type AssessmentEditProps = {
-  createMode?: boolean;
+  mode: AssessmentEditMode;
 };
 
 /** AssessmentEdit page that holds the main body of an assessment */
-const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
+const AssessmentEdit = ({
+  mode = AssessmentEditMode.Create,
+}: AssessmentEditProps) => {
   const [reqFields, setReqFields] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState(1);
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -140,14 +147,20 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
     ActorOrganisationMapping[]
   >([]);
   useEffect(() => {
+    console.log(
+      "$$$",
+      assessment?.actor.id,
+      mode === AssessmentEditMode.Import && Boolean(assessment?.actor.id),
+    );
     const filt = validations
       // We only allow assessment creation for APPROVED validations and
       // specific actors
-      .filter(
-        (v: ValidationResponse) =>
-          v["status"] === "APPROVED" &&
-          Object.values(allowedActors).includes(v["actor_id"]),
-      )
+      .filter((v: ValidationResponse) => {
+        return mode === AssessmentEditMode.Import && assessment?.actor.id
+          ? v["status"] === "APPROVED" && v["actor_id"] === assessment?.actor.id
+          : v["status"] === "APPROVED" &&
+              Object.values(allowedActors).includes(v["actor_id"]);
+      })
       .map((filtered: ValidationResponse) => {
         return {
           actor_name: filtered.actor_name,
@@ -159,7 +172,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       })
       .sort((a, b) => (a.actor_id > b.actor_id ? 1 : -1));
     setActorsOrgsMap(filt);
-  }, [validations]);
+  }, [validations, mode, assessment]);
 
   const mutationCreateAssessment = useCreateAssessment(keycloak?.token || "");
 
@@ -189,6 +202,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   }
 
   function handleCreateAssessment() {
+    console.log("template", templateId, "val", vldid);
     if (templateId && vldid && assessment && checkRequiredFields(assessment)) {
       const promise = mutationCreateAssessment
         .mutateAsync({
@@ -318,30 +332,46 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
   );
 
   useEffect(() => {
-    setAssessment((prev_assessment) => ({
-      ...templateData!,
-      ...prev_assessment!,
-      actor: {
-        name: actor?.name || templateData?.actor.name || "",
-        id: actor?.id || templateData?.actor.id || 0,
-      },
-      organisation: {
-        name: organisation?.name || templateData?.organisation.name || "",
-        id: organisation?.id || templateData?.organisation.id || "",
-      },
-      principles: templateData?.principles || prev_assessment?.principles || [],
-    }));
+    if (mode === AssessmentEditMode.Import) {
+      setAssessment((prev_assessment) => ({
+        ...prev_assessment!,
+        actor: {
+          name: actor?.name || templateData?.actor.name || "",
+          id: actor?.id || templateData?.actor.id || 0,
+        },
+        organisation: {
+          name: organisation?.name || templateData?.organisation.name || "",
+          id: organisation?.id || templateData?.organisation.id || "",
+        },
+      }));
+    } else {
+      setAssessment((prev_assessment) => ({
+        ...templateData!,
+        ...prev_assessment!,
+        actor: {
+          name: actor?.name || templateData?.actor.name || "",
+          id: actor?.id || templateData?.actor.id || 0,
+        },
+        organisation: {
+          name: organisation?.name || templateData?.organisation.name || "",
+          id: organisation?.id || templateData?.organisation.id || "",
+        },
+        principles:
+          templateData?.principles || prev_assessment?.principles || [],
+      }));
+    }
+
     setWizardTabActive(
       (actor?.id && organisation?.id) ||
         (templateData?.actor.id && templateData?.organisation.id)
         ? true
         : false,
     );
-  }, [actor, organisation, templateData]);
+  }, [actor, organisation, templateData, mode]);
 
   // Handle the resetting of assessment templates
   useEffect(() => {
-    if (createMode && qTemplate.data) {
+    if (mode !== AssessmentEditMode.Edit && qTemplate.data) {
       const data = qTemplate.data?.template_doc;
       data.organisation.id = qValidation.data?.organisation_id || "";
       data.organisation.name = qValidation.data?.organisation_name || "";
@@ -349,11 +379,11 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       setTemplateData(data);
       setTemplateID(qTemplate.data.id);
       // if not on create mode load assessment itself
-    } else if (createMode === false && qAssessment.data) {
+    } else if (mode === AssessmentEditMode.Edit && qAssessment.data) {
       const data = qAssessment.data.assessment_doc;
       setTemplateData(data);
     }
-  }, [qTemplate.data, qValidation, createMode, qAssessment.data]);
+  }, [qTemplate.data, qValidation, mode, qAssessment.data]);
 
   function handleSubjectChange(subject: AssessmentSubject) {
     if (assessment) {
@@ -372,6 +402,26 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
       });
     }
   }
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        try {
+          const contents = JSON.parse(reader.result as string);
+          contents.assessment_doc.id = undefined;
+          contents.assessment_doc.timestamp = "";
+          setAssessment(contents.assessment_doc);
+          console.log("Assessment set");
+        } catch (error) {
+          console.error("Error parsing JSON file:", error);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
 
   function handleCriterionChange(
     principleID: string,
@@ -449,12 +499,16 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
 
   // evaluate the assessment
   const evalResult = evalAssessment(assessment);
+  const extraTab = mode === AssessmentEditMode.Import ? 1 : 0;
+  let importDone = true;
+  if (mode === AssessmentEditMode.Import) {
+    importDone = Boolean(assessment?.actor?.id);
+  }
 
   return (
     <>
       <h3 className="cat-view-heading">
-        <FaCheckCircle className="me-2" />{" "}
-        {(createMode ? "create" : "edit") + " assessment"}
+        <FaCheckCircle className="me-2" /> {`${mode} assessment`}
         {assessment && assessment.id && (
           <span className="badge bg-secondary ms-2">id: {assessment?.id}</span>
         )}
@@ -471,10 +525,27 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
         <Card className="mb-3 mt-3">
           <Card.Header>
             <Nav variant="pills">
-              <Nav.Item className="bg-light border rounded me-2">
-                <Nav.Link eventKey="step-1">
+              {mode === AssessmentEditMode.Import && (
+                <Nav.Item className="bg-light border rounded me-2">
+                  <Nav.Link eventKey="step-1">
+                    <span className="badge text-black bg-light me-2">
+                      Step 1.
+                    </span>{" "}
+                    Import File
+                  </Nav.Link>
+                </Nav.Item>
+              )}
+              <Nav.Item
+                className={`bg-light border rounded me-2 ${
+                  !importDone ? "opacity-25" : ""
+                }`}
+              >
+                <Nav.Link
+                  eventKey={`step-${1 + extraTab}`}
+                  disabled={!importDone}
+                >
                   <span className="badge text-black bg-light me-2">
-                    Step 1.
+                    Step {1 + extraTab}.
                   </span>{" "}
                   Actor
                 </Nav.Link>
@@ -484,9 +555,12 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                   !wizardTabActive ? "opacity-25" : ""
                 }`}
               >
-                <Nav.Link eventKey="step-2" disabled={!wizardTabActive}>
+                <Nav.Link
+                  eventKey={`step-${2 + extraTab}`}
+                  disabled={!wizardTabActive}
+                >
                   <span className="badge text-black bg-light me-2">
-                    Step 2.
+                    Step {2 + extraTab}.
                   </span>{" "}
                   Submission
                   {reqFields.length > 0 && (
@@ -499,9 +573,12 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                   !wizardTabActive ? "opacity-25" : ""
                 }`}
               >
-                <Nav.Link eventKey="step-3" disabled={!wizardTabActive}>
+                <Nav.Link
+                  eventKey={`step-${3 + extraTab}`}
+                  disabled={!wizardTabActive}
+                >
                   <span className="badge text-black bg-light me-2">
-                    Step 3.
+                    Step {3 + extraTab}.
                   </span>{" "}
                   Assessment
                 </Nav.Link>
@@ -510,7 +587,27 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
           </Card.Header>
           <Card.Body>
             <Tab.Content className="p-2">
-              <Tab.Pane className="text-black" eventKey="step-1">
+              {mode === AssessmentEditMode.Import && (
+                <Tab.Pane className="text-black" eventKey={"step-1"}>
+                  <div>
+                    <h5>
+                      <FaFileImport className="me-2 mt-2" /> Select File for
+                      Import
+                    </h5>
+                    <Form.Group controlId="formFile" className="mb-3">
+                      <Form.Control
+                        type="file"
+                        accept=".json"
+                        onChange={handleImport}
+                      />
+                    </Form.Group>
+                  </div>
+                </Tab.Pane>
+              )}
+              <Tab.Pane
+                className="text-black"
+                eventKey={`step-${1 + extraTab}`}
+              >
                 <AssessmentSelectActor
                   actorsOrgsMap={actorsOrgsMap}
                   actorId={actor?.id}
@@ -522,7 +619,10 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                   onSelectActor={handleSelectActor}
                 />
               </Tab.Pane>
-              <Tab.Pane className="text-black" eventKey="step-2">
+              <Tab.Pane
+                className="text-black"
+                eventKey={`step-${2 + extraTab}`}
+              >
                 <AssessmentInfo
                   id={assessment?.id}
                   name={assessment?.name || ""}
@@ -545,7 +645,10 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
                   reqFields={reqFields}
                 />
               </Tab.Pane>
-              <Tab.Pane className="text-black" eventKey="step-3">
+              <Tab.Pane
+                className="text-black"
+                eventKey={`step-${3 + extraTab}`}
+              >
                 {evalResult && assessment?.result && (
                   <AssessmentEvalStats
                     evalResult={evalResult}
@@ -589,7 +692,7 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
             </div>
             {/* Add SAVE button here and cancel */}
             <div>
-              {createMode ? (
+              {mode !== AssessmentEditMode.Edit ? (
                 <Button
                   id="create_assessment_button"
                   disabled={!wizardTabActive}
@@ -633,7 +736,11 @@ const AssessmentEdit = ({ createMode = true }: AssessmentEditProps) => {
               )}
               <Link
                 className="btn btn-secondary ms-5 px-4"
-                to={createMode ? "/assess" : "/assessments"}
+                to={
+                  mode === AssessmentEditMode.Create
+                    ? "/assess"
+                    : "/assessments"
+                }
               >
                 Close
               </Link>
