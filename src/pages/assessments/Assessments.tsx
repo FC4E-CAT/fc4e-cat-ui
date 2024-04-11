@@ -72,25 +72,26 @@ function Assessments() {
           {authenticated && (
             <div className="d-flex justify-content-end my-2">
               <Link
+                id="view_assessments_button"
+                to="/assessments"
+                className="btn btn-light border-black me-3"
+              >
+                <FaList />{" "}
+                <span className="align-middle">View your Assessments</span>
+              </Link>
+              <Link
                 id="assessment_form_button"
                 to={`/assessments/create`}
-                className="btn btn-light border-black me-2"
+                className="btn btn-light border-black me-3"
               >
-                <FaPlus /> Create New
+                <FaPlus /> <span className="align-middle">Create New</span>
               </Link>
               <Link
                 id="assessment_form_button"
                 to={`/assessments/import`}
-                className="btn btn-light border-black ms-2 me-2"
+                className="btn btn-light border-black"
               >
-                <FaFileImport /> Import
-              </Link>
-              <Link
-                id="view_assessments_button"
-                to="/assessments"
-                className="btn btn-light border-black ms-4"
-              >
-                <FaList /> View Your Assessments
+                <FaFileImport /> <span className="align-middle">Import</span>
               </Link>
             </div>
           )}
