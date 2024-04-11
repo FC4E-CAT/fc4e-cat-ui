@@ -25,6 +25,8 @@ import { CriterionProgress } from "./CriterionProgress";
 type CriteriaTabsProps = {
   principles: Principle[];
   resetActiveTab: boolean;
+  handleGuide(id: string, title: string, text: string): void;
+  handleGuideClose(): void;
   onResetActiveTab(): void;
   onTestChange(
     principleId: string,
@@ -65,7 +67,13 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
     principle.criteria.forEach((criterion) => {
       navs.push(
         <Nav.Item key={criterion.id} className="cat-crit-tab">
-          <Nav.Link eventKey={criterion.id} className="p-0">
+          <Nav.Link
+            eventKey={criterion.id}
+            className="p-0"
+            onClick={() => {
+              props.handleGuideClose();
+            }}
+          >
             <div className="cat-tab-inner p-3 ">
               <div className="d-flex">
                 <h6
@@ -113,6 +121,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   onTestChange={props.onTestChange}
                   criterionId={criterion.id}
                   principleId={principle.id}
+                  handleGuide={props.handleGuide}
                 />
               </div>
             </div>,
@@ -126,6 +135,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   onTestChange={props.onTestChange}
                   criterionId={criterion.id}
                   principleId={principle.id}
+                  handleGuide={props.handleGuide}
                 />
               </div>
             </div>,

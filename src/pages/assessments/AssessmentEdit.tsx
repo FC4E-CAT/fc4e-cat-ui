@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useContext, useCallback } from "react";
-
+import Markdown from "react-markdown";
 import { AuthContext } from "@/auth";
 import {
   useGetProfile,
@@ -19,12 +19,23 @@ import {
   AssessmentEditMode,
 } from "@/types";
 import { useParams } from "react-router";
-import { Card, Nav, Tab, Button, Form } from "react-bootstrap";
+import {
+  Card,
+  Nav,
+  Tab,
+  Button,
+  Form,
+  Alert,
+  Offcanvas,
+} from "react-bootstrap";
 import { AssessmentInfo, CriteriaTabs } from "@/pages/assessments/components";
 import {
   FaCheckCircle,
+  FaDownload,
   FaExclamationCircle,
   FaFileImport,
+  FaHandPointRight,
+  FaTimesCircle,
 } from "react-icons/fa";
 import { evalAssessment, evalMetric } from "@/utils";
 
@@ -52,6 +63,13 @@ type AssessmentEditProps = {
   mode: AssessmentEditMode;
 };
 
+type Guide = {
+  id: string;
+  title: string;
+  text: string;
+  show: boolean;
+};
+
 /** AssessmentEdit page that holds the main body of an assessment */
 const AssessmentEdit = ({
   mode = AssessmentEditMode.Create,
@@ -72,6 +90,30 @@ const AssessmentEdit = ({
   const [templateData, setTemplateData] = useState<Assessment>();
   const { valID, asmtID } = useParams();
 
+  // guidance state
+  const [guide, setGuide] = useState<Guide>({
+    id: "",
+    title: "",
+    text: "",
+    show: false,
+  });
+
+  const handleGuideClose = () =>
+    setGuide({ id: "", title: "", text: "", show: false });
+
+  const handleGuide = (id: string, title: string, text: string) => {
+    if (id == guide.id) {
+      setGuide({ id: "", title: "", text: "", show: false });
+    } else {
+      setGuide({
+        id: id,
+        text: text,
+        title: title,
+        show: true,
+      });
+    }
+  };
+
   const navigate = useNavigate();
   // const [actorId, setActorId] = useState<number>();
   // for the time being get the only one assessment template supported
@@ -85,6 +127,7 @@ const AssessmentEdit = ({
 
   const validationID = valID !== undefined ? valID : "";
   const [vldid, setVldid] = useState<string>();
+  const [importInfo, setImportInfo] = useState<Assessment>();
   const qValidation = useGetValidationDetails({
     validation_id: vldid!,
     token: keycloak?.token || "",
@@ -147,17 +190,13 @@ const AssessmentEdit = ({
     ActorOrganisationMapping[]
   >([]);
   useEffect(() => {
-    console.log(
-      "$$$",
-      assessment?.actor.id,
-      mode === AssessmentEditMode.Import && Boolean(assessment?.actor.id),
-    );
     const filt = validations
       // We only allow assessment creation for APPROVED validations and
       // specific actors
       .filter((v: ValidationResponse) => {
-        return mode === AssessmentEditMode.Import && assessment?.actor.id
-          ? v["status"] === "APPROVED" && v["actor_id"] === assessment?.actor.id
+        return mode === AssessmentEditMode.Import && importInfo?.actor?.id
+          ? v["status"] === "APPROVED" &&
+              v["actor_id"] === importInfo?.actor?.id
           : v["status"] === "APPROVED" &&
               Object.values(allowedActors).includes(v["actor_id"]);
       })
@@ -172,7 +211,7 @@ const AssessmentEdit = ({
       })
       .sort((a, b) => (a.actor_id > b.actor_id ? 1 : -1));
     setActorsOrgsMap(filt);
-  }, [validations, mode, assessment]);
+  }, [validations, mode, assessment, importInfo]);
 
   const mutationCreateAssessment = useCreateAssessment(keycloak?.token || "");
 
@@ -202,7 +241,6 @@ const AssessmentEdit = ({
   }
 
   function handleCreateAssessment() {
-    console.log("template", templateId, "val", vldid);
     if (templateId && vldid && assessment && checkRequiredFields(assessment)) {
       const promise = mutationCreateAssessment
         .mutateAsync({
@@ -242,7 +280,10 @@ const AssessmentEdit = ({
   }
 
   function handleNextTab() {
-    if (activeTab < 3) {
+    if (
+      (mode === AssessmentEditMode.Import && activeTab < 4) ||
+      activeTab < 3
+    ) {
       handleChangeTab(activeTab + 1);
     }
   }
@@ -411,10 +452,8 @@ const AssessmentEdit = ({
       reader.onload = () => {
         try {
           const contents = JSON.parse(reader.result as string);
-          contents.assessment_doc.id = undefined;
-          contents.assessment_doc.timestamp = "";
-          setAssessment(contents.assessment_doc);
-          console.log("Assessment set");
+          setImportInfo(contents);
+          setAssessment({ ...contents, id: undefined, timestamp: "" });
         } catch (error) {
           console.error("Error parsing JSON file:", error);
         }
@@ -502,11 +541,32 @@ const AssessmentEdit = ({
   const extraTab = mode === AssessmentEditMode.Import ? 1 : 0;
   let importDone = true;
   if (mode === AssessmentEditMode.Import) {
-    importDone = Boolean(assessment?.actor?.id);
+    importDone = Boolean(importInfo?.actor?.id);
   }
+
+  const nextEnabled =
+    mode === AssessmentEditMode.Import
+      ? importDone
+        ? activeTab === 1 || (wizardTabActive && activeTab <= 3)
+        : false
+      : wizardTabActive && activeTab < 3;
 
   return (
     <>
+      <Offcanvas
+        show={guide.show}
+        onHide={handleGuideClose}
+        scroll={true}
+        placement="end"
+        backdrop={false}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>{guide.title}</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <Markdown>{guide.text}</Markdown>
+        </Offcanvas.Body>
+      </Offcanvas>
       <h3 className="cat-view-heading">
         <FaCheckCircle className="me-2" /> {`${mode} assessment`}
         {assessment && assessment.id && (
@@ -519,6 +579,7 @@ const AssessmentEdit = ({
         onSelect={(key) => {
           if (key) {
             handleChangeTab(parseInt(key.replace("step-", "")) || 1);
+            handleGuideClose();
           }
         }}
       >
@@ -590,10 +651,40 @@ const AssessmentEdit = ({
               {mode === AssessmentEditMode.Import && (
                 <Tab.Pane className="text-black" eventKey={"step-1"}>
                   <div>
-                    <h5>
-                      <FaFileImport className="me-2 mt-2" /> Select File for
-                      Import
-                    </h5>
+                    <div>
+                      CAT Toolkit instances give the ability to{" "}
+                      <em className="text-underline">export</em> and{" "}
+                      <em className="text-underline">import</em> Assessments as{" "}
+                      <code className="text-muted mx-2">*.json</code> format
+                      files that adhere to a specific schema.
+                    </div>
+
+                    <div>
+                      <em className="ms-4 text-muted mb-3">
+                        <small>
+                          <FaHandPointRight /> You can export an existing
+                          assessment by going to{" "}
+                          <Link to="/assessments">your assement list</Link> and
+                          clicking the <FaDownload className="text-muted" />{" "}
+                          button in the actions column
+                        </small>
+                      </em>
+                    </div>
+
+                    <div className="mt-1">
+                      You can import an External Assessment that exists as a
+                      json file in your filesystem and use it as a basis to
+                      create a new one.
+                    </div>
+
+                    <div className="mt-4">
+                      {" "}
+                      <FaFileImport className="me-2" />{" "}
+                      <strong className="align-middle">
+                        Select External Assessment file (*.json) for importing:
+                      </strong>{" "}
+                    </div>
+
                     <Form.Group controlId="formFile" className="mb-3">
                       <Form.Control
                         type="file"
@@ -601,6 +692,76 @@ const AssessmentEdit = ({
                         onChange={handleImport}
                       />
                     </Form.Group>
+                    {importDone && importInfo !== undefined && (
+                      <>
+                        <Alert variant="success">
+                          <div>
+                            <FaCheckCircle className="me-2" />
+                            <strong className="align-middle">
+                              Valid assessment imported
+                            </strong>
+                          </div>
+                          <hr />
+                          {importInfo.timestamp && (
+                            <div>
+                              <small>
+                                <strong>timestamp:</strong>{" "}
+                                {importInfo.timestamp}
+                              </small>
+                            </div>
+                          )}
+                          {importInfo.id && (
+                            <div>
+                              <small>
+                                <strong>id:</strong> {importInfo.id}
+                              </small>
+                            </div>
+                          )}
+                          {importInfo.name && (
+                            <div>
+                              <small>
+                                <strong>name:</strong> {importInfo.name}
+                              </small>
+                            </div>
+                          )}
+                          {importInfo.actor && (
+                            <div>
+                              <small>
+                                <strong>actor:</strong> {importInfo.actor.name}{" "}
+                                - [id: {importInfo.actor.id}]
+                              </small>
+                            </div>
+                          )}
+                          {importInfo.organisation && (
+                            <div>
+                              <small>
+                                <strong>organisation:</strong>{" "}
+                                {importInfo?.organisation?.name} - [id:{" "}
+                                {importInfo?.organisation?.id}]
+                              </small>
+                            </div>
+                          )}
+                        </Alert>
+                        <div>
+                          Please proceed to the next step to select Actor
+                        </div>
+                      </>
+                    )}
+                    {!importDone && importInfo !== undefined && (
+                      <>
+                        <Alert variant="danger">
+                          <div>
+                            <FaTimesCircle className="me-2" />
+                            <span className="align-middle">
+                              <strong className="me-2">
+                                Invalid Assessment!
+                              </strong>
+                              - Please try to import a different file...
+                            </span>
+                          </div>
+                        </Alert>
+                      </>
+                    )}
                   </div>
                 </Tab.Pane>
               )}
@@ -631,8 +792,8 @@ const AssessmentEdit = ({
                     templateData?.actor || { id: 0, name: "" }
                   }
                   type={assessment?.assessment_type?.name || ""}
-                  org={assessment?.organisation.name || ""}
-                  orgId={assessment?.organisation.id || ""}
+                  org={assessment?.organisation?.name || ""}
+                  orgId={assessment?.organisation?.id || ""}
                   subject={
                     assessment?.subject ||
                     templateData?.subject || { id: "", name: "", type: "" }
@@ -660,6 +821,8 @@ const AssessmentEdit = ({
                   resetActiveTab={resetCriterionTab}
                   onTestChange={handleCriterionChange}
                   onResetActiveTab={handleResetCriterionTabComplete}
+                  handleGuide={handleGuide}
+                  handleGuideClose={handleGuideClose}
                 />
               </Tab.Pane>
             </Tab.Content>
@@ -680,9 +843,9 @@ const AssessmentEdit = ({
 
               <Button
                 id="next-button"
-                disabled={activeTab > 2 || !wizardTabActive}
+                disabled={!nextEnabled}
                 className={`me-2 px-5 border-black ${
-                  activeTab > 2 || !wizardTabActive ? "opacity-25" : ""
+                  !nextEnabled ? "opacity-25" : ""
                 }`}
                 variant="light"
                 onClick={handleNextTab}

@@ -136,11 +136,11 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   useEffect(() => {
     if (qAssessment.data) {
       const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-        JSON.stringify(qAssessment.data, null, 2),
+        JSON.stringify(qAssessment.data.assessment_doc, null, 2),
       )}`;
       const link = document.createElement("a");
       link.href = jsonString;
-      link.download = `${qAssessment.data?.id}.json`;
+      link.download = `${qAssessment.data.assessment_doc.id}.json`;
 
       link.click();
     }
@@ -232,9 +232,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             cell: (info) => (
               <span className="cat-date-cell">
                 {String(info.getValue()).split(" ")[0]}
-                <span className="ms-1 cat-full-date-info">
-                  <FaInfoCircle title={info.getValue()} />
-                </span>
               </span>
             ),
             header: () => <span>Created On</span>,
@@ -282,7 +279,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       : [
           {
             accessorKey: "name",
-            header: () => <span>Id</span>,
+            header: () => <span>Name</span>,
             cell: (info) => info.getValue(),
             enableColumnFilter: false,
           },
@@ -468,13 +465,13 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 to="/assessments/create"
                 className="btn btn-light border-black ms-3"
               >
-                <FaPlus /> Create New
+                <FaPlus /> <span className="align-middle">Create New</span>
               </Link>
               <Link
                 to="/assessments/import"
                 className="btn btn-light border-black ms-3"
               >
-                <FaFileImport /> Import
+                <FaFileImport /> <span className="align-middle">Import</span>
               </Link>
             </>
           )}
