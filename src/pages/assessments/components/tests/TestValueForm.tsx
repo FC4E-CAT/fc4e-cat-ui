@@ -6,13 +6,13 @@
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { AssessmentTest, TestValue } from "@/types";
-import { useState } from "react";
-import { FaCaretLeft, FaCaretRight, FaRegQuestionCircle } from "react-icons/fa";
+import { FaRegQuestionCircle } from "react-icons/fa";
 
 interface AssessmentTestProps {
   test: TestValue;
   principleId: string;
   criterionId: string;
+  handleGuide(id: string, title: string, text: string): void;
   onTestChange(
     principleId: string,
     criterionId: string,
@@ -26,8 +26,6 @@ enum TestValueEventType {
 }
 
 export const TestValueForm = (props: AssessmentTestProps) => {
-  const [showHelp, setShowHelp] = useState(false);
-
   const handleValueChange = (
     eventType: TestValueEventType,
     event: React.ChangeEvent<HTMLInputElement>,
@@ -78,30 +76,26 @@ export const TestValueForm = (props: AssessmentTestProps) => {
               <span className="me-4">{props.test.id}</span>
               {props.test.name}
             </small>
+            <Button
+              className="ms-2"
+              variant="light"
+              size="sm"
+              onClick={() => {
+                //setShowHelp(!showHelp);
+                props.handleGuide(
+                  props.test.id + props.test.guidance?.id || " ",
+                  "Guidance " + props.test.guidance?.id || "",
+                  props.test.guidance?.description || "No guidance Available",
+                );
+              }}
+            >
+              <span>
+                <FaRegQuestionCircle />
+              </span>
+            </Button>
           </h6>
         </Col>
-        <Col xs={3} className="text-end">
-          <Button
-            className="mb-2"
-            variant="light"
-            size="sm"
-            onClick={() => {
-              setShowHelp(!showHelp);
-            }}
-          >
-            {showHelp ? (
-              <span>
-                <FaCaretRight />
-                <FaRegQuestionCircle />
-              </span>
-            ) : (
-              <span>
-                <FaCaretLeft />
-                <FaRegQuestionCircle />
-              </span>
-            )}
-          </Button>
-        </Col>
+        <Col xs={1} className="text-start"></Col>
       </Row>
 
       <Row>
@@ -170,16 +164,6 @@ export const TestValueForm = (props: AssessmentTestProps) => {
             </div> */}
           </Form>
         </Col>
-
-        {/* Show guidance */}
-        {showHelp && props.test.guidance && (
-          <Col className="border-start px-4 mb-2 ms-2">
-            <h3>Guidance {props.test.guidance.id}</h3>
-            <p style={{ whiteSpace: "pre-line" }}>
-              {props.test.guidance.description}
-            </p>
-          </Col>
-        )}
       </Row>
     </div>
   );
