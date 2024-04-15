@@ -598,7 +598,7 @@ const AssessmentEdit = ({
                 <Tab.Pane className="text-black" eventKey={"step-1"}>
                   <div>
                     <div>
-                      CAT Toolkit instances give the ability to{" "}
+                      CAT Toolkit gives the ability to{" "}
                       <em className="text-underline">export</em> and{" "}
                       <em className="text-underline">import</em> Assessments as{" "}
                       <code className="text-muted mx-2">*.json</code> format
