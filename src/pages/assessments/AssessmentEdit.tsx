@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useContext, useCallback } from "react";
-
+import Markdown from "react-markdown";
 import { AuthContext } from "@/auth";
 import {
   useGetProfile,
@@ -19,7 +19,15 @@ import {
   AssessmentEditMode,
 } from "@/types";
 import { useParams } from "react-router";
-import { Card, Nav, Tab, Button, Form, Alert } from "react-bootstrap";
+import {
+  Card,
+  Nav,
+  Tab,
+  Button,
+  Form,
+  Alert,
+  Offcanvas,
+} from "react-bootstrap";
 import { AssessmentInfo, CriteriaTabs } from "@/pages/assessments/components";
 import {
   FaCheckCircle,
@@ -55,6 +63,13 @@ type AssessmentEditProps = {
   mode: AssessmentEditMode;
 };
 
+type Guide = {
+  id: string;
+  title: string;
+  text: string;
+  show: boolean;
+};
+
 /** AssessmentEdit page that holds the main body of an assessment */
 const AssessmentEdit = ({
   mode = AssessmentEditMode.Create,
@@ -74,6 +89,30 @@ const AssessmentEdit = ({
   });
   const [templateData, setTemplateData] = useState<Assessment>();
   const { valID, asmtID } = useParams();
+
+  // guidance state
+  const [guide, setGuide] = useState<Guide>({
+    id: "",
+    title: "",
+    text: "",
+    show: false,
+  });
+
+  const handleGuideClose = () =>
+    setGuide({ id: "", title: "", text: "", show: false });
+
+  const handleGuide = (id: string, title: string, text: string) => {
+    if (id == guide.id) {
+      setGuide({ id: "", title: "", text: "", show: false });
+    } else {
+      setGuide({
+        id: id,
+        text: text,
+        title: title,
+        show: true,
+      });
+    }
+  };
 
   const navigate = useNavigate();
   // const [actorId, setActorId] = useState<number>();
@@ -514,6 +553,20 @@ const AssessmentEdit = ({
 
   return (
     <>
+      <Offcanvas
+        show={guide.show}
+        onHide={handleGuideClose}
+        scroll={true}
+        placement="end"
+        backdrop={false}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>{guide.title}</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <Markdown>{guide.text}</Markdown>
+        </Offcanvas.Body>
+      </Offcanvas>
       <h3 className="cat-view-heading">
         <FaCheckCircle className="me-2" /> {`${mode} assessment`}
         {assessment && assessment.id && (
@@ -526,6 +579,7 @@ const AssessmentEdit = ({
         onSelect={(key) => {
           if (key) {
             handleChangeTab(parseInt(key.replace("step-", "")) || 1);
+            handleGuideClose();
           }
         }}
       >
@@ -767,6 +821,8 @@ const AssessmentEdit = ({
                   resetActiveTab={resetCriterionTab}
                   onTestChange={handleCriterionChange}
                   onResetActiveTab={handleResetCriterionTabComplete}
+                  handleGuide={handleGuide}
+                  handleGuideClose={handleGuideClose}
                 />
               </Tab.Pane>
             </Tab.Content>
