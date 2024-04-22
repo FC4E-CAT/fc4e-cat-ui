@@ -154,7 +154,7 @@ export default function AdminUsers() {
               <option>PID Manager</option>
               <option>PID Owner</option>
               <option>PID Scheme</option>
-              <option>PID Service</option>
+              <option>PID Service Provider</option>
             </Form.Select>
           </Col>
           <Col>
