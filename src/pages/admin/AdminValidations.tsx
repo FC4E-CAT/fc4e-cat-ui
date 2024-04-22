@@ -266,7 +266,7 @@ export default function AdminUsers() {
                     <div className="d-flex flex-nowrap">
                       <OverlayTrigger placement="top" overlay={tooltipView}>
                         <Link
-                          className="btn btn-light "
+                          className="btn btn-light btn-sm m-1"
                           to={`/admin/validations/${item.id}`}
                         >
                           <FaBars />
@@ -275,7 +275,7 @@ export default function AdminUsers() {
                       {item.status === "REVIEW" ? (
                         <OverlayTrigger placement="top" overlay={tooltipAccept}>
                           <Link
-                            className="btn btn-light "
+                            className="btn btn-light btn-sm m-1"
                             to={`/admin/validations/${item.id}/approve#alert-spot`}
                           >
                             <FaCheck />
@@ -285,7 +285,7 @@ export default function AdminUsers() {
                       {item.status === "REVIEW" ? (
                         <OverlayTrigger placement="top" overlay={tooltipReject}>
                           <Link
-                            className="btn  btn-light"
+                            className="btn btn-light btn-sm m-1"
                             to={`/admin/validations/${item.id}/reject/#alert-spot`}
                           >
                             <FaTimes />

@@ -453,19 +453,19 @@ export default function AdminUsers() {
                   </td>
                   <td>
                     <OverlayTrigger placement="top" overlay={tooltipView}>
-                      <Button className="btn-light">
+                      <Button className="btn-light btn-sm m-1">
                         <FaBars />
                       </Button>
                     </OverlayTrigger>
                     <OverlayTrigger placement="top" overlay={tooltipEdit}>
-                      <Button className="btn-light">
+                      <Button className="btn-light btn-sm m-1">
                         <FaPencilAlt />
                       </Button>
                     </OverlayTrigger>
                     {item.banned ? (
                       <OverlayTrigger placement="top" overlay={tooltipRestore}>
                         <Button
-                          className="btn-light"
+                          className="btn-light btn-sm m-1"
                           onClick={() => {
                             setUserModalConfig({
                               id: item.id,
@@ -480,7 +480,7 @@ export default function AdminUsers() {
                     ) : (
                       <OverlayTrigger placement="top" overlay={tooltipDelete}>
                         <Button
-                          className="btn-light"
+                          className="btn-light btn-sm m-1"
                           onClick={() => {
                             setUserModalConfig({
                               id: item.id,
