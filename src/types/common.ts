@@ -111,3 +111,9 @@ export type ApiUsers = ApiOptions & {
   search: string;
   status: string;
 };
+
+export type ApiValidations = ApiOptions & {
+  type: string;
+  search: string;
+  status: string;
+};
