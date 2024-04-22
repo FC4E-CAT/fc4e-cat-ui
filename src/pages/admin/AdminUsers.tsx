@@ -30,6 +30,7 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { idToColor, trimField } from "@/utils/admin";
 
 type UserState = {
   sortOrder: string;
@@ -160,45 +161,6 @@ export function UserModal(props: UserModalProps) {
     </Modal>
   );
 }
-
-const idToColor = (id: string) => {
-  // generate hash from id
-  const hash = Array.from(id).reduce(
-    (acc, char) => acc + char.charCodeAt(0),
-    0,
-  );
-
-  // define color palette
-  const palette = [
-    "#ea7286",
-    "#eab281",
-    "#e3e19f",
-    "#a9c484",
-    "#5d937b",
-    "#58525a",
-    "#a07ca7",
-    "#f4a4bf",
-    "#f5d1b6",
-    "#eeede3",
-    "#d6cec2",
-    "#a2a6a9",
-    "#777f8f",
-    "#a3b2d2",
-    "#bfded8",
-    "#bf796d",
-  ];
-
-  // select the color
-  return palette[hash % palette.length];
-};
-
-// trim the field if it is too big
-const trimField = (value: string, length: number) => {
-  if (value.length > length) {
-    return value.slice(0, length) + "...";
-  }
-  return value;
-};
 
 // create an up/down arrow to designate sorting in a column
 const SortMarker = (field: string, sortField: string, sortOrder: string) => {
@@ -422,183 +384,178 @@ export default function AdminUsers() {
         </Row>
       </Form>
 
-      <code className="text-black">
-        <Table hover>
-          <thead>
-            <tr className="table-light">
-              <th>
-                <span
-                  onClick={() => handleSortClick("name")}
-                  className="cat-cursor-pointer"
-                >
-                  Name {SortMarker("name", opts.sortBy, opts.sortOrder)}
-                </span>
-              </th>
-              <th>
-                <span
-                  onClick={() => handleSortClick("email")}
-                  className="cat-cursor-pointer"
-                >
-                  Email {SortMarker("email", opts.sortBy, opts.sortOrder)}
-                </span>
-              </th>
-              <th>
-                <span>Registered</span>
-              </th>
-              <th>
-                <span>User Type</span>
-              </th>
-              <th>
-                <span>Status</span>
-              </th>
-              <th></th>
-            </tr>
-          </thead>
-          {users.length > 0 ? (
-            <tbody>
-              {users.map((item) => {
-                return (
-                  <tr key={item.id}>
-                    <td className="align-middle">
-                      <div className="d-flex  justify-content-start">
+      <Table hover>
+        <thead>
+          <tr className="table-light">
+            <th>
+              <span
+                onClick={() => handleSortClick("name")}
+                className="cat-cursor-pointer"
+              >
+                Name {SortMarker("name", opts.sortBy, opts.sortOrder)}
+              </span>
+            </th>
+            <th>
+              <span
+                onClick={() => handleSortClick("email")}
+                className="cat-cursor-pointer"
+              >
+                Email {SortMarker("email", opts.sortBy, opts.sortOrder)}
+              </span>
+            </th>
+            <th>
+              <span>Registered</span>
+            </th>
+            <th>
+              <span>User Type</span>
+            </th>
+            <th>
+              <span>Status</span>
+            </th>
+            <th></th>
+          </tr>
+        </thead>
+        {users.length > 0 ? (
+          <tbody>
+            {users.map((item) => {
+              return (
+                <tr key={item.id}>
+                  <td className="align-middle">
+                    <div className="d-flex  justify-content-start">
+                      <div>
+                        <FaUserCircle
+                          size={"3rem"}
+                          style={{ color: idToColor(item.id) }}
+                        />
+                      </div>
+                      <div className="ms-2 d-flex flex-column justify-content-between">
+                        <div>{item.name || <br />}</div>
                         <div>
-                          <FaUserCircle
-                            size={"3rem"}
-                            style={{ color: idToColor(item.id) }}
-                          />
-                        </div>
-                        <div className="ms-2 d-flex flex-column justify-content-between">
-                          <div>{item.name || <br />}</div>
-                          <div>
-                            <span
-                              style={{ fontSize: "0.64rem" }}
-                              className="text-muted"
-                            >
-                              id: {trimField(item.id, 20)}
-                            </span>
-                          </div>
+                          <span
+                            style={{ fontSize: "0.64rem" }}
+                            className="text-muted"
+                          >
+                            id: {trimField(item.id, 20)}
+                          </span>
                         </div>
                       </div>
-                    </td>
-                    <td className="align-middle">{item.email}</td>
-                    <td className="align-middle">
-                      {item.registered_on.split("T")[0]}
-                    </td>
-                    <td className="align-middle">
-                      {UserTypeBadge(item.user_type)}
-                    </td>
-                    <td className="align-middle">
-                      {UserStatusBadge(item.banned)}
-                    </td>
-                    <td>
-                      <OverlayTrigger placement="top" overlay={tooltipView}>
-                        <Button className="btn-light">
-                          <FaBars />
-                        </Button>
-                      </OverlayTrigger>
-                      <OverlayTrigger placement="top" overlay={tooltipEdit}>
-                        <Button className="btn-light">
-                          <FaPencilAlt />
-                        </Button>
-                      </OverlayTrigger>
-                      {item.banned ? (
-                        <OverlayTrigger
-                          placement="top"
-                          overlay={tooltipRestore}
+                    </div>
+                  </td>
+                  <td className="align-middle">{item.email}</td>
+                  <td className="align-middle">
+                    {item.registered_on.split("T")[0]}
+                  </td>
+                  <td className="align-middle">
+                    {UserTypeBadge(item.user_type)}
+                  </td>
+                  <td className="align-middle">
+                    {UserStatusBadge(item.banned)}
+                  </td>
+                  <td>
+                    <OverlayTrigger placement="top" overlay={tooltipView}>
+                      <Button className="btn-light">
+                        <FaBars />
+                      </Button>
+                    </OverlayTrigger>
+                    <OverlayTrigger placement="top" overlay={tooltipEdit}>
+                      <Button className="btn-light">
+                        <FaPencilAlt />
+                      </Button>
+                    </OverlayTrigger>
+                    {item.banned ? (
+                      <OverlayTrigger placement="top" overlay={tooltipRestore}>
+                        <Button
+                          className="btn-light"
+                          onClick={() => {
+                            setUserModalConfig({
+                              id: item.id,
+                              mode: UserModalMode.Restore,
+                              show: true,
+                            });
+                          }}
                         >
-                          <Button
-                            className="btn-light"
-                            onClick={() => {
-                              setUserModalConfig({
-                                id: item.id,
-                                mode: UserModalMode.Restore,
-                                show: true,
-                              });
-                            }}
-                          >
-                            <FaTrashRestoreAlt />
-                          </Button>
-                        </OverlayTrigger>
-                      ) : (
-                        <OverlayTrigger placement="top" overlay={tooltipDelete}>
-                          <Button
-                            className="btn-light"
-                            onClick={() => {
-                              setUserModalConfig({
-                                id: item.id,
-                                mode: UserModalMode.Delete,
-                                show: true,
-                              });
-                            }}
-                          >
-                            <FaTrashAlt />
-                          </Button>
-                        </OverlayTrigger>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          ) : null}
-        </Table>
-        {!isLoading && users.length === 0 && (
-          <Alert variant="warning" className="text-center mx-auto">
-            <h3>
-              <FaExclamationTriangle />
-            </h3>
-            <h5>No data found...</h5>
-          </Alert>
-        )}
-        <div className="d-flex justify-content-end">
-          <div>
-            <span className="mx-1">rows per page: </span>
-            <select
-              name="per-page"
-              value={opts.size.toString() || "20"}
-              id="per-page"
-              onChange={handleChangePageSize}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-            </select>
-          </div>
-
-          {data && data.number_of_page && data.total_pages && (
-            <div className="ms-4">
-              <span>
-                {(data.number_of_page - 1) * opts.size + 1} -{" "}
-                {(data.number_of_page - 1) * opts.size + data.size_of_page} of{" "}
-                {data.total_elements}
-              </span>
-              <span
-                onClick={() => {
-                  setOpts({ ...opts, page: opts.page - 1 });
-                }}
-                className={`ms-4 btn py-0 btn-light btn-small ${
-                  opts.page === 1 ? "disabled text-muted" : null
-                }`}
-              >
-                <FaArrowLeft />
-              </span>
-              <span
-                onClick={() => {
-                  setOpts({ ...opts, page: opts.page + 1 });
-                }}
-                className={`btn py-0 btn-light btn-small" ${
-                  data?.total_pages > data?.number_of_page
-                    ? null
-                    : "disabled text-muted"
-                }`}
-              >
-                <FaArrowRight />
-              </span>
-            </div>
-          )}
+                          <FaTrashRestoreAlt />
+                        </Button>
+                      </OverlayTrigger>
+                    ) : (
+                      <OverlayTrigger placement="top" overlay={tooltipDelete}>
+                        <Button
+                          className="btn-light"
+                          onClick={() => {
+                            setUserModalConfig({
+                              id: item.id,
+                              mode: UserModalMode.Delete,
+                              show: true,
+                            });
+                          }}
+                        >
+                          <FaTrashAlt />
+                        </Button>
+                      </OverlayTrigger>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        ) : null}
+      </Table>
+      {!isLoading && users.length === 0 && (
+        <Alert variant="warning" className="text-center mx-auto">
+          <h3>
+            <FaExclamationTriangle />
+          </h3>
+          <h5>No data found...</h5>
+        </Alert>
+      )}
+      <div className="d-flex justify-content-end">
+        <div>
+          <span className="mx-1">rows per page: </span>
+          <select
+            name="per-page"
+            value={opts.size.toString() || "20"}
+            id="per-page"
+            onChange={handleChangePageSize}
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
         </div>
-      </code>
+
+        {data && data.number_of_page && data.total_pages && (
+          <div className="ms-4">
+            <span>
+              {(data.number_of_page - 1) * opts.size + 1} -{" "}
+              {(data.number_of_page - 1) * opts.size + data.size_of_page} of{" "}
+              {data.total_elements}
+            </span>
+            <span
+              onClick={() => {
+                setOpts({ ...opts, page: opts.page - 1 });
+              }}
+              className={`ms-4 btn py-0 btn-light btn-small ${
+                opts.page === 1 ? "disabled text-muted" : null
+              }`}
+            >
+              <FaArrowLeft />
+            </span>
+            <span
+              onClick={() => {
+                setOpts({ ...opts, page: opts.page + 1 });
+              }}
+              className={`btn py-0 btn-light btn-small" ${
+                data?.total_pages > data?.number_of_page
+                  ? null
+                  : "disabled text-muted"
+              }`}
+            >
+              <FaArrowRight />
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

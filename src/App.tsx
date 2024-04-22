@@ -26,6 +26,7 @@ import Subjects from "./pages/Subjects";
 import About from "./pages/About";
 import { AssessmentEditMode } from "./types";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminValidations from "./pages/admin/AdminValidations";
 
 const queryClient = new QueryClient();
 
@@ -147,7 +148,7 @@ function App() {
                     <Route index element={<ValidationDetails />} />
                   </Route>
                   <Route path="/admin/validations" element={<ProtectedRoute />}>
-                    <Route index element={<ValidationList admin={true} />} />
+                    <Route index element={<AdminValidations />} />
                   </Route>
                   <Route
                     path="/admin/validations/:id"
