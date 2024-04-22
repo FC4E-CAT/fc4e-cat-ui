@@ -11,7 +11,7 @@ import {
   Profile,
   RequestValidation,
   ValidationList,
-  Users,
+  // Users,
   ProfileUpdate,
   ValidationDetails,
 } from "@/pages";
@@ -25,6 +25,7 @@ import { Toaster } from "react-hot-toast";
 import Subjects from "./pages/Subjects";
 import About from "./pages/About";
 import { AssessmentEditMode } from "./types";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 const queryClient = new QueryClient();
 
@@ -128,7 +129,7 @@ function App() {
                     <Route index element={<ProfileUpdate />} />
                   </Route>
                   <Route path="/admin/users" element={<ProtectedRoute />}>
-                    <Route index element={<Users />} />
+                    <Route index element={<AdminUsers />} />
                   </Route>
                   <Route
                     path="/validations/request"

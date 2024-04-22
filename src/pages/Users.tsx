@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { useGetAdminUsers, useUnbanUser, useBanUser } from "@/api";
+import { useGetAdminUsers, useRestoreUser, useDeleteUser } from "@/api";
 import { CustomTable } from "@/components";
 import { FaLock, FaLockOpen, FaUnlock, FaUsers } from "react-icons/fa";
 import { AlertInfo, UserProfile } from "@/types";
@@ -143,8 +143,8 @@ function Users() {
   const { keycloak } = useContext(AuthContext)!;
 
   // hooks for handling subjects in through the backend
-  const mutationBanUser = useBanUser(keycloak?.token || "");
-  const mutationUnbanUser = useUnbanUser(keycloak?.token || "");
+  const mutationBanUser = useDeleteUser(keycloak?.token || "");
+  const mutationUnbanUser = useRestoreUser(keycloak?.token || "");
 
   const handleUnban = (id: string, reason: string) => {
     const promise = mutationUnbanUser
