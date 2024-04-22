@@ -54,7 +54,6 @@ export function SortMarker(
 
 // create a validation status badge for approved, rejected, pending
 const ValidationStatusBadge = (status: string) => {
-  console.log(status);
   if (status === "APPROVED") {
     return (
       <span className="badge bg-success">
@@ -151,9 +150,11 @@ export default function AdminUsers() {
               value={opts.type}
             >
               <option value="">Select type...</option>
-              <option>PID Owner</option>
-              <option>PID Manager</option>
               <option>PID Authority</option>
+              <option>PID Manager</option>
+              <option>PID Owner</option>
+              <option>PID Scheme</option>
+              <option>PID Service</option>
             </Form.Select>
           </Col>
           <Col>
