@@ -44,6 +44,7 @@ export interface ApiPaginationOptions {
   size?: number;
   page?: number;
   sortBy?: string;
+  sortOrder?: string;
 }
 
 export interface ApiPublicAssessmentOptions {
@@ -98,4 +99,21 @@ export type Subject = {
   subject_id: string;
   name: string;
   type: string;
+};
+
+export type UserAccess = {
+  user_id: string;
+  reason?: string;
+};
+
+export type ApiUsers = ApiOptions & {
+  type: string;
+  search: string;
+  status: string;
+};
+
+export type ApiValidations = ApiOptions & {
+  type: string;
+  search: string;
+  status: string;
 };

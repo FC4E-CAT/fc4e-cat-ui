@@ -1,4 +1,4 @@
-import { FaCheckCircle, FaList, FaPlus } from "react-icons/fa";
+import { FaCheckCircle, FaFileImport, FaList, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
@@ -8,6 +8,8 @@ import ownersImg from "@/assets/thumb_user.png";
 import { useGetActors } from "@/api";
 import { Col, Row } from "react-bootstrap";
 import { ActorCard } from "./components/ActorCard";
+import { AuthContext } from "@/auth";
+import { useContext } from "react";
 
 interface CardProps {
   id: number;
@@ -25,6 +27,8 @@ function Assessments() {
     page: 1,
     sortBy: "asc",
   });
+
+  const { authenticated } = useContext(AuthContext)!;
 
   const cardProps: CardProps[] = [];
 
@@ -65,17 +69,32 @@ function Assessments() {
               <FaCheckCircle className="me-1" /> assessments
             </h3>
           </div>
-          <div className="d-flex justify-content-end my-2">
-            <Link
-              to={`/assessments/create`}
-              className="btn btn-light border-black mx-3"
-            >
-              <FaPlus /> Create New
-            </Link>
-            <Link to="/assessments" className="btn btn-light border-black mx-3">
-              <FaList /> View Your Assessments
-            </Link>
-          </div>
+          {authenticated && (
+            <div className="d-flex justify-content-end my-2">
+              <Link
+                id="view_assessments_button"
+                to="/assessments"
+                className="btn btn-light border-black me-3"
+              >
+                <FaList />{" "}
+                <span className="align-middle">View your Assessments</span>
+              </Link>
+              <Link
+                id="assessment_form_button"
+                to={`/assessments/create`}
+                className="btn btn-light border-black me-3"
+              >
+                <FaPlus /> <span className="align-middle">Create New</span>
+              </Link>
+              <Link
+                id="assessment_form_button"
+                to={`/assessments/import`}
+                className="btn btn-light border-black"
+              >
+                <FaFileImport /> <span className="align-middle">Import</span>
+              </Link>
+            </div>
+          )}
         </div>
       </>
       <>

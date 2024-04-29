@@ -1,6 +1,6 @@
 import { APIClient } from "@/api";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { ApiOptions } from "@/types";
+import { ApiOptions, ApiValidations } from "@/types";
 import {
   APIValidationResponse,
   ValidationDetailsRequestParams,
@@ -10,6 +10,35 @@ import {
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
+
+export const useAdminGetValidations = ({
+  size,
+  page,
+  sortBy,
+  sortOrder,
+  token,
+  isRegistered,
+  search,
+  type,
+  status,
+}: ApiValidations) =>
+  useQuery({
+    queryKey: ["validations"],
+    queryFn: async () => {
+      let url = `/admin/validations?size=${size}&page=${page}`;
+      sortBy ? (url = `${url}&sort=${sortBy}`) : null;
+      sortOrder ? (url = `${url}&order=${sortOrder}`) : null;
+      type ? (url = `${url}&type=${type}`) : null;
+      status ? (url = `${url}&status=${status}`) : null;
+      search ? (url = `${url}&search=${search}`) : null;
+      const response = await APIClient(token).get<APIValidationResponse>(url);
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered,
+  });
 
 export const useGetValidationList = ({
   size,

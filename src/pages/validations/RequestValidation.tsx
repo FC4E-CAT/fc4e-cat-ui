@@ -110,8 +110,9 @@ function RequestValidation() {
     setActorID(data.actor_id);
     const promise = refetchValidationRequest()
       .catch((err) => {
+        console.log(err);
         alert.current = {
-          message: "Error during validation request submission.",
+          message: `Error during validation request submission:\n${err.response.data.message}`,
         };
         throw err; // throw again after you catch
       })
@@ -120,7 +121,7 @@ function RequestValidation() {
           message: "Validation request succesfully submitted.",
         };
       })
-      .finally(() => navigate("/validations"));
+      .then(() => navigate("/validations"));
     toast.promise(promise, {
       loading: "Submitting",
       success: () => `${alert.current.message}`,
@@ -178,6 +179,7 @@ function RequestValidation() {
           id="actor_id"
           {...register("actor_id", {
             required: true,
+            validate: (value) => value > -1 || "Please select an option",
           })}
         >
           <option disabled value={-1}>
@@ -196,12 +198,10 @@ function RequestValidation() {
       <ErrorMessage
         errors={errors}
         name="actor_id"
-        render={({ message }) => <p>{message}</p>}
+        render={({ message }) => <p className="text-danger">{message}</p>}
       />
     </>
   );
-
-  console.log(watchOrgSource);
 
   return (
     <div className="mt-4">
@@ -225,16 +225,28 @@ function RequestValidation() {
               }
             >
               {watchOrgSource === "ROR" ? (
-                <Select
-                  className="basic-single"
-                  classNamePrefix="select"
-                  onInputChange={(value) => setInputValue(value)}
-                  onChange={(s) => updateForm(s)}
-                  isSearchable={true}
-                  name="organisation_name"
-                  options={renderOptions()}
-                  filterOption={() => true}
-                />
+                <>
+                  {/* hidden field to just validate the combo below */}
+                  <input
+                    type="hidden"
+                    {...register("organisation_name", {
+                      required: {
+                        value: true,
+                        message: "Organisation name is required",
+                      },
+                    })}
+                  />
+                  <Select
+                    className="basic-single"
+                    classNamePrefix="select"
+                    onInputChange={(value) => setInputValue(value)}
+                    onChange={(s) => updateForm(s)}
+                    isSearchable={true}
+                    name="organisation_name"
+                    options={renderOptions()}
+                    filterOption={() => true}
+                  />
+                </>
               ) : (
                 <input
                   type="text"
@@ -259,7 +271,7 @@ function RequestValidation() {
             <ErrorMessage
               errors={errors}
               name="organisation_name"
-              render={({ message }) => <p>{message}</p>}
+              render={({ message }) => <p className="text-danger">{message}</p>}
             />
           </Col>
           <Col className="mt-3" xs={12} md={3}>
@@ -306,7 +318,7 @@ function RequestValidation() {
             <ErrorMessage
               errors={errors}
               name="organisation_source"
-              render={({ message }) => <p>{message}</p>}
+              render={({ message }) => <p className="text-danger">{message}</p>}
             />
           </Col>
           <Col className="mt-3" xs={12} md={3}>
@@ -340,7 +352,7 @@ function RequestValidation() {
             <ErrorMessage
               errors={errors}
               name="organisation_website"
-              render={({ message }) => <p>{message}</p>}
+              render={({ message }) => <p className="text-danger">{message}</p>}
             />
           </Col>
         </Row>
@@ -379,7 +391,7 @@ function RequestValidation() {
             <ErrorMessage
               errors={errors}
               name="organisation_role"
-              render={({ message }) => <p>{message}</p>}
+              render={({ message }) => <p className="text-danger">{message}</p>}
             />
           </Col>
           <Col className="mt-3" xs={12} md={6}>
@@ -430,7 +442,11 @@ function RequestValidation() {
           </Col>
         </Row>
         <div className="mb-3 mt-4" style={{ textAlign: "left" }}>
-          <button className="btn btn-light border-black" type="submit">
+          <button
+            id="create_validation"
+            className="btn btn-light border-black"
+            type="submit"
+          >
             Submit
           </button>
           <Link to="/validations" className="my-2 btn btn-secondary mx-3">

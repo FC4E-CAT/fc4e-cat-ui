@@ -16,6 +16,7 @@ import {
   FaFilter,
   FaTimes,
   FaDownload,
+  FaFileImport,
 } from "react-icons/fa";
 import {
   Collapse,
@@ -135,11 +136,11 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   useEffect(() => {
     if (qAssessment.data) {
       const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-        JSON.stringify(qAssessment.data, null, 2),
+        JSON.stringify(qAssessment.data.assessment_doc, null, 2),
       )}`;
       const link = document.createElement("a");
       link.href = jsonString;
-      link.download = `${qAssessment.data?.id}.json`;
+      link.download = `${qAssessment.data.assessment_doc.id}.json`;
 
       link.click();
     }
@@ -231,9 +232,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             cell: (info) => (
               <span className="cat-date-cell">
                 {String(info.getValue()).split(" ")[0]}
-                <span className="ms-1 cat-full-date-info">
-                  <FaInfoCircle title={info.getValue()} />
-                </span>
               </span>
             ),
             header: () => <span>Created On</span>,
@@ -281,7 +279,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       : [
           {
             accessorKey: "name",
-            header: () => <span>Id</span>,
+            header: () => <span>Name</span>,
             cell: (info) => info.getValue(),
             enableColumnFilter: false,
           },
@@ -359,12 +357,14 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 <>
                   <div className="edit-buttons btn-group shadow">
                     <Link
+                      id={`edit-button-${item.id}`}
                       className="btn btn-secondary cat-action-view-link btn-sm "
                       to={`/assessments/${item.id}`}
                     >
                       <FaEdit />
                     </Link>
                     <Button
+                      id={`download-button-${item.id}`}
                       className="btn btn-secondary cat-action-reject-link btn-sm "
                       onClick={() => {
                         setAsmtNumID(item["id"]);
@@ -373,6 +373,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       <FaDownload />
                     </Button>
                     <Button
+                      id={`delete-button-${item.id}`}
                       className="btn btn-secondary cat-action-reject-link btn-sm "
                       onClick={() => {
                         handleDeleteOpenModal(item);
@@ -459,12 +460,20 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             </Button>
           </>
           {!listPublic && (
-            <Link
-              to="/assessments/create"
-              className="btn btn-light border-black mx-3"
-            >
-              <FaPlus /> Create New
-            </Link>
+            <>
+              <Link
+                to="/assessments/create"
+                className="btn btn-light border-black ms-3"
+              >
+                <FaPlus /> <span className="align-middle">Create New</span>
+              </Link>
+              <Link
+                to="/assessments/import"
+                className="btn btn-light border-black ms-3"
+              >
+                <FaFileImport /> <span className="align-middle">Import</span>
+              </Link>
+            </>
           )}
         </div>
       </div>
@@ -557,6 +566,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 <Col className="d-flex justify-content-end filter-div">
                   <InputGroup className="mb-3">
                     <Button
+                      id="apply_filter_button"
                       className="btn btn-success btn centerButton"
                       type="submit"
                     >
@@ -565,6 +575,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   </InputGroup>
                   <InputGroup className="mb-3">
                     <Button
+                      id="clear_filter_button"
                       className="btn btn-primary btn centerButton"
                       type="submit"
                       onClick={() => {

@@ -39,6 +39,9 @@ export function ProtectedRoute() {
             checkLoginIframe: false,
             pkceMethod: "S256",
           });
+          keycloakInstance.onTokenExpired = () => {
+            keycloakInstance.updateToken(5);
+          };
           setKeycloak(keycloakInstance);
           setAuthenticated(authenticated);
         }

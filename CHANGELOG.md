@@ -2,6 +2,46 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v1.1.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.1.0) (2024-04-29)
+
+### Added:
+
+- Cypress spec /assess and /assessment page ([#152](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/152))
+- Add about page ([#164](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/164))
+- CAT-333 ban/unban users ([#169](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/169))
+- CAT-176 Support import of external assessment ([#175](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/175))
+
+### Changed:
+
+- CAT-329 Simplify navigation menu ([#155](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/155))
+- CAT-335 Update styling in create assessment wizard ([#156](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/156))
+- CAT-335 Further update assessment form sidebar ([#157](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/157))
+- CAT-335 Further improve assessment test styling ([#158](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/158))
+- CAT-335 Remove top white space from test questions ([#159](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/159))
+- CAT-335 Update stylization of test progress ([#160](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/160))
+- CAT-301 Improve notifications and error messages on request validatio… ([#166](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/166))
+- Update follow-redirects dep ([#167](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/167))
+- CAT-302 Improve error notifications in assessment create form ([#168](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/168))
+- CAT-338 Update display of ror id in validation details ([#173](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/173))
+- CAT-348 Update guidance styling ([#178](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/178))
+- CAT-343 redesign admin users view ([#180](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/180))
+- CAT-344 redesign admin view validations ([#181](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/181))
+- CAT-344 Add all pid actor types in admin validation filter element ([#183](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/183))
+
+### Fixed:
+
+- CAT-323 Fix approve/reject admin validation paths ([#153](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/153))
+- CAT-328 Assessment creation: fix issue with valid actor duplicates ([#154](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/154))
+- CAT-294 Fix: assessment form resets on refocus ([#162](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/162))
+- CAT-336 Fix error while reloading the edit assessment page ([#163](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/163))
+- CAT-254 Fix about page style image marker ([#165](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/165))
+- CAT-333 Fix ban/unban methods. Add email info on user table. Fix noti… ([#170](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/170))
+- CAT-337 Fix keycloack token refresh ([#171](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/171))
+- CAT-352 fix export and import issues ([#176](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/176))
+- CAT-352 Minor fix in import assessment help text ([#179](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/179))
+- CAT-344 Fix button layout in admin validations and admin user views ([#182](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/182))
+- CAT-344 Fix validation actor filter service provider value ([#184](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/184))
+
 ## [v1.0.2](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.0.2) (2024-02-16)
 
 ### Added:

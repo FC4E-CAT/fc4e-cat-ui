@@ -11,7 +11,7 @@ import {
   Profile,
   RequestValidation,
   ValidationList,
-  Users,
+  // Users,
   ProfileUpdate,
   ValidationDetails,
 } from "@/pages";
@@ -23,6 +23,10 @@ import AssessmentEdit from "./pages/assessments/AssessmentEdit";
 
 import { Toaster } from "react-hot-toast";
 import Subjects from "./pages/Subjects";
+import About from "./pages/About";
+import { AssessmentEditMode } from "./types";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminValidations from "./pages/admin/AdminValidations";
 
 const queryClient = new QueryClient();
 
@@ -39,7 +43,7 @@ function App() {
           // Define default options
           className: " ",
           duration: 2000,
-          position: "top-right",
+          position: "top-center",
           style: {
             background: "#363636",
             color: "#fff",
@@ -64,26 +68,51 @@ function App() {
               <Container>
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
                   <Route
                     path="/assessments/create/:valID"
                     element={<ProtectedRoute />}
                   >
-                    <Route index element={<AssessmentEdit />} />
+                    <Route
+                      index
+                      element={
+                        <AssessmentEdit mode={AssessmentEditMode.Create} />
+                      }
+                    />
+                  </Route>
+                  <Route
+                    path="/assessments/import"
+                    element={<ProtectedRoute />}
+                  >
+                    {/* Use AssessmentEdit component with mode = import */}
+                    <Route
+                      index
+                      element={
+                        <AssessmentEdit mode={AssessmentEditMode.Import} />
+                      }
+                    />
                   </Route>
                   <Route
                     path="/assessments/create/"
                     element={<ProtectedRoute />}
                   >
-                    <Route index element={<AssessmentEdit />} />
+                    <Route
+                      index
+                      element={
+                        <AssessmentEdit mode={AssessmentEditMode.Create} />
+                      }
+                    />
                   </Route>
                   <Route
                     path="/assessments/:asmtID"
                     element={<ProtectedRoute />}
                   >
-                    {/* Use AssessmentEdit component with create mode = false to configure the view for update */}
+                    {/* Use AssessmentEdit component with mode = edit */}
                     <Route
                       index
-                      element={<AssessmentEdit createMode={false} />}
+                      element={
+                        <AssessmentEdit mode={AssessmentEditMode.Edit} />
+                      }
                     />
                   </Route>
                   <Route path="/assess" element={<Assessments />} />
@@ -101,7 +130,7 @@ function App() {
                     <Route index element={<ProfileUpdate />} />
                   </Route>
                   <Route path="/admin/users" element={<ProtectedRoute />}>
-                    <Route index element={<Users />} />
+                    <Route index element={<AdminUsers />} />
                   </Route>
                   <Route
                     path="/validations/request"
@@ -119,7 +148,7 @@ function App() {
                     <Route index element={<ValidationDetails />} />
                   </Route>
                   <Route path="/admin/validations" element={<ProtectedRoute />}>
-                    <Route index element={<ValidationList admin={true} />} />
+                    <Route index element={<AdminValidations />} />
                   </Route>
                   <Route
                     path="/admin/validations/:id"
@@ -133,7 +162,9 @@ function App() {
                   >
                     <Route
                       index
-                      element={<ValidationDetails toReject={true} />}
+                      element={
+                        <ValidationDetails admin={true} toReject={true} />
+                      }
                     />
                   </Route>
                   <Route
@@ -142,7 +173,9 @@ function App() {
                   >
                     <Route
                       index
-                      element={<ValidationDetails toApprove={true} />}
+                      element={
+                        <ValidationDetails admin={true} toApprove={true} />
+                      }
                     />
                   </Route>
                   <Route path="/login" element={<ProtectedRoute />}>

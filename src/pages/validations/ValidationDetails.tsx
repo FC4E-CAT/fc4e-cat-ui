@@ -7,6 +7,7 @@ import {
   ValidationStatus,
 } from "@/types";
 import { useRef, useState, useContext, useEffect } from "react";
+import { Modal } from "react-bootstrap";
 import toast from "react-hot-toast";
 import {
   FaExclamationTriangle,
@@ -57,117 +58,114 @@ function ValidationDetails(props: ValidationProps) {
 
   if (props.toReject) {
     rejectCard = (
-      <div className="container">
-        <div className="card border-danger mb-2">
-          <div className="card-header border-danger text-danger text-center">
-            <h5>
-              <FaExclamationTriangle className="mx-3" />
-              <strong>Validation Request Rejection</strong>
-            </h5>
-          </div>
-          <div className=" card-body border-danger text-center">
-            Are you sure you want to reject validation with ID:{" "}
-            <strong>{params.id}</strong> ?
-          </div>
-          <div className="card-footer border-danger text-danger text-center">
-            <button
-              className="btn btn-danger mr-2"
-              onClick={() => {
-                setReviewStatus(ValidationStatus.REJECTED);
-                const promise = mutateValidationUpdateStatus()
-                  .catch((err) => {
-                    alert.current = {
-                      message: "Error during validation rejection.",
-                    };
-                    throw err;
-                  })
-                  .then(() => {
-                    alert.current = {
-                      message: "Validation successfully rejected.",
-                    };
-                  })
-                  .finally(() => navigate("/admin/validations"));
-                toast.promise(promise, {
-                  loading: "Rejecting",
-                  success: () => `${alert.current.message}`,
-                  error: () => `${alert.current.message}`,
-                });
-              }}
-            >
-              Reject
-            </button>
-            <button
-              onClick={() => {
-                navigate(`/admin/validations/${params.id}`);
-              }}
-              className="btn btn-dark mx-4"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
+      <Modal show={true} className="border-danger mb-2">
+        <Modal.Header className="card-header border-danger text-danger text-center">
+          <h5>
+            <FaExclamationTriangle className="mx-3" />
+            <strong>Validation Request Rejection</strong>
+          </h5>
+        </Modal.Header>
+        <Modal.Body className=" card-body border-danger text-center">
+          Are you sure you want to reject validation with ID:{" "}
+          <strong>{params.id}</strong> ?
+        </Modal.Body>
+        <Modal.Footer className="card-footer border-danger text-danger text-center">
+          <button
+            className="btn btn-danger mr-2"
+            onClick={() => {
+              setReviewStatus(ValidationStatus.REJECTED);
+              const promise = mutateValidationUpdateStatus()
+                .catch((err) => {
+                  alert.current = {
+                    message: "Error during validation rejection.",
+                  };
+                  throw err;
+                })
+                .then(() => {
+                  alert.current = {
+                    message: "Validation successfully rejected.",
+                  };
+                })
+                .finally(() => navigate("/admin/validations"));
+              toast.promise(promise, {
+                loading: "Rejecting",
+                success: () => `${alert.current.message}`,
+                error: () => `${alert.current.message}`,
+              });
+            }}
+          >
+            Reject
+          </button>
+          <button
+            onClick={() => {
+              navigate(`/admin/validations/${params.id}`);
+            }}
+            className="btn btn-dark mx-4"
+          >
+            Cancel
+          </button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 
   if (props.toApprove) {
     approveCard = (
-      <div className="container">
-        <div className="card border-success mb-2">
-          <div className="card-header border-success text-success text-center">
-            <h5>
-              <FaExclamationTriangle className="mx-3" />
-              <strong>Validation Request Approval</strong>
-            </h5>
-          </div>
-          <div className=" card-body border-info text-center">
-            Are you sure you want to approve validation with ID:{" "}
-            <strong>{params.id}</strong> ?
-          </div>
-          <div className="card-footer border-success text-success text-center">
-            <button
-              className="btn btn-success mr-2"
-              onClick={() => {
-                setReviewStatus(ValidationStatus.APPROVED);
-                const promise = mutateValidationUpdateStatus()
-                  .catch((err) => {
-                    alert.current = {
-                      message: "Error during validation approval.",
-                    };
-                    throw err;
-                  })
-                  .then(() => {
-                    alert.current = {
-                      message: "Validation successfully approved.",
-                    };
-                  })
-                  .finally(() => navigate("/admin/validations"));
-                toast.promise(promise, {
-                  loading: "Approving",
-                  success: () => `${alert.current.message}`,
-                  error: () => `${alert.current.message}`,
-                });
-              }}
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => {
-                navigate(`/admin/validations/${params.id}`);
-              }}
-              className="btn btn-dark mx-4"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
+      <Modal show={true}>
+        <Modal.Header className="border-success text-success text-center">
+          <h5>
+            <FaExclamationTriangle className="mx-3" />
+            <strong>Validation Request Approval</strong>
+          </h5>
+        </Modal.Header>
+        <Modal.Body className="border-info text-center">
+          Are you sure you want to approve validation with ID:{" "}
+          <strong>{params.id}</strong> ?
+        </Modal.Body>
+        <Modal.Footer className="border-success text-success text-center">
+          <button
+            className="btn btn-success mr-2"
+            onClick={() => {
+              setReviewStatus(ValidationStatus.APPROVED);
+              const promise = mutateValidationUpdateStatus()
+                .catch((err) => {
+                  alert.current = {
+                    message: "Error during validation approval.",
+                  };
+                  throw err;
+                })
+                .then(() => {
+                  alert.current = {
+                    message: "Validation successfully approved.",
+                  };
+                })
+                .finally(() => navigate("/admin/validations"));
+              toast.promise(promise, {
+                loading: "Approving",
+                success: () => `${alert.current.message}`,
+                error: () => `${alert.current.message}`,
+              });
+            }}
+          >
+            Approve
+          </button>
+          <button
+            onClick={() => {
+              navigate(`/admin/validations/${params.id}`);
+            }}
+            className="btn btn-dark mx-4"
+          >
+            Cancel
+          </button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 
   if (keycloak?.token) {
     return (
       <div className="mt-4">
+        <span id="alert-spot" />
         {rejectCard}
         {approveCard}
         <div
@@ -207,7 +205,6 @@ function ValidationDetails(props: ValidationProps) {
               <strong>Id: </strong>
               {validation?.organisation_source === "ROR" ? (
                 <>
-                  <span className="text-muted">ror.org/</span>
                   <a
                     target="_blank"
                     rel="noreferrer"
@@ -215,6 +212,7 @@ function ValidationDetails(props: ValidationProps) {
                   >
                     {validation?.organisation_id}
                   </a>
+                  <span> - [ROR]</span>
                 </>
               ) : (
                 <>
@@ -301,13 +299,13 @@ function ValidationDetails(props: ValidationProps) {
               <section className="col-9">
                 <Link
                   className="btn btn-light border-black text-success"
-                  to={`/validations/${params.id}/approve#alert-spot`}
+                  to={`/admin/validations/${params.id}/approve#alert-spot`}
                 >
                   <FaCheck /> Approve
                 </Link>
                 <Link
                   className="btn btn-light mx-4 text-danger border-black"
-                  to={`/validations/${params.id}/reject#alert-spot`}
+                  to={`/admin/validations/${params.id}/reject#alert-spot`}
                 >
                   <FaTimes /> Reject
                 </Link>
@@ -321,8 +319,6 @@ function ValidationDetails(props: ValidationProps) {
         >
           Back
         </Link>
-
-        <span id="alert-spot" />
       </div>
     );
   } else {

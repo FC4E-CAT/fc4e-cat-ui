@@ -6,13 +6,13 @@
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { AssessmentTest, TestBinary } from "@/types";
-import { useState } from "react";
-import { FaCaretLeft, FaCaretRight, FaRegQuestionCircle } from "react-icons/fa";
+import { FaRegQuestionCircle } from "react-icons/fa";
 
 interface AssessmentTestProps {
   test: TestBinary;
   principleId: string;
   criterionId: string;
+  handleGuide(id: string, title: string, text: string): void;
   onTestChange(
     principleId: string,
     criterionId: string,
@@ -21,8 +21,6 @@ interface AssessmentTestProps {
 }
 
 export const TestBinaryForm = (props: AssessmentTestProps) => {
-  const [showHelp, setShowHelp] = useState(false);
-
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let result: 0 | 1 = 0;
     let value: boolean = false;
@@ -41,48 +39,41 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
   }
 
   return (
-    <div className="mt-4">
+    <div>
       <Row>
         <Col>
-          <h5>
-            Test {props.test.id}: {props.test.name}{" "}
-          </h5>
-        </Col>
-        <Col xs={3} className="text-end">
-          <Button
-            className="mb-2"
-            variant="light"
-            size="sm"
-            onClick={() => {
-              setShowHelp(!showHelp);
-            }}
-          >
-            {showHelp ? (
+          <h6>
+            <small className="text-muted badge badge-pill border bg-light">
+              <span className="me-4">{props.test.id}</span>
+              {props.test.name}
+            </small>
+            <Button
+              className="ms-2"
+              variant="light"
+              size="sm"
+              onClick={() => {
+                //setShowHelp(!showHelp);
+                props.handleGuide(
+                  props.test.id + props.test.guidance?.id || " ",
+                  "Guidance " + props.test.guidance?.id || "",
+                  props.test.guidance?.description || "No guidance Available",
+                );
+              }}
+            >
               <span>
-                <FaCaretRight />
                 <FaRegQuestionCircle />
               </span>
-            ) : (
-              <span>
-                <FaCaretLeft />
-                <FaRegQuestionCircle />
-              </span>
-            )}
-          </Button>
+            </Button>
+          </h6>
         </Col>
+        <Col xs={3} className="text-start"></Col>
       </Row>
 
       <Row>
         <Col>
           <Form>
-            <div className="border rounded p-4 shadow-sm">
-              <h5 className="mb-4">
-                <strong className="me-2">Question: </strong>
-                {props.test.text}
-              </h5>
-              <span className="h5 me-4">
-                <strong>Answer: </strong>
-              </span>
+            <div className="">
+              <h5>{props.test.text}</h5>
               <Form.Check
                 inline
                 label="Yes"
@@ -111,31 +102,8 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
                 onListChange={onURLChange}
               />
             )}
-
-            <div className="text-muted mt-2 border-top align-right">
-              <small>
-                <em>Test Result: </em>
-                {props.test.result !== null ? (
-                  <strong>{props.test.result}</strong>
-                ) : (
-                  <span>
-                    <strong>Unknown</strong> - Please answer the question above
-                  </span>
-                )}
-              </small>
-            </div>
           </Form>
         </Col>
-
-        {/* Show guidance */}
-        {showHelp && props.test.guidance && (
-          <Col className="border-start px-4 mb-2 ms-2">
-            <h3>Guidance {props.test.guidance.id}</h3>
-            <p style={{ whiteSpace: "pre-line" }}>
-              {props.test.guidance.description}
-            </p>
-          </Col>
-        )}
       </Row>
     </div>
   );

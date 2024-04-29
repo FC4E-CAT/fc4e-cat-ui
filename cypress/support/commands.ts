@@ -20,7 +20,7 @@ Cypress.Commands.add("updateProfile", (authToken) => {
 });
 
 Cypress.Commands.add("createValidation", (authToken) => {
-  cy.fixture("validation").then((orgData) => {
+  cy.fixture("validations/validation").then((orgData) => {
     cy.request({
       method: "POST",
       url: "http://localhost:8080/v1/validations",

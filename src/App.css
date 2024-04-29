@@ -12,8 +12,69 @@
   border-bottom: solid 2px #919191;
 }
 
+.cat-cursor-pointer {
+  cursor: pointer;
+}
+
+.cat-list-bullet-image {
+  list-style: url("/fclogo.png");
+}
+
+.cat-list-bullet-image li {
+  padding: 0.6rem;
+}
+
+.cat-crit-sidebar {
+  background-color: rgb(240 240 240);
+}
+
+.assessment-card .nav-link {
+  color: #3b3b3b;
+}
+
+.cat-test-div {
+  padding: 1rem;
+  border-left: 0.8rem solid rgb(240 240 240);
+}
+
+.cat-crit-tab .nav-link {
+  color: black;
+  border: 1px solid rgb(222 226 230);
+}
+
+.cat-crit-tab .nav-link:hover {
+  color: rgb(187 155 53);
+  background: white;
+}
+
+.cat-tab-inner {
+  border-left: 8px solid rgb(240 240 240);
+}
+
+.nav-link:hover .cat-tab-inner {
+  border-left: 8px solid rgb(248 206 71);
+}
+
+.nav-link.active .cat-tab-inner {
+  border-left: 8px solid rgb(248 206 71);
+}
+
+.active {
+  color: red;
+}
+
+.cat-crit-tab .nav-link.active {
+  color: rgb(187 155 53);
+  background: white;
+  border-right: 1px solid white;
+}
+
+.navlink.active .cat-tab-inner {
+  border-right: 3px solid yellow;
+}
+
 .cat-view-heading {
-  color: #00bcd4;
+  color: hsl(187deg 100% 42%);
 }
 
 .cat-logo-sm {
@@ -83,10 +144,6 @@ footer a {
   padding: 15px;
 }
 
-.active {
-  color: red;
-}
-
 .custom-pagination input {
   display: inline-block;
   float: left;
@@ -114,10 +171,6 @@ footer a {
 .disabled-div {
   pointer-events: none; /* Prevent mouse interactions */
   opacity: 0.5; /* Reduce opacity to make it appear disabled */
-}
-
-.assessment-card .nav-link {
-  color: #3b3b3b !important;
 }
 
 .assessment-card .nav-link.active {
