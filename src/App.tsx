@@ -27,7 +27,7 @@ import About from "./pages/About";
 import { AssessmentEditMode } from "./types";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminValidations from "./pages/admin/AdminValidations";
-import Explore from "./pages/Explore";
+import PidSelection from "./pages/PidSelection";
 
 const queryClient = new QueryClient();
 
@@ -70,7 +70,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
-                  <Route path="/explore" element={<Explore />} />
+                  <Route path="/pid-selection" element={<PidSelection />} />
                   <Route
                     path="/assessments/create/:valID"
                     element={<ProtectedRoute />}

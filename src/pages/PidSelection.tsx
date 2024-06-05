@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import config from "@/config.json";
 
-function Explore() {
+function PidSelection() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   // const [iframeHeight, setIframeHeight] = useState('0px');
 
   useEffect(() => {
     const handleResize = (event: MessageEvent) => {
-      if (event.origin === config.embedded_views.explore_view) {
+      if (event.origin === config?.embedded_views?.pid_selection_view) {
         // Replace with the actual domain of pageB
         console.log("received size from child:", event.data);
         if (iframeRef.current)
@@ -26,7 +26,7 @@ function Explore() {
   return (
     <div>
       <iframe
-        src={config.embedded_views.explore_view}
+        src={config?.embedded_views?.pid_selection_view}
         style={{ width: "100%", height: "800px" }}
         ref={iframeRef}
       ></iframe>
@@ -34,4 +34,4 @@ function Explore() {
   );
 }
 
-export default Explore;
+export default PidSelection;

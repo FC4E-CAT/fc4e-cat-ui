@@ -4,6 +4,6 @@
     "version": "v1"
   },
   "embedded_views": {
-    "explore_view": "https://rdy.gr"
+    "pid_selection_view": ""
   }
 }
