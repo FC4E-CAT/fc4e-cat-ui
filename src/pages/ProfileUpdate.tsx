@@ -137,7 +137,7 @@ export default function ProfileUpdate() {
           <input
             {...register("orcid_id", {
               pattern: {
-                value: /[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}/,
+                value: /^(\d{4}-){3}\d{3}(\d|X)$/,
                 message: "Invalid ORCID id",
               },
             })}
