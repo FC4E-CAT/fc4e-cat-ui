@@ -105,8 +105,8 @@ function Header() {
                 </Link>
               </NavItem>
               <NavItem>
-                <Link to="/explore" className="cat-nav-link">
-                  EXPLORE
+                <Link to="/pid-selection" className="cat-nav-link">
+                  PID SELECTION
                 </Link>
               </NavItem>
             </Nav>
