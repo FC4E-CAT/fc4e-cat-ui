@@ -104,6 +104,11 @@ function Header() {
                   ASSESSMENTS
                 </Link>
               </NavItem>
+              <NavItem>
+                <Link to="/explore" className="cat-nav-link">
+                  EXPLORE
+                </Link>
+              </NavItem>
             </Nav>
 
             {authenticated && userProfile?.user_type === "Admin" && (
