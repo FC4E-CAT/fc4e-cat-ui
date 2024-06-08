@@ -76,6 +76,11 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
           }}
           aria-describedby="label-add-url"
           placeholder="Please enter and add a valid url to support your claim"
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              handleAddURL();
+            }
+          }}
         />
         <span className="btn btn-primary btn-sm" onClick={handleAddURL}>
           Add
