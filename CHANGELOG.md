@@ -2,6 +2,23 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v1.2.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.0) (2024-06-10)
+
+### Added:
+
+- CAT-380 Add iframe ([#189](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/189))
+- CAT-382 Add user name in delete/restore modal ([#193](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/193))
+
+### Changed:
+
+- CAT-380 Update iframe view name to Pid Selection. Make view visible (… ([#190](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/190))
+- CAT-378 Restrict subject input fields to 200 chars max ([#192](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/192))
+
+### Fixed:
+
+- CAT-379 Fix orcid validation regex ([#191](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/191))
+- CAT-367 Fix key press enter issue in assessment edit view ([#194](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/194))
+
 ## [v1.1.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.1.0) (2024-04-29)
 
 ### Added:

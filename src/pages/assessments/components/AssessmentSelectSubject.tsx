@@ -132,6 +132,7 @@ export const AssessmentSelectSubject = (
               id="input-info-subject-id"
               placeholder="A unique identifier for the current subject"
               value={props.subject?.id || ""}
+              maxLength={200}
               onChange={(e) => {
                 props.onSubjectChange(
                   handleSubjectChange("id", e.target.value),
@@ -167,6 +168,7 @@ export const AssessmentSelectSubject = (
               id="input-info-subject-name"
               placeholder="The name of the subject of the assessment as identified above"
               value={props.subject?.name || ""}
+              maxLength={200}
               onChange={(e) => {
                 props.onSubjectChange(
                   handleSubjectChange("name", e.target.value),
@@ -204,6 +206,7 @@ export const AssessmentSelectSubject = (
               id="input-info-subject-type"
               placeholder="The type of object for which the assessment will  be completed"
               value={props.subject?.type || ""}
+              maxLength={200}
               onChange={(e) => {
                 props.onSubjectChange(
                   handleSubjectChange("type", e.target.value),

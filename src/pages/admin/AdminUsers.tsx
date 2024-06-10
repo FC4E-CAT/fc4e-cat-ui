@@ -52,6 +52,7 @@ enum UserModalMode {
 type UserModalBasicConfig = {
   mode: UserModalMode;
   id: string;
+  name?: string;
   show: boolean;
 };
 
@@ -104,10 +105,17 @@ export function UserModal(props: UserModalProps) {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <p>
-            Are you sure you want to delete user with id:{" "}
-            <strong>{props.id}</strong> ?
-          </p>
+          <div>
+            <div>Are you sure you want to delete the following user ?</div>
+            <div>
+              id: <strong>{props.id}</strong>
+            </div>
+            {props.name && (
+              <div>
+                name: <strong>{props.name}</strong>
+              </div>
+            )}
+          </div>
           <Form.Group className="mb-3" controlId="input-delete-user-reason">
             <Form.Label>
               <strong>Reason (*)</strong>
@@ -223,6 +231,7 @@ export default function AdminUsers() {
     mode: UserModalMode.Delete,
     show: false,
     id: "",
+    name: "",
   });
 
   // hooks for handling subjects in through the backend
@@ -471,6 +480,7 @@ export default function AdminUsers() {
                               id: item.id,
                               mode: UserModalMode.Restore,
                               show: true,
+                              name: item.name,
                             });
                           }}
                         >
@@ -485,6 +495,7 @@ export default function AdminUsers() {
                             setUserModalConfig({
                               id: item.id,
                               mode: UserModalMode.Delete,
+                              name: item.name,
                               show: true,
                             });
                           }}

@@ -100,57 +100,56 @@ export const TestValueForm = (props: AssessmentTestProps) => {
 
       <Row>
         <Col>
-          <Form>
-            <div>
-              <h5>{props.test.text}</h5>
-              <Row>
-                <Col xs={2}>
-                  <InputGroup className="mt-1">
-                    <InputGroup.Text id="label-first-value">
-                      {props.test.value_name}:
-                    </InputGroup.Text>
-                    <Form.Control
-                      value={props.test.value || ""}
-                      type="text"
-                      id="input-value-control"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleValueChange(TestValueEventType.Value, e)
-                      }
-                    />
-                  </InputGroup>
-                </Col>
-              </Row>
-              {props.test.threshold !== undefined && (
-                <>
-                  <Row className="mt-1">
-                    <Col xs={2}>
-                      <InputGroup className="mt-2">
-                        <InputGroup.Text id="label-second-value">
-                          {props.test.threshold_name || "Threshold"}:{" "}
-                        </InputGroup.Text>
-                        <Form.Control
-                          value={props.test.threshold || ""}
-                          type="text"
-                          id="input-value-community"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            handleValueChange(TestValueEventType.Threshold, e)
-                          }
-                        />
-                      </InputGroup>
-                    </Col>
-                  </Row>
-                </>
-              )}
-            </div>
-
-            {props.test.evidence_url !== undefined && (
-              <EvidenceURLS
-                urls={props.test.evidence_url}
-                onListChange={onURLChange}
-              />
+          <div>
+            <h5>{props.test.text}</h5>
+            <Row>
+              <Col xs={2}>
+                <InputGroup className="mt-1">
+                  <InputGroup.Text id="label-first-value">
+                    {props.test.value_name}:
+                  </InputGroup.Text>
+                  <Form.Control
+                    value={props.test.value || ""}
+                    type="text"
+                    id="input-value-control"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleValueChange(TestValueEventType.Value, e)
+                    }
+                  />
+                </InputGroup>
+              </Col>
+            </Row>
+            {props.test.threshold !== undefined && (
+              <>
+                <Row className="mt-1">
+                  <Col xs={2}>
+                    <InputGroup className="mt-2">
+                      <InputGroup.Text id="label-second-value">
+                        {props.test.threshold_name || "Threshold"}:{" "}
+                      </InputGroup.Text>
+                      <Form.Control
+                        value={props.test.threshold || ""}
+                        type="text"
+                        id="input-value-community"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleValueChange(TestValueEventType.Threshold, e)
+                        }
+                      />
+                    </InputGroup>
+                  </Col>
+                </Row>
+              </>
             )}
+          </div>
 
-            {/* <div className="text-muted mt-2 border-top align-right">
+          {props.test.evidence_url !== undefined && (
+            <EvidenceURLS
+              urls={props.test.evidence_url}
+              onListChange={onURLChange}
+            />
+          )}
+
+          {/* <div className="text-muted mt-2 border-top align-right">
               <small>
                 <em>Test Result: </em>
                 {props.test.result !== null ? (
@@ -162,7 +161,6 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                 )}
               </small>
             </div> */}
-          </Form>
         </Col>
       </Row>
     </div>
