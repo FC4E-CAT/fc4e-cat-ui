@@ -72,29 +72,27 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
       <Row>
         <Col>
           <div className="">
-            <Form onSubmit={() => false}>
-              <h5>{props.test.text}</h5>
-              <Form.Check
-                inline
-                label="Yes"
-                value="1"
-                name="test-input-group"
-                type="radio"
-                id="test-check-yes"
-                checked={props.test.value === true}
-                onChange={handleValueChange}
-              />
-              <Form.Check
-                inline
-                label="No"
-                value="0"
-                name="test-input-group"
-                type="radio"
-                id="test-check-no"
-                checked={props.test.value === false}
-                onChange={handleValueChange}
-              />
-            </Form>
+            <h5>{props.test.text}</h5>
+            <Form.Check
+              inline
+              label="Yes"
+              value="1"
+              name="test-input-group"
+              type="radio"
+              id="test-check-yes"
+              checked={props.test.value === true}
+              onChange={handleValueChange}
+            />
+            <Form.Check
+              inline
+              label="No"
+              value="0"
+              name="test-input-group"
+              type="radio"
+              id="test-check-no"
+              checked={props.test.value === false}
+              onChange={handleValueChange}
+            />
           </div>
 
           {props.test.evidence_url !== undefined && (
