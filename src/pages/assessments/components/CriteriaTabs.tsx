@@ -162,7 +162,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   {criterion.id}: {criterion.name}
                 </span>
 
-                {criterion.imperative === CriterionImperative.Should ? (
+                {criterion.imperative === CriterionImperative.Must ? (
                   <span className="badge bg-success bg-small ms-4 align-middle">
                     Required
                   </span>
