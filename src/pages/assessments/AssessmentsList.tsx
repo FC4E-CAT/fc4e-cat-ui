@@ -131,6 +131,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     id: asmtNumID,
     token: keycloak?.token || "",
     isRegistered: registered || false,
+    isPublic: listPublic,
   });
 
   useEffect(() => {
