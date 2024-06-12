@@ -153,6 +153,7 @@ const AssessmentEdit = ({
     id: asmtNumID,
     token: keycloak?.token || "",
     isRegistered: registered,
+    isPublic: false,
   });
 
   const [page, setPage] = useState<number>(1);
