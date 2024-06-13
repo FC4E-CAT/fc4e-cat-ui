@@ -2,6 +2,15 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v1.2.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.1) (2024-06-13)
+
+### Fixed:
+
+- CAT-388 Fix test checkboxes issue ([#199](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/199))
+- CAT-389 Fix marked as required criteria ([#200](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/200))
+- CAT-389 Fix required label on assessment criterion menu ([#201](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/201))
+- CAT-390 make Public Assessment download button work without login ([#202](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/202))
+
 ## [v1.2.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.0) (2024-06-10)
 
 ### Added:
