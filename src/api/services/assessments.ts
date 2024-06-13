@@ -122,27 +122,38 @@ export function useGetPublicAssessments({
   });
 }
 
+// works for public and private assessments
 export function useGetAssessment({
   id,
+  isPublic,
   token,
   isRegistered,
 }: {
   id: string;
+  isPublic: boolean;
   token?: string;
   isRegistered?: boolean;
 }) {
   return useQuery({
     queryKey: ["assessment", id],
     queryFn: async () => {
-      const response = await APIClient(token).get<AssessmentDetailsResponse>(
-        `/assessments/${id}`,
-      );
+      let url: string;
+      if (isPublic) {
+        url = `/assessments/public/${id}`;
+      } else {
+        url = `/assessments/${id}`;
+      }
+      const response =
+        await APIClient(token).get<AssessmentDetailsResponse>(url);
       return response.data;
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
-    enabled: (!!token && isRegistered && id !== "") || id !== "",
+    enabled:
+      (isPublic && id !== "") ||
+      (!!token && isRegistered && id !== "") ||
+      id !== "",
   });
 }
 

@@ -91,9 +91,9 @@ export interface Criterion {
   description?: string;
 }
 
-/** Each criterion can be either mandatory or optional */
+/** Each criterion can be either mandatory (must) or optional (should) */
 export enum CriterionImperative {
-  May = "may",
+  Must = "must",
   Should = "should",
 }
 

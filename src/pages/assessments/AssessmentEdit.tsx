@@ -153,6 +153,7 @@ const AssessmentEdit = ({
     id: asmtNumID,
     token: keycloak?.token || "",
     isRegistered: registered,
+    isPublic: false,
   });
 
   const [page, setPage] = useState<number>(1);
@@ -510,7 +511,7 @@ const AssessmentEdit = ({
       // update criteria result reference tables
       newAssessment.principles.forEach((principle) => {
         principle.criteria.forEach((criterion) => {
-          if (criterion.imperative === CriterionImperative.Should) {
+          if (criterion.imperative === CriterionImperative.Must) {
             mandatory.push(criterion.metric.result);
           } else {
             optional.push(criterion.metric.result);

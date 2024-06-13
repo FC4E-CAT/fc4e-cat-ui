@@ -77,7 +77,11 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
             <div className="cat-tab-inner p-3 ">
               <div className="d-flex">
                 <h6
-                  className={criterion.imperative === "should" ? "fw-bold" : ""}
+                  className={
+                    criterion.imperative === CriterionImperative.Must
+                      ? "fw-bold"
+                      : ""
+                  }
                 >
                   {" "}
                   {criterion.id} - {criterion.name}
@@ -88,7 +92,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                     <FaCheckCircle className="ms-2 text-success" />
                   )}
                 </h6>
-                {criterion.imperative === "should" && (
+                {criterion.imperative === CriterionImperative.Must && (
                   <div>
                     <small
                       style={{ fontSize: "0.6rem" }}
@@ -162,7 +166,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   {criterion.id}: {criterion.name}
                 </span>
 
-                {criterion.imperative === CriterionImperative.Should ? (
+                {criterion.imperative === CriterionImperative.Must ? (
                   <span className="badge bg-success bg-small ms-4 align-middle">
                     Required
                   </span>
