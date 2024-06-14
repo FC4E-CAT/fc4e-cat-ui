@@ -72,7 +72,7 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
       <Row>
         <Col>
           <div className="">
-            <Form onSubmit={() => false}>
+            <Form className="form-binary-test" onSubmit={() => false}>
               <h5>{props.test.text}</h5>
               <Form.Check
                 inline
@@ -94,7 +94,7 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
                 checked={props.test.value === false}
                 onChange={handleValueChange}
               />
-            </Form>
+            {/* here ends the binary test */}</Form>
           </div>
 
           {props.test.evidence_url !== undefined && (
