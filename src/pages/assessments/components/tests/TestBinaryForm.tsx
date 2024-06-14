@@ -94,7 +94,8 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
                 checked={props.test.value === false}
                 onChange={handleValueChange}
               />
-            {/* here ends the binary test */}</Form>
+              {/* here ends the binary test */}
+            </Form>
           </div>
 
           {props.test.evidence_url !== undefined && (
