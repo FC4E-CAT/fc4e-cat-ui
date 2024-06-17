@@ -2,6 +2,12 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v1.2.2](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.2) (2024-06-17)
+
+### Added:
+
+- CAT-391 Display error when import json format has issues ([#209](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/209))
+
 ## [v1.2.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.1) (2024-06-13)
 
 ### Fixed:
