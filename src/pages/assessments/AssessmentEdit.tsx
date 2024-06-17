@@ -156,6 +156,7 @@ const AssessmentEdit = ({
     isPublic: false,
   });
 
+  const [importError, setImportError] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [validations, setValidations] = useState<ValidationResponse[]>([]);
   const { data, refetch: refetchGetValidationList } = useGetValidationList({
@@ -452,11 +453,17 @@ const AssessmentEdit = ({
 
       reader.onload = () => {
         try {
+          setImportError("");
+          setImportInfo(undefined);
           const contents = JSON.parse(reader.result as string);
           setImportInfo(contents);
           setAssessment({ ...contents, id: undefined, timestamp: "" });
         } catch (error) {
-          console.error("Error parsing JSON file:", error);
+          if (error instanceof Error) {
+            setImportError(error.message);
+          } else {
+            console.log(error);
+          }
         }
       };
       reader.readAsText(file);
@@ -748,16 +755,33 @@ const AssessmentEdit = ({
                         </div>
                       </>
                     )}
-                    {!importDone && importInfo !== undefined && (
+                    {!importError &&
+                      !importDone &&
+                      importInfo !== undefined && (
+                        <>
+                          <Alert variant="danger">
+                            <div>
+                              <FaTimesCircle className="me-2" />
+                              <span className="align-middle">
+                                <strong className="me-2">
+                                  Invalid Assessment!
+                                </strong>
+                                - Please try to import a different file...
+                              </span>
+                            </div>
+                          </Alert>
+                        </>
+                      )}
+                    {importError && (
                       <>
                         <Alert variant="danger">
                           <div>
                             <FaTimesCircle className="me-2" />
                             <span className="align-middle">
                               <strong className="me-2">
-                                Invalid Assessment!
+                                Invalid JSON Format!
                               </strong>
-                              - Please try to import a different file...
+                              {importError}
                             </span>
                           </div>
                         </Alert>
