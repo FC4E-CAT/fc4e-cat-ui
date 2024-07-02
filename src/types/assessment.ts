@@ -118,13 +118,8 @@ export enum MetricAlgorithm {
   Single = "single",
 }
 
-/** Each metric includes a benchmark. For now, we only deal with equal than greater kind  */
-export interface BenchmarkEqualGreaterThan {
-  equal_greater_than: number | string;
-}
-
-/** Each benchmark will gonna have different types - right now only one type is supported  */
-export type Benchmark = BenchmarkEqualGreaterThan;
+/** Each benchmark will gonna have different types  */
+export type Benchmark = Record<string, string | number>;
 
 /** Each metric has a list of tests. Test can be of different kinds */
 export interface TestBinary {

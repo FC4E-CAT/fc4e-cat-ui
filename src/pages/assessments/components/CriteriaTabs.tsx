@@ -57,13 +57,6 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
   }, [props]);
 
   props.principles.forEach((principle) => {
-    // comment to not push principle lable to navigation list
-    // navs.push(
-    //   <span className="mt-2 text-muted" key={principle.id}>
-    //     {principle.id} - {principle.name}:
-    //   </span>,
-    // );
-
     principle.criteria.forEach((criterion) => {
       navs.push(
         <Nav.Item key={criterion.id} className="cat-crit-tab">
@@ -118,8 +111,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       criterion.metric.tests.forEach((test) => {
         if (test.type === "binary") {
           testList.push(
-            <div className="border mt-4">
-              <div className="cat-test-div" key={test.id}>
+            <div className="border mt-4" key={test.id}>
+              <div className="cat-test-div">
                 <TestBinaryForm
                   test={test}
                   onTestChange={props.onTestChange}
@@ -132,8 +125,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
           );
         } else if (test.type === "value") {
           testList.push(
-            <div className="border mt-4">
-              <div className="cat-test-div" key={test.id}>
+            <div className="border mt-4" key={test.id}>
+              <div className="cat-test-div">
                 <TestValueForm
                   test={test}
                   onTestChange={props.onTestChange}
