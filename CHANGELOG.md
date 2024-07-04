@@ -2,6 +2,17 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v1.2.3](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.3) (2024-07-04)
+
+### Added:
+
+- CAT-399 Support max mode in criteria and equal_less_than mode in benc… ([#212](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/212))
+- CAT-420 support for locked thresholds ([#213](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/213))
+
+### Fixed:
+
+- CAT-420 Update threshold locked functionality ([#214](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/214))
+
 ## [v1.2.2](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.2) (2024-06-17)
 
 ### Added:

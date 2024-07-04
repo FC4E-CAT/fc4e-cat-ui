@@ -26,6 +26,12 @@ export function evalMetric(metric: Metric): {
       if (sum === null || item.result === null) return null;
       return sum + item.result;
     }, 0);
+  } else if (metric.algorithm === "max") {
+    value = metric.tests.reduce((max: number | null, item: AssessmentTest) => {
+      // if any of the test values are null (not filled-in) designate the whole metric value/result as null
+      if (max === null || item.result === null) return null;
+      return Math.max(item.result, max);
+    }, -Infinity);
   }
   // if all the tests are filled-in and a value has been produced calculate also the rating
   if (value !== null) {
