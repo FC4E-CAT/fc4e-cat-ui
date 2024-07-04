@@ -3,10 +3,18 @@
  */
 
 // import { useState } from "react"
-import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Form,
+  InputGroup,
+  OverlayTrigger,
+  Row,
+  Tooltip,
+} from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { AssessmentTest, TestValue } from "@/types";
-import { FaRegQuestionCircle } from "react-icons/fa";
+import { FaLock, FaRegQuestionCircle } from "react-icons/fa";
 import { useState } from "react";
 
 interface AssessmentTestProps {
@@ -103,6 +111,8 @@ export const TestValueForm = (props: AssessmentTestProps) => {
     props.onTestChange(props.principleId, props.criterionId, newTest);
   }
 
+  console.log(props.test);
+
   return (
     <div>
       <Row>
@@ -167,7 +177,23 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleValueChange(TestValueEventType.Threshold, e)
                       }
+                      disabled={props.test.locked_threshold}
                     />
+                    {props.test.locked_threshold && (
+                      <OverlayTrigger
+                        key="top"
+                        placement="top"
+                        overlay={
+                          <Tooltip id={`tooltip-top`}>
+                            This threshold is predefined (non-editable)
+                          </Tooltip>
+                        }
+                      >
+                        <InputGroup.Text id="label-second-value">
+                          <FaLock />
+                        </InputGroup.Text>
+                      </OverlayTrigger>
+                    )}
                   </InputGroup>
                 </Row>
               </>
