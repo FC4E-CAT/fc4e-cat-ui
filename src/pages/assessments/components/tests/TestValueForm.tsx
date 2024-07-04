@@ -177,9 +177,9 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleValueChange(TestValueEventType.Threshold, e)
                       }
-                      disabled={props.test.locked_threshold}
+                      disabled={props.test.threshold_locked}
                     />
-                    {props.test.locked_threshold && (
+                    {props.test.threshold_locked && (
                       <OverlayTrigger
                         key="top"
                         placement="top"
