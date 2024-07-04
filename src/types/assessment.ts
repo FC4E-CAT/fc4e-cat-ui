@@ -146,7 +146,7 @@ export interface TestValue {
   threshold?: number | null;
   value_name: string;
   threshold_name?: string;
-  locked_threshold?: boolean;
+  threshold_locked?: boolean;
   benchmark: Benchmark;
   evidence_url?: string[];
 }
