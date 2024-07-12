@@ -1,22 +1,16 @@
 import { useEffect, useRef, useState, useContext, useCallback } from "react";
 import Markdown from "react-markdown";
 import { AuthContext } from "@/auth";
-import {
-  useGetProfile,
-  useGetTemplate,
-  useGetValidationDetails,
-  useGetValidationList,
-} from "@/api";
+import { useGetAsmtEligibility, useGetProfile, useGetTemplate } from "@/api";
 import {
   Assessment,
   AssessmentSubject,
   AssessmentTest,
   CriterionImperative,
   Criterion,
-  ValidationResponse,
-  ActorOrganisationMapping,
   AlertInfo,
   AssessmentEditMode,
+  ActorOrgAsmtType,
 } from "@/types";
 import { useParams } from "react-router";
 import {
@@ -51,14 +45,6 @@ import { AssessmentSelectActor } from "./components/AssessmentSelectActor";
 
 import { toast } from "react-hot-toast";
 
-const allowedActors = {
-  PID_AUTHORITY: 2,
-  PID_SERVICE_PROVIDER: 3,
-  PID_MANAGER: 5,
-  PID_OWNER: 6,
-  PID_SCHEME: 9,
-};
-
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
 };
@@ -84,11 +70,15 @@ const AssessmentEdit = ({
     id: string;
     name: string;
   }>();
+  const [asmtType, setAsmtType] = useState<{
+    id: number;
+    name: string;
+  }>();
   const alert = useRef<AlertInfo>({
     message: "",
   });
   const [templateData, setTemplateData] = useState<Assessment>();
-  const { valID, asmtID } = useParams();
+  const { asmtId } = useParams();
 
   // guidance state
   const [guide, setGuide] = useState<Guide>({
@@ -124,20 +114,11 @@ const AssessmentEdit = ({
   // a refresh in the criteria sub-tab component and select the first
   // criterion as an active sub-tab
   const [resetCriterionTab, setResetCriterionTab] = useState(false);
-
-  const validationID = valID !== undefined ? valID : "";
-  const [vldid, setVldid] = useState<string>();
   const [importInfo, setImportInfo] = useState<Assessment>();
-  const qValidation = useGetValidationDetails({
-    validation_id: vldid!,
-    token: keycloak?.token || "",
-    isRegistered: registered,
-    adminMode: false,
-  });
 
   const qTemplate = useGetTemplate(
-    1,
-    qValidation.data?.actor_id || actor?.id,
+    asmtType?.id || 0,
+    actor?.id,
     keycloak?.token || "",
     registered,
   );
@@ -147,7 +128,7 @@ const AssessmentEdit = ({
     isRegistered: registered,
   });
 
-  const asmtNumID = asmtID !== undefined ? asmtID : "";
+  const asmtNumID = asmtId !== undefined ? asmtId : "";
 
   const qAssessment = useGetAssessment({
     id: asmtNumID,
@@ -158,8 +139,8 @@ const AssessmentEdit = ({
 
   const [importError, setImportError] = useState<string>("");
   const [page, setPage] = useState<number>(1);
-  const [validations, setValidations] = useState<ValidationResponse[]>([]);
-  const { data, refetch: refetchGetValidationList } = useGetValidationList({
+  const [actorMap, setActorMap] = useState<ActorOrgAsmtType[]>([]);
+  const { data, refetch: refetchGetAsmtEligibility } = useGetAsmtEligibility({
     size: 100,
     page: page,
     sortBy: "asc",
@@ -174,52 +155,25 @@ const AssessmentEdit = ({
   useEffect(() => {
     if (data?.content) {
       // if we are on the first page replace previous content
+
       if (page === 1) {
-        setValidations(data.content);
+        setActorMap(data.content);
       } else {
-        setValidations((validations) => [...validations, ...data.content]);
+        setActorMap((actorMap) => [...actorMap, ...data.content]);
       }
 
       if (data?.number_of_page < data?.total_pages) {
         setPage((page) => page + 1);
-        refetchGetValidationList();
+        refetchGetAsmtEligibility();
       }
     }
-  }, [data, refetchGetValidationList, page, validations]);
-
-  // After retrieving user's valitions we create a struct for the option boxes creation
-  const [actorsOrgsMap, setActorsOrgsMap] = useState<
-    ActorOrganisationMapping[]
-  >([]);
-  useEffect(() => {
-    const filt = validations
-      // We only allow assessment creation for APPROVED validations and
-      // specific actors
-      .filter((v: ValidationResponse) => {
-        return mode === AssessmentEditMode.Import && importInfo?.actor?.id
-          ? v["status"] === "APPROVED" &&
-              v["actor_id"] === importInfo?.actor?.id
-          : v["status"] === "APPROVED" &&
-              Object.values(allowedActors).includes(v["actor_id"]);
-      })
-      .map((filtered: ValidationResponse) => {
-        return {
-          actor_name: filtered.actor_name,
-          actor_id: filtered.actor_id,
-          organisation_id: filtered.organisation_id,
-          organisation_name: filtered.organisation_name,
-          validation_id: filtered.id,
-        } as ActorOrganisationMapping;
-      })
-      .sort((a, b) => (a.actor_id > b.actor_id ? 1 : -1));
-    setActorsOrgsMap(filt);
-  }, [validations, mode, assessment, importInfo]);
+  }, [data, refetchGetAsmtEligibility, page, actorMap]);
 
   const mutationCreateAssessment = useCreateAssessment(keycloak?.token || "");
 
   const mutationUpdateAssessment = useUpdateAssessment(
     keycloak?.token || "",
-    asmtID,
+    asmtId,
   );
 
   function handleResetCriterionTabComplete() {
@@ -243,11 +197,9 @@ const AssessmentEdit = ({
   }
 
   function handleCreateAssessment() {
-    if (templateId && vldid && assessment && checkRequiredFields(assessment)) {
+    if (templateId && assessment && checkRequiredFields(assessment)) {
       const promise = mutationCreateAssessment
         .mutateAsync({
-          validation_id: parseInt(vldid),
-          template_id: templateId,
           assessment_doc: assessment,
         })
         .catch((err) => {
@@ -297,7 +249,7 @@ const AssessmentEdit = ({
   }
 
   function handleUpdateAssessment(exit: boolean) {
-    if (assessment && asmtID && checkRequiredFields(assessment)) {
+    if (assessment && asmtId && checkRequiredFields(assessment)) {
       const promise = mutationUpdateAssessment
         .mutateAsync({
           assessment_doc: assessment,
@@ -334,41 +286,57 @@ const AssessmentEdit = ({
   }
 
   function handleSelectActor(
-    valId: string,
-    actorName: string,
     actorId: number,
-    orgName: string,
+    actorName: string,
     orgId: string,
+    orgName: string,
+    asmtTypeId: number,
+    asmtTypeName: string,
   ) {
-    setVldid(valId);
-    handleActorChange(actorName, actorId, orgName, orgId);
+    handleActorChange(
+      actorId,
+      actorName,
+      orgId,
+      orgName,
+      asmtTypeId,
+      asmtTypeName,
+    );
   }
 
   // This is the callback to run upon Actor-Organisation option selection
   const handleActorChange = useCallback(
     (
-      actor_name: string,
       actor_id: number,
-      organisation_name: string,
+      actor_name: string,
       organisation_id: string,
+      organisation_name: string,
+      asmtTypeId: number,
+      asmtTypeName: string,
     ) => {
       if (assessment) {
         setAssessment({
           ...assessment,
           actor: {
-            name: actor_name,
             id: actor_id,
+            name: actor_name,
           },
           organisation: {
-            name: organisation_name,
             id: organisation_id,
+            name: organisation_name,
+          },
+          assessment_type: {
+            id: asmtTypeId,
+            name: asmtTypeName,
+            description: assessment.assessment_type.description,
           },
         });
         setActor({ id: actor_id, name: actor_name });
         setOrganisation({ id: organisation_id, name: organisation_name });
+        setAsmtType({ id: asmtTypeId, name: asmtTypeName });
       } else {
         setActor({ id: actor_id, name: actor_name });
         setOrganisation({ id: organisation_id, name: organisation_name });
+        setAsmtType({ id: asmtTypeId, name: asmtTypeName });
       }
     },
     [assessment],
@@ -399,6 +367,11 @@ const AssessmentEdit = ({
           name: organisation?.name || templateData?.organisation.name || "",
           id: organisation?.id || templateData?.organisation.id || "",
         },
+        assessment_type: {
+          name: asmtType?.name || templateData?.assessment_type.name || "",
+          id: asmtType?.id || templateData?.assessment_type.id || 0,
+          description: templateData?.assessment_type.description || "",
+        },
         principles:
           templateData?.principles || prev_assessment?.principles || [],
       }));
@@ -410,14 +383,13 @@ const AssessmentEdit = ({
         ? true
         : false,
     );
-  }, [actor, organisation, templateData, mode]);
+  }, [actor, organisation, templateData, mode, asmtType]);
 
   // Handle the resetting of assessment templates
   useEffect(() => {
     if (mode !== AssessmentEditMode.Edit && qTemplate.data) {
       const data = qTemplate.data?.template_doc;
-      data.organisation.id = qValidation.data?.organisation_id || "";
-      data.organisation.name = qValidation.data?.organisation_name || "";
+
       // setAssessment(data);
       setTemplateData(data);
       setTemplateID(qTemplate.data.id);
@@ -426,7 +398,7 @@ const AssessmentEdit = ({
       const data = qAssessment.data.assessment_doc;
       setTemplateData(data);
     }
-  }, [qTemplate.data, qValidation, mode, qAssessment.data]);
+  }, [qTemplate.data, mode, qAssessment.data]);
 
   function handleSubjectChange(subject: AssessmentSubject) {
     if (assessment) {
@@ -710,6 +682,15 @@ const AssessmentEdit = ({
                             </strong>
                           </div>
                           <hr />
+                          {importInfo.assessment_type && (
+                            <div>
+                              <small>
+                                <strong>type of assessment:</strong>{" "}
+                                {importInfo?.assessment_type?.name} - [id:{" "}
+                                {importInfo?.assessment_type?.id}]
+                              </small>
+                            </div>
+                          )}
                           {importInfo.timestamp && (
                             <div>
                               <small>
@@ -795,13 +776,16 @@ const AssessmentEdit = ({
                 eventKey={`step-${1 + extraTab}`}
               >
                 <AssessmentSelectActor
-                  actorsOrgsMap={actorsOrgsMap}
+                  actorMap={actorMap}
                   actorId={actor?.id}
-                  asmtID={asmtID}
-                  validationID={validationID}
-                  orgName={organisation?.name}
+                  asmtId={asmtId}
+                  orgId={organisation?.id}
+                  asmtTypeId={asmtType?.id}
+                  importAsmtTypeId={importInfo?.assessment_type?.id}
+                  importActorId={importInfo?.actor?.id}
                   templateDataActorId={templateData?.actor.id}
-                  templateDataOrgName={templateData?.organisation.name}
+                  templateDataOrgId={templateData?.organisation.id}
+                  templateDataAsmtTypeId={templateData?.assessment_type.id}
                   onSelectActor={handleSelectActor}
                 />
               </Tab.Pane>

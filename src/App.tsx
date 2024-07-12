@@ -1,5 +1,4 @@
 import { Container } from "react-bootstrap";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -106,7 +105,7 @@ function App() {
                     />
                   </Route>
                   <Route
-                    path="/assessments/:asmtID"
+                    path="/assessments/:asmtId"
                     element={<ProtectedRoute />}
                   >
                     {/* Use AssessmentEdit component with mode = edit */}

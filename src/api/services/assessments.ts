@@ -15,11 +15,7 @@ import { handleBackendError } from "@/utils";
 export function useCreateAssessment(token: string) {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (postData: {
-      validation_id: number;
-      template_id: number;
-      assessment_doc: Assessment;
-    }) => {
+    mutationFn: (postData: { assessment_doc: Assessment }) => {
       return APIClient(token).post("/assessments", postData);
     },
     // for the time being redirect to assessment list

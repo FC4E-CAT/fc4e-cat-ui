@@ -1,7 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { APIClient } from "@/api";
-import { ApiOptions, ApiUsers, UserAccess } from "@/types";
+import {
+  ApiOptions,
+  ApiUsers,
+  AsmtEligibilityResponse,
+  UserAccess,
+} from "@/types";
 import { UserResponse, UserListResponse } from "@/types";
 import { handleBackendError } from "@/utils";
 
@@ -11,6 +16,22 @@ export const useGetProfile = ({ token, isRegistered }: ApiOptions) =>
     queryFn: async () => {
       const response =
         await APIClient(token).get<UserResponse>(`/users/profile`);
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
+export const useGetAsmtEligibility = ({ token, isRegistered }: ApiOptions) =>
+  useQuery({
+    queryKey: ["assessment-eligibility"],
+    queryFn: async () => {
+      const response = await APIClient(token).get<AsmtEligibilityResponse>(
+        `/users/assessment-eligibility`,
+      );
       return response.data;
     },
     onError: (error: AxiosError) => {

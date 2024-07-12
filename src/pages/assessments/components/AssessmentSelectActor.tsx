@@ -4,27 +4,39 @@
  */
 
 import { Form } from "react-bootstrap";
-import { ActorOrganisationMapping } from "@/types";
+import { ActorOrgAsmtType } from "@/types";
 
 interface AssessmentSelectActorProps {
-  actorsOrgsMap: ActorOrganisationMapping[];
-  asmtID?: string;
-  validationID: string;
+  actorMap: ActorOrgAsmtType[];
+  asmtId?: string;
   templateDataActorId?: number;
-  templateDataOrgName?: string;
+  templateDataOrgId?: string;
+  templateDataAsmtTypeId?: number;
   actorId?: number;
-  orgName?: string;
+  orgId?: string;
+  asmtTypeId?: number;
+  importAsmtTypeId?: number;
+  importActorId?: number;
   onSelectActor: (
-    valId: string,
-    actorName: string,
     actorId: number,
-    orgName: string,
+    actorName: string,
     orgId: string,
+    orgName: string,
+    asmtTypeId: number,
+    asmtTypeName: string,
   ) => void;
 }
 
 export const AssessmentSelectActor = (props: AssessmentSelectActorProps) => {
   let checked = false;
+  let filteredActors = props.actorMap;
+  if (props.importAsmtTypeId && props.importActorId) {
+    filteredActors = props.actorMap.filter(
+      (item) =>
+        item.assessment_type_id === props.importAsmtTypeId &&
+        item.actor_id === props.importActorId,
+    );
+  }
   return (
     <>
       <span className="mb-3">
@@ -37,54 +49,57 @@ export const AssessmentSelectActor = (props: AssessmentSelectActorProps) => {
           style={{ maxHeight: "30vh" }}
           className="overflow-auto px-4 py-2 border"
         >
-          {props.actorsOrgsMap &&
-            props.actorsOrgsMap.map((t, i) => {
-              if (props.actorId && props.orgName) {
+          {filteredActors &&
+            filteredActors.map((t, i) => {
+              if (props.actorId && props.orgId) {
                 checked =
                   props.actorId === t.actor_id &&
-                  props.orgName === t.organisation_name;
+                  props.orgId === t.organisation_id &&
+                  props.asmtTypeId === t.assessment_type_id;
               } else {
                 checked =
                   props.templateDataActorId === t.actor_id &&
-                  props.templateDataOrgName === t.organisation_name;
+                  props.templateDataOrgId === t.organisation_id &&
+                  props.templateDataAsmtTypeId === t.assessment_type_id;
               }
-              if ((props.validationID || props.asmtID) && checked) {
+
+              if (props.asmtId && checked) {
                 return (
                   <Form.Check
                     key={`type-${i}`}
-                    value={t.validation_id}
                     disabled={!checked}
                     type="radio"
                     aria-label={`radio-${i}`}
-                    label={`${t.actor_name} at ${t.organisation_name}`}
+                    label={`${t.actor_name} at ${t.organisation_name} - ${t.assessment_type_name}`}
                     onChange={() => {
                       props.onSelectActor(
-                        t.validation_id.toString(),
-                        t.actor_name,
                         t.actor_id,
-                        t.organisation_name,
+                        t.actor_name,
                         t.organisation_id,
+                        t.organisation_name,
+                        t.assessment_type_id,
+                        t.assessment_type_name,
                       );
                     }}
                     checked={checked}
                   />
                 );
-              } else if (!props.validationID && !props.asmtID) {
+              } else if (!props.asmtId) {
                 return (
                   <Form.Check
                     key={`type-${i}`}
-                    value={t.validation_id}
                     type="radio"
                     id={`radio-${i}`}
                     aria-label={`radio-${i}`}
-                    label={`${t.actor_name} at ${t.organisation_name}`}
+                    label={`${t.actor_name} at ${t.organisation_name} - ${t.assessment_type_name}`}
                     onChange={() => {
                       props.onSelectActor(
-                        t.validation_id.toString(),
-                        t.actor_name,
                         t.actor_id,
-                        t.organisation_name,
+                        t.actor_name,
                         t.organisation_id,
+                        t.organisation_name,
+                        t.assessment_type_id,
+                        t.assessment_type_name,
                       );
                     }}
                     checked={checked}
