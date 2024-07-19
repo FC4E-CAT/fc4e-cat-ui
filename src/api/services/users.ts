@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { APIClient } from "@/api";
 import {
@@ -25,14 +30,25 @@ export const useGetProfile = ({ token, isRegistered }: ApiOptions) =>
     enabled: isRegistered,
   });
 
-export const useGetAsmtEligibility = ({ token, isRegistered }: ApiOptions) =>
-  useQuery({
+export const useGetAsmtEligibility = ({
+  token,
+  isRegistered,
+  size,
+}: ApiOptions) =>
+  useInfiniteQuery({
     queryKey: ["assessment-eligibility"],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<AsmtEligibilityResponse>(
-        `/users/assessment-eligibility`,
+        `/users/assessment-eligibility?size=${size}&page=${pageParam}`,
       );
       return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
