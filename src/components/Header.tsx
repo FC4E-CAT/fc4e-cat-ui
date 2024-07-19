@@ -132,6 +132,9 @@ function Header() {
                   >
                     Validations
                   </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/assessments/view">
+                    Assessments
+                  </NavDropdown.Item>
                 </NavDropdown>
               </Nav>
             )}

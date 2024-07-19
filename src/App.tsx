@@ -28,6 +28,7 @@ import { AssessmentEditMode } from "./types";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminValidations from "./pages/admin/AdminValidations";
 import PidSelection from "./pages/PidSelection";
+import AssessmentsTable from "./pages/admin/AssessmentsTable";
 
 const queryClient = new QueryClient();
 
@@ -125,6 +126,9 @@ function App() {
                     path="/public-assessments"
                     element={<AssessmentsList listPublic={true} />}
                   />
+                  <Route path="/assessments/view" element={<ProtectedRoute />}>
+                    <Route index element={<AssessmentsTable />} />
+                  </Route>
                   <Route path="/profile" element={<ProtectedRoute />}>
                     <Route index element={<Profile />} />
                   </Route>

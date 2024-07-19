@@ -8,6 +8,7 @@ import {
   AssessmentFiltersType,
   AssessmentListResponse,
   AssessmentSubjectListResponse,
+  AssessmentAdminDetailsResponse,
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
@@ -154,6 +155,28 @@ export function useGetAssessment({
       (isPublic && id !== "") ||
       (!!token && isRegistered && id !== "") ||
       id !== "",
+  });
+}
+
+export function useGetAdminAssessment({
+  token,
+  isRegistered,
+}: {
+  token?: string;
+  isRegistered?: boolean;
+}) {
+  return useQuery({
+    queryKey: ["assessment"],
+    queryFn: async () => {
+      const url = `/admin/assessments`;
+      const response =
+        await APIClient(token).get<AssessmentAdminDetailsResponse>(url);
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered,
   });
 }
 
