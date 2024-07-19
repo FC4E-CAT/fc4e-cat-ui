@@ -138,10 +138,10 @@ const AssessmentEdit = ({
   });
 
   const [importError, setImportError] = useState<string>("");
-  const [page, setPage] = useState<number>(1);
+  const [page] = useState<number>(1);
   const [actorMap, setActorMap] = useState<ActorOrgAsmtType[]>([]);
-  const { data, refetch: refetchGetAsmtEligibility } = useGetAsmtEligibility({
-    size: 100,
+  const { data, fetchNextPage, hasNextPage } = useGetAsmtEligibility({
+    size: 10,
     page: page,
     sortBy: "asc",
     token: keycloak?.token || "",
@@ -153,21 +153,15 @@ const AssessmentEdit = ({
 
   // TODO: Get all available pages in an infinite scroll not all sequentially.
   useEffect(() => {
-    if (data?.content) {
-      // if we are on the first page replace previous content
-
-      if (page === 1) {
-        setActorMap(data.content);
-      } else {
-        setActorMap((actorMap) => [...actorMap, ...data.content]);
-      }
-
-      if (data?.number_of_page < data?.total_pages) {
-        setPage((page) => page + 1);
-        refetchGetAsmtEligibility();
+    if (data?.pages) {
+      data.pages.map((page) => {
+        setActorMap((actorMap) => [...actorMap, ...page.content]);
+      });
+      if (hasNextPage) {
+        fetchNextPage();
       }
     }
-  }, [data, refetchGetAsmtEligibility, page, actorMap]);
+  }, [data, hasNextPage, fetchNextPage]);
 
   const mutationCreateAssessment = useCreateAssessment(keycloak?.token || "");
 
