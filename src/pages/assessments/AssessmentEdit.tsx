@@ -153,14 +153,20 @@ const AssessmentEdit = ({
 
   // TODO: Get all available pages in an infinite scroll not all sequentially.
   useEffect(() => {
+    // gather all actor/org/type mappings in one array
+    let actorMappings: ActorOrgAsmtType[] = [];
+
+    // iterate over backend pages and gather all items in the actorMappings array
     if (data?.pages) {
       data.pages.map((page) => {
-        setActorMap((actorMap) => [...actorMap, ...page.content]);
+        actorMappings = [...actorMappings, ...page.content];
       });
       if (hasNextPage) {
         fetchNextPage();
       }
     }
+
+    setActorMap(actorMappings);
   }, [data, hasNextPage, fetchNextPage]);
 
   const mutationCreateAssessment = useCreateAssessment(keycloak?.token || "");
