@@ -174,6 +174,32 @@ export type ActorOrgAsmtType = {
   assessment_type_name: string;
 };
 
+export interface AssessmentAdminListItem {
+  id: string;
+  name: string;
+  user_id: string;
+  validation_id: number;
+  created_on: string;
+  updated_on: string;
+  type: string;
+  actor: string;
+  organisation: string;
+  published: boolean;
+  subject_name: string;
+  subject_type: string;
+  compliance: boolean | null;
+  ranking: number | null;
+}
+
+export interface AssessmentAdminDetailsResponse {
+  size_of_page: number;
+  number_of_page: number;
+  total_elements: number;
+  total_pages: number;
+  content: AssessmentAdminListItem[];
+  links: unknown[];
+}
+
 export interface AssessmentListItem {
   id: string;
   user_id: string;
