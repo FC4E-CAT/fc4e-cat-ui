@@ -3,7 +3,27 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import { useGetAdminAssessment } from "@/api";
 import { AuthContext } from "@/auth";
 import { AssessmentAdminListItem } from "@/types";
-import { FaCheckCircle } from "react-icons/fa";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { FaEye, FaFileExport, FaCheckCircle } from "react-icons/fa";
+
+const tooltipView = <Tooltip id="tooltip">View Assessment</Tooltip>;
+const tooltipExport = <Tooltip id="tooltip">Export Assessment</Tooltip>;
+
+// Custom styles for the table
+const customStyles = {
+  headCells: {
+    style: {
+      color: "#202124",
+      fontSize: "16px",
+      backgroundColor: "#F4F6F8",
+    },
+  },
+  rows: {
+    style: {
+      fontSize: "14px",
+    },
+  },
+};
 
 const AssessmentsTable: React.FC = () => {
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -13,63 +33,97 @@ const AssessmentsTable: React.FC = () => {
     isRegistered: registered || false,
   });
 
-  const customStyles = {
-    headCells: {
-      style: {
-        color: "#202124",
-        fontSize: "16px",
-        backgroundColor: "#F4F6F8",
-      },
-    },
-    rows: {
-      style: {
-        fontSize: "14px",
-      },
-    },
-  };
+  const subTypeHeader = (
+    <>
+      Subject
+      <br />
+      Type / Name
+    </>
+  );
+
+  const nameCreatedOnHeader = (
+    <div className="row">
+      NName
+      <div className="row">
+        <span
+          style={{
+            color: "gray",
+            display: "block",
+            lineHeight: "1",
+            fontSize: "14px",
+          }}
+        >
+          Created On
+        </span>
+      </div>
+    </div>
+  );
 
   const columns: TableColumn<AssessmentAdminListItem>[] = [
-    { name: "Name", selector: (row) => row.name, sortable: true },
-    // { name: "Id", selector: (row) => row.id, sortable: true },
+    { name: "ID", selector: (row) => row.id, sortable: true, width: "100px" },
+    {
+      name: nameCreatedOnHeader,
+      cell: (row) => (
+        <div>
+          <div>{row.name}</div>
+          <div style={{ fontSize: "12px", color: "#6c757d" }}>
+            {new Date(row.created_on).toLocaleDateString()}
+          </div>
+        </div>
+      ),
+      sortable: true,
+      width: "200px",
+    },
     {
       name: "User ID",
-      selector: (row) => row.user_id,
+      selector: (row) => row.user_id.substring(0, 10),
       sortable: true,
       wrap: true,
     },
     { name: "Type", selector: (row) => row.type, sortable: true },
     {
-      name: "Subject Type",
-      selector: (row) => row.subject_type,
+      name: subTypeHeader,
+      selector: (row) => `${row.subject_type} / ${row.subject_name}`,
       sortable: true,
-    },
-    {
-      name: "Subject Name",
-      selector: (row) => row.subject_name,
-      sortable: true,
+      width: "200px",
     },
     {
       name: "Organisation",
       selector: (row) => row.organisation,
       sortable: true,
       wrap: true,
-      width: "200px",
+      width: "300px",
     },
     {
       name: "Compliance",
       selector: (row) => (row.compliance ? "Yes" : "No"),
       sortable: true,
+      width: "150px",
     },
     {
-      name: "Ranking",
-      selector: (row) => row.ranking?.toString() || "N/A",
-      sortable: true,
-      width: "110px",
-    },
-    {
-      name: "Created On",
-      selector: (row) => new Date(row.created_on).toLocaleDateString(),
-      sortable: true,
+      name: "Actions",
+      cell: () => (
+        <div className="btn-group">
+          <OverlayTrigger placement="top" overlay={tooltipView}>
+            <Button
+              variant="light"
+              size="sm"
+              onClick={() => (window.location.href = ``)}
+            >
+              <FaEye />
+            </Button>
+          </OverlayTrigger>
+          <OverlayTrigger placement="top" overlay={tooltipExport}>
+            <Button
+              variant="light"
+              size="sm"
+              onClick={() => (window.location.href = ``)}
+            >
+              <FaFileExport />
+            </Button>
+          </OverlayTrigger>
+        </div>
+      ),
     },
   ];
 
@@ -89,7 +143,7 @@ const AssessmentsTable: React.FC = () => {
       </h4>
       <DataTable
         columns={columns}
-        data={data.content}
+        data={data}
         defaultSortFieldId={1}
         highlightOnHover
         theme="default"

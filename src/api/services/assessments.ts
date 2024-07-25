@@ -164,10 +164,22 @@ export function useGetAdminAssessment({
   return useQuery({
     queryKey: ["assessment"],
     queryFn: async () => {
-      const url = `/admin/assessments`;
-      const response =
-        await APIClient(token).get<AssessmentAdminDetailsResponse>(url);
-      return response.data;
+      let page = 1;
+      let allData: AssessmentAdminDetailsResponse["content"] = [];
+      let totalPages = 1;
+
+      do {
+        const url = `/admin/assessments?page=${page}&size=10`;
+        const response =
+          await APIClient(token).get<AssessmentAdminDetailsResponse>(url);
+        const data = response.data;
+
+        allData = allData.concat(data.content);
+        totalPages = data.total_pages;
+        page += 1;
+      } while (page <= totalPages);
+
+      return allData;
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
