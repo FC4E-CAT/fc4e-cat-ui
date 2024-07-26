@@ -186,8 +186,8 @@ export interface AssessmentAdminListItem {
   published: boolean;
   subject_name: string;
   subject_type: string;
-  compliance: boolean | null;
-  ranking: number | null;
+  compliance: boolean;
+  ranking: number;
 }
 
 export interface AssessmentAdminDetailsResponse {
@@ -237,4 +237,12 @@ export enum AssessmentEditMode {
   Create = "create",
   Edit = "edit",
   Import = "import",
+}
+
+export interface AssessmentTypeResponse {
+  size_of_page: number;
+  number_of_page: number;
+  total_elements: number;
+  total_pages: number;
+  content: AssessmentType[];
 }

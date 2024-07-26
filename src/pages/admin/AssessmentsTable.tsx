@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { useGetAdminAssessment } from "@/api";
+import { useGetAdminAssessment, useGetAssessmentTypes } from "@/api";
 import { AuthContext } from "@/auth";
 import { AssessmentAdminListItem } from "@/types";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaEye, FaFileExport, FaCheckCircle } from "react-icons/fa";
 
 const tooltipView = <Tooltip id="tooltip">View Assessment</Tooltip>;
@@ -28,10 +28,43 @@ const customStyles = {
 const AssessmentsTable: React.FC = () => {
   const { keycloak, registered } = useContext(AuthContext)!;
 
-  const { data, isLoading, error } = useGetAdminAssessment({
+  const { data } = useGetAdminAssessment({
     token: keycloak?.token || "",
     isRegistered: registered || false,
   });
+
+  const { data: typeOptions } = useGetAssessmentTypes({
+    token: keycloak?.token || "",
+    isRegistered: registered || true,
+  });
+
+  const [filterText, setFilterText] = useState("");
+  const [filterType, setFilterType] = useState("");
+
+  const handleClear = () => {
+    setFilterText("");
+    setFilterType("");
+  };
+
+  const filteredData =
+    data?.filter((assessment: AssessmentAdminListItem) => {
+      const matchesText =
+        assessment.name.toLowerCase().includes(filterText.toLowerCase()) ||
+        assessment.id.toLowerCase().includes(filterText.toLowerCase()) ||
+        assessment.user_id.toLowerCase().includes(filterText.toLowerCase()) ||
+        assessment.subject_name
+          .toLowerCase()
+          .includes(filterText.toLowerCase()) ||
+        assessment.organisation
+          .toLowerCase()
+          .includes(filterText.toLowerCase());
+
+      const matchesType = filterType
+        ? assessment.type.toLowerCase() === filterType.toLowerCase()
+        : true;
+
+      return matchesText && matchesType;
+    }) || [];
 
   const subTypeHeader = (
     <>
@@ -127,23 +160,48 @@ const AssessmentsTable: React.FC = () => {
     },
   ];
 
-  if (error) {
-    return <div>Error loading assessments: {error.message}</div>;
-  }
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <>
       <h4 className="cat-view-heading">
         <FaCheckCircle className="me-2" />
         All Assessments
       </h4>
+      <div className="row mb-3 mt-3">
+        <div className="col-4">
+          <Form.Select
+            id="typeFilter"
+            name="typeFilter"
+            aria-label="Type Filter"
+            onChange={(e) => setFilterType(e.target.value)}
+            value={filterType}
+          >
+            <option value="">All Types</option>
+            {typeOptions?.map((option) => (
+              <option key={option.id} value={option.name}>
+                {option.name}
+              </option>
+            ))}
+          </Form.Select>
+        </div>
+        <div className="col-7">
+          <Form.Control
+            id="searchField"
+            name="filterText"
+            aria-label="Search Input"
+            placeholder="Search ..."
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+          />
+        </div>
+        <div className="col-1">
+          <Button variant="outline-primary" onClick={handleClear}>
+            Clear
+          </Button>
+        </div>
+      </div>
       <DataTable
         columns={columns}
-        data={data}
+        data={filteredData}
         defaultSortFieldId={1}
         highlightOnHover
         theme="default"

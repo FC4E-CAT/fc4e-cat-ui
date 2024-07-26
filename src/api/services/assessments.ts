@@ -9,6 +9,7 @@ import {
   AssessmentListResponse,
   AssessmentSubjectListResponse,
   AssessmentAdminDetailsResponse,
+  AssessmentTypeResponse,
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
@@ -246,5 +247,26 @@ export function useGetObjects({
       return handleBackendError(error);
     },
     enabled: !!actorId,
+  });
+}
+
+export function useGetAssessmentTypes({
+  token,
+  isRegistered,
+}: {
+  token?: string;
+  isRegistered?: boolean;
+}) {
+  return useQuery({
+    queryKey: ["assessmentTypes"],
+    queryFn: async () => {
+      const url = `/codelist/assessment-types?size=100&page=1`;
+      const response = await APIClient(token).get<AssessmentTypeResponse>(url);
+      return response.data.content;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: isRegistered,
   });
 }
