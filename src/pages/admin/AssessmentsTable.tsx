@@ -1,12 +1,15 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { useGetAdminAssessment, useGetAssessmentTypes } from "@/api";
+import {
+  useGetAdminAssessment,
+  useGetAdminAssessmentById,
+  useGetAssessmentTypes,
+} from "@/api";
 import { AuthContext } from "@/auth";
 import { AssessmentAdminListItem } from "@/types";
 import { Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { FaEye, FaFileExport, FaCheckCircle } from "react-icons/fa";
+import { FaFileExport, FaCheckCircle } from "react-icons/fa";
 
-const tooltipView = <Tooltip id="tooltip">View Assessment</Tooltip>;
 const tooltipExport = <Tooltip id="tooltip">Export Assessment</Tooltip>;
 
 // Custom styles for the table
@@ -45,6 +48,26 @@ const AssessmentsTable: React.FC = () => {
     setFilterText("");
     setFilterType("");
   };
+
+  const [asmtNumID, setAsmtNumID] = useState<string>("");
+  const qAssessment = useGetAdminAssessmentById({
+    id: asmtNumID,
+    token: keycloak?.token || "",
+    isRegistered: registered || false,
+  });
+
+  useEffect(() => {
+    if (qAssessment.data) {
+      const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+        JSON.stringify(qAssessment.data.assessment_doc, null, 2),
+      )}`;
+      const link = document.createElement("a");
+      link.href = jsonString;
+      link.download = `${qAssessment.data.assessment_doc.id}.json`;
+
+      link.click();
+    }
+  }, [qAssessment]);
 
   const filteredData =
     data?.filter((assessment: AssessmentAdminListItem) => {
@@ -136,55 +159,28 @@ const AssessmentsTable: React.FC = () => {
     {
       name: "Actions",
       cell: (row) => (
-        <div>
-          <OverlayTrigger placement="top" overlay={tooltipView}>
-            <Button
-              variant="light"
-              size="sm"
-              onClick={() => (window.location.href = ``)}
-              style={{ marginRight: "10px" }}
-            >
-              <FaEye />
-            </Button>
-          </OverlayTrigger>
-          <OverlayTrigger placement="top" overlay={tooltipExport}>
-            <Button
-              variant="light"
-              size="sm"
-              onClick={() => exportAssessment(row)}
-            >
-              <FaFileExport />
-            </Button>
-          </OverlayTrigger>
-        </div>
+        <OverlayTrigger placement="top" overlay={tooltipExport}>
+          <Button
+            variant="light"
+            size="sm"
+            onClick={() => setAsmtNumID(row.id)}
+          >
+            <FaFileExport />
+          </Button>
+        </OverlayTrigger>
       ),
-      width: "100px",
+      width: "110px",
     },
   ];
 
-  const exportAssessment = (assessment: AssessmentAdminListItem) => {
-    const dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(assessment, null, 2));
-    const downloadAnchorNode = document.createElement("a");
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute(
-      "download",
-      `assessment_${assessment.id}.json`,
-    );
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  };
-
   return (
-    <>
+    <div className="mb-4">
       <h4>
-        <FaCheckCircle className="me-2" />
+        <FaCheckCircle />
         <strong className="align-middle">All Assessments</strong>
       </h4>
-      <div className="row mb-3 mt-3">
-        <div className="col-4">
+      <div className="row mt-2 mb-2">
+        <div className="col">
           <Form.Select
             id="typeFilter"
             name="typeFilter"
@@ -200,17 +196,19 @@ const AssessmentsTable: React.FC = () => {
             ))}
           </Form.Select>
         </div>
-        <div className="col-7">
-          <Form.Control
-            id="searchField"
-            name="filterText"
-            aria-label="Search Input"
-            placeholder="Search ..."
-            value={filterText}
-            onChange={(e) => setFilterText(e.target.value)}
-          />
+        <div className="col">
+          <div className="d-flex justify-content-center">
+            <Form.Control
+              id="searchField"
+              name="filterText"
+              aria-label="Search Input"
+              placeholder="Search ..."
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+            />
+          </div>
         </div>
-        <div className="col-1">
+        <div className="col-1 d-md-flex justify-content-md-end">
           <Button variant="primary" onClick={handleClear}>
             Clear
           </Button>
@@ -225,7 +223,7 @@ const AssessmentsTable: React.FC = () => {
         customStyles={customStyles}
         pagination
       />
-    </>
+    </div>
   );
 };
 
