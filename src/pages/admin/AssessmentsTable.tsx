@@ -50,7 +50,6 @@ const AssessmentsTable: React.FC = () => {
     data?.filter((assessment: AssessmentAdminListItem) => {
       const matchesText =
         assessment.name.toLowerCase().includes(filterText.toLowerCase()) ||
-        assessment.id.toLowerCase().includes(filterText.toLowerCase()) ||
         assessment.user_id.toLowerCase().includes(filterText.toLowerCase()) ||
         assessment.subject_name
           .toLowerCase()
@@ -112,13 +111,14 @@ const AssessmentsTable: React.FC = () => {
       selector: (row) => row.user_id.substring(0, 10),
       sortable: true,
       wrap: true,
+      width: "120px",
     },
     { name: "Type", selector: (row) => row.type, sortable: true },
     {
       name: subTypeHeader,
       selector: (row) => `${row.subject_type} / ${row.subject_name}`,
       sortable: true,
-      width: "200px",
+      width: "150px",
     },
     {
       name: "Organisation",
@@ -131,17 +131,18 @@ const AssessmentsTable: React.FC = () => {
       name: "Compliance",
       selector: (row) => (row.compliance ? "Yes" : "No"),
       sortable: true,
-      width: "150px",
+      width: "140px",
     },
     {
       name: "Actions",
-      cell: () => (
-        <div className="btn-group">
+      cell: (row) => (
+        <div>
           <OverlayTrigger placement="top" overlay={tooltipView}>
             <Button
               variant="light"
               size="sm"
               onClick={() => (window.location.href = ``)}
+              style={{ marginRight: "10px" }}
             >
               <FaEye />
             </Button>
@@ -150,21 +151,37 @@ const AssessmentsTable: React.FC = () => {
             <Button
               variant="light"
               size="sm"
-              onClick={() => (window.location.href = ``)}
+              onClick={() => exportAssessment(row)}
             >
               <FaFileExport />
             </Button>
           </OverlayTrigger>
         </div>
       ),
+      width: "100px",
     },
   ];
 
+  const exportAssessment = (assessment: AssessmentAdminListItem) => {
+    const dataStr =
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(assessment, null, 2));
+    const downloadAnchorNode = document.createElement("a");
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute(
+      "download",
+      `assessment_${assessment.id}.json`,
+    );
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
   return (
     <>
-      <h4 className="cat-view-heading">
+      <h4>
         <FaCheckCircle className="me-2" />
-        All Assessments
+        <strong className="align-middle">All Assessments</strong>
       </h4>
       <div className="row mb-3 mt-3">
         <div className="col-4">
@@ -194,7 +211,7 @@ const AssessmentsTable: React.FC = () => {
           />
         </div>
         <div className="col-1">
-          <Button variant="outline-primary" onClick={handleClear}>
+          <Button variant="primary" onClick={handleClear}>
             Clear
           </Button>
         </div>
