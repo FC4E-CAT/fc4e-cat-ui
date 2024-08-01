@@ -89,12 +89,6 @@ export const TestValueForm = (props: AssessmentTestProps) => {
     if (newTest.value) {
       if (comparisonMode === "equal_greater_than") {
         result = newTest.value >= comparisonValue ? 1 : 0;
-        console.log(
-          comparisonMode,
-          newTest.value,
-          comparisonValue,
-          newTest.threshold,
-        );
       } else if (comparisonMode === "equal_less_than") {
         result = newTest.value <= comparisonValue ? 1 : 0;
       } else {
@@ -110,8 +104,6 @@ export const TestValueForm = (props: AssessmentTestProps) => {
     const newTest = { ...props.test, evidence_url: newURLS };
     props.onTestChange(props.principleId, props.criterionId, newTest);
   }
-
-  console.log(props.test);
 
   return (
     <div>

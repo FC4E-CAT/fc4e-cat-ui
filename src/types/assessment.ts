@@ -165,12 +165,13 @@ export interface ResultStats {
   optional: number;
 }
 
-export type ActorOrganisationMapping = {
-  actor_name: string;
+export type ActorOrgAsmtType = {
   actor_id: number;
+  actor_name: string;
   organisation_id: string;
   organisation_name: string;
-  validation_id: number;
+  assessment_type_id: number;
+  assessment_type_name: string;
 };
 
 export interface AssessmentAdminListItem {
@@ -208,6 +209,8 @@ export interface AssessmentListItem {
   template_id: number;
   published: boolean;
 }
+
+export type AsmtEligibilityResponse = ResponsePage<ActorOrgAsmtType[]>;
 
 export type AssessmentListResponse = ResponsePage<AssessmentListItem[]>;
 
