@@ -1,7 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { APIClient } from "@/api";
-import { ApiOptions, ApiUsers, UserAccess } from "@/types";
+import {
+  ApiOptions,
+  ApiUsers,
+  UserAccess,
+  ApiViewUsers,
+  UserView,
+} from "@/types";
 import { UserResponse, UserListResponse } from "@/types";
 import { handleBackendError } from "@/utils";
 
@@ -32,6 +38,21 @@ export const useGetAdminUsers = ({
     queryFn: async () => {
       const response = await APIClient(token).get<UserListResponse>(
         `/admin/users?size=${size}&page=${page}&sort=${sortBy}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered,
+  });
+
+export const useGetViewUsers = ({ id, token, isRegistered }: ApiViewUsers) =>
+  useQuery({
+    queryKey: ["users", { id }],
+    queryFn: async () => {
+      const response = await APIClient(token).get<UserView>(
+        `/admin/users/${id}`,
       );
       return response.data;
     },
