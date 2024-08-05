@@ -57,7 +57,11 @@ const ViewUsers: React.FC = () => {
               <br />
               <p>
                 <FaUserCircle className="me-2" /> <strong>Name:</strong>{" "}
-                {profile.name}
+                {profile.name}{" "}
+                <span className="ms-4">
+                  <strong>Surname:</strong>{" "}
+                  <span className="ms-1">{profile.surname}</span>
+                </span>
               </p>
               <p>
                 <FaMailBulk className="me-2" /> <strong>Email:</strong>{" "}
