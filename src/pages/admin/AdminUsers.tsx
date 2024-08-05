@@ -22,7 +22,6 @@ import {
   FaBars,
   FaCheckCircle,
   FaExclamationTriangle,
-  FaPencilAlt,
   FaShieldAlt,
   FaTrashAlt,
   FaTrashRestoreAlt,
@@ -215,7 +214,6 @@ const UserTypeBadge = (userType: string) => {
 // create the tooltips
 const tooltipDelete = <Tooltip id="tip-delete">Delete User</Tooltip>;
 const tooltipRestore = <Tooltip id="tip-restore">Restore User</Tooltip>;
-const tooltipEdit = <Tooltip id="tip-restore">Edit User Details</Tooltip>;
 const tooltipView = <Tooltip id="tip-restore">View User Details</Tooltip>;
 
 // the main component that lists the admin users in a table
@@ -471,11 +469,6 @@ export default function AdminUsers() {
                       >
                         {/* <Button className="btn-light btn-sm m-1"> */}
                         <FaBars />
-                      </Button>
-                    </OverlayTrigger>
-                    <OverlayTrigger placement="top" overlay={tooltipEdit}>
-                      <Button className="btn-light btn-sm m-1">
-                        <FaPencilAlt />
                       </Button>
                     </OverlayTrigger>
                     {item.banned ? (
