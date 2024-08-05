@@ -436,7 +436,9 @@ export default function AdminUsers() {
                         />
                       </div>
                       <div className="ms-2 d-flex flex-column justify-content-between">
-                        <div>{item.name || <br />}</div>
+                        <div>
+                          {(item.name || "") + " " + (item.surname || "")}
+                        </div>
                         <div>
                           <span
                             style={{ fontSize: "0.64rem" }}
