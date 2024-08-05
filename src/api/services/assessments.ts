@@ -189,6 +189,30 @@ export function useGetAdminAssessment({
   });
 }
 
+export function useGetAdminAssessmentById({
+  id,
+  token,
+  isRegistered,
+}: {
+  id: string;
+  token?: string;
+  isRegistered?: boolean;
+}) {
+  return useQuery({
+    queryKey: ["assessment", id],
+    queryFn: async () => {
+      const url = `/admin/assessments/${id}`;
+      const response =
+        await APIClient(token).get<AssessmentDetailsResponse>(url);
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered && id !== "",
+  });
+}
+
 export function useGetObjectsByActor({
   size,
   page,
