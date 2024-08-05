@@ -12,6 +12,7 @@ import {
   UserAccess,
   ApiViewUsers,
   UserView,
+  AsmtEligibilityResponse,
 } from "@/types";
 import { UserResponse, UserListResponse } from "@/types";
 import { handleBackendError } from "@/utils";
