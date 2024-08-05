@@ -106,6 +106,10 @@ export type UserAccess = {
   reason?: string;
 };
 
+export type ApiViewUsers = ApiOptions & {
+  id: string;
+};
+
 export type ApiUsers = ApiOptions & {
   type: string;
   search: string;

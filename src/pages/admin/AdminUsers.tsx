@@ -462,7 +462,14 @@ export default function AdminUsers() {
                   </td>
                   <td>
                     <OverlayTrigger placement="top" overlay={tooltipView}>
-                      <Button className="btn-light btn-sm m-1">
+                      <Button
+                        variant="light"
+                        size="sm"
+                        onClick={() =>
+                          (window.location.href = `/admin/users/view/${item.id}`)
+                        }
+                      >
+                        {/* <Button className="btn-light btn-sm m-1"> */}
                         <FaBars />
                       </Button>
                     </OverlayTrigger>

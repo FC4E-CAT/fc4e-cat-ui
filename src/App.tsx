@@ -28,6 +28,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminValidations from "./pages/admin/AdminValidations";
 import PidSelection from "./pages/PidSelection";
 import AssessmentsTable from "./pages/admin/AssessmentsTable";
+import ViewUsers from "./pages/admin/ViewUsers";
 
 const queryClient = new QueryClient();
 
@@ -136,6 +137,12 @@ function App() {
                   </Route>
                   <Route path="/admin/users" element={<ProtectedRoute />}>
                     <Route index element={<AdminUsers />} />
+                  </Route>
+                  <Route
+                    path="/admin/users/view/:id"
+                    element={<ProtectedRoute />}
+                  >
+                    <Route index element={<ViewUsers />} />
                   </Route>
                   <Route
                     path="/validations/request"
