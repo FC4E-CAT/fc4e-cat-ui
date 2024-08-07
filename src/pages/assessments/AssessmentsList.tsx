@@ -17,6 +17,7 @@ import {
   FaTimes,
   FaDownload,
   FaFileImport,
+  FaUsers,
 } from "react-icons/fa";
 import {
   Collapse,
@@ -29,6 +30,7 @@ import {
   FloatingLabel,
   OverlayTrigger,
   Tooltip,
+  Badge,
 } from "react-bootstrap";
 import { AssessmentListItem, AssessmentFiltersType, AlertInfo } from "@/types";
 import {
@@ -281,7 +283,18 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           {
             accessorKey: "name",
             header: () => <span>Name</span>,
-            cell: (info) => info.getValue(),
+            cell: (info) => {
+              return (
+                <>
+                  <div>{info.getValue() + ""}</div>
+                  {info.row.original.shared_to_user && (
+                    <Badge pill bg="light" text="secondary" className="border">
+                      shared with me <FaUsers className="ms-1" />
+                    </Badge>
+                  )}
+                </>
+              );
+            },
             enableColumnFilter: false,
           },
           {

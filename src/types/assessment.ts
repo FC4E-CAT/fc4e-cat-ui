@@ -35,6 +35,7 @@ export interface Assessment {
   result: AssessmentResult;
   principles: Principle[];
   published: boolean;
+  shared_with_user: boolean;
 }
 
 /** Reference with numerical id */
@@ -202,12 +203,14 @@ export interface AssessmentAdminDetailsResponse {
 
 export interface AssessmentListItem {
   id: string;
+  name: string;
   user_id: string;
   validation_id: number;
   created_on: number;
   updated_on: string;
   template_id: number;
   published: boolean;
+  shared_to_user: boolean;
 }
 
 export type AsmtEligibilityResponse = ResponsePage<ActorOrgAsmtType[]>;
@@ -216,6 +219,7 @@ export type AssessmentListResponse = ResponsePage<AssessmentListItem[]>;
 
 export interface AssessmentDetailsResponse {
   id: number;
+  shared_to_user: boolean;
   assessment_doc: Assessment;
 }
 
