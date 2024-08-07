@@ -21,6 +21,7 @@ import {
   Form,
   Alert,
   Offcanvas,
+  Badge,
 } from "react-bootstrap";
 import { AssessmentInfo, CriteriaTabs } from "@/pages/assessments/components";
 import {
@@ -30,6 +31,7 @@ import {
   FaFileImport,
   FaHandPointRight,
   FaTimesCircle,
+  FaUsers,
 } from "react-icons/fa";
 import { evalAssessment, evalMetric } from "@/utils";
 
@@ -137,6 +139,7 @@ const AssessmentEdit = ({
     isPublic: false,
   });
 
+  const [shared, setShared] = useState<boolean>(false);
   const [importError, setImportError] = useState<string>("");
   const [page] = useState<number>(1);
   const [actorMap, setActorMap] = useState<ActorOrgAsmtType[]>([]);
@@ -396,6 +399,7 @@ const AssessmentEdit = ({
       // if not on create mode load assessment itself
     } else if (mode === AssessmentEditMode.Edit && qAssessment.data) {
       const data = qAssessment.data.assessment_doc;
+      setShared(qAssessment.data.shared_to_user);
       setTemplateData(data);
     }
   }, [qTemplate.data, mode, qAssessment.data]);
@@ -550,7 +554,16 @@ const AssessmentEdit = ({
       <h3 className="cat-view-heading">
         <FaCheckCircle className="me-2" /> {`${mode} assessment`}
         {assessment && assessment.id && (
-          <span className="badge bg-secondary ms-2">id: {assessment?.id}</span>
+          <>
+            <span className="badge bg-secondary ms-2">
+              id: {assessment?.id}
+              {shared && (
+                <Badge pill bg="light" text="secondary" className="border ms-4">
+                  shared with me <FaUsers className="ms-1" />
+                </Badge>
+              )}
+            </span>
+          </>
         )}
       </h3>
       <Tab.Container
