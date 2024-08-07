@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { InputGroup, Form } from "react-bootstrap";
-import { FaLink } from "react-icons/fa";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 /**
  * Small component to add url list
@@ -50,8 +50,13 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
           {urlList.map((item, index) => (
             <li className="list-group-item py-1" key={index}>
               <small>
-                <FaLink />{" "}
-                <a className="ms-2" href={item}>
+                <FaExternalLinkAlt />{" "}
+                <a
+                  className="ms-2"
+                  href={item}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   {item}
                 </a>{" "}
                 <span
