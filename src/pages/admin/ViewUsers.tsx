@@ -74,7 +74,8 @@ const ViewUsers: React.FC = () => {
                 </a>
               </p>
               <p>
-                <FaIdBadge className="me-2" /> <strong>ID:</strong> {trimField(profile.id, 20)}
+                <FaIdBadge className="me-2" /> <strong>ID:</strong>{" "}
+                {trimField(profile.id, 20)}
                 <OverlayTrigger
                   placement="top"
                   delay={{ show: 250, hide: 400 }}
