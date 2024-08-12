@@ -37,6 +37,10 @@ function Profile() {
         </h3>
 
         <div className="row border-top py-3 mt-4">
+          <div className="col-3">
+            asdsad
+          </div>
+          <div className="col-9">
           <header className="col-3 h4 text-muted">Account</header>
           <section className="col-9">
             <div>
@@ -186,6 +190,8 @@ function Profile() {
           </section>
         </div>
       </div>
+    </div>
+
     );
   } else {
     return <div>Press Login to authenticate</div>;
