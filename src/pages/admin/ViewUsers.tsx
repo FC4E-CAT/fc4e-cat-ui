@@ -19,7 +19,7 @@ import {
   OverlayTrigger,
   TooltipProps,
 } from "react-bootstrap";
-import { idToColor } from "@/utils/admin";
+import { idToColor, trimField } from "@/utils/admin";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const ViewUsers: React.FC = () => {
@@ -44,7 +44,7 @@ const ViewUsers: React.FC = () => {
     <div className="mb-4">
       <h4>
         <FaUser />
-        <strong className="align-middle m-1">View User Profile</strong>
+        <strong className="align-middle m-1">View User Details</strong>
       </h4>
       {profile && (
         <div className="mt-4">
@@ -74,7 +74,7 @@ const ViewUsers: React.FC = () => {
                 </a>
               </p>
               <p>
-                <FaIdBadge className="me-2" /> <strong>ID:</strong> {profile.id}
+                <FaIdBadge className="me-2" /> <strong>ID:</strong> {trimField(profile.id, 20)}
                 <OverlayTrigger
                   placement="top"
                   delay={{ show: 250, hide: 400 }}
