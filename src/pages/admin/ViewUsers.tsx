@@ -63,6 +63,7 @@ const ViewUsers: React.FC = () => {
                   <span className="ms-1">{profile.surname}</span>
                 </span>
               </p>
+              Profile is : ${JSON.stringify(profile)}
               <p>User Type{profile.user_type}</p>
               <p>registered om: {profile.registered_on}</p>
               <p>updated om: {profile.updated_on}</p>
