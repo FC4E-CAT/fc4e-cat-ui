@@ -2,13 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetProfile } from "@/api";
 import { AuthContext } from "@/auth";
-import {
-  FaAddressCard,
-  FaPlus,
-  FaLock,
-  FaCheckCircle,
-  FaShieldAlt,
-} from "react-icons/fa";
+import { FaPlus, FaLock, FaCheckCircle, FaShieldAlt } from "react-icons/fa";
 import { UserProfile } from "@/types";
 
 function Profile() {
@@ -31,12 +25,8 @@ function Profile() {
 
   if (keycloak?.token && authenticated) {
     return (
-      <div className="mt-4">
-        <h3 className="cat-view-heading">
-          <FaAddressCard /> profile
-        </h3>
-
-        <div className="container rounded bg-white mt-5 mb-5">
+      <>
+        <div className="container rounded bg-white mt-1 mb-5">
           <div className="row">
             <div className="col-3 border-right">
               <div className="d-flex flex-column align-items-center text-center p-1 py-1">
@@ -70,6 +60,18 @@ function Profile() {
                 <span>
                   <br />{" "}
                 </span>
+                {userProfile?.orcid_id && (
+                  <div id="orcid">
+                    <strong>ORCID:</strong> {userProfile?.orcid_id}
+                  </div>
+                )}
+                <Link
+                  id="profile-update-button"
+                  to="/profile/update"
+                  className="btn btn-light border-black mt-4"
+                >
+                  Update Details
+                </Link>
                 <p className="font-italic">
                   <i>1fe601..@einfra.grnet.gr</i>(copy icon/svg)
                 </p>
@@ -80,37 +82,7 @@ function Profile() {
               <div className="p-3 py-5">
                 <header className="h4 text-muted">User Dashboard</header>
                 <div className="row border-top py-3 mt-4">
-                  <header className="col-3 h4 text-muted">
-                    Personal Details
-                  </header>
-                  <section className="col-9">
-                    <div id="name">
-                      <strong>Name:</strong> {userProfile?.name}
-                    </div>
-                    <div id="surname">
-                      <strong>Surname:</strong> {userProfile?.surname}
-                    </div>
-                    <div id="email">
-                      <strong>Email:</strong> {userProfile?.email}
-                    </div>
-                    {userProfile?.orcid_id && (
-                      <div id="orcid">
-                        <strong>ORCID:</strong> {userProfile?.orcid_id}
-                      </div>
-                    )}
-                    <Link
-                      id="profile-update-button"
-                      to="/profile/update"
-                      className="btn btn-light border-black mt-4"
-                    >
-                      Update Details
-                    </Link>
-                  </section>
-                </div>
-                <div className="row border-top py-3 mt-4">
-                  <header className="col-3 h4 text-muted">
-                    Validation Requests
-                  </header>
+                  <h4>Validation Requests</h4>
                   <section className="col-9 disabled">
                     {!hasDetails && (
                       <div
@@ -210,7 +182,6 @@ function Profile() {
             </div>
           </div>
         </div>
-
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Account</header>
           <section className="col-9">
@@ -360,7 +331,7 @@ function Profile() {
             )}
           </section>
         </div>
-      </div>
+      </>
     );
   } else {
     return <div>Press Login to authenticate</div>;
