@@ -63,12 +63,7 @@ const ViewUsers: React.FC = () => {
                   <span className="ms-1">{profile.surname}</span>
                 </span>
               </p>
-              Profile is : ${JSON.stringify(profile)}
-              <p>User Type{profile.user_type}</p>
-              <p>registered om: {profile.registered_on}</p>
-              <p>updated om: {profile.updated_on}</p>
-              <p>Roles{profile.roles}</p>
-              <p>ORCID {profile.orcid_id}</p>
+
               <p>
                 <FaMailBulk className="me-2" /> <strong>Email:</strong>{" "}
                 {profile.email}
