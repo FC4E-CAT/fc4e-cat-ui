@@ -82,26 +82,27 @@ function Profile() {
                     <strong>ORCID:</strong> {userProfile?.orcid_id}
                   </div>
                 )}
-
-                <p>
-                  <FaIdBadge className="me-2" /> <strong>ID:</strong>{" "}
-                  {trimField(profile.id, 20)}
-                  <OverlayTrigger
-                    placement="top"
-                    delay={{ show: 250, hide: 400 }}
-                    overlay={renderTooltip}
-                  >
-                    <CopyToClipboard
-                      text={profile.id}
-                      onCopy={() => setCopySuccess("Copied!")}
+                {userProfile?.id && (
+                  <p>
+                    <FaIdBadge className="me-2" /> <strong>ID:</strong>{" "}
+                    {trimField(userProfile.id, 20)}
+                    <OverlayTrigger
+                      placement="top"
+                      delay={{ show: 250, hide: 400 }}
+                      overlay={renderTooltip}
                     >
-                      <FaCopy
-                        style={{ cursor: "pointer", marginLeft: "10px" }}
-                        onMouseLeave={() => setCopySuccess("")}
-                      />
-                    </CopyToClipboard>
-                  </OverlayTrigger>
-                </p>
+                      <CopyToClipboard
+                        text={userProfile.id}
+                        onCopy={() => setCopySuccess("Copied!")}
+                      >
+                        <FaCopy
+                          style={{ cursor: "pointer", marginLeft: "10px" }}
+                          onMouseLeave={() => setCopySuccess("")}
+                        />
+                      </CopyToClipboard>
+                    </OverlayTrigger>
+                  </p>
+                )}
                 <Link
                   id="profile-update-button"
                   to="/profile/update"
