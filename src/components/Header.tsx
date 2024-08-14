@@ -29,7 +29,7 @@ function Header() {
   }, [data]);
 
   return (
-    <div className="mb-4">
+    <div>
       <Container className="d-flex justify-content-between my-2">
         {/* Branding logos */}
         <Link to="/">
