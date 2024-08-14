@@ -84,6 +84,8 @@
 
 .cat-main-view {
   min-height: 60vh;
+  background-color: #e8e8e8;
+  padding: 10px;
 }
 
 .cat-hash-link {

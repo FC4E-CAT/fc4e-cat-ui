@@ -28,7 +28,7 @@ function Profile() {
       <>
         <div className="container rounded bg-white mt-1 mb-5">
           <div className="row">
-            <div className="col-3 border-right">
+            <div className="col-3 border-right border-dashed">
               <div className="d-flex flex-column align-items-center text-center p-1 py-1">
                 <img
                   className="rounded-circle mt-5"
