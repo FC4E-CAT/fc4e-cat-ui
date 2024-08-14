@@ -7,7 +7,6 @@ import {
   FaLock,
   FaCheckCircle,
   FaShieldAlt,
-  FaIdBadge,
   FaCopy,
 } from "react-icons/fa";
 import { UserProfile } from "@/types";
@@ -71,9 +70,7 @@ function Profile() {
                   {userProfile?.name} {userProfile?.surname}
                 </span>
                 <span className="text-black-50">{userProfile?.email}</span>
-                <span>
-                  <strong>registered on:</strong> {userProfile?.registered_on}
-                </span>
+
                 <span>
                   <br />{" "}
                 </span>
@@ -83,8 +80,8 @@ function Profile() {
                   </div>
                 )}
                 {userProfile?.id && (
-                  <p>
-                    <FaIdBadge className="me-2" /> <strong>ID:</strong>{" "}
+                  <span className="text-black-50">
+                    {" "}
                     {trimField(userProfile.id, 20)}
                     <OverlayTrigger
                       placement="top"
@@ -101,7 +98,7 @@ function Profile() {
                         />
                       </CopyToClipboard>
                     </OverlayTrigger>
-                  </p>
+                  </span>
                 )}
                 <Link
                   id="profile-update-button"
@@ -110,10 +107,10 @@ function Profile() {
                 >
                   Update Details
                 </Link>
-                <p className="font-italic">
-                  <i>1fe601..@einfra.grnet.gr</i>(copy icon/svg)
-                </p>
-                <span> </span>
+
+                <span>
+                  <strong>registered on:</strong> {userProfile?.registered_on}
+                </span>
               </div>
             </div>
             <div className="col-9 border-right">
