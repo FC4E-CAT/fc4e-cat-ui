@@ -4,6 +4,9 @@ import { useGetProfile } from "@/api";
 import { AuthContext } from "@/auth";
 import { FaPlus, FaLock, FaCheckCircle, FaShieldAlt } from "react-icons/fa";
 import { UserProfile } from "@/types";
+import { trimField } from "@/utils/admin";
+import { TooltipProps } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 function Profile() {
   const { authenticated, keycloak, registered } = useContext(AuthContext)!;
@@ -18,6 +21,13 @@ function Profile() {
     setUserProfile(profileData);
   }, [profileData]);
 
+  const [copySuccess, setCopySuccess] = useState("");
+
+  const renderTooltip = (props: TooltipProps) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {copySuccess ? "Copied!" : "Copy to clipboard"}
+    </Tooltip>
+  );
   // check if the user has details
   const hasDetails =
     (userProfile?.name && userProfile?.surname && userProfile?.name) ||
@@ -28,7 +38,7 @@ function Profile() {
       <>
         <div className="container rounded bg-white mt-1 mb-5">
           <div className="row">
-            <div className="col-3 border-right border-dashed">
+            <div className="col-3 border-right  border-dashed">
               <div className="d-flex flex-column align-items-center text-center p-1 py-1">
                 <img
                   className="rounded-circle mt-5"
@@ -65,6 +75,26 @@ function Profile() {
                     <strong>ORCID:</strong> {userProfile?.orcid_id}
                   </div>
                 )}
+
+                <p>
+                  <FaIdBadge className="me-2" /> <strong>ID:</strong>{" "}
+                  {trimField(profile.id, 20)}
+                  <OverlayTrigger
+                    placement="top"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={renderTooltip}
+                  >
+                    <CopyToClipboard
+                      text={profile.id}
+                      onCopy={() => setCopySuccess("Copied!")}
+                    >
+                      <FaCopy
+                        style={{ cursor: "pointer", marginLeft: "10px" }}
+                        onMouseLeave={() => setCopySuccess("")}
+                      />
+                    </CopyToClipboard>
+                  </OverlayTrigger>
+                </p>
                 <Link
                   id="profile-update-button"
                   to="/profile/update"
