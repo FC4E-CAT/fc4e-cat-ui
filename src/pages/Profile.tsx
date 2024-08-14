@@ -2,13 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetProfile } from "@/api";
 import { AuthContext } from "@/auth";
-import { FaPlus, FaLock, FaCheckCircle, FaShieldAlt, FaIdBadge, FaCopy } from "react-icons/fa";
+import {
+  FaPlus,
+  FaLock,
+  FaCheckCircle,
+  FaShieldAlt,
+  FaIdBadge,
+  FaCopy,
+} from "react-icons/fa";
 import { UserProfile } from "@/types";
 import { trimField } from "@/utils/admin";
-import { 
-  Tooltip,
-  OverlayTrigger,
-  TooltipProps } from "react-bootstrap";
+import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 function Profile() {
