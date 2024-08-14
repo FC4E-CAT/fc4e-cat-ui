@@ -70,10 +70,6 @@ function Profile() {
                   {userProfile?.name} {userProfile?.surname}
                 </span>
                 <span className="text-black-50">{userProfile?.email}</span>
-
-                <span>
-                  <br />{" "}
-                </span>
                 {userProfile?.orcid_id && (
                   <div id="orcid">
                     <strong>ORCID:</strong> {userProfile?.orcid_id}
@@ -81,8 +77,7 @@ function Profile() {
                 )}
                 {userProfile?.id && (
                   <span className="text-black-50">
-                    {" "}
-                    {trimField(userProfile.id, 20)}
+                    <strong>ID:</strong> {trimField(userProfile.id, 10)}
                     <OverlayTrigger
                       placement="top"
                       delay={{ show: 250, hide: 400 }}
@@ -93,7 +88,11 @@ function Profile() {
                         onCopy={() => setCopySuccess("Copied!")}
                       >
                         <FaCopy
-                          style={{ cursor: "pointer", marginLeft: "10px" }}
+                          style={{
+                            color: "#FF7F50",
+                            cursor: "pointer",
+                            marginLeft: "10px",
+                          }}
                           onMouseLeave={() => setCopySuccess("")}
                         />
                       </CopyToClipboard>
@@ -107,10 +106,6 @@ function Profile() {
                 >
                   Update Details
                 </Link>
-
-                <span>
-                  <strong>registered on:</strong> {userProfile?.registered_on}
-                </span>
               </div>
             </div>
             <div className="col-9 border-right">
