@@ -67,7 +67,7 @@ function App() {
           <BrowserRouter basename="/">
             <Header />
             <main className="cat-main-view">
-              <Container>
+              <div className="container rounded bg-white mt-1 mb-5">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
@@ -195,7 +195,7 @@ function App() {
                   </Route>
                   <Route path="/logout" element={<KeycloakLogout />} />
                 </Routes>
-              </Container>
+              </div>
             </main>
             <Footer />
           </BrowserRouter>
