@@ -43,7 +43,7 @@ function Profile() {
     return (
       <>
         <div className="row">
-          <div className="col-3 border-right  border-dashed">
+          <div className="col col-lg-3 border-right  border-dashed">
             <div className="d-flex flex-column align-items-center text-center p-1 py-1">
               <img
                 className="rounded-circle mt-5"
@@ -107,7 +107,7 @@ function Profile() {
               </Link>
             </div>
           </div>
-          <div className="col-9 border-right">
+          <div className="col-md-auto border-right">
             <div className="p-3 py-5">
               <header className="h3 text-muted">User Dashboard</header>
               <div className="row border-top py-3 mt-4">
