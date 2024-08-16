@@ -269,27 +269,30 @@ function ValidationList(props: ValidationProps) {
   }
 
   return (
-    <div className="mt-4">
-      {rejectCard}
-      {approveCard}
-      <div
-        className={`${
-          props.admin && "alert alert-primary"
-        } d-flex justify-content-between`}
-      >
-        <h3 className={`${!props.admin && "cat-view-heading"}`}>
-          <FaIdBadge /> validation requests
-        </h3>
-        {props.admin ? (
-          <h3 className="opacity-50">admin mode</h3>
-        ) : (
-          <Link
-            to="/validations/request"
-            className="btn btn-light border-black mx-3"
-          >
-            <FaPlus /> Create New
-          </Link>
-        )}
+    <div>
+      <div className="row border-bottom py-3 p-4">
+        {rejectCard}
+        {approveCard}
+        <div className="col col-lg-4">
+          <h2 className={`${!props.admin && "cat-view-heading text-muted"}`}>
+            <FaIdBadge /> Validation Requests
+            <p className="lead">
+              All validation Requests in one place for admininstrators
+            </p>
+          </h2>
+        </div>
+        <div className="col-md-auto">
+          {props.admin ? (
+            <h2 className="opacity-50">admin mode</h2>
+          ) : (
+            <Link
+              to="/validations/request"
+              className="btn btn-warning btn-light mx-2"
+            >
+              <FaPlus /> Create New
+            </Link>
+          )}
+        </div>
       </div>
       {isAdmin.current && keycloak ? (
         <CustomTable columns={cols} dataSource={useAdminValidations} />
