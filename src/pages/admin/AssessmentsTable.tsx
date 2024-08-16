@@ -8,7 +8,7 @@ import {
 import { AuthContext } from "@/auth";
 import { AssessmentAdminListItem } from "@/types";
 import { Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { FaFileExport, FaCheckCircle } from "react-icons/fa";
+import { FaFileExport } from "react-icons/fa";
 
 const tooltipExport = <Tooltip id="tooltip">Export Assessment</Tooltip>;
 
@@ -174,12 +174,19 @@ const AssessmentsTable: React.FC = () => {
   ];
 
   return (
-    <div className="mb-4">
-      <h4>
-        <FaCheckCircle />
-        <strong className="align-middle">All Assessments</strong>
-      </h4>
-      <div className="row mt-2 mb-2">
+    <div>
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col col-lg-6">
+          <h2 className="cat-view-heading text-muted">
+            Assessments
+            <p className="lead cat-view-lead">
+              Manage all Assessments as administrator.
+            </p>
+          </h2>
+        </div>
+        <div className="col-md-auto"></div>
+      </div>
+      <div className="row py-3 p-4">
         <div className="col">
           <Form.Select
             id="typeFilter"
@@ -223,6 +230,9 @@ const AssessmentsTable: React.FC = () => {
         customStyles={customStyles}
         pagination
       />
+      <div className="row py-3 p-4">
+        <div className="col"></div>
+      </div>
     </div>
   );
 };
