@@ -13,7 +13,6 @@ import {
   FaTimes,
   FaExclamationTriangle,
   FaPlus,
-  FaIdBadge,
 } from "react-icons/fa";
 import { CustomTable } from "@/components";
 import {
@@ -273,22 +272,17 @@ function ValidationList(props: ValidationProps) {
       <div className="row border-bottom py-3 p-4">
         {rejectCard}
         {approveCard}
-        <div className="col col-lg-4">
+        <div className="col col-lg-6">
           <h2 className={`${!props.admin && "cat-view-heading text-muted"}`}>
-            <FaIdBadge /> Validation Requests
-            <p className="lead">
-              All validation Requests in one place for admininstrators
-            </p>
+            Validation Requests
+            <p className="lead">All validation Requests in one place.</p>
           </h2>
         </div>
         <div className="col-md-auto">
           {props.admin ? (
             <h2 className="opacity-50">admin mode</h2>
           ) : (
-            <Link
-              to="/validations/request"
-              className="btn btn-warning btn-light mx-2"
-            >
+            <Link to="/validations/request" className="btn btn-warning mx-2">
               <FaPlus /> Create New
             </Link>
           )}
