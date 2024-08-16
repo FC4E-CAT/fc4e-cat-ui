@@ -269,7 +269,7 @@ function ValidationList(props: ValidationProps) {
 
   return (
     <div>
-      <div className="row border-bottom py-3 p-4">
+      <div className="cat-view-heading-block row border-bottom">
         {rejectCard}
         {approveCard}
         <div className="col col-lg-6">

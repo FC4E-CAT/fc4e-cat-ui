@@ -42,7 +42,7 @@ function Profile() {
   if (keycloak?.token && authenticated) {
     return (
       <>
-        <div className="row border-bottom py-3 p-4">
+        <div className="cat-view-heading-block row border-bottom">
           <div className="col col-lg-4">
             <h2 className="text-muted cat-view-heading"> User Dashboard</h2>
           </div>
