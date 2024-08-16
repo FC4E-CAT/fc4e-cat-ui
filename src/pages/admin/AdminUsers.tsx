@@ -332,7 +332,7 @@ export default function AdminUsers() {
 
   return (
     <div>
-      <div className="row border-bottom py-3 p-4">
+      <div className="cat-view-heading-block row border-bottom">
         <UserModal
           {...userModalConfig}
           onHide={() => setUserModalConfig({ ...userModalConfig, show: false })}
