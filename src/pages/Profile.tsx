@@ -114,7 +114,7 @@ function Profile() {
             </div>
           </div>
           <div className="col-md-auto border-right">
-            <div className="p-3 py-5">
+            <div className="p-3">
               <div className="row py-3 mt-4">
                 <h4>Validation Requests</h4>
                 <section className="col-9 disabled">
