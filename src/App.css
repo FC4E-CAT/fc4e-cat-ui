@@ -78,7 +78,7 @@
 }
 
 .cat-view-lead {
-  font-size: 1.05 rem;
+  font-size: 1.05 rem !important;
 }
 
 .cat-logo-sm {
