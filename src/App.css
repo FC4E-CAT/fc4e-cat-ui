@@ -77,6 +77,10 @@
   color: hsl(187deg 100% 42%);
 }
 
+.cat-view-lead {
+  font-size: 1.05 rem;
+}
+
 .cat-logo-sm {
   width: 100px;
   margin: 5px;
@@ -148,7 +152,6 @@ footer a {
 
 .custom-pagination input {
   display: inline-block;
-  float: left;
   width: 85px;
   margin-left: -1px;
   vertical-align: top;

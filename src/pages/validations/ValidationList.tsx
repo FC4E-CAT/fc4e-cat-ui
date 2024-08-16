@@ -275,7 +275,9 @@ function ValidationList(props: ValidationProps) {
         <div className="col col-lg-6">
           <h2 className={`${!props.admin && "cat-view-heading text-muted"}`}>
             Validation Requests
-            <p className="lead">All validation Requests in one place.</p>
+            <p className="lead cat-view-lead">
+              All validation Requests in one place.
+            </p>
           </h2>
         </div>
         <div className="col-md-auto">
