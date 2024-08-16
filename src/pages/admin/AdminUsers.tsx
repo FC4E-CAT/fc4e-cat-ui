@@ -25,7 +25,6 @@ import {
   FaShieldAlt,
   FaTrashAlt,
   FaTrashRestoreAlt,
-  FaUser,
   FaUserCircle,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
@@ -332,16 +331,20 @@ export default function AdminUsers() {
   const users: UserProfile[] = data ? data?.content : [];
 
   return (
-    <div className="mb-4">
+    <div className="row border-bottom py-3 p-4">
       <UserModal
         {...userModalConfig}
         onHide={() => setUserModalConfig({ ...userModalConfig, show: false })}
         handleDelete={handleDelete}
         handleRestore={handleRestore}
       />
-      <h4>
-        <FaUser /> <strong className="align-middle">Users</strong>
-      </h4>
+      <div className="col col-lg-6">
+        <h2 className="cat-view-heading text-muted">
+          Users
+          <p className="lead cat-view-lead">Manage all Users.</p>
+        </h2>
+      </div>
+      <div className="col-md-auto"></div>
       <Form className="mt-2 mb-2">
         <Row>
           <Col>
