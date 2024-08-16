@@ -42,6 +42,12 @@ function Profile() {
   if (keycloak?.token && authenticated) {
     return (
       <>
+        <div className="row border-bottom py-3 p-4">
+          <div className="col col-lg-4">
+            <h2 className="text-muted cat-view-heading"> User Dashboard</h2>
+          </div>
+          <div className="col-md-auto"></div>
+        </div>
         <div className="row">
           <div className="col col-lg-3 border-right  border-dashed">
             <div className="d-flex flex-column align-items-center text-center p-1 py-1">
@@ -101,7 +107,7 @@ function Profile() {
               <Link
                 id="profile-update-button"
                 to="/profile/update"
-                className="btn btn-light border-black mt-4"
+                className="btn btn-lt border-black mt-4"
               >
                 Update Details
               </Link>
@@ -109,8 +115,7 @@ function Profile() {
           </div>
           <div className="col-md-auto border-right">
             <div className="p-3 py-5">
-              <header className="h3 text-muted">User Dashboard</header>
-              <div className="row border-top py-3 mt-4">
+              <div className="row py-3 mt-4">
                 <h4>Validation Requests</h4>
                 <section className="col-9 disabled">
                   {!hasDetails && (
