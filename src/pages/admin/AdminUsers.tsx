@@ -346,7 +346,7 @@ export default function AdminUsers() {
         <div className="col-md-auto"></div>
       </div>
       <div>
-        <Form className="mt-2 mb-2">
+        <Form className="mb-3">
           <div className="row cat-view-search-block border-bottom">
             <div className="col col-lg-3">
               <Form.Select
