@@ -85,6 +85,11 @@
   font-size: 1.05 rem !important;
 }
 
+.cat-view-search-block {
+  padding: 18px;
+  background: lightgray;
+}
+
 .cat-logo-sm {
   width: 100px;
   margin: 5px;
