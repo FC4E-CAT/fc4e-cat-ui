@@ -5,11 +5,9 @@ import { useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
-  Col,
   Form,
   Modal,
   OverlayTrigger,
-  Row,
   Table,
   Tooltip,
 } from "react-bootstrap";
@@ -340,17 +338,17 @@ export default function AdminUsers() {
           handleRestore={handleRestore}
         />
         <div className="col col-lg-6">
-          <h2 className="cat-view-heading text-muted">
+          <h2 className="text-muted cat-view-heading ">
             Users
             <p className="lead cat-view-lead">Manage all Users.</p>
           </h2>
         </div>
         <div className="col-md-auto"></div>
       </div>
-      <div className="py-3 p-4">
+      <div>
         <Form className="mt-2 mb-2">
-          <Row>
-            <Col>
+          <div className="row cat-view-search-block border-bottom">
+            <div className="col col-lg-3">
               <Form.Select
                 onChange={(e) => {
                   setOpts({ ...opts, type: e.target.value });
@@ -362,8 +360,8 @@ export default function AdminUsers() {
                 <option>Validated</option>
                 <option>Admin</option>
               </Form.Select>
-            </Col>
-            <Col>
+            </div>
+            <div className="col-md-auto">
               <Form.Select
                 onChange={(e) => {
                   setOpts({ ...opts, status: e.target.value });
@@ -374,8 +372,8 @@ export default function AdminUsers() {
                 <option value="active">Active</option>
                 <option value="deleted">Deleted</option>
               </Form.Select>
-            </Col>
-            <Col xs={6}>
+            </div>
+            <div className="col col-lg-6">
               <div className="d-flex justify-content-center">
                 <Form.Control
                   placeholder="Search ..."
@@ -393,8 +391,8 @@ export default function AdminUsers() {
                   Clear
                 </Button>
               </div>
-            </Col>
-          </Row>
+            </div>
+          </div>
         </Form>
 
         <Table hover>
