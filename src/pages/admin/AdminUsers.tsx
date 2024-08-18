@@ -392,6 +392,7 @@ export default function AdminUsers() {
                 </Button>
               </div>
             </div>
+            <div>Total Users = {data.total_elements}</div>
           </div>
         </Form>
 
@@ -576,6 +577,9 @@ export default function AdminUsers() {
             </div>
           )}
         </div>
+      </div>
+      <div className="row py-3 p-4">
+        <div className="col"></div>
       </div>
     </div>
   );
