@@ -392,7 +392,6 @@ export default function AdminUsers() {
                 </Button>
               </div>
             </div>
-            <div>Total Users = {data.total_elements}</div>
           </div>
         </Form>
 
