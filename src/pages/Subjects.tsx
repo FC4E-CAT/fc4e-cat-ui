@@ -2,7 +2,6 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { CustomTable } from "@/components";
 import {
-  FaCubes,
   FaEdit,
   FaInfoCircle,
   FaPlus,
@@ -438,7 +437,7 @@ function Subjects() {
   };
 
   return (
-    <div className="mt-4">
+    <div>
       <SubjectModal
         {...subjectModalConfig}
         onHide={() =>
@@ -448,24 +447,28 @@ function Subjects() {
         onUpdate={handleUpdateSubject}
         onDelete={handleDeleteSubject}
       />
-      <div className={"d-flex justify-content-between container"}>
-        <h3 className="cat-view-heading">
-          <FaCubes className="me-2" />
-          subjects
-        </h3>
-        <Button
-          variant="light"
-          className="border-black"
-          onClick={() =>
-            setSubjectModalConfig({
-              id: -1,
-              mode: SubjectModalMode.Create,
-              show: true,
-            })
-          }
-        >
-          <FaPlus /> Create New
-        </Button>
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col col-lg-6">
+          <h2 className="cat-view-heading text-muted">
+            Subjects
+            <p className="lead cat-view-lead">Manage your own subjects.</p>
+          </h2>
+        </div>
+        <div className="col-md-auto">
+          <Button
+            variant="warning"
+            className="border-black"
+            onClick={() =>
+              setSubjectModalConfig({
+                id: -1,
+                mode: SubjectModalMode.Create,
+                show: true,
+              })
+            }
+          >
+            <FaPlus /> Create New
+          </Button>
+        </div>
       </div>
       <CustomTable columns={cols} dataSource={useGetSubjects} />
     </div>
