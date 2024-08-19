@@ -456,11 +456,10 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col col-lg-6">
           <h2 className="cat-view-heading text-muted">
-            Assessments
             {/* if component is used in public list mode display the actor name */}
             {listPublic && actorName && <span>{actorName} </span>}
             Assessments
-            <p className="lead cat-view-lead">Manage your own subjects.</p>
+            <p className="lead cat-view-lead">Manage your own assessments.</p>
           </h2>
         </div>
         <div className="col-md-auto">
@@ -480,7 +479,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
               <Link to="/assessments/create" className="btn btn-warning  ms-3">
                 <FaPlus /> <span className="align-middle">Create New</span>
               </Link>
-              <Link to="/assessments/import" className="btn btn-info  ms-3">
+              <Link to="/assessments/import" className="btn btn-dark  ms-3">
                 <FaFileImport /> <span className="align-middle">Import</span>
               </Link>
             </>
