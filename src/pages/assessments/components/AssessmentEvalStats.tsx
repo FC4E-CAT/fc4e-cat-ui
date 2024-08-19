@@ -20,8 +20,8 @@ export const AssessmentEvalStats = ({
             evalResult.mandatoryFilled !== evalResult.totalMandatory
               ? "secondary"
               : assessmentResult.compliance
-                ? "success"
-                : "danger"
+              ? "success"
+              : "danger"
           }
         >
           <Row>
