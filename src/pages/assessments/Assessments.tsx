@@ -75,7 +75,7 @@ function Assessments() {
               <Link
                 id="view_assessments_button"
                 to="/assessments"
-                className="btn btn-light me-3"
+                className="btn btn-light border-black me-3"
               >
                 <FaList />{" "}
                 <span className="align-middle">View your Assessments</span>
