@@ -66,13 +66,16 @@ function Assessments() {
         <div className="cat-view-heading-block row border-bottom">
           <div className="col col-lg-6">
             <h2 className="cat-view-heading text-muted">Assessments</h2>
+            <p className="lead cat-view-lead">
+              Read about different actors in the ecosystem before starting.
+            </p>
           </div>
           {authenticated && (
             <div className="col-md-auto">
               <Link
                 id="view_assessments_button"
                 to="/assessments"
-                className="btn btn-light me-3"
+                className="btn btn-light border-black me-3"
               >
                 <FaList />{" "}
                 <span className="align-middle">View your Assessments</span>
@@ -96,8 +99,14 @@ function Assessments() {
         </div>
       </>
       <>
-        <h6>Read about different actors in the ecosystem before starting.</h6>
-        <Row xs={2} sm={2} md={3} lg={4} xl={5} className="g-4 d-flex mt-2">
+        <Row
+          xs={2}
+          sm={2}
+          md={3}
+          lg={4}
+          xl={5}
+          className="px-4 g-4 d-flex mt-2"
+        >
           {cardProps.map((c, index) => (
             <Col key={index}>
               <ActorCard key={index} {...c} />
@@ -105,6 +114,7 @@ function Assessments() {
           ))}
         </Row>
       </>
+      <div className="row py-2 mt-2"></div>
     </div>
   );
 }
