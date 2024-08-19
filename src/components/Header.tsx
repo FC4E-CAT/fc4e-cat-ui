@@ -24,7 +24,7 @@ function Header() {
   return (
     <div>
       <Container>
-        <Navbar variant="light" expand="lg" className="main-nav">
+        <Navbar variant="light" expand="lg">
           <Navbar.Brand>
             {" "}
             {/* Branding logos */}
