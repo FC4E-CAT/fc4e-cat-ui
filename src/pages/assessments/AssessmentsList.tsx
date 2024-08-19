@@ -9,7 +9,6 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { CustomTable } from "@/components";
 import {
-  FaCheckCircle,
   FaEdit,
   FaInfoCircle,
   FaPlus,
@@ -442,7 +441,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   }, [userObjects]);
 
   return (
-    <div className="mt-4">
+    <div>
       <DeleteModal
         show={deleteModalConfig.show}
         title={deleteModalConfig.title}
@@ -454,14 +453,17 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         }}
         onDelete={handleDeleteConfirmed}
       />
-      <div className="d-flex justify-content-between my-2 container">
-        <h3 className="cat-view-heading">
-          <FaCheckCircle className="me-2" />
-          {/* if component is used in public list mode display the actor name */}
-          {listPublic && actorName && <span>{actorName} </span>}
-          assessments
-        </h3>
-        <div>
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col col-lg-6">
+          <h2 className="cat-view-heading text-muted">
+            Assessments
+            {/* if component is used in public list mode display the actor name */}
+            {listPublic && actorName && <span>{actorName} </span>}
+            Assessments
+            <p className="lead cat-view-lead">Manage your own subjects.</p>
+          </h2>
+        </div>
+        <div className="col-md-auto">
           <>
             <Button
               variant="secondary"
@@ -475,16 +477,10 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           </>
           {!listPublic && (
             <>
-              <Link
-                to="/assessments/create"
-                className="btn btn-light border-black ms-3"
-              >
+              <Link to="/assessments/create" className="btn btn-warning  ms-3">
                 <FaPlus /> <span className="align-middle">Create New</span>
               </Link>
-              <Link
-                to="/assessments/import"
-                className="btn btn-light border-black ms-3"
-              >
+              <Link to="/assessments/import" className="btn btn-info  ms-3">
                 <FaFileImport /> <span className="align-middle">Import</span>
               </Link>
             </>

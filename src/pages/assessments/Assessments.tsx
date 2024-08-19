@@ -1,4 +1,4 @@
-import { FaCheckCircle, FaFileImport, FaList, FaPlus } from "react-icons/fa";
+import { FaFileImport, FaList, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
@@ -61,20 +61,18 @@ function Assessments() {
   }
 
   return (
-    <div className="mt-4">
+    <div>
       <>
-        <div className="d-flex justify-content-between my-2 container">
-          <div className="d-flex justify-content-between my-2">
-            <h3 className="cat-view-heading">
-              <FaCheckCircle className="me-1" /> assessments
-            </h3>
+        <div className="cat-view-heading-block row border-bottom">
+          <div className="col col-lg-6">
+            <h2 className="cat-view-heading text-muted">Assessments</h2>
           </div>
           {authenticated && (
-            <div className="d-flex justify-content-end my-2">
+            <div className="col-md-auto">
               <Link
                 id="view_assessments_button"
                 to="/assessments"
-                className="btn btn-light border-black me-3"
+                className="btn btn-light me-3"
               >
                 <FaList />{" "}
                 <span className="align-middle">View your Assessments</span>
@@ -82,14 +80,14 @@ function Assessments() {
               <Link
                 id="assessment_form_button"
                 to={`/assessments/create`}
-                className="btn btn-light border-black me-3"
+                className="btn btn-warning me-3"
               >
                 <FaPlus /> <span className="align-middle">Create New</span>
               </Link>
               <Link
                 id="assessment_form_button"
                 to={`/assessments/import`}
-                className="btn btn-light border-black"
+                className="btn btn-info"
               >
                 <FaFileImport /> <span className="align-middle">Import</span>
               </Link>
