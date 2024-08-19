@@ -457,7 +457,7 @@ function Subjects() {
         <div className="col-md-auto">
           <Button
             variant="warning"
-            className="border-black"
+            className=""
             onClick={() =>
               setSubjectModalConfig({
                 id: -1,
