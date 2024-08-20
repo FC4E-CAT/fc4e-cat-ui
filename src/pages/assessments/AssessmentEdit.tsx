@@ -21,7 +21,6 @@ import {
   Form,
   Alert,
   Offcanvas,
-  Badge,
 } from "react-bootstrap";
 import { AssessmentInfo, CriteriaTabs } from "@/pages/assessments/components";
 import {
@@ -559,9 +558,9 @@ const AssessmentEdit = ({
               Fill in the required fields of the assessment
               {assessment && assessment.id && (
                 <>
-                  <span className="badge badge-light ms-2">
-                    with id ${assessment.id}
-                  </span>
+                  <p className="text-info">
+                    <small> with id ${assessment.id}</small>
+                  </p>
                 </>
               )}
             </p>
@@ -569,9 +568,9 @@ const AssessmentEdit = ({
         </div>
         <div className="col-md-auto">
           {shared && (
-            <Badge pill bg="light" text="secondary" className="border ms-4">
+            <button className="btn btn-secondary">
               shared with me <FaUsers className="ms-1" />
-            </Badge>
+            </button>
           )}
         </div>
       </div>
