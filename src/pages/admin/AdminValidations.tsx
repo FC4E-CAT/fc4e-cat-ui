@@ -139,9 +139,9 @@ export default function AdminUsers() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col col-lg-6">
           <h2 className="cat-view-heading text-muted">
-            VAlidations
+            Validations
             <p className="lead cat-view-lead">
-              Manage all VAlidations as administrator.
+              Manage all Validations as administrator.
             </p>
           </h2>
         </div>
