@@ -16,7 +16,7 @@ import { useContext, useState, useRef, useEffect } from "react";
 import { OverlayTrigger, Tooltip, Row, Col, InputGroup } from "react-bootstrap";
 import { useForm, SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
-import { FaInfoCircle, FaIdBadge } from "react-icons/fa";
+import { FaInfoCircle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import Select, { SingleValue } from "react-select";
 
