@@ -75,7 +75,7 @@ export default function ProfileUpdate() {
         </div>
         <div className="col-md-auto"></div>
       </div>
-      <div className="row py-3 mt-4">
+      <div className="row py-4 px-4 mt-4">
         <Form onSubmit={onSubmit}>
           <Row className="mb-2">
             <Col>
