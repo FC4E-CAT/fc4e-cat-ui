@@ -5,11 +5,9 @@ import { useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
-  Col,
   Form,
   Modal,
   OverlayTrigger,
-  Row,
   Table,
   Tooltip,
 } from "react-bootstrap";
@@ -25,7 +23,6 @@ import {
   FaShieldAlt,
   FaTrashAlt,
   FaTrashRestoreAlt,
-  FaUser,
   FaUserCircle,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
@@ -332,242 +329,256 @@ export default function AdminUsers() {
   const users: UserProfile[] = data ? data?.content : [];
 
   return (
-    <div className="mb-4">
-      <UserModal
-        {...userModalConfig}
-        onHide={() => setUserModalConfig({ ...userModalConfig, show: false })}
-        handleDelete={handleDelete}
-        handleRestore={handleRestore}
-      />
-      <h4>
-        <FaUser /> <strong className="align-middle">Users</strong>
-      </h4>
-      <Form className="mt-2 mb-2">
-        <Row>
-          <Col>
-            <Form.Select
-              onChange={(e) => {
-                setOpts({ ...opts, type: e.target.value });
-              }}
-              value={opts.type}
-            >
-              <option value="">Select type...</option>
-              <option>Identified</option>
-              <option>Validated</option>
-              <option>Admin</option>
-            </Form.Select>
-          </Col>
-          <Col>
-            <Form.Select
-              onChange={(e) => {
-                setOpts({ ...opts, status: e.target.value });
-              }}
-              value={opts.status}
-            >
-              <option value="">Select status...</option>
-              <option value="active">Active</option>
-              <option value="deleted">Deleted</option>
-            </Form.Select>
-          </Col>
-          <Col xs={6}>
-            <div className="d-flex justify-content-center">
-              <Form.Control
-                placeholder="Search ..."
-                onChange={(e) => {
-                  setOpts({ ...opts, search: e.target.value });
-                }}
-                value={opts.search}
-              />
-              <Button
-                onClick={() => {
-                  setOpts({ ...opts, search: "", type: "", status: "" });
-                }}
-                className="ms-4"
-              >
-                Clear
-              </Button>
-            </div>
-          </Col>
-        </Row>
-      </Form>
-
-      <Table hover>
-        <thead>
-          <tr className="table-light">
-            <th>
-              <span
-                onClick={() => handleSortClick("name")}
-                className="cat-cursor-pointer"
-              >
-                Name {SortMarker("name", opts.sortBy, opts.sortOrder)}
-              </span>
-            </th>
-            <th>
-              <span
-                onClick={() => handleSortClick("email")}
-                className="cat-cursor-pointer"
-              >
-                Email {SortMarker("email", opts.sortBy, opts.sortOrder)}
-              </span>
-            </th>
-            <th>
-              <span>Registered</span>
-            </th>
-            <th>
-              <span>User Type</span>
-            </th>
-            <th>
-              <span>Status</span>
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        {users.length > 0 ? (
-          <tbody>
-            {users.map((item) => {
-              return (
-                <tr key={item.id}>
-                  <td className="align-middle">
-                    <div className="d-flex  justify-content-start">
-                      <div>
-                        <FaUserCircle
-                          size={"3rem"}
-                          style={{ color: idToColor(item.id) }}
-                        />
-                      </div>
-                      <div className="ms-2 d-flex flex-column justify-content-between">
-                        <div>
-                          {(item.name || "") + " " + (item.surname || "")}
-                        </div>
-                        <div>
-                          <span
-                            style={{ fontSize: "0.64rem" }}
-                            className="text-muted"
-                          >
-                            id: {trimField(item.id, 20)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="align-middle">{item.email}</td>
-                  <td className="align-middle">
-                    {item.registered_on.split("T")[0]}
-                  </td>
-                  <td className="align-middle">
-                    {UserTypeBadge(item.user_type)}
-                  </td>
-                  <td className="align-middle">
-                    {UserStatusBadge(item.banned)}
-                  </td>
-                  <td>
-                    <OverlayTrigger placement="top" overlay={tooltipView}>
-                      <Button
-                        variant="light"
-                        size="sm"
-                        onClick={() =>
-                          (window.location.href = `/admin/users/view/${item.id}`)
-                        }
-                      >
-                        {/* <Button className="btn-light btn-sm m-1"> */}
-                        <FaBars />
-                      </Button>
-                    </OverlayTrigger>
-                    {item.banned ? (
-                      <OverlayTrigger placement="top" overlay={tooltipRestore}>
-                        <Button
-                          className="btn-light btn-sm m-1"
-                          onClick={() => {
-                            setUserModalConfig({
-                              id: item.id,
-                              mode: UserModalMode.Restore,
-                              show: true,
-                              name: item.name,
-                            });
-                          }}
-                        >
-                          <FaTrashRestoreAlt />
-                        </Button>
-                      </OverlayTrigger>
-                    ) : (
-                      <OverlayTrigger placement="top" overlay={tooltipDelete}>
-                        <Button
-                          className="btn-light btn-sm m-1"
-                          onClick={() => {
-                            setUserModalConfig({
-                              id: item.id,
-                              mode: UserModalMode.Delete,
-                              name: item.name,
-                              show: true,
-                            });
-                          }}
-                        >
-                          <FaTrashAlt />
-                        </Button>
-                      </OverlayTrigger>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        ) : null}
-      </Table>
-      {!isLoading && users.length === 0 && (
-        <Alert variant="warning" className="text-center mx-auto">
-          <h3>
-            <FaExclamationTriangle />
-          </h3>
-          <h5>No data found...</h5>
-        </Alert>
-      )}
-      <div className="d-flex justify-content-end">
-        <div>
-          <span className="mx-1">rows per page: </span>
-          <select
-            name="per-page"
-            value={opts.size.toString() || "20"}
-            id="per-page"
-            onChange={handleChangePageSize}
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-          </select>
+    <div>
+      <div className="cat-view-heading-block row border-bottom">
+        <UserModal
+          {...userModalConfig}
+          onHide={() => setUserModalConfig({ ...userModalConfig, show: false })}
+          handleDelete={handleDelete}
+          handleRestore={handleRestore}
+        />
+        <div className="col col-lg-6">
+          <h2 className="text-muted cat-view-heading ">
+            Users
+            <p className="lead cat-view-lead">Manage all Users.</p>
+          </h2>
         </div>
-
-        {data && data.number_of_page && data.total_pages && (
-          <div className="ms-4">
-            <span>
-              {(data.number_of_page - 1) * opts.size + 1} -{" "}
-              {(data.number_of_page - 1) * opts.size + data.size_of_page} of{" "}
-              {data.total_elements}
-            </span>
-            <span
-              onClick={() => {
-                setOpts({ ...opts, page: opts.page - 1 });
-              }}
-              className={`ms-4 btn py-0 btn-light btn-small ${
-                opts.page === 1 ? "disabled text-muted" : null
-              }`}
-            >
-              <FaArrowLeft />
-            </span>
-            <span
-              onClick={() => {
-                setOpts({ ...opts, page: opts.page + 1 });
-              }}
-              className={`btn py-0 btn-light btn-small" ${
-                data?.total_pages > data?.number_of_page
-                  ? null
-                  : "disabled text-muted"
-              }`}
-            >
-              <FaArrowRight />
-            </span>
+        <div className="col-md-auto"></div>
+      </div>
+      <div>
+        <Form className="mb-3">
+          <div className="row cat-view-search-block border-bottom">
+            <div className="col col-lg-3">
+              <Form.Select
+                onChange={(e) => {
+                  setOpts({ ...opts, type: e.target.value });
+                }}
+                value={opts.type}
+              >
+                <option value="">Select type...</option>
+                <option>Identified</option>
+                <option>Validated</option>
+                <option>Admin</option>
+              </Form.Select>
+            </div>
+            <div className="col-md-auto">
+              <Form.Select
+                onChange={(e) => {
+                  setOpts({ ...opts, status: e.target.value });
+                }}
+                value={opts.status}
+              >
+                <option value="">Select status...</option>
+                <option value="active">Active</option>
+                <option value="deleted">Deleted</option>
+              </Form.Select>
+            </div>
+            <div className="col col-lg-6">
+              <div className="d-flex justify-content-center">
+                <Form.Control
+                  placeholder="Search ..."
+                  onChange={(e) => {
+                    setOpts({ ...opts, search: e.target.value });
+                  }}
+                  value={opts.search}
+                />
+                <Button
+                  onClick={() => {
+                    setOpts({ ...opts, search: "", type: "", status: "" });
+                  }}
+                  className="ms-4"
+                >
+                  Clear
+                </Button>
+              </div>
+            </div>
           </div>
+        </Form>
+
+        <Table hover>
+          <thead>
+            <tr className="table-light">
+              <th>
+                <span
+                  onClick={() => handleSortClick("name")}
+                  className="cat-cursor-pointer"
+                >
+                  Name {SortMarker("name", opts.sortBy, opts.sortOrder)}
+                </span>
+              </th>
+              <th>
+                <span
+                  onClick={() => handleSortClick("email")}
+                  className="cat-cursor-pointer"
+                >
+                  Email {SortMarker("email", opts.sortBy, opts.sortOrder)}
+                </span>
+              </th>
+              <th>
+                <span>Registered</span>
+              </th>
+              <th>
+                <span>User Type</span>
+              </th>
+              <th>
+                <span>Status</span>
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          {users.length > 0 ? (
+            <tbody>
+              {users.map((item) => {
+                return (
+                  <tr key={item.id}>
+                    <td className="align-middle">
+                      <div className="d-flex  justify-content-start">
+                        <div>
+                          <FaUserCircle
+                            size={"3rem"}
+                            style={{ color: idToColor(item.id) }}
+                          />
+                        </div>
+                        <div className="ms-2 d-flex flex-column justify-content-between">
+                          <div>
+                            {(item.name || "") + " " + (item.surname || "")}
+                          </div>
+                          <div>
+                            <span
+                              style={{ fontSize: "0.64rem" }}
+                              className="text-muted"
+                            >
+                              id: {trimField(item.id, 20)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="align-middle">{item.email}</td>
+                    <td className="align-middle">
+                      {item.registered_on.split("T")[0]}
+                    </td>
+                    <td className="align-middle">
+                      {UserTypeBadge(item.user_type)}
+                    </td>
+                    <td className="align-middle">
+                      {UserStatusBadge(item.banned)}
+                    </td>
+                    <td>
+                      <OverlayTrigger placement="top" overlay={tooltipView}>
+                        <Button
+                          variant="light"
+                          size="sm"
+                          onClick={() =>
+                            (window.location.href = `/admin/users/view/${item.id}`)
+                          }
+                        >
+                          {/* <Button className="btn-light btn-sm m-1"> */}
+                          <FaBars />
+                        </Button>
+                      </OverlayTrigger>
+                      {item.banned ? (
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={tooltipRestore}
+                        >
+                          <Button
+                            className="btn-light btn-sm m-1"
+                            onClick={() => {
+                              setUserModalConfig({
+                                id: item.id,
+                                mode: UserModalMode.Restore,
+                                show: true,
+                                name: item.name,
+                              });
+                            }}
+                          >
+                            <FaTrashRestoreAlt />
+                          </Button>
+                        </OverlayTrigger>
+                      ) : (
+                        <OverlayTrigger placement="top" overlay={tooltipDelete}>
+                          <Button
+                            className="btn-light btn-sm m-1"
+                            onClick={() => {
+                              setUserModalConfig({
+                                id: item.id,
+                                mode: UserModalMode.Delete,
+                                name: item.name,
+                                show: true,
+                              });
+                            }}
+                          >
+                            <FaTrashAlt />
+                          </Button>
+                        </OverlayTrigger>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          ) : null}
+        </Table>
+        {!isLoading && users.length === 0 && (
+          <Alert variant="warning" className="text-center mx-auto">
+            <h3>
+              <FaExclamationTriangle />
+            </h3>
+            <h5>No data found...</h5>
+          </Alert>
         )}
+        <div className="d-flex justify-content-end">
+          <div>
+            <span className="mx-1">rows per page: </span>
+            <select
+              name="per-page"
+              value={opts.size.toString() || "20"}
+              id="per-page"
+              onChange={handleChangePageSize}
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+
+          {data && data.number_of_page && data.total_pages && (
+            <div className="ms-4">
+              <span>
+                {(data.number_of_page - 1) * opts.size + 1} -{" "}
+                {(data.number_of_page - 1) * opts.size + data.size_of_page} of{" "}
+                {data.total_elements}
+              </span>
+              <span
+                onClick={() => {
+                  setOpts({ ...opts, page: opts.page - 1 });
+                }}
+                className={`ms-4 btn py-0 btn-light btn-small ${
+                  opts.page === 1 ? "disabled text-muted" : null
+                }`}
+              >
+                <FaArrowLeft />
+              </span>
+              <span
+                onClick={() => {
+                  setOpts({ ...opts, page: opts.page + 1 });
+                }}
+                className={`btn py-0 btn-light btn-small" ${
+                  data?.total_pages > data?.number_of_page
+                    ? null
+                    : "disabled text-muted"
+                }`}
+              >
+                <FaArrowRight />
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="row py-3 p-4">
+        <div className="col"></div>
       </div>
     </div>
   );

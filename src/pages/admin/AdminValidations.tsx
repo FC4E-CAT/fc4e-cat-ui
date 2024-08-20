@@ -21,7 +21,6 @@ import {
   FaArrowsAltV,
   FaBars,
   FaCheck,
-  FaCheckCircle,
   FaExclamationTriangle,
   FaGlasses,
   FaTimes,
@@ -136,10 +135,19 @@ export default function AdminUsers() {
   const validations: ValidationResponse[] = data ? data?.content : [];
 
   return (
-    <div className="mb-4">
-      <h4>
-        <FaCheckCircle /> <strong className="align-middle">Validations</strong>
-      </h4>
+    <div>
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col col-lg-6">
+          <h2 className="cat-view-heading text-muted">
+            VAlidations
+            <p className="lead cat-view-lead">
+              Manage all VAlidations as administrator.
+            </p>
+          </h2>
+        </div>
+        <div className="col-md-auto"></div>
+      </div>
+
       <Form className="mt-2 mb-2">
         <Row>
           <Col>
@@ -356,6 +364,9 @@ export default function AdminUsers() {
             </span>
           </div>
         )}
+      </div>
+      <div className="row py-3 p-4">
+        <div className="col"></div>
       </div>
     </div>
   );

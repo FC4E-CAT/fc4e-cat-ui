@@ -63,6 +63,7 @@ const ViewUsers: React.FC = () => {
                   <span className="ms-1">{profile.surname}</span>
                 </span>
               </p>
+
               <p>
                 <FaMailBulk className="me-2" /> <strong>Email:</strong>{" "}
                 {profile.email}
@@ -74,7 +75,8 @@ const ViewUsers: React.FC = () => {
                 </a>
               </p>
               <p>
-                <FaIdBadge className="me-2" /> <strong>ID:</strong> {trimField(profile.id, 20)}
+                <FaIdBadge className="me-2" /> <strong>ID:</strong>{" "}
+                {trimField(profile.id, 20)}
                 <OverlayTrigger
                   placement="top"
                   delay={{ show: 250, hide: 400 }}

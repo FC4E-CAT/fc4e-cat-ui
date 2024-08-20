@@ -1,4 +1,4 @@
-import { FaCheckCircle, FaFileImport, FaList, FaPlus } from "react-icons/fa";
+import { FaFileImport, FaList, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
@@ -61,16 +61,19 @@ function Assessments() {
   }
 
   return (
-    <div className="mt-4">
+    <div>
       <>
-        <div className="d-flex justify-content-between my-2 container">
-          <div className="d-flex justify-content-between my-2">
-            <h3 className="cat-view-heading">
-              <FaCheckCircle className="me-1" /> assessments
-            </h3>
+        <div className="cat-view-heading-block row border-bottom">
+          <div className="col col-lg-6">
+            <h2 className="cat-view-heading text-muted">
+              Assessments
+              <p className="lead cat-view-lead">
+                Read about different actors in the ecosystem before starting.
+              </p>
+            </h2>
           </div>
           {authenticated && (
-            <div className="d-flex justify-content-end my-2">
+            <div className="col-md-auto">
               <Link
                 id="view_assessments_button"
                 to="/assessments"
@@ -82,14 +85,14 @@ function Assessments() {
               <Link
                 id="assessment_form_button"
                 to={`/assessments/create`}
-                className="btn btn-light border-black me-3"
+                className="btn btn-warning me-3"
               >
                 <FaPlus /> <span className="align-middle">Create New</span>
               </Link>
               <Link
                 id="assessment_form_button"
                 to={`/assessments/import`}
-                className="btn btn-light border-black"
+                className="btn btn-info"
               >
                 <FaFileImport /> <span className="align-middle">Import</span>
               </Link>
@@ -98,8 +101,14 @@ function Assessments() {
         </div>
       </>
       <>
-        <h6>Read about different actors in the ecosystem before starting.</h6>
-        <Row xs={2} sm={2} md={3} lg={4} xl={5} className="g-4 d-flex mt-2">
+        <Row
+          xs={2}
+          sm={2}
+          md={3}
+          lg={4}
+          xl={5}
+          className="px-4 g-4 d-flex mt-2"
+        >
           {cardProps.map((c, index) => (
             <Col key={index}>
               <ActorCard key={index} {...c} />
@@ -107,6 +116,7 @@ function Assessments() {
           ))}
         </Row>
       </>
+      <div className="row py-2 mt-2"></div>
     </div>
   );
 }

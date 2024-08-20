@@ -73,8 +73,21 @@
   border-right: 3px solid yellow;
 }
 
+.cat-view-heading-block {
+  padding: 7px;
+}
+
 .cat-view-heading {
   color: hsl(187deg 100% 42%);
+}
+
+.cat-view-lead {
+  font-size: 1.05 rem !important;
+}
+
+.cat-view-search-block {
+  padding: 18px;
+  background: #e9ecef;
 }
 
 .cat-logo-sm {
@@ -84,6 +97,8 @@
 
 .cat-main-view {
   min-height: 60vh;
+  padding: 10px;
+  background-color: #e8e8e8;
 }
 
 .cat-hash-link {
@@ -136,17 +151,12 @@ footer a {
   text-decoration: none;
 }
 
-.main-nav {
-  border-bottom: 1px solid rgb(169 169 169);
-}
-
 .nav-text {
   padding: 15px;
 }
 
 .custom-pagination input {
   display: inline-block;
-  float: left;
   width: 85px;
   margin-left: -1px;
   vertical-align: top;
