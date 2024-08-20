@@ -551,21 +551,30 @@ const AssessmentEdit = ({
           <Markdown>{guide.text}</Markdown>
         </Offcanvas.Body>
       </Offcanvas>
-      <h3 className="cat-view-heading">
-        <FaCheckCircle className="me-2" /> {`${mode} assessment`}
-        {assessment && assessment.id && (
-          <>
-            <span className="badge bg-secondary ms-2">
-              id: {assessment?.id}
-              {shared && (
-                <Badge pill bg="light" text="secondary" className="border ms-4">
-                  shared with me <FaUsers className="ms-1" />
-                </Badge>
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col col-lg-6">
+          <h2 className="cat-view-heading text-muted">
+            {`${mode} assessment`}
+            <p className="lead cat-view-lead">
+              Fill in the required fields of the assessment
+              {assessment && assessment.id && (
+                <>
+                  <span className="badge badge-light ms-2">
+                    with id ${assessment.id}
+                  </span>
+                </>
               )}
-            </span>
-          </>
-        )}
-      </h3>
+            </p>
+          </h2>
+        </div>
+        <div className="col-md-auto">
+          {shared && (
+            <Badge pill bg="light" text="secondary" className="border ms-4">
+              shared with me <FaUsers className="ms-1" />
+            </Badge>
+          )}
+        </div>
+      </div>
       <Tab.Container
         id="assessment-wizard"
         activeKey={"step-" + activeTab.toString()}
