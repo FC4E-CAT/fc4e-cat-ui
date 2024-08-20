@@ -65,10 +65,12 @@ function Assessments() {
       <>
         <div className="cat-view-heading-block row border-bottom">
           <div className="col col-lg-6">
-            <h2 className="cat-view-heading text-muted">Assessments</h2>
-            <p className="lead cat-view-lead">
-              Read about different actors in the ecosystem before starting.
-            </p>
+            <h2 className="cat-view-heading text-muted">
+              Assessments
+              <p className="lead cat-view-lead">
+                Read about different actors in the ecosystem before starting.
+              </p>
+            </h2>
           </div>
           {authenticated && (
             <div className="col-md-auto">
