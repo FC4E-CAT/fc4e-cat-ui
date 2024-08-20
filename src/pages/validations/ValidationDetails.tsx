@@ -15,6 +15,7 @@ import {
   FaTimes,
   FaCheck,
 } from "react-icons/fa";
+import Badge from "react-bootstrap/Badge";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
 function ValidationDetails(props: ValidationProps) {
@@ -169,18 +170,22 @@ function ValidationDetails(props: ValidationProps) {
         {approveCard}
         <div className="cat-view-heading-block row border-bottom">
           <div className="col col-lg-6">
-            <h2 className="cat-view-heading text-muted">Validation Request </h2>
-            <p className="lead cat-view-lead">
-              Manage the validation with id: {validation?.id} .
-            </p>
+            <h2 className="cat-view-heading text-muted">
+              Validation Request
+              <p className="lead cat-view-lead">
+                Manage the validation with id: {validation?.id} .
+              </p>
+            </h2>
           </div>
           <div className="col-md-auto">
             {props.admin ? (
-              <span className="badge badge-light">admin mode</span>
+              <h4>
+                <Badge bg="dark">Admin Mode</Badge>
+              </h4>
             ) : null}
           </div>
         </div>
-        <div className="row border-top py-3 mt-4">
+        <div className="row py-3 mt-4">
           <header className="col-3 h4 text-muted">Requestor</header>
           <section className="col-9">
             <div>
