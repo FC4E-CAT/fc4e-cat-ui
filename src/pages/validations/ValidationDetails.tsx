@@ -11,7 +11,6 @@ import { Modal } from "react-bootstrap";
 import toast from "react-hot-toast";
 import {
   FaExclamationTriangle,
-  FaIdBadge,
   FaGlasses,
   FaTimes,
   FaCheck,
@@ -164,22 +163,22 @@ function ValidationDetails(props: ValidationProps) {
 
   if (keycloak?.token) {
     return (
-      <div className="mt-4">
+      <div>
         <span id="alert-spot" />
         {rejectCard}
         {approveCard}
-        <div
-          className={`${
-            props.admin && "alert alert-primary"
-          } d-flex justify-content-between`}
-        >
-          <h3 className={`${!props.admin && "cat-view-heading"}`}>
-            <FaIdBadge /> Validation Request
-            <span className="ms-2 badge bg-secondary">
-              id: {validation?.id}
-            </span>
-          </h3>
-          {props.admin ? <h3 className="opacity-50">admin mode</h3> : null}
+        <div className="cat-view-heading-block row border-bottom">
+          <div className="col col-lg-6">
+            <h2 className="cat-view-heading text-muted">Validation Request </h2>
+            <p className="lead cat-view-lead">
+              Manage the validation with id: {validation?.id} .
+            </p>
+          </div>
+          <div className="col-md-auto">
+            {props.admin ? (
+              <span className="badge badge-light">admin mode</span>
+            ) : null}
+          </div>
         </div>
         <div className="row border-top py-3 mt-4">
           <header className="col-3 h4 text-muted">Requestor</header>
