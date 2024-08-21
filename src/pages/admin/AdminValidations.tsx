@@ -6,10 +6,8 @@ import { useContext, useEffect, useState } from "react";
 import {
   Alert,
   Button,
-  Col,
   Form,
   OverlayTrigger,
-  Row,
   Table,
   Tooltip,
 } from "react-bootstrap";
@@ -148,9 +146,9 @@ export default function AdminUsers() {
         <div className="col-md-auto"></div>
       </div>
 
-      <Form className="mt-2 mb-2">
-        <Row>
-          <Col>
+      <Form className="mb-2">
+        <div className="row cat-view-search-block border-bottom">
+          <div className="col col-lg-3">
             <Form.Select
               onChange={(e) => {
                 setOpts({ ...opts, type: e.target.value });
@@ -164,8 +162,8 @@ export default function AdminUsers() {
               <option>PID Scheme</option>
               <option>PID Service Provider</option>
             </Form.Select>
-          </Col>
-          <Col>
+          </div>
+          <div className="col-md-auto">
             <Form.Select
               onChange={(e) => {
                 setOpts({ ...opts, status: e.target.value });
@@ -177,8 +175,8 @@ export default function AdminUsers() {
               <option value="REJECTED">Rejected</option>
               <option value="REVIEW">Review</option>
             </Form.Select>
-          </Col>
-          <Col xs={6}>
+          </div>
+          <div className="col col-lg-6">
             <div className="d-flex justify-content-center">
               <Form.Control
                 placeholder="Search ..."
@@ -196,8 +194,8 @@ export default function AdminUsers() {
                 Clear
               </Button>
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
       </Form>
 
       <Table hover>
