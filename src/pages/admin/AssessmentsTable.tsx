@@ -186,8 +186,8 @@ const AssessmentsTable: React.FC = () => {
         </div>
         <div className="col-md-auto"></div>
       </div>
-      <div className="row py-3 p-4">
-        <div className="col">
+      <div className="row cat-view-search-block border-bottom">
+        <div className="col col-lg-6">
           <Form.Select
             id="typeFilter"
             name="typeFilter"
@@ -203,7 +203,7 @@ const AssessmentsTable: React.FC = () => {
             ))}
           </Form.Select>
         </div>
-        <div className="col">
+        <div className="col col-lg-6">
           <div className="d-flex justify-content-center">
             <Form.Control
               id="searchField"
@@ -213,12 +213,10 @@ const AssessmentsTable: React.FC = () => {
               value={filterText}
               onChange={(e) => setFilterText(e.target.value)}
             />
+            <Button variant="primary" onClick={handleClear}>
+              Clear
+            </Button>
           </div>
-        </div>
-        <div className="col-1 d-md-flex justify-content-md-end">
-          <Button variant="primary" onClick={handleClear}>
-            Clear
-          </Button>
         </div>
       </div>
       <DataTable
