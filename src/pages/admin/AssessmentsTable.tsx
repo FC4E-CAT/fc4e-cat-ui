@@ -186,39 +186,41 @@ const AssessmentsTable: React.FC = () => {
         </div>
         <div className="col-md-auto"></div>
       </div>
-      <div className="row cat-view-search-block border-bottom">
-        <div className="col col-lg-6">
-          <Form.Select
-            id="typeFilter"
-            name="typeFilter"
-            aria-label="Type Filter"
-            onChange={(e) => setFilterType(e.target.value)}
-            value={filterType}
-          >
-            <option value="">All Types</option>
-            {typeOptions?.map((option) => (
-              <option key={option.id} value={option.name}>
-                {option.name}
-              </option>
-            ))}
-          </Form.Select>
-        </div>
-        <div className="col col-lg-6">
-          <div className="d-flex justify-content-center">
-            <Form.Control
-              id="searchField"
-              name="filterText"
-              aria-label="Search Input"
-              placeholder="Search ..."
-              value={filterText}
-              onChange={(e) => setFilterText(e.target.value)}
-            />
-            <Button variant="primary" onClick={handleClear}>
-              Clear
-            </Button>
+      <Form className="mb-2">
+        <div className="row cat-view-search-block border-bottom">
+          <div className="col col-lg-6">
+            <Form.Select
+              id="typeFilter"
+              name="typeFilter"
+              aria-label="Type Filter"
+              onChange={(e) => setFilterType(e.target.value)}
+              value={filterType}
+            >
+              <option value="">All Types</option>
+              {typeOptions?.map((option) => (
+                <option key={option.id} value={option.name}>
+                  {option.name}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
+          <div className="col col-lg-6">
+            <div className="d-flex justify-content-center">
+              <Form.Control
+                id="searchField"
+                name="filterText"
+                aria-label="Search Input"
+                placeholder="Search ..."
+                value={filterText}
+                onChange={(e) => setFilterText(e.target.value)}
+              />
+              <Button variant="primary" onClick={handleClear} className="ms-4">
+                Clear
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </Form>
       <DataTable
         columns={columns}
         data={filteredData}
