@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
-import { AssessmentTest, TestValue } from "@/types";
+import { AssessmentTest, EvidenceURL, TestValue } from "@/types";
 import { FaLock, FaRegQuestionCircle } from "react-icons/fa";
 import { useState } from "react";
 
@@ -100,7 +100,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
     props.onTestChange(props.principleId, props.criterionId, newTest);
   };
 
-  function onURLChange(newURLS: string[]) {
+  function onURLChange(newURLS: EvidenceURL[]) {
     const newTest = { ...props.test, evidence_url: newURLS };
     props.onTestChange(props.principleId, props.criterionId, newTest);
   }
