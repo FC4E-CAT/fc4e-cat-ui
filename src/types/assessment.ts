@@ -132,7 +132,7 @@ export interface TestBinary {
   text: string;
   result: number | null;
   value: boolean | null;
-  evidence_url?: string[];
+  evidence_url?: EvidenceURL[];
 }
 
 export interface TestValue {
@@ -149,7 +149,12 @@ export interface TestValue {
   threshold_name?: string;
   threshold_locked?: boolean;
   benchmark: Benchmark;
-  evidence_url?: string[];
+  evidence_url?: EvidenceURL[];
+}
+
+export interface EvidenceURL {
+  url: string;
+  description?: string;
 }
 
 export interface Guidance {

@@ -5,7 +5,7 @@
 // import { useState } from "react"
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
-import { AssessmentTest, TestBinary } from "@/types";
+import { AssessmentTest, EvidenceURL, TestBinary } from "@/types";
 import { FaRegQuestionCircle } from "react-icons/fa";
 
 interface AssessmentTestProps {
@@ -33,7 +33,7 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
     props.onTestChange(props.principleId, props.criterionId, newTest);
   };
 
-  function onURLChange(newURLS: string[]) {
+  function onURLChange(newURLS: EvidenceURL[]) {
     const newTest = { ...props.test, evidence_url: newURLS };
     props.onTestChange(props.principleId, props.criterionId, newTest);
   }
