@@ -29,6 +29,7 @@ import {
   FaExclamationCircle,
   FaFileImport,
   FaHandPointRight,
+  FaShare,
   FaTimesCircle,
   FaUsers,
 } from "react-icons/fa";
@@ -45,10 +46,17 @@ import { DebugJSON } from "./components/DebugJSON";
 import { AssessmentSelectActor } from "./components/AssessmentSelectActor";
 
 import { toast } from "react-hot-toast";
+import { ShareModal } from "./components/ShareModal";
 
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
 };
+
+interface ShareModalConfig {
+  show: boolean;
+  name: string;
+  id: string;
+}
 
 type Guide = {
   id: string;
@@ -87,6 +95,13 @@ const AssessmentEdit = ({
     title: "",
     text: "",
     show: false,
+  });
+
+  // Share Modal
+  const [shareModalConfig, setShareModalConfig] = useState<ShareModalConfig>({
+    show: false,
+    name: "",
+    id: "",
   });
 
   const handleGuideClose = () =>
@@ -399,6 +414,11 @@ const AssessmentEdit = ({
     } else if (mode === AssessmentEditMode.Edit && qAssessment.data) {
       const data = qAssessment.data.assessment_doc;
       setShared(qAssessment.data.shared_to_user);
+      setShareModalConfig({
+        id: qAssessment.data.assessment_doc.id,
+        name: qAssessment.data.assessment_doc.name,
+        show: false,
+      });
       setTemplateData(data);
     }
   }, [qTemplate.data, mode, qAssessment.data]);
@@ -536,6 +556,14 @@ const AssessmentEdit = ({
 
   return (
     <>
+      <ShareModal
+        show={shareModalConfig.show}
+        name={shareModalConfig.name}
+        id={shareModalConfig.id}
+        onHide={() => {
+          setShareModalConfig({ ...shareModalConfig, show: false });
+        }}
+      />
       <Offcanvas
         show={guide.show}
         onHide={handleGuideClose}
@@ -551,7 +579,7 @@ const AssessmentEdit = ({
         </Offcanvas.Body>
       </Offcanvas>
       <div className="cat-view-heading-block row border-bottom">
-        <div className="col col-lg-6">
+        <div className="col">
           <h2 className="cat-view-heading text-muted">
             {`${mode} assessment`}
             <p className="lead cat-view-lead">
@@ -559,7 +587,7 @@ const AssessmentEdit = ({
               {assessment && assessment.id && (
                 <>
                   <p className="text-info">
-                    <small> with id ${assessment.id}</small>
+                    <small> with id {assessment.id}</small>
                   </p>
                 </>
               )}
@@ -567,9 +595,18 @@ const AssessmentEdit = ({
           </h2>
         </div>
         <div className="col-md-auto">
-          {shared && (
+          {shared ? (
             <button className="btn btn-secondary">
               shared with me <FaUsers className="ms-1" />
+            </button>
+          ) : (
+            <button
+              className="btn btn-success"
+              onClick={() => {
+                setShareModalConfig({ ...shareModalConfig, show: true });
+              }}
+            >
+              <FaShare /> Share
             </button>
           )}
         </div>
