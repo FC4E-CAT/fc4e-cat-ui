@@ -25,6 +25,7 @@ import {
 import { AssessmentInfo, CriteriaTabs } from "@/pages/assessments/components";
 import {
   FaCheckCircle,
+  FaComment,
   FaDownload,
   FaExclamationCircle,
   FaFileImport,
@@ -47,6 +48,7 @@ import { AssessmentSelectActor } from "./components/AssessmentSelectActor";
 
 import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
+import { Comments } from "./components/Comments";
 
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
@@ -103,6 +105,8 @@ const AssessmentEdit = ({
     name: "",
     id: "",
   });
+  // comments state
+  const [commentsShow, setCommentsShow] = useState(false);
 
   const handleGuideClose = () =>
     setGuide({ id: "", title: "", text: "", show: false });
@@ -578,6 +582,23 @@ const AssessmentEdit = ({
           <Markdown>{guide.text}</Markdown>
         </Offcanvas.Body>
       </Offcanvas>
+      {/* This is a second offcanvas element to host assessment comments */}
+      <Offcanvas
+        show={commentsShow}
+        onHide={() => {
+          setCommentsShow(false);
+        }}
+        scroll={true}
+        placement="end"
+        backdrop={false}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>Comments</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body id="cat-comments-area">
+          <Comments id={assessment?.id || ""} />
+        </Offcanvas.Body>
+      </Offcanvas>
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
@@ -609,6 +630,12 @@ const AssessmentEdit = ({
               <FaShare /> Share
             </button>
           )}
+          <button
+            className="btn btn-warning ms-2"
+            onClick={() => setCommentsShow(!commentsShow)}
+          >
+            <FaComment /> Comments
+          </button>
         </div>
       </div>
       <Tab.Container

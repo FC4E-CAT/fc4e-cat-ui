@@ -171,6 +171,17 @@ footer a {
   background: #f7f9fb;
 }
 
+.cat-comment-buttons {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.list-group-item:hover .cat-comment-buttons {
+  pointer-events: auto;
+  opacity: 1;
+}
+
 .limited {
   max-width: 10ch;
   overflow: hidden;

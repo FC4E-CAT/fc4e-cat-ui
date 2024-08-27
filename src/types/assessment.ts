@@ -222,6 +222,8 @@ export type AsmtEligibilityResponse = ResponsePage<ActorOrgAsmtType[]>;
 
 export type AssessmentListResponse = ResponsePage<AssessmentListItem[]>;
 
+export type AssessmentCommentResponse = ResponsePage<AssessmentComment[]>;
+
 export interface AssessmentDetailsResponse {
   id: number;
   shared_to_user: boolean;
@@ -268,4 +270,12 @@ export interface SharedUser {
   name: string;
   surname: string;
   email: string;
+}
+
+export interface AssessmentComment {
+  id: number;
+  assessment_id: string;
+  text: string;
+  user_name: string;
+  created_on: string;
 }
