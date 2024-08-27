@@ -10,6 +10,7 @@ import {
   AssessmentSubjectListResponse,
   AssessmentAdminDetailsResponse,
   AssessmentTypeResponse,
+  SharedUsers,
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
@@ -117,6 +118,44 @@ export function useGetPublicAssessments({
       return handleBackendError(error);
     },
     enabled: !!actorId && actorId > 0,
+  });
+}
+
+export function useGetAssessmentShares({
+  id,
+  token,
+  isRegistered,
+}: {
+  id: string;
+  token?: string;
+  isRegistered?: boolean;
+}) {
+  return useQuery({
+    queryKey: ["assessment-shares", id],
+    queryFn: async () => {
+      const url = `/assessments/${id}/shared-users`;
+      const response = await APIClient(token).get<SharedUsers>(url);
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: (!!token && isRegistered && id !== "") || id !== "",
+  });
+}
+
+// share Assessment
+
+export function useShareAssessment(token: string, id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (postData: { shared_with_user: string }) => {
+      return APIClient(token).post(`/assessments/${id}/share`, postData);
+    },
+    // for the time being redirect to assessment list
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessment-shares", id]);
+    },
   });
 }
 

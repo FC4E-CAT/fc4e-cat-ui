@@ -258,3 +258,14 @@ export interface AssessmentTypeResponse {
   total_pages: number;
   content: AssessmentType[];
 }
+
+export interface SharedUsers {
+  shared_users: SharedUser[];
+}
+
+export interface SharedUser {
+  id: string;
+  name: string;
+  surname: string;
+  email: string;
+}

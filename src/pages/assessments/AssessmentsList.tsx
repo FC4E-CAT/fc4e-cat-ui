@@ -17,6 +17,7 @@ import {
   FaDownload,
   FaFileImport,
   FaUsers,
+  FaShare,
 } from "react-icons/fa";
 import {
   Collapse,
@@ -45,6 +46,7 @@ import { Link } from "react-router-dom";
 import { DeleteModal } from "@/components/DeleteModal";
 
 import { toast } from "react-hot-toast";
+import { ShareModal } from "./components/ShareModal";
 
 /**
  * ComplianceBadge gets a compliance value (null, false, true) and renders
@@ -81,6 +83,12 @@ interface DeleteModalConfig {
   itemName: string;
 }
 
+interface ShareModalConfig {
+  show: boolean;
+  name: string;
+  id: string;
+}
+
 function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   // get the extra url parameters when in public list mode from url
@@ -93,7 +101,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     message: "",
   });
 
-  // Modal
+  // Delete Modal
   const [deleteModalConfig, setDeleteModalConfig] = useState<DeleteModalConfig>(
     {
       show: false,
@@ -103,6 +111,13 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       itemName: "",
     },
   );
+
+  // Share Modal
+  const [shareModalConfig, setShareModalConfig] = useState<ShareModalConfig>({
+    show: false,
+    name: "",
+    id: "",
+  });
 
   const actorId = actorIdParam ? parseInt(actorIdParam, 10) : -1;
   const assessmentTypeId = assessmentTypeIdParam
@@ -194,6 +209,14 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         show: true,
         itemId: item.id,
         itemName: "test",
+      });
+    };
+
+    const handleShareOpenModal = (item: AssessmentListItem) => {
+      setShareModalConfig({
+        show: true,
+        name: item.name,
+        id: item.id,
       });
     };
 
@@ -386,6 +409,15 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       <FaDownload />
                     </Button>
                     <Button
+                      id={`share-button-${item.id}`}
+                      className="btn btn-secondary cat-action-reject-link btn-sm "
+                      onClick={() => {
+                        handleShareOpenModal(item);
+                      }}
+                    >
+                      <FaShare />
+                    </Button>
+                    <Button
                       id={`delete-button-${item.id}`}
                       className="btn btn-secondary cat-action-reject-link btn-sm "
                       onClick={() => {
@@ -442,6 +474,14 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
 
   return (
     <div>
+      <ShareModal
+        show={shareModalConfig.show}
+        name={shareModalConfig.name}
+        id={shareModalConfig.id}
+        onHide={() => {
+          setShareModalConfig({ id: "", name: "", show: false });
+        }}
+      />
       <DeleteModal
         show={deleteModalConfig.show}
         title={deleteModalConfig.title}
