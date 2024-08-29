@@ -169,7 +169,7 @@ function ValidationDetails(props: ValidationProps) {
         {rejectCard}
         {approveCard}
         <div className="cat-view-heading-block row border-bottom">
-          <div className="col col-lg-6">
+          <div className="col">
             <h2 className="cat-view-heading text-muted">
               Validation Request
               <p className="lead cat-view-lead">
@@ -177,7 +177,7 @@ function ValidationDetails(props: ValidationProps) {
               </p>
             </h2>
           </div>
-          <div className="col-md-auto">
+          <div className="col-md-auto cat-heading-right">
             {props.admin ? (
               <h4>
                 <Badge bg="dark">Admin Mode</Badge>

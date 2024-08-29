@@ -448,16 +448,16 @@ function Subjects() {
         onDelete={handleDeleteSubject}
       />
       <div className="cat-view-heading-block row border-bottom">
-        <div className="col col-lg-6">
+        <div className="col">
           <h2 className="cat-view-heading text-muted">
             Subjects
             <p className="lead cat-view-lead">Manage your own subjects.</p>
           </h2>
         </div>
-        <div className="col-md-auto">
+        <div className="col-md-auto cat-heading-right">
           <Button
             variant="warning"
-            className=""
+            className="cat-button-create-new"
             onClick={() =>
               setSubjectModalConfig({
                 id: -1,

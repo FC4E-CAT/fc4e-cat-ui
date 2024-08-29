@@ -337,13 +337,13 @@ export default function AdminUsers() {
           handleDelete={handleDelete}
           handleRestore={handleRestore}
         />
-        <div className="col col-lg-6">
+        <div className="col">
           <h2 className="text-muted cat-view-heading ">
             Users
             <p className="lead cat-view-lead">Manage all Users.</p>
           </h2>
         </div>
-        <div className="col-md-auto"></div>
+        <div className="col-md-auto  cat-heading-right"></div>
       </div>
       <div>
         <Form className="mb-3">

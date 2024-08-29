@@ -43,10 +43,10 @@ function Profile() {
     return (
       <>
         <div className="cat-view-heading-block row border-bottom">
-          <div className="col col-lg-4">
+          <div className="col">
             <h2 className="text-muted cat-view-heading"> User Dashboard</h2>
           </div>
-          <div className="col-md-auto"></div>
+          <div className="col-md-auto cat-heading-right"></div>
         </div>
         <div className="row">
           <div className="col col-lg-3 border-right  border-dashed">

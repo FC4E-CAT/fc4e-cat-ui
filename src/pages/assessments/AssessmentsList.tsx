@@ -494,7 +494,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         onDelete={handleDeleteConfirmed}
       />
       <div className="cat-view-heading-block row border-bottom">
-        <div className="col col-lg-6">
+        <div className="col">
           <h2 className="cat-view-heading text-muted">
             {/* if component is used in public list mode display the actor name */}
             {listPublic && actorName && <span>{actorName} </span>}
@@ -502,7 +502,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             <p className="lead cat-view-lead">Manage your own assessments.</p>
           </h2>
         </div>
-        <div className="col-md-auto">
+        <div className="col-md-auto cat-heading-right">
           <>
             <Button
               variant="secondary"

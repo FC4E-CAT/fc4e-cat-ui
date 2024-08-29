@@ -65,7 +65,7 @@ export default function ProfileUpdate() {
   return (
     <div>
       <div className="cat-view-heading-block row border-bottom">
-        <div className="col col-lg-6">
+        <div className="col">
           <h2 className="cat-view-heading text-muted">
             Update your personal details
             <p className="lead cat-view-lead">
@@ -73,7 +73,7 @@ export default function ProfileUpdate() {
             </p>
           </h2>
         </div>
-        <div className="col-md-auto"></div>
+        <div className="col-md-auto  cat-heading-right"></div>
       </div>
       <div className="row py-4 px-4">
         <Form onSubmit={onSubmit}>
