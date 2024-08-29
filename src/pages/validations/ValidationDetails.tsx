@@ -22,14 +22,6 @@ import { trimField } from "@/utils/admin";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-const [copySuccess, setCopySuccess] = useState("");
-
-const renderTooltip = (props: TooltipProps) => (
-  <Tooltip id="button-tooltip" {...props}>
-    {copySuccess ? "Copied!" : "Copy to clipboard"}
-  </Tooltip>
-);
-
 function ValidationDetails(props: ValidationProps) {
   const params = useParams();
   const navigate = useNavigate();
@@ -52,6 +44,13 @@ function ValidationDetails(props: ValidationProps) {
     isAdmin.current = true;
   }
 
+  const [copySuccess, setCopySuccess] = useState("");
+
+  const renderTooltip = (props: TooltipProps) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {copySuccess ? "Copied!" : "Copy to clipboard"}
+    </Tooltip>
+  );
   const [validation, setValidation] = useState<ValidationResponse>();
 
   const { data: validationData } = useGetValidationDetails({
