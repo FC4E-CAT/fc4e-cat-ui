@@ -257,46 +257,61 @@ function ValidationDetails(props: ValidationProps) {
           </div>
           <div className="col col-lg-9 border-right">
             <div className="p-3">
-              <div className="row border-top py-3 mt-4">
-                <h4>Status</h4>
+              <div className="row py-3 mt-4">
+                {validation?.status === "REVIEW" && (
+                  <h4>
+                    Status
+                    <small className="px-3">
+                      <span className="badge bg-primary">
+                        <FaGlasses /> Pending for Review
+                      </span>
+                    </small>
+                  </h4>
+                )}
+                {validation?.status === ValidationStatus.REJECTED && (
+                  <>
+                    <h4>
+                      Status
+                      <small className="px-3">
+                        <span className="badge bg-danger">
+                          <FaTimes /> REJECTED
+                        </span>
+                      </small>
+                    </h4>
+
+                    <div>
+                      <strong>Rejected on:</strong> {validation?.validated_on}
+                    </div>
+                    <div>
+                      <strong>Rejected by:</strong> {validation?.validated_by}
+                    </div>
+                  </>
+                )}
+                {validation?.status === ValidationStatus.APPROVED && (
+                  <>
+                    <h4>
+                      Status
+                      <small className="px-3">
+                        <span className="badge bg-success">
+                          <FaCheck /> Approved
+                        </span>
+                      </small>
+                    </h4>
+                    <div>
+                      <strong>Approved on:</strong> {validation?.validated_on}
+                    </div>
+                    <div>
+                      <strong>Approved by:</strong> {validation?.validated_by}
+                    </div>
+                  </>
+                )}{" "}
                 <section className="col-9 disabled">
                   <div>
                     <strong>Created on:</strong> {validation?.created_on}
                   </div>
-                  {validation?.status === "REVIEW" && (
-                    <div className="alert alert-info mt-4" role="alert">
-                      <FaGlasses /> PENDING FOR REVIEW
-                    </div>
-                  )}
-                  {validation?.status === ValidationStatus.REJECTED && (
-                    <>
-                      <div className="alert alert-danger mt-4" role="alert">
-                        <FaTimes /> REJECTED
-                      </div>
-                      <div>
-                        <strong>Rejected on:</strong> {validation?.validated_on}
-                      </div>
-                      <div>
-                        <strong>Rejected by:</strong> {validation?.validated_by}
-                      </div>
-                    </>
-                  )}
-                  {validation?.status === ValidationStatus.APPROVED && (
-                    <>
-                      <div className="alert alert-success mt-4" role="alert">
-                        <FaCheck /> APPROVED
-                      </div>
-                      <div>
-                        <strong>Approved on:</strong> {validation?.validated_on}
-                      </div>
-                      <div>
-                        <strong>Approved by:</strong> {validation?.validated_by}
-                      </div>
-                    </>
-                  )}{" "}
                 </section>
               </div>
-              <div className="row py-3 mt-4">
+              <div className="row border-top py-3 mt-4">
                 <h4>Organisation</h4>
                 <section className="col-9 disabled">
                   <div>
