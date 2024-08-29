@@ -272,7 +272,7 @@ function ValidationList(props: ValidationProps) {
       <div className="cat-view-heading-block row border-bottom">
         {rejectCard}
         {approveCard}
-        <div className="col col-lg-6">
+        <div className="col">
           <h2 className={`${!props.admin && "cat-view-heading text-muted"}`}>
             Validation Requests
             <p className="lead cat-view-lead">
@@ -280,7 +280,7 @@ function ValidationList(props: ValidationProps) {
             </p>
           </h2>
         </div>
-        <div className="col-md-auto">
+        <div className="col-md-auto cat-heading-right">
           {props.admin ? (
             <h2 className="opacity-50">admin mode</h2>
           ) : (

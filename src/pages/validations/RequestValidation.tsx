@@ -206,7 +206,7 @@ function RequestValidation() {
   return (
     <div>
       <div className="cat-view-heading-block row border-bottom">
-        <div className="col col-lg-6">
+        <div className="col">
           <h2 className="cat-view-heading text-muted">
             Create new validation request
             <p className="lead cat-view-lead">
@@ -214,7 +214,7 @@ function RequestValidation() {
             </p>
           </h2>
         </div>
-        <div className="col-md-auto"></div>
+        <div className="col-md-auto cat-heading-right"></div>
       </div>
       <form className="mt-4 py-4 px-4" onSubmit={handleSubmit(onSubmit)}>
         <Row>

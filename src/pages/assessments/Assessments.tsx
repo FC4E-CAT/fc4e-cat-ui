@@ -64,7 +64,7 @@ function Assessments() {
     <div>
       <>
         <div className="cat-view-heading-block row border-bottom">
-          <div className="col col-lg-6">
+          <div className="col">
             <h2 className="cat-view-heading text-muted">
               Assessments
               <p className="lead cat-view-lead">
@@ -73,7 +73,7 @@ function Assessments() {
             </h2>
           </div>
           {authenticated && (
-            <div className="col-md-auto">
+            <div className="col-md-auto cat-heading-right">
               <Link
                 id="view_assessments_button"
                 to="/assessments"

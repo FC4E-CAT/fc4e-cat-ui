@@ -615,7 +615,7 @@ const AssessmentEdit = ({
             </p>
           </h2>
         </div>
-        <div className="col-md-auto">
+        <div className="col-md-auto cat-heading-right">
           {shared ? (
             <button className="btn btn-secondary">
               shared with me <FaUsers className="ms-1" />
