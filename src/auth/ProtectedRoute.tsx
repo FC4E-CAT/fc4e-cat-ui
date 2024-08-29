@@ -81,16 +81,12 @@ export function ProtectedRoute() {
 
   // check if a non-admin user tries to access an admin view
   useEffect(() => {
-    if (
-      authenticated &&
-      adminRoute &&
-      profileData?.user_type.toLowerCase() !== "admin"
-    ) {
-      navigate("/profile");
+    if (authenticated && adminRoute && profileData) {
+      if (profileData.user_type.toLowerCase() !== "admin") navigate("/profile");
     }
   }, [authenticated, adminRoute, profileData, navigate]);
 
-  if (authenticated && isSuccess) {
+  if (authenticated && isSuccess && profileData) {
     return <Outlet />;
   } else {
     return <></>;
