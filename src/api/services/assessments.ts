@@ -1,6 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { APIClient } from "@/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   ApiOptions,
   Assessment,
@@ -11,6 +16,7 @@ import {
   AssessmentAdminDetailsResponse,
   AssessmentTypeResponse,
   SharedUsers,
+  AssessmentCommentResponse,
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
@@ -327,5 +333,85 @@ export function useGetAssessmentTypes({
       return handleBackendError(error);
     },
     enabled: isRegistered,
+  });
+}
+
+// use infinite query to get all the comments for a specific assessment given it's id
+export const useGetAssessmentComments = (
+  id: string,
+  { token, isRegistered, size }: ApiOptions,
+) =>
+  useInfiniteQuery({
+    queryKey: ["assessment-comments", id],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<AssessmentCommentResponse>(
+        `/assessments/${id}/comments?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
+// use mutation to add a new comment to assessment with specific id
+export function useAssessmentCommentAdd(token: string, id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (postData: { text: string }) => {
+      return APIClient(token).post(`/assessments/${id}/comments`, postData);
+    },
+    // update query cache
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessment-comments", id]);
+    },
+  });
+}
+
+// use mutation to update a comment with cid, included in an assessment with specific id
+export function useAssessmentCommentUpdate(
+  token: string,
+  id: string,
+  cid: number,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (putData: { text: string }) => {
+      return APIClient(token).put(
+        `/assessments/${id}/comments/${cid}`,
+        putData,
+      );
+    },
+    // update query cache
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessment-comments", id]);
+    },
+  });
+}
+
+// use mutation to delete a comment with cid, included in an assessment with specific id
+export function useAssessmentCommentDelete(
+  token: string,
+  id: string,
+  cid: number,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      return APIClient(token).delete(`/assessments/${id}/comments/${cid}`);
+    },
+    // update query cache
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessment-comments", id]);
+    },
   });
 }
