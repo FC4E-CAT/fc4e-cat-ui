@@ -252,94 +252,88 @@ function ValidationDetails(props: ValidationProps) {
                 </span>
               )}
             </div>
-            <div className="col-md-auto border-right">
-              <div className="p-3">
-                <div className="row py-3 mt-4">
-                  <h4>Organisation</h4>
-                  <section className="col-9 disabled">
-                    <div>
-                      <strong>Id: </strong>
-                      {validation?.organisation_source === "ROR" ? (
-                        <>
-                          <a
-                            target="_blank"
-                            rel="noreferrer"
-                            href={
-                              "http://ror.org/" + validation?.organisation_id
-                            }
-                          >
-                            {validation?.organisation_id}
-                          </a>
-                          <span> - [ROR]</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>{validation?.organisation_id}</span>
-                          <small>({validation?.organisation_source})</small>
-                        </>
-                      )}
+          </div>
+          <div className="col-md-auto border-right">
+            <div className="p-3">
+              <div className="row py-3 mt-4">
+                <h4>Organisation</h4>
+                <section className="col-9 disabled">
+                  <div>
+                    <strong>Id: </strong>
+                    {validation?.organisation_source === "ROR" ? (
+                      <>
+                        <a
+                          target="_blank"
+                          rel="noreferrer"
+                          href={"http://ror.org/" + validation?.organisation_id}
+                        >
+                          {validation?.organisation_id}
+                        </a>
+                        <span> - [ROR]</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{validation?.organisation_id}</span>
+                        <small>({validation?.organisation_source})</small>
+                      </>
+                    )}
+                  </div>
+                  <div>
+                    <strong>Name:</strong> {validation?.organisation_name}
+                  </div>
+                </section>
+              </div>
+              <div className="row border-top py-3 mt-4">
+                <h4>Roles</h4>
+                <section className="col-9 disabled">
+                  <div>
+                    <strong>User role in organisation:</strong>{" "}
+                    {validation?.organisation_role}
+                  </div>
+                  <div>
+                    <strong>User requests as Actor with:</strong>{" "}
+                    {validation?.actor_name}
+                  </div>
+                </section>
+              </div>
+              <div className="row border-top py-3 mt-4">
+                <h4>Status</h4>
+                <section className="col-9 disabled">
+                  <div>
+                    <strong>Created on:</strong> {validation?.created_on}
+                  </div>
+                  {validation?.status === "REVIEW" && (
+                    <div className="alert alert-info mt-4" role="alert">
+                      <FaGlasses /> PENDING FOR REVIEW
                     </div>
-                    <div>
-                      <strong>Name:</strong> {validation?.organisation_name}
-                    </div>
-                  </section>
-                </div>
-                <div className="row border-top py-3 mt-4">
-                  <h4>Roles</h4>
-                  <section className="col-9 disabled">
-                    <div>
-                      <strong>User role in organisation:</strong>{" "}
-                      {validation?.organisation_role}
-                    </div>
-                    <div>
-                      <strong>User requests as Actor with:</strong>{" "}
-                      {validation?.actor_name}
-                    </div>
-                  </section>
-                </div>
-                <div className="row border-top py-3 mt-4">
-                  <h4>Status</h4>
-                  <section className="col-9 disabled">
-                    <div>
-                      <strong>Created on:</strong> {validation?.created_on}
-                    </div>
-                    {validation?.status === "REVIEW" && (
-                      <div className="alert alert-info mt-4" role="alert">
-                        <FaGlasses /> PENDING FOR REVIEW
+                  )}
+                  {validation?.status === ValidationStatus.REJECTED && (
+                    <>
+                      <div className="alert alert-danger mt-4" role="alert">
+                        <FaTimes /> REJECTED
                       </div>
-                    )}
-                    {validation?.status === ValidationStatus.REJECTED && (
-                      <>
-                        <div className="alert alert-danger mt-4" role="alert">
-                          <FaTimes /> REJECTED
-                        </div>
-                        <div>
-                          <strong>Rejected on:</strong>{" "}
-                          {validation?.validated_on}
-                        </div>
-                        <div>
-                          <strong>Rejected by:</strong>{" "}
-                          {validation?.validated_by}
-                        </div>
-                      </>
-                    )}
-                    {validation?.status === ValidationStatus.APPROVED && (
-                      <>
-                        <div className="alert alert-success mt-4" role="alert">
-                          <FaCheck /> APPROVED
-                        </div>
-                        <div>
-                          <strong>Approved on:</strong>{" "}
-                          {validation?.validated_on}
-                        </div>
-                        <div>
-                          <strong>Approved by:</strong>{" "}
-                          {validation?.validated_by}
-                        </div>
-                      </>
-                    )}{" "}
-                  </section>
-                </div>
+                      <div>
+                        <strong>Rejected on:</strong> {validation?.validated_on}
+                      </div>
+                      <div>
+                        <strong>Rejected by:</strong> {validation?.validated_by}
+                      </div>
+                    </>
+                  )}
+                  {validation?.status === ValidationStatus.APPROVED && (
+                    <>
+                      <div className="alert alert-success mt-4" role="alert">
+                        <FaCheck /> APPROVED
+                      </div>
+                      <div>
+                        <strong>Approved on:</strong> {validation?.validated_on}
+                      </div>
+                      <div>
+                        <strong>Approved by:</strong> {validation?.validated_by}
+                      </div>
+                    </>
+                  )}{" "}
+                </section>
               </div>
             </div>
           </div>
