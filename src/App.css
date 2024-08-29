@@ -84,7 +84,11 @@
 .cat-view-lead {
   font-size: 1.05 rem !important;
 }
-
+.admin-mode-badge-sm{
+  font-size: 0.75 rem;
+  padding-right: 10px;
+  padding-top: 0px;   
+}
 .cat-view-search-block {
   padding: 18px;
   background: #e9ecef;
