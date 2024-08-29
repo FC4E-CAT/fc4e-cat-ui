@@ -27,6 +27,7 @@ import {
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { idToColor, trimField } from "@/utils/admin";
+import { Link } from "react-router-dom";
 
 type UserState = {
   sortOrder: string;
@@ -466,16 +467,12 @@ export default function AdminUsers() {
                     </td>
                     <td>
                       <OverlayTrigger placement="top" overlay={tooltipView}>
-                        <Button
-                          variant="light"
-                          size="sm"
-                          onClick={() =>
-                            (window.location.href = `/admin/users/view/${item.id}`)
-                          }
+                        <Link
+                          className="btn btn-sm btn-light"
+                          to={`/admin/users/view/${item.id}`}
                         >
-                          {/* <Button className="btn-light btn-sm m-1"> */}
                           <FaBars />
-                        </Button>
+                        </Link>
                       </OverlayTrigger>
                       {item.banned ? (
                         <OverlayTrigger
