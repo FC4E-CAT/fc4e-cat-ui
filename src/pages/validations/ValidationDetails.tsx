@@ -184,13 +184,13 @@ function ValidationDetails(props: ValidationProps) {
             <h2 className="cat-view-heading text-muted">
               Validation Request
               <p className="lead cat-view-lead">
-              {props.admin ? (
-                <span className="admin-mode-badge-sm">
-                <small className="small-badge">
-                  <Badge bg="dark">Admin Mode</Badge>
-                </small>
-                </span>
-              ) : null}
+                {props.admin ? (
+                  <span className="admin-mode-badge-sm">
+                    <small className="small-badge">
+                      <Badge bg="dark">Admin Mode</Badge>
+                    </small>
+                  </span>
+                ) : null}
                 Manage the validation with id: {validation?.id} .
               </p>
             </h2>
@@ -257,7 +257,7 @@ function ValidationDetails(props: ValidationProps) {
           </div>
           <div className="col col-lg-9 border-right">
             <div className="p-3">
-            <div className="row border-top py-3 mt-4">
+              <div className="row border-top py-3 mt-4">
                 <h4>Status</h4>
                 <section className="col-9 disabled">
                   <div>
@@ -337,7 +337,6 @@ function ValidationDetails(props: ValidationProps) {
                   </div>
                 </section>
               </div>
-              
             </div>
           </div>
         </div>
