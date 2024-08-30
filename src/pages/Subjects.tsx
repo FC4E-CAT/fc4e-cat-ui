@@ -8,6 +8,9 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaExclamationTriangle,
+  FaArrowUp,
+  FaArrowDown,
+  FaArrowsAltV,
 } from "react-icons/fa";
 import { AlertInfo, Subject } from "@/types";
 import {
@@ -54,7 +57,7 @@ type SubjectModalProps = SubjectModalBasicConfig & {
   onDelete: (id: number) => void;
 };
 
-type ValidationState = {
+type SubjectState = {
   sortOrder: string;
   sortBy: string;
   type: string;
@@ -63,6 +66,19 @@ type ValidationState = {
   search: string;
   status: string;
 };
+
+// create an up/down arrow to designate sorting in a column
+export function SortMarker(
+  field: string,
+  sortField: string,
+  sortOrder: string,
+) {
+  if (field === sortField) {
+    if (sortOrder === "DESC") return <FaArrowUp />;
+    else if (sortOrder === "ASC") return <FaArrowDown />;
+  }
+  return <FaArrowsAltV className="text-secondary opacity-50" />;
+}
 
 // Creates a modal with a small form to create/edit a subject
 export function SubjectModal(props: SubjectModalProps) {
@@ -293,7 +309,7 @@ function Subjects() {
   // mutation hook for creating a new subject
   const { keycloak } = useContext(AuthContext)!;
 
-  const [opts, setOpts] = useState<ValidationState>({
+  const [opts, setOpts] = useState<SubjectState>({
     sortBy: "",
     sortOrder: "",
     type: "",
@@ -307,6 +323,20 @@ function Subjects() {
   const handleChangePageSize = (evt: { target: { value: string } }) => {
     setOpts({ ...opts, page: 1, size: parseInt(evt.target.value) });
   };
+
+   // handler for clicking to sort
+   const handleSortClick = (field: string) => {
+    if (field === opts.sortBy) {
+      if (opts.sortOrder === "ASC") {
+        setOpts({ ...opts, sortOrder: "DESC" });
+      } else {
+        setOpts({ ...opts, sortOrder: "ASC" });
+      }
+    } else {
+      setOpts({ ...opts, sortOrder: "ASC", sortBy: field });
+    }
+  };
+
   const { isLoading, data, refetch } = useGetSubjects({
     size: opts.size,
     page: opts.page,
@@ -445,12 +475,18 @@ function Subjects() {
           </Button>
         </div>
       </div>
-
+      <div className="py-2 px-2">
       <Table hover>
         <thead>
           <tr className="table-light">
             <th>
-              <span>Subject Id </span>
+            <span
+                onClick={() => handleSortClick("id")}
+                className="cat-cursor-pointer"
+              >
+                SubjectID{" "}
+                {SortMarker("id", opts.sortBy, opts.sortOrder)}
+              </span>
             </th>
             <th>
               <span>Subject Name </span>
@@ -517,6 +553,7 @@ function Subjects() {
           </tbody>
         ) : null}
       </Table>
+      </div>
       {!isLoading && subjects.length === 0 && (
         <Alert variant="warning" className="text-center mx-auto">
           <h3>
