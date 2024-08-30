@@ -276,6 +276,13 @@ export interface AssessmentComment {
   id: number;
   assessment_id: string;
   text: string;
-  user_name: string;
+  user: AssessmentCommentUser;
   created_on: string;
+}
+
+export interface AssessmentCommentUser {
+  id: string;
+  name: string;
+  surname: string;
+  email: string;
 }

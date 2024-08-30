@@ -222,17 +222,21 @@ export const Comments = ({ id }: { id: string }) => {
                     : ""
                 }
               >
-                <Row className="mb-1">
+                <Row>
                   <Col>
                     <small>
                       <strong>
-                        <FaUser className="me-1" /> {item.user_name}
+                        <FaUser className="me-1" />
+                        {`${item.user.name} ${item.user.surname}`}
                       </strong>
                     </small>
                   </Col>
                   <Col md="auto">
                     <small>{item.created_on}</small>
                   </Col>
+                </Row>
+                <Row>
+                  <small className="text-muted">{item.user.email}</small>
                 </Row>
                 <div className="border-top mb-2 p-1">
                   <span className="mt-2">{item.text}</span>
