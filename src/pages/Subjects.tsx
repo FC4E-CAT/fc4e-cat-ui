@@ -273,6 +273,10 @@ export function SubjectModal(props: SubjectModalProps) {
   );
 }
 
+// create the tooltips
+const tooltipEdit = <Tooltip id="tip-edit">Edit Subject</Tooltip>;
+const tooltipDelete = <Tooltip id="tip-delete">Delete Subject</Tooltip>;
+
 function Subjects() {
   // toast alert reference used in notification messaging
   const toastAlert = useRef<AlertInfo>({
@@ -455,7 +459,9 @@ function Subjects() {
             <th>
               <span>Subject Type </span>
             </th>
-            <th></th>
+            <th>
+              <span>Actions </span>
+            </th>
           </tr>
         </thead>
         {subjects.length > 0 ? (
@@ -468,37 +474,41 @@ function Subjects() {
                   <td className="align-middle">{item.type}</td>
 
                   <td>
-                    <div className="edit-buttons btn-group shadow">
-                      <Button
-                        id={`edit-button-${item.id}`}
-                        className="btn btn-secondary cat-action-reject-link btn-sm "
-                        onClick={() => {
-                          if (item.id) {
-                            setSubjectModalConfig({
-                              id: item.id,
-                              mode: SubjectModalMode.Update,
-                              show: true,
-                            });
-                          }
-                        }}
-                      >
-                        <FaEdit />
-                      </Button>
-                      <Button
-                        id={`delete-button-${item.id}`}
-                        className="btn btn-secondary cat-action-reject-link btn-sm "
-                        onClick={() => {
-                          if (item.id) {
-                            setSubjectModalConfig({
-                              id: item.id,
-                              mode: SubjectModalMode.Delete,
-                              show: true,
-                            });
-                          }
-                        }}
-                      >
-                        <FaTimes />
-                      </Button>
+                    <div className="d-flex flex-nowrap">
+                      <OverlayTrigger placement="top" overlay={tooltipEdit}>
+                        <Button
+                          id={`edit-button-${item.id}`}
+                          className="btn btn-light btn-sm m-1 "
+                          onClick={() => {
+                            if (item.id) {
+                              setSubjectModalConfig({
+                                id: item.id,
+                                mode: SubjectModalMode.Update,
+                                show: true,
+                              });
+                            }
+                          }}
+                        >
+                          <FaEdit />
+                        </Button>
+                      </OverlayTrigger>
+                      <OverlayTrigger placement="top" overlay={tooltipDelete}>
+                        <Button
+                          id={`delete-button-${item.id}`}
+                          className="btn btn-light btn-sm m-1"
+                          onClick={() => {
+                            if (item.id) {
+                              setSubjectModalConfig({
+                                id: item.id,
+                                mode: SubjectModalMode.Delete,
+                                show: true,
+                              });
+                            }
+                          }}
+                        >
+                          <FaTimes />
+                        </Button>
+                      </OverlayTrigger>
                     </div>
                   </td>
                 </tr>
