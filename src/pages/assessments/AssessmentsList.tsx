@@ -410,7 +410,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     </Button>
                     <Button
                       id={`share-button-${item.id}`}
-                      className="btn btn-secondary cat-action-reject-link btn-sm "
+                      className={`btn cat-action-reject-link btn-sm ${item.shared ? "btn-success border" : "btn-secondary"}`}
                       onClick={() => {
                         handleShareOpenModal(item);
                       }}

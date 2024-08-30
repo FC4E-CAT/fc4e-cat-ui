@@ -216,6 +216,7 @@ export interface AssessmentListItem {
   template_id: number;
   published: boolean;
   shared_to_user: boolean;
+  shared: boolean;
 }
 
 export type AsmtEligibilityResponse = ResponsePage<ActorOrgAsmtType[]>;
