@@ -310,8 +310,8 @@ function Subjects() {
   const { keycloak } = useContext(AuthContext)!;
 
   const [opts, setOpts] = useState<SubjectState>({
-    sortBy: "",
-    sortOrder: "",
+    sortBy: "id",
+    sortOrder: "ASC",
     type: "",
     page: 1,
     size: 20,
@@ -337,6 +337,7 @@ function Subjects() {
     }
   };
 
+  // data get admin users
   const { isLoading, data, refetch } = useGetSubjects({
     size: opts.size,
     page: opts.page,
@@ -484,7 +485,7 @@ function Subjects() {
                   onClick={() => handleSortClick("id")}
                   className="cat-cursor-pointer"
                 >
-                  SubjectID {SortMarker("id", opts.sortBy, opts.sortOrder)}
+                  Subject ID {SortMarker("id", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
               <th>
