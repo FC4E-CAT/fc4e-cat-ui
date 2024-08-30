@@ -440,9 +440,7 @@ function Subjects() {
           <thead>
             <tr className="table-light">
               <th>
-                <span>
-                  Subject ID
-                </span>
+                <span>Subject ID</span>
               </th>
               <th>
                 <span>Subject Name </span>
