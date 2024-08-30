@@ -17,6 +17,7 @@ export type ValidationResponse = {
   created_on: string;
   validated_on: string;
   validated_by: string;
+  rejection_reason: string;
 };
 
 export type APIValidationResponse = ResponsePage<ValidationResponse[]>;
@@ -43,6 +44,7 @@ export type ValidationUpdateStatusParams = ApiAuthOptions &
 
 export interface ValidationStatusUpdate {
   validation_id: string;
+  rejection_reason?: string;
   status: string;
 }
 

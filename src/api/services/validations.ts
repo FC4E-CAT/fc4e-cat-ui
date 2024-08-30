@@ -151,6 +151,7 @@ export const useValidationRequest = ({
 export const useValidationStatusUpdate = ({
   validation_id,
   status,
+  rejection_reason,
   token,
 }: ValidationUpdateStatusParams) =>
   useMutation(
@@ -159,6 +160,7 @@ export const useValidationStatusUpdate = ({
         `/admin/validations/${validation_id}/update-status`,
         {
           status,
+          rejection_reason,
           token,
         },
       );

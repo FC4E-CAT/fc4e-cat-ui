@@ -1,3 +1,0 @@
-#!/usr/bin/bash 
-npm run prettier:fix
-npm run stylelint:fix

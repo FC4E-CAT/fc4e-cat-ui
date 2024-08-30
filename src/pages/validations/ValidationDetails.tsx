@@ -7,7 +7,7 @@ import {
   ValidationStatus,
 } from "@/types";
 import { useRef, useState, useContext, useEffect } from "react";
-import { Modal } from "react-bootstrap";
+import { Form, Modal } from "react-bootstrap";
 import toast from "react-hot-toast";
 import {
   FaExclamationTriangle,
@@ -31,11 +31,13 @@ function ValidationDetails(props: ValidationProps) {
   const isAdmin = useRef<boolean>(false);
   const [reviewStatus, setReviewStatus] = useState<string>("");
   const { keycloak, registered } = useContext(AuthContext)!;
+  const [rejection, setRejection] = useState<string>("");
 
   const { mutateAsync: mutateValidationUpdateStatus } =
     useValidationStatusUpdate({
       validation_id: params.id!,
       status: reviewStatus,
+      rejection_reason: rejection,
       token: keycloak?.token || "",
       isRegistered: registered,
     });
@@ -79,10 +81,24 @@ function ValidationDetails(props: ValidationProps) {
         <Modal.Body className=" card-body border-danger text-center">
           Are you sure you want to reject validation with ID:{" "}
           <strong>{params.id}</strong> ?
+          <div className="text-start mt-2">
+            <Form.Control
+              id="input-share-user"
+              placeholder="Add a reason for rejecting this request (required)"
+              value={rejection}
+              as="textarea"
+              rows={3}
+              onChange={(e) => {
+                setRejection(e.target.value);
+              }}
+              aria-describedby="label-share-user"
+            />
+          </div>
         </Modal.Body>
         <Modal.Footer className="card-footer border-danger text-danger text-center">
           <button
             className="btn btn-danger mr-2"
+            disabled={rejection === ""}
             onClick={() => {
               setReviewStatus(ValidationStatus.REJECTED);
               const promise = mutateValidationUpdateStatus()
@@ -278,7 +294,10 @@ function ValidationDetails(props: ValidationProps) {
                         </span>
                       </small>
                     </h4>
-
+                    <div className="alert alert-danger">
+                      <strong>Rejection Reason:</strong>
+                      <p>{validation?.rejection_reason}</p>
+                    </div>
                     <div>
                       <strong>Rejected on:</strong> {validation?.validated_on}
                     </div>
