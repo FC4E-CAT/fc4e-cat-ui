@@ -85,7 +85,7 @@ export function useGetAssessments({
     }
   });
   return useQuery({
-    queryKey: ["assessments", { size, page, sortBy, ...filters }],
+    queryKey: ["assessments"],
     queryFn: async () => {
       const response = await APIClient(token).get<AssessmentListResponse>(url);
       return response.data;
@@ -161,6 +161,7 @@ export function useShareAssessment(token: string, id: string) {
     // for the time being redirect to assessment list
     onSuccess: () => {
       queryClient.invalidateQueries(["assessment-shares", id]);
+      queryClient.invalidateQueries(["assessments"]);
     },
   });
 }
