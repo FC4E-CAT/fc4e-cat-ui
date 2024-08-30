@@ -8,9 +8,6 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaExclamationTriangle,
-  FaArrowUp,
-  FaArrowDown,
-  FaArrowsAltV,
 } from "react-icons/fa";
 import { AlertInfo, Subject } from "@/types";
 import {
@@ -58,27 +55,9 @@ type SubjectModalProps = SubjectModalBasicConfig & {
 };
 
 type SubjectState = {
-  sortOrder: string;
-  sortBy: string;
-  type: string;
   page: number;
   size: number;
-  search: string;
-  status: string;
 };
-
-// create an up/down arrow to designate sorting in a column
-export function SortMarker(
-  field: string,
-  sortField: string,
-  sortOrder: string,
-) {
-  if (field === sortField) {
-    if (sortOrder === "DESC") return <FaArrowUp />;
-    else if (sortOrder === "ASC") return <FaArrowDown />;
-  }
-  return <FaArrowsAltV className="text-secondary opacity-50" />;
-}
 
 // Creates a modal with a small form to create/edit a subject
 export function SubjectModal(props: SubjectModalProps) {
@@ -310,13 +289,8 @@ function Subjects() {
   const { keycloak } = useContext(AuthContext)!;
 
   const [opts, setOpts] = useState<SubjectState>({
-    sortBy: "id",
-    sortOrder: "ASC",
-    type: "",
     page: 1,
     size: 20,
-    search: "",
-    status: "",
   });
 
   // handler for changing page size
@@ -324,25 +298,10 @@ function Subjects() {
     setOpts({ ...opts, page: 1, size: parseInt(evt.target.value) });
   };
 
-  // handler for clicking to sort
-  const handleSortClick = (field: string) => {
-    if (field === opts.sortBy) {
-      if (opts.sortOrder === "ASC") {
-        setOpts({ ...opts, sortOrder: "DESC" });
-      } else {
-        setOpts({ ...opts, sortOrder: "ASC" });
-      }
-    } else {
-      setOpts({ ...opts, sortOrder: "ASC", sortBy: field });
-    }
-  };
-
-  // data get admin users
+  // data get subjects
   const { isLoading, data, refetch } = useGetSubjects({
     size: opts.size,
     page: opts.page,
-    sortBy: opts.sortBy,
-    sortOrder: opts.sortOrder,
     token: keycloak?.token || "",
   });
 
@@ -481,12 +440,7 @@ function Subjects() {
           <thead>
             <tr className="table-light">
               <th>
-                <span
-                  onClick={() => handleSortClick("id")}
-                  className="cat-cursor-pointer"
-                >
-                  Subject ID {SortMarker("id", opts.sortBy, opts.sortOrder)}
-                </span>
+                <span>Subject ID</span>
               </th>
               <th>
                 <span>Subject Name </span>
