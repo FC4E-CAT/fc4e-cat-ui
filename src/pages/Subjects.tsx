@@ -324,8 +324,8 @@ function Subjects() {
     setOpts({ ...opts, page: 1, size: parseInt(evt.target.value) });
   };
 
-   // handler for clicking to sort
-   const handleSortClick = (field: string) => {
+  // handler for clicking to sort
+  const handleSortClick = (field: string) => {
     if (field === opts.sortBy) {
       if (opts.sortOrder === "ASC") {
         setOpts({ ...opts, sortOrder: "DESC" });
@@ -476,83 +476,82 @@ function Subjects() {
         </div>
       </div>
       <div className="py-2 px-2">
-      <Table hover>
-        <thead>
-          <tr className="table-light">
-            <th>
-            <span
-                onClick={() => handleSortClick("id")}
-                className="cat-cursor-pointer"
-              >
-                SubjectID{" "}
-                {SortMarker("id", opts.sortBy, opts.sortOrder)}
-              </span>
-            </th>
-            <th>
-              <span>Subject Name </span>
-            </th>
+        <Table hover>
+          <thead>
+            <tr className="table-light">
+              <th>
+                <span
+                  onClick={() => handleSortClick("id")}
+                  className="cat-cursor-pointer"
+                >
+                  SubjectID {SortMarker("id", opts.sortBy, opts.sortOrder)}
+                </span>
+              </th>
+              <th>
+                <span>Subject Name </span>
+              </th>
 
-            <th>
-              <span>Subject Type </span>
-            </th>
-            <th>
-              <span>Actions </span>
-            </th>
-          </tr>
-        </thead>
-        {subjects.length > 0 ? (
-          <tbody>
-            {subjects.map((item) => {
-              return (
-                <tr key={item.id}>
-                  <td className="align-middle">{item.id}</td>
-                  <td className="align-middle">{item.name}</td>
-                  <td className="align-middle">{item.type}</td>
+              <th>
+                <span>Subject Type </span>
+              </th>
+              <th>
+                <span>Actions </span>
+              </th>
+            </tr>
+          </thead>
+          {subjects.length > 0 ? (
+            <tbody>
+              {subjects.map((item) => {
+                return (
+                  <tr key={item.id}>
+                    <td className="align-middle">{item.id}</td>
+                    <td className="align-middle">{item.name}</td>
+                    <td className="align-middle">{item.type}</td>
 
-                  <td>
-                    <div className="d-flex flex-nowrap">
-                      <OverlayTrigger placement="top" overlay={tooltipEdit}>
-                        <Button
-                          id={`edit-button-${item.id}`}
-                          className="btn btn-light btn-sm m-1 "
-                          onClick={() => {
-                            if (item.id) {
-                              setSubjectModalConfig({
-                                id: item.id,
-                                mode: SubjectModalMode.Update,
-                                show: true,
-                              });
-                            }
-                          }}
-                        >
-                          <FaEdit />
-                        </Button>
-                      </OverlayTrigger>
-                      <OverlayTrigger placement="top" overlay={tooltipDelete}>
-                        <Button
-                          id={`delete-button-${item.id}`}
-                          className="btn btn-light btn-sm m-1"
-                          onClick={() => {
-                            if (item.id) {
-                              setSubjectModalConfig({
-                                id: item.id,
-                                mode: SubjectModalMode.Delete,
-                                show: true,
-                              });
-                            }
-                          }}
-                        >
-                          <FaTimes />
-                        </Button>
-                      </OverlayTrigger>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        ) : null}
-      </Table>
+                    <td>
+                      <div className="d-flex flex-nowrap">
+                        <OverlayTrigger placement="top" overlay={tooltipEdit}>
+                          <Button
+                            id={`edit-button-${item.id}`}
+                            className="btn btn-light btn-sm m-1 "
+                            onClick={() => {
+                              if (item.id) {
+                                setSubjectModalConfig({
+                                  id: item.id,
+                                  mode: SubjectModalMode.Update,
+                                  show: true,
+                                });
+                              }
+                            }}
+                          >
+                            <FaEdit />
+                          </Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger placement="top" overlay={tooltipDelete}>
+                          <Button
+                            id={`delete-button-${item.id}`}
+                            className="btn btn-light btn-sm m-1"
+                            onClick={() => {
+                              if (item.id) {
+                                setSubjectModalConfig({
+                                  id: item.id,
+                                  mode: SubjectModalMode.Delete,
+                                  show: true,
+                                });
+                              }
+                            }}
+                          >
+                            <FaTimes />
+                          </Button>
+                        </OverlayTrigger>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          ) : null}
+        </Table>
       </div>
       {!isLoading && subjects.length === 0 && (
         <Alert variant="warning" className="text-center mx-auto">
