@@ -30,6 +30,7 @@ import {
   FaExclamationCircle,
   FaFileImport,
   FaHandPointRight,
+  FaLock,
   FaShare,
   FaTimesCircle,
   FaUsers,
@@ -49,6 +50,7 @@ import { AssessmentSelectActor } from "./components/AssessmentSelectActor";
 import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
 import { Comments } from "./components/Comments";
+import FormCheckInput from "react-bootstrap/esm/FormCheckInput";
 
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
@@ -607,35 +609,40 @@ const AssessmentEdit = ({
               Fill in the required fields of the assessment
               {assessment && assessment.id && (
                 <>
-                  <p className="text-info">
+                  <br />
+                  <span className="text-info">
                     <small> with id {assessment.id}</small>
-                  </p>
+                  </span>
                 </>
               )}
             </p>
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
-          {shared ? (
-            <button className="btn btn-secondary">
-              shared with me <FaUsers className="ms-1" />
-            </button>
-          ) : (
-            <button
-              className="btn btn-success"
-              onClick={() => {
-                setShareModalConfig({ ...shareModalConfig, show: true });
-              }}
-            >
-              <FaShare /> Share
-            </button>
+          {mode === AssessmentEditMode.Edit && (
+            <>
+              {shared ? (
+                <button className="btn btn-secondary">
+                  shared with me <FaUsers className="ms-1" />
+                </button>
+              ) : (
+                <button
+                  className="btn btn-success"
+                  onClick={() => {
+                    setShareModalConfig({ ...shareModalConfig, show: true });
+                  }}
+                >
+                  <FaShare /> Share
+                </button>
+              )}
+              <button
+                className="btn btn-warning ms-2"
+                onClick={() => setCommentsShow(!commentsShow)}
+              >
+                <FaComment /> Comments
+              </button>
+            </>
           )}
-          <button
-            className="btn btn-warning ms-2"
-            onClick={() => setCommentsShow(!commentsShow)}
-          >
-            <FaComment /> Comments
-          </button>
         </div>
       </div>
       <Tab.Container
@@ -860,19 +867,38 @@ const AssessmentEdit = ({
                 className="text-black"
                 eventKey={`step-${1 + extraTab}`}
               >
-                <AssessmentSelectActor
-                  actorMap={actorMap}
-                  actorId={actor?.id}
-                  asmtId={asmtId}
-                  orgId={organisation?.id}
-                  asmtTypeId={asmtType?.id}
-                  importAsmtTypeId={importInfo?.assessment_type?.id}
-                  importActorId={importInfo?.actor?.id}
-                  templateDataActorId={templateData?.actor.id}
-                  templateDataOrgId={templateData?.organisation.id}
-                  templateDataAsmtTypeId={templateData?.assessment_type.id}
-                  onSelectActor={handleSelectActor}
-                />
+                {shared ? (
+                  <div>
+                    <div>
+                      <FaLock /> This is a <strong>shared</strong> assessment
+                      from another user, which includes the following actor
+                      information:
+                    </div>
+                    <div className="border p-2 m-2 text-muted">
+                      <FormCheckInput
+                        checked
+                        type="radio"
+                        disabled={true}
+                        className="mx-2"
+                      />
+                      {`${assessment?.actor.name} at ${assessment?.organisation.name} - ${assessment?.assessment_type.name}`}
+                    </div>
+                  </div>
+                ) : (
+                  <AssessmentSelectActor
+                    actorMap={actorMap}
+                    actorId={actor?.id}
+                    asmtId={asmtId}
+                    orgId={organisation?.id}
+                    asmtTypeId={asmtType?.id}
+                    importAsmtTypeId={importInfo?.assessment_type?.id}
+                    importActorId={importInfo?.actor?.id}
+                    templateDataActorId={templateData?.actor.id}
+                    templateDataOrgId={templateData?.organisation.id}
+                    templateDataAsmtTypeId={templateData?.assessment_type.id}
+                    onSelectActor={handleSelectActor}
+                  />
+                )}
               </Tab.Pane>
               <Tab.Pane
                 className="text-black"
