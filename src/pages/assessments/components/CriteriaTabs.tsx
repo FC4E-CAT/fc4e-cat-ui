@@ -14,7 +14,7 @@ import {
   FaHubspot,
   FaSliders,
   FaTape,
-  FaArrowDownUpAcrossLine, 
+  FaArrowDownUpAcrossLine,
   FaReadme,
   FaConnectdevelop,
   FaParachuteBox,
@@ -86,10 +86,13 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
           {principle.id === "P4" && (
             <FaSliders className="met-2 " color="green" width="2em" />
           )}
-          
-          
-           {principle.id === "P6" && (
-            <FaArrowDownUpAcrossLine className="met-2 " color="green" width="2em" />
+
+          {principle.id === "P6" && (
+            <FaArrowDownUpAcrossLine
+              className="met-2 "
+              color="green"
+              width="2em"
+            />
           )}
           {principle.id === "P7" && (
             <FaCubesStacked className="met-2 " color="green" width="2em" />
@@ -109,7 +112,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
           {principle.id === "P14" && (
             <FaReadme className="met-2 " color="green" width="2em" />
           )}
-        {principle.id === "P15" && (
+          {principle.id === "P15" && (
             <FaHeartPulse className="met-2 " color="red" width="2em" />
           )}
           <span className="px-2">
