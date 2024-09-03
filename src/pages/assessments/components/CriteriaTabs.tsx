@@ -8,7 +8,7 @@ import {
   Tab,
   // Tooltip,
 } from "react-bootstrap";
-import { FaCableCar } from "react-icons/fa6";
+import { FaCableCar, FaShieldCat, FaHubspot } from "react-icons/fa6";
 import {
   AssessmentTest,
   CriterionImperative,
@@ -61,8 +61,10 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
     navs.push(
       <div className="cat-menu-principal">
         <span className="cat-menu-principal-name">
-          <FaCableCar className="me-2" />
-          {principle.id} - {principle.name}
+          ({principle.id} === P1 && (
+          <FaCableCar className="met-2" />) ({principle.id} === P2 && (
+          <FaShieldCat className="met-2" />) ({principle.id} === P3 && (
+          <FaHubspot className="met-2" />){principle.id} - {principle.name}
         </span>
       </div>,
     );
@@ -105,9 +107,6 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   </div>
                 )}
               </div>
-              <p className="text-secondary lh-sm m-0">
-                <small>{criterion.description}</small>
-              </p>
             </div>
           </Nav.Link>
         </Nav.Item>,
