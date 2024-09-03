@@ -8,7 +8,20 @@ import {
   Tab,
   // Tooltip,
 } from "react-bootstrap";
-import { FaCableCar, FaShieldCat, FaHubspot } from "react-icons/fa6";
+import {
+  FaCableCar,
+  FaShieldCat,
+  FaHubspot,
+  FaSliders,
+  FaTape,
+  FaArrowDownUpAcrossLine, 
+  FaReadme,
+  FaConnectdevelop,
+  FaParachuteBox,
+  FaCubesStacked,
+  FaChair,
+  FaHeartPulse,
+} from "react-icons/fa6";
 import {
   AssessmentTest,
   CriterionImperative,
@@ -69,6 +82,35 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
           )}
           {principle.id === "P3" && (
             <FaHubspot className="met-2 " color="green" width="2em" />
+          )}
+          {principle.id === "P4" && (
+            <FaSliders className="met-2 " color="green" width="2em" />
+          )}
+          
+          
+           {principle.id === "P6" && (
+            <FaArrowDownUpAcrossLine className="met-2 " color="green" width="2em" />
+          )}
+          {principle.id === "P7" && (
+            <FaCubesStacked className="met-2 " color="green" width="2em" />
+          )}
+          {principle.id === "P8" && (
+            <FaConnectdevelop className="met-2 " color="green" width="2em" />
+          )}
+          {principle.id === "P9" && (
+            <FaParachuteBox className="met-2 " color="green" width="2em" />
+          )}
+          {principle.id === "P10" && (
+            <FaChair className="met-2 " color="green" width="2em" />
+          )}
+          {principle.id === "P13" && (
+            <FaTape className="met-2 " color="green" width="2em" />
+          )}
+          {principle.id === "P14" && (
+            <FaReadme className="met-2 " color="green" width="2em" />
+          )}
+        {principle.id === "P15" && (
+            <FaHeartPulse className="met-2 " color="red" width="2em" />
           )}
           <span className="px-2">
             {principle.id} - {principle.name}
