@@ -59,8 +59,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
 
   props.principles.forEach((principle) => {
     navs.push(
-      <div className="menu-principal">
-        <span className="menu-principal-name">
+      <div className="cat-menu-principal">
+        <span className="cat-menu-principal-name">
           <FaCableCar className="me-2" />
           {principle.id} - {principle.name}
         </span>
