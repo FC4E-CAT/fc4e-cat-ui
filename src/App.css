@@ -119,6 +119,20 @@
   text-align: left;
 }
 
+.cat-menu-principal {
+  position: relative;
+  display: block;
+  padding: 15px 10px;
+  background-color: rgb(220 220 220);
+  transition: 1.3s;
+  transition-property: color;
+}
+
+.cat-menu-principal-name {
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
 .cat-nav-link {
   display: block;
   padding: 15px;
