@@ -57,6 +57,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
   }, [props]);
 
   props.principles.forEach((principle) => {
+    <div>
+      <h3>principle.name</h3>
+    </div>;
     principle.criteria.forEach((criterion) => {
       navs.push(
         <Nav.Item key={criterion.id} className="cat-crit-tab">
