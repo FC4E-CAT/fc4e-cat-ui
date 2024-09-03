@@ -61,10 +61,10 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
     navs.push(
       <div className="cat-menu-principal">
         <span className="cat-menu-principal-name">
-          ({principle.id} === P1 && (
-          <FaCableCar className="met-2" />) ({principle.id} === P2 && (
-          <FaShieldCat className="met-2" />) ({principle.id} === P3 && (
-          <FaHubspot className="met-2" />){principle.id} - {principle.name}
+          {principle.id === "P1" && <FaCableCar className="met-2" />}
+          {principle.id === "P2" && <FaShieldCat className="met-2" />}
+          {principle.id === "P3" && <FaHubspot className="met-2" />}
+          {principle.id} - {principle.name}
         </span>
       </div>,
     );
