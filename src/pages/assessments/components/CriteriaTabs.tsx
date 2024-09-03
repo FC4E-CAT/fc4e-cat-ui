@@ -62,15 +62,17 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       <div className="cat-menu-principal">
         <span className="cat-menu-principal-name">
           {principle.id === "P1" && (
-            <FaCableCar className="met-2 px-2" color="green" width="2em"/>
+            <FaCableCar className="met-2" color="green" width="2em" />
           )}
           {principle.id === "P2" && (
-            <FaShieldCat className="met-2 px-2" color="green" width="2em" />
+            <FaShieldCat className="met-2" color="green" width="2em" />
           )}
           {principle.id === "P3" && (
-            <FaHubspot className="met-2 px-2" color="green" width="2em"/>
+            <FaHubspot className="met-2 " color="green" width="2em" />
           )}
-          {principle.id} - {principle.name}
+          <span className="px-2">
+            {principle.id} - {principle.name}
+          </span>
         </span>
       </div>,
     );
