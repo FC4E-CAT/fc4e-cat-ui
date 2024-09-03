@@ -8,6 +8,7 @@ import {
   Tab,
   // Tooltip,
 } from "react-bootstrap";
+import { FaCableCar } from "react-icons/fa6";
 import {
   AssessmentTest,
   CriterionImperative,
@@ -60,6 +61,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
     navs.push(
       <div>
         <h4>
+          <FaCableCar className="me-2" />
           {principle.id} - {principle.name}
         </h4>
       </div>,
