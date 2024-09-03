@@ -59,7 +59,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
   props.principles.forEach((principle) => {
     navs.push(
       <div>
-        <h4>{principle.id} - {principle.name}</h4>
+        <h4>
+          {principle.id} - {principle.name}
+        </h4>
       </div>,
     );
     principle.criteria.forEach((criterion) => {
