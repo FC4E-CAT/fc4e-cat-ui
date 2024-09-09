@@ -112,10 +112,6 @@ function ValidationList() {
                 <span>ID</span>
               </th>
               <th>
-                <span>User ID</span>
-              </th>
-
-              <th>
                 <span>Organization Name </span>
               </th>
               <th>
@@ -138,8 +134,6 @@ function ValidationList() {
                 return (
                   <tr key={item.id}>
                     <td className="align-middle">{item.id}</td>
-                    <td className="align-middle">{item.user_id}</td>
-
                     <td className="align-middle">{item.organisation_name}</td>
                     <td className="align-middle">{item.organisation_role}</td>
                     <td className="align-middle">{item.actor_name}</td>
@@ -151,8 +145,8 @@ function ValidationList() {
                     <td>
                       <div className="d-flex flex-nowrap">
                         <Link
-                          className="btn btn-secondary btn-sm "
-                          to="/validations/${props.row.original.id}`"
+                          className="btn btn-light btn-sm m-1"
+                          to={`/validations/${item.id}`}
                         >
                           <FaList />
                         </Link>
