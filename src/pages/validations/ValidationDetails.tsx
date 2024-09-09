@@ -15,10 +15,11 @@ import {
   FaTimes,
   FaCheck,
   FaCopy,
+  FaUserCircle,
 } from "react-icons/fa";
 import Badge from "react-bootstrap/Badge";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { trimField } from "@/utils/admin";
+import { idToColor, trimField } from "@/utils/admin";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
@@ -236,11 +237,12 @@ function ValidationDetails(props: ValidationProps) {
         <div className="row">
           <div className="col col-lg-3 border-right  border-dashed">
             <div className="d-flex flex-column align-items-center text-center p-1 py-1">
-              <img
-                className="rounded-circle mt-5"
-                width="150px"
-                src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"
-              />
+              <div className="py-3 mt-5">
+                <FaUserCircle
+                  size={"9rem"}
+                  style={{ color: idToColor(validation?.user_id || "black") }}
+                />
+              </div>
               <span className="font-weight-bold">
                 {validation?.user_name} {validation?.user_surname}
               </span>
