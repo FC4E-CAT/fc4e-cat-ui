@@ -314,6 +314,11 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       shared with me <FaUsers className="ms-1" />
                     </Badge>
                   )}
+                  {info.row.original.shared && (
+                    <Badge pill bg="light" text="secondary" className="border">
+                      shared <FaUsers className="ms-1" />
+                    </Badge>
+                  )}
                 </>
               );
             },
@@ -410,7 +415,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     </Button>
                     <Button
                       id={`share-button-${item.id}`}
-                      className={`btn cat-action-reject-link btn-sm ${item.shared ? "btn-success border" : "btn-secondary"}`}
+                      className="btn cat-action-reject-link btn-sm btn-secondary"
                       onClick={() => {
                         handleShareOpenModal(item);
                       }}
