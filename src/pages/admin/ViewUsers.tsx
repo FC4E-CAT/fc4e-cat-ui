@@ -7,6 +7,10 @@ import {
   FaCopy,
   FaShieldAlt,
 } from "react-icons/fa";
+import {
+FaFileCircleCheck,
+FaEarlybirds,
+} from "react-icons/fa6";
 import { useParams } from "react-router-dom";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { idToColor, trimField } from "@/utils/admin";
@@ -98,10 +102,17 @@ const ViewUsers: React.FC = () => {
             </div>
           </div>
           <div className="col-md-auto border-right">
-            <h4>User Data</h4>
-            <div className="row">
+            <div className="p-3">
+              <div className="row py-3 mt-4">
+                <h4>User Data</h4>
+              
+            
+            
               <div className="col-md-3 col-sm-6 bottom-margin text-center counter-section wow fadeInUp sm-margin-bottom-ten animated">
-                <i className="fa fa-beer medium-icon"></i>
+                <FaFileCircleCheck
+                  size={"9rem"}
+                  style={{ color: idToColor(profile?.id || "black") }}
+                />
                 <span id="anim-number-pizza" className="counter-number"></span>
                 <span className="timer counter alt-font appear">
                   {" "}
@@ -110,13 +121,17 @@ const ViewUsers: React.FC = () => {
                 <p className="counter-title"># Assessments</p>
               </div>
               <div className="col-md-3 col-sm-6 bottom-margin text-center counter-section wow fadeInUp sm-margin-bottom-ten animated">
-                <i className="fa fa-beer medium-icon"></i>
+                <FaEarlybirds
+                  size={"9rem"}
+                  style={{ color: idToColor(profile?.id || "black") }}
+                />
                 <span id="anim-number-pizza" className="counter-number"></span>
                 <span className="timer counter alt-font appear">
                   {" "}
                   {profile?.count_of_validations}
                 </span>
                 <p className="counter-title"># Validations</p>
+              </div>
               </div>
             </div>
           </div>
