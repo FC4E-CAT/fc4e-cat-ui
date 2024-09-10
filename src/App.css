@@ -160,6 +160,57 @@
   border-color: #0a58ca;
 }
 
+.counter-section i {
+  display: block;
+  margin: 0 0 10px;
+}
+
+.counter-section span.counter {
+  display: block;
+  font-family: Oswald, sans-serif;
+  font-size: 40px;
+  line-height: 60px;
+  color: #000;
+  letter-spacing: 2px;
+}
+
+.counter-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.counter-icon {
+  position: relative;
+  top: 25px;
+}
+
+.counter-style2 .counter-title {
+  float: left;
+  letter-spacing: 0.55px;
+}
+
+.counter-style2 span.counter {
+  float: left;
+  margin-right: 10px;
+  letter-spacing: 0.55px;
+}
+
+.counter-style2 i {
+  float: right;
+  margin: 0 10px 0 0;
+  line-height: 26px;
+}
+
+.counter-subheadline span {
+  float: right;
+}
+
+.medium-icon {
+  margin-bottom: 15px !important;
+  font-size: 40px !important;
+}
+
 footer h6 {
   font-weight: bold;
   color: grey;
