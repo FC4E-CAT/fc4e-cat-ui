@@ -103,11 +103,8 @@ const ViewUsers: React.FC = () => {
               <div className="row py-3 mt-4">
                 <h4>User Data</h4>
 
-                <div className="col-md-3 col-sm-6 bottom-margin text-center counter-section wow fadeInUp sm-margin-bottom-ten animated">
-                  <FaFileCircleCheck
-                    size={"9rem"}
-                    style={{ color: idToColor(profile?.id || "black") }}
-                  />
+                <div className="col-md-6 col-sm-6 bottom-margin text-center counter-section wow sm-margin-bottom-ten py-3">
+                  <FaFileCircleCheck className="medium-icon" />
                   <span
                     id="anim-number-pizza"
                     className="counter-number"
@@ -118,11 +115,8 @@ const ViewUsers: React.FC = () => {
                   </span>
                   <p className="counter-title"># Assessments</p>
                 </div>
-                <div className="col-md-3 col-sm-6 bottom-margin text-center counter-section wow fadeInUp sm-margin-bottom-ten animated">
-                  <FaEarlybirds
-                    size={"9rem"}
-                    style={{ color: idToColor(profile?.id || "black") }}
-                  />
+                <div className="col-md-6 col-sm-6 bottom-margin text-center counter-section wow  sm-margin-bottom-ten py-3">
+                  <FaEarlybirds className="medium-icon" />
                   <span
                     id="anim-number-pizza"
                     className="counter-number"
