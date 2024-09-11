@@ -4,7 +4,8 @@ All notable changes in FC4E-CAT-UI project are documented here
 
 ## [v1.3.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.3.1) (2024-09-11)
 
-### Fixed: 
+### Fixed:
+
 - CAT-491 Fix assessment name in delete assessment modal ([#333](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/333))
 
 ## [v1.3.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.3.0) (2024-09-10)
