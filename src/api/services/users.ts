@@ -1,7 +1,19 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { APIClient } from "@/api";
-import { ApiOptions, ApiUsers, UserAccess } from "@/types";
+import {
+  ApiOptions,
+  ApiUsers,
+  UserAccess,
+  ApiViewUsers,
+  UserView,
+  AsmtEligibilityResponse,
+} from "@/types";
 import { UserResponse, UserListResponse } from "@/types";
 import { handleBackendError } from "@/utils";
 
@@ -12,6 +24,33 @@ export const useGetProfile = ({ token, isRegistered }: ApiOptions) =>
       const response =
         await APIClient(token).get<UserResponse>(`/users/profile`);
       return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
+export const useGetAsmtEligibility = ({
+  token,
+  isRegistered,
+  size,
+}: ApiOptions) =>
+  useInfiniteQuery({
+    queryKey: ["assessment-eligibility"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<AsmtEligibilityResponse>(
+        `/users/assessment-eligibility?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
@@ -32,6 +71,21 @@ export const useGetAdminUsers = ({
     queryFn: async () => {
       const response = await APIClient(token).get<UserListResponse>(
         `/admin/users?size=${size}&page=${page}&sort=${sortBy}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered,
+  });
+
+export const useGetViewUsers = ({ id, token, isRegistered }: ApiViewUsers) =>
+  useQuery({
+    queryKey: ["users", { id }],
+    queryFn: async () => {
+      const response = await APIClient(token).get<UserView>(
+        `/admin/users/${id}`,
       );
       return response.data;
     },

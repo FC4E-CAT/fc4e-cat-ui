@@ -73,8 +73,26 @@
   border-right: 3px solid yellow;
 }
 
+.cat-view-heading-block {
+  padding: 7px;
+}
+
 .cat-view-heading {
   color: hsl(187deg 100% 42%);
+}
+
+.cat-view-lead {
+  font-size: 1.05 rem !important;
+}
+
+.admin-mode-badge-sm {
+  padding-right: 10px;
+  font-size: 0.75 rem;
+}
+
+.cat-view-search-block {
+  padding: 18px;
+  background: #e9ecef;
 }
 
 .cat-logo-sm {
@@ -84,6 +102,8 @@
 
 .cat-main-view {
   min-height: 60vh;
+  padding: 10px;
+  background-color: #e8e8e8;
 }
 
 .cat-hash-link {
@@ -97,6 +117,20 @@
 
 .cat-metric-tooltip .tooltip.show p {
   text-align: left;
+}
+
+.cat-menu-principal {
+  position: relative;
+  display: block;
+  padding: 15px 10px;
+  background-color: rgb(220 220 220);
+  transition: 1.3s;
+  transition-property: color;
+}
+
+.cat-menu-principal-name {
+  font-size: 1.15rem;
+  font-weight: 500;
 }
 
 .cat-nav-link {
@@ -126,6 +160,57 @@
   border-color: #0a58ca;
 }
 
+.counter-section i {
+  display: block;
+  margin: 0 0 10px;
+}
+
+.counter-section span.counter {
+  display: block;
+  font-family: Oswald, sans-serif;
+  font-size: 40px;
+  line-height: 60px;
+  color: #000;
+  letter-spacing: 2px;
+}
+
+.counter-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.counter-icon {
+  position: relative;
+  top: 25px;
+}
+
+.counter-style2 .counter-title {
+  float: left;
+  letter-spacing: 0.55px;
+}
+
+.counter-style2 span.counter {
+  float: left;
+  margin-right: 10px;
+  letter-spacing: 0.55px;
+}
+
+.counter-style2 i {
+  float: right;
+  margin: 0 10px 0 0;
+  line-height: 26px;
+}
+
+.counter-subheadline span {
+  float: right;
+}
+
+.medium-icon {
+  margin-bottom: 15px !important;
+  font-size: 30px !important;
+}
+
 footer h6 {
   font-weight: bold;
   color: grey;
@@ -136,17 +221,12 @@ footer a {
   text-decoration: none;
 }
 
-.main-nav {
-  border-bottom: 1px solid rgb(169 169 169);
-}
-
 .nav-text {
   padding: 15px;
 }
 
 .custom-pagination input {
   display: inline-block;
-  float: left;
   width: 85px;
   margin-left: -1px;
   vertical-align: top;
@@ -159,6 +239,17 @@ footer a {
 
 .list-group-item:nth-child(even) {
   background: #f7f9fb;
+}
+
+.cat-comment-buttons {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.list-group-item:hover .cat-comment-buttons {
+  pointer-events: auto;
+  opacity: 1;
 }
 
 .limited {

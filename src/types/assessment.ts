@@ -35,6 +35,7 @@ export interface Assessment {
   result: AssessmentResult;
   principles: Principle[];
   published: boolean;
+  shared_with_user: boolean;
 }
 
 /** Reference with numerical id */
@@ -131,7 +132,7 @@ export interface TestBinary {
   text: string;
   result: number | null;
   value: boolean | null;
-  evidence_url?: string[];
+  evidence_url?: EvidenceURL[];
 }
 
 export interface TestValue {
@@ -148,7 +149,12 @@ export interface TestValue {
   threshold_name?: string;
   threshold_locked?: boolean;
   benchmark: Benchmark;
-  evidence_url?: string[];
+  evidence_url?: EvidenceURL[];
+}
+
+export interface EvidenceURL {
+  url: string;
+  description?: string;
 }
 
 export interface Guidance {
@@ -165,28 +171,63 @@ export interface ResultStats {
   optional: number;
 }
 
-export type ActorOrganisationMapping = {
-  actor_name: string;
+export type ActorOrgAsmtType = {
   actor_id: number;
+  actor_name: string;
   organisation_id: string;
   organisation_name: string;
-  validation_id: number;
+  assessment_type_id: number;
+  assessment_type_name: string;
 };
+
+export interface AssessmentAdminListItem {
+  id: string;
+  name: string;
+  user_id: string;
+  validation_id: number;
+  created_on: string;
+  updated_on: string;
+  type: string;
+  actor: string;
+  organisation: string;
+  published: boolean;
+  subject_name: string;
+  subject_type: string;
+  compliance: boolean;
+  ranking: number;
+}
+
+export interface AssessmentAdminDetailsResponse {
+  size_of_page: number;
+  number_of_page: number;
+  total_elements: number;
+  total_pages: number;
+  content: AssessmentAdminListItem[];
+  links: unknown[];
+}
 
 export interface AssessmentListItem {
   id: string;
+  name: string;
   user_id: string;
   validation_id: number;
   created_on: number;
   updated_on: string;
   template_id: number;
   published: boolean;
+  shared_to_user: boolean;
+  shared: boolean;
 }
+
+export type AsmtEligibilityResponse = ResponsePage<ActorOrgAsmtType[]>;
 
 export type AssessmentListResponse = ResponsePage<AssessmentListItem[]>;
 
+export type AssessmentCommentResponse = ResponsePage<AssessmentComment[]>;
+
 export interface AssessmentDetailsResponse {
   id: number;
+  shared_to_user: boolean;
   assessment_doc: Assessment;
 }
 
@@ -211,4 +252,38 @@ export enum AssessmentEditMode {
   Create = "create",
   Edit = "edit",
   Import = "import",
+}
+
+export interface AssessmentTypeResponse {
+  size_of_page: number;
+  number_of_page: number;
+  total_elements: number;
+  total_pages: number;
+  content: AssessmentType[];
+}
+
+export interface SharedUsers {
+  shared_users: SharedUser[];
+}
+
+export interface SharedUser {
+  id: string;
+  name: string;
+  surname: string;
+  email: string;
+}
+
+export interface AssessmentComment {
+  id: number;
+  assessment_id: string;
+  text: string;
+  user: AssessmentCommentUser;
+  created_on: string;
+}
+
+export interface AssessmentCommentUser {
+  id: string;
+  name: string;
+  surname: string;
+  email: string;
 }

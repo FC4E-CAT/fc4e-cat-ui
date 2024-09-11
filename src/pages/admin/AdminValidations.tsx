@@ -6,10 +6,8 @@ import { useContext, useEffect, useState } from "react";
 import {
   Alert,
   Button,
-  Col,
   Form,
   OverlayTrigger,
-  Row,
   Table,
   Tooltip,
 } from "react-bootstrap";
@@ -21,7 +19,6 @@ import {
   FaArrowsAltV,
   FaBars,
   FaCheck,
-  FaCheckCircle,
   FaExclamationTriangle,
   FaGlasses,
   FaTimes,
@@ -136,13 +133,22 @@ export default function AdminUsers() {
   const validations: ValidationResponse[] = data ? data?.content : [];
 
   return (
-    <div className="mb-4">
-      <h4>
-        <FaCheckCircle /> <strong className="align-middle">Validations</strong>
-      </h4>
-      <Form className="mt-2 mb-2">
-        <Row>
-          <Col>
+    <div>
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col">
+          <h2 className="cat-view-heading text-muted">
+            Validations
+            <p className="lead cat-view-lead">
+              Manage all Validations as administrator.
+            </p>
+          </h2>
+        </div>
+        <div className="col-md-auto cat-heading-right"></div>
+      </div>
+
+      <Form className="mb-2">
+        <div className="row cat-view-search-block border-bottom">
+          <div className="col col-lg-3">
             <Form.Select
               onChange={(e) => {
                 setOpts({ ...opts, type: e.target.value });
@@ -156,8 +162,8 @@ export default function AdminUsers() {
               <option>PID Scheme</option>
               <option>PID Service Provider</option>
             </Form.Select>
-          </Col>
-          <Col>
+          </div>
+          <div className="col-md-auto">
             <Form.Select
               onChange={(e) => {
                 setOpts({ ...opts, status: e.target.value });
@@ -169,8 +175,8 @@ export default function AdminUsers() {
               <option value="REJECTED">Rejected</option>
               <option value="REVIEW">Review</option>
             </Form.Select>
-          </Col>
-          <Col xs={6}>
+          </div>
+          <div className="col col-lg-6">
             <div className="d-flex justify-content-center">
               <Form.Control
                 placeholder="Search ..."
@@ -188,8 +194,8 @@ export default function AdminUsers() {
                 Clear
               </Button>
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
       </Form>
 
       <Table hover>
@@ -356,6 +362,9 @@ export default function AdminUsers() {
             </span>
           </div>
         )}
+      </div>
+      <div className="row py-3 p-4">
+        <div className="col"></div>
       </div>
     </div>
   );

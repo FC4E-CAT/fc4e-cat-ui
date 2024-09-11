@@ -12,7 +12,7 @@ export const useGetTemplate = (
   isRegistered: boolean,
 ) =>
   useQuery({
-    queryKey: ["template", actorId],
+    queryKey: ["template", templateTypeId],
     queryFn: async () => {
       const response = await APIClient(token).get<TemplateResponse>(
         `/templates/by-type/${templateTypeId}/by-actor/${actorId}`,

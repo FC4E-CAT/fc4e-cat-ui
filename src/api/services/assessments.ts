@@ -1,6 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { APIClient } from "@/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   ApiOptions,
   Assessment,
@@ -8,6 +13,10 @@ import {
   AssessmentFiltersType,
   AssessmentListResponse,
   AssessmentSubjectListResponse,
+  AssessmentAdminDetailsResponse,
+  AssessmentTypeResponse,
+  SharedUsers,
+  AssessmentCommentResponse,
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
@@ -15,11 +24,7 @@ import { handleBackendError } from "@/utils";
 export function useCreateAssessment(token: string) {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (postData: {
-      validation_id: number;
-      template_id: number;
-      assessment_doc: Assessment;
-    }) => {
+    mutationFn: (postData: { assessment_doc: Assessment }) => {
       return APIClient(token).post("/assessments", postData);
     },
     // for the time being redirect to assessment list
@@ -80,7 +85,7 @@ export function useGetAssessments({
     }
   });
   return useQuery({
-    queryKey: ["assessments", { size, page, sortBy, ...filters }],
+    queryKey: ["assessments"],
     queryFn: async () => {
       const response = await APIClient(token).get<AssessmentListResponse>(url);
       return response.data;
@@ -122,6 +127,45 @@ export function useGetPublicAssessments({
   });
 }
 
+export function useGetAssessmentShares({
+  id,
+  token,
+  isRegistered,
+}: {
+  id: string;
+  token?: string;
+  isRegistered?: boolean;
+}) {
+  return useQuery({
+    queryKey: ["assessment-shares", id],
+    queryFn: async () => {
+      const url = `/assessments/${id}/shared-users`;
+      const response = await APIClient(token).get<SharedUsers>(url);
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: (!!token && isRegistered && id !== "") || id !== "",
+  });
+}
+
+// share Assessment
+
+export function useShareAssessment(token: string, id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (postData: { shared_with_user: string }) => {
+      return APIClient(token).post(`/assessments/${id}/share`, postData);
+    },
+    // for the time being redirect to assessment list
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessment-shares", id]);
+      queryClient.invalidateQueries(["assessments"]);
+    },
+  });
+}
+
 // works for public and private assessments
 export function useGetAssessment({
   id,
@@ -154,6 +198,64 @@ export function useGetAssessment({
       (isPublic && id !== "") ||
       (!!token && isRegistered && id !== "") ||
       id !== "",
+  });
+}
+
+export function useGetAdminAssessment({
+  token,
+  isRegistered,
+}: {
+  token?: string;
+  isRegistered?: boolean;
+}) {
+  return useQuery({
+    queryKey: ["assessment"],
+    queryFn: async () => {
+      let page = 1;
+      let allData: AssessmentAdminDetailsResponse["content"] = [];
+      let totalPages = 1;
+
+      do {
+        const url = `/admin/assessments?page=${page}&size=10`;
+        const response =
+          await APIClient(token).get<AssessmentAdminDetailsResponse>(url);
+        const data = response.data;
+
+        allData = allData.concat(data.content);
+        totalPages = data.total_pages;
+        page += 1;
+      } while (page <= totalPages);
+
+      return allData;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered,
+  });
+}
+
+export function useGetAdminAssessmentById({
+  id,
+  token,
+  isRegistered,
+}: {
+  id: string;
+  token?: string;
+  isRegistered?: boolean;
+}) {
+  return useQuery({
+    queryKey: ["assessment", id],
+    queryFn: async () => {
+      const url = `/admin/assessments/${id}`;
+      const response =
+        await APIClient(token).get<AssessmentDetailsResponse>(url);
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered && id !== "",
   });
 }
 
@@ -211,5 +313,106 @@ export function useGetObjects({
       return handleBackendError(error);
     },
     enabled: !!actorId,
+  });
+}
+
+export function useGetAssessmentTypes({
+  token,
+  isRegistered,
+}: {
+  token?: string;
+  isRegistered?: boolean;
+}) {
+  return useQuery({
+    queryKey: ["assessmentTypes"],
+    queryFn: async () => {
+      const url = `/codelist/assessment-types?size=100&page=1`;
+      const response = await APIClient(token).get<AssessmentTypeResponse>(url);
+      return response.data.content;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: isRegistered,
+  });
+}
+
+// use infinite query to get all the comments for a specific assessment given it's id
+export const useGetAssessmentComments = (
+  id: string,
+  { token, isRegistered, size }: ApiOptions,
+) =>
+  useInfiniteQuery({
+    queryKey: ["assessment-comments", id],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<AssessmentCommentResponse>(
+        `/assessments/${id}/comments?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
+// use mutation to add a new comment to assessment with specific id
+export function useAssessmentCommentAdd(token: string, id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (postData: { text: string }) => {
+      return APIClient(token).post(`/assessments/${id}/comments`, postData);
+    },
+    // update query cache
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessment-comments", id]);
+    },
+  });
+}
+
+// use mutation to update a comment with cid, included in an assessment with specific id
+export function useAssessmentCommentUpdate(
+  token: string,
+  id: string,
+  cid: number,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (putData: { text: string }) => {
+      return APIClient(token).put(
+        `/assessments/${id}/comments/${cid}`,
+        putData,
+      );
+    },
+    // update query cache
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessment-comments", id]);
+    },
+  });
+}
+
+// use mutation to delete a comment with cid, included in an assessment with specific id
+export function useAssessmentCommentDelete(
+  token: string,
+  id: string,
+  cid: number,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      return APIClient(token).delete(`/assessments/${id}/comments/${cid}`);
+    },
+    // update query cache
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessment-comments", id]);
+    },
   });
 }

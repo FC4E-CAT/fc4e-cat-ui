@@ -1,5 +1,3 @@
-import { Container } from "react-bootstrap";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -28,6 +26,8 @@ import { AssessmentEditMode } from "./types";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminValidations from "./pages/admin/AdminValidations";
 import PidSelection from "./pages/PidSelection";
+import AssessmentsTable from "./pages/admin/AssessmentsTable";
+import ViewUsers from "./pages/admin/ViewUsers";
 
 const queryClient = new QueryClient();
 
@@ -66,7 +66,7 @@ function App() {
           <BrowserRouter basename="/">
             <Header />
             <main className="cat-main-view">
-              <Container>
+              <div className="container rounded bg-white mt-1 mb-5">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
@@ -106,7 +106,7 @@ function App() {
                     />
                   </Route>
                   <Route
-                    path="/assessments/:asmtID"
+                    path="/assessments/:asmtId"
                     element={<ProtectedRoute />}
                   >
                     {/* Use AssessmentEdit component with mode = edit */}
@@ -125,6 +125,9 @@ function App() {
                     path="/public-assessments"
                     element={<AssessmentsList listPublic={true} />}
                   />
+                  <Route path="/assessments/view" element={<ProtectedRoute />}>
+                    <Route index element={<AssessmentsTable />} />
+                  </Route>
                   <Route path="/profile" element={<ProtectedRoute />}>
                     <Route index element={<Profile />} />
                   </Route>
@@ -133,6 +136,12 @@ function App() {
                   </Route>
                   <Route path="/admin/users" element={<ProtectedRoute />}>
                     <Route index element={<AdminUsers />} />
+                  </Route>
+                  <Route
+                    path="/admin/users/view/:id"
+                    element={<ProtectedRoute />}
+                  >
+                    <Route index element={<ViewUsers />} />
                   </Route>
                   <Route
                     path="/validations/request"
@@ -185,7 +194,7 @@ function App() {
                   </Route>
                   <Route path="/logout" element={<KeycloakLogout />} />
                 </Routes>
-              </Container>
+              </div>
             </main>
             <Footer />
           </BrowserRouter>

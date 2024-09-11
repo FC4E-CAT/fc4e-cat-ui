@@ -1,11 +1,16 @@
 import { useContext, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "@/auth";
 import Keycloak from "keycloak-js";
 import KeycloakConfig from "@/keycloak.json";
 import { useUserRegister, useGetProfile } from "@/api";
 
 export function ProtectedRoute() {
+  // check if the current path leads to an admin-view
+  const adminRoute = useLocation().pathname.startsWith("/admin");
+  // load navigate hook to use it to programmaticaly navigate to profile page if needed
+  const navigate = useNavigate();
+
   const {
     authenticated,
     setAuthenticated,
@@ -74,7 +79,14 @@ export function ProtectedRoute() {
     }
   }, [isSuccessRegister, setRegistered, profileData]);
 
-  if (authenticated && isSuccess) {
+  // check if a non-admin user tries to access an admin view
+  useEffect(() => {
+    if (authenticated && adminRoute && profileData) {
+      if (profileData.user_type.toLowerCase() !== "admin") navigate("/profile");
+    }
+  }, [authenticated, adminRoute, profileData, navigate]);
+
+  if (authenticated && isSuccess && profileData) {
     return <Outlet />;
   } else {
     return <></>;

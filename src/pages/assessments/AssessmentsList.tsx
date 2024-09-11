@@ -9,7 +9,6 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { CustomTable } from "@/components";
 import {
-  FaCheckCircle,
   FaEdit,
   FaInfoCircle,
   FaPlus,
@@ -17,6 +16,8 @@ import {
   FaTimes,
   FaDownload,
   FaFileImport,
+  FaUsers,
+  FaShare,
 } from "react-icons/fa";
 import {
   Collapse,
@@ -29,6 +30,7 @@ import {
   FloatingLabel,
   OverlayTrigger,
   Tooltip,
+  Badge,
 } from "react-bootstrap";
 import { AssessmentListItem, AssessmentFiltersType, AlertInfo } from "@/types";
 import {
@@ -44,6 +46,7 @@ import { Link } from "react-router-dom";
 import { DeleteModal } from "@/components/DeleteModal";
 
 import { toast } from "react-hot-toast";
+import { ShareModal } from "./components/ShareModal";
 
 /**
  * ComplianceBadge gets a compliance value (null, false, true) and renders
@@ -80,6 +83,12 @@ interface DeleteModalConfig {
   itemName: string;
 }
 
+interface ShareModalConfig {
+  show: boolean;
+  name: string;
+  id: string;
+}
+
 function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   // get the extra url parameters when in public list mode from url
@@ -92,7 +101,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     message: "",
   });
 
-  // Modal
+  // Delete Modal
   const [deleteModalConfig, setDeleteModalConfig] = useState<DeleteModalConfig>(
     {
       show: false,
@@ -102,6 +111,13 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       itemName: "",
     },
   );
+
+  // Share Modal
+  const [shareModalConfig, setShareModalConfig] = useState<ShareModalConfig>({
+    show: false,
+    name: "",
+    id: "",
+  });
 
   const actorId = actorIdParam ? parseInt(actorIdParam, 10) : -1;
   const assessmentTypeId = assessmentTypeIdParam
@@ -196,6 +212,14 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       });
     };
 
+    const handleShareOpenModal = (item: AssessmentListItem) => {
+      setShareModalConfig({
+        show: true,
+        name: item.name,
+        id: item.id,
+      });
+    };
+
     return listPublic
       ? [
           {
@@ -281,7 +305,23 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           {
             accessorKey: "name",
             header: () => <span>Name</span>,
-            cell: (info) => info.getValue(),
+            cell: (info) => {
+              return (
+                <>
+                  <div>{info.getValue() + ""}</div>
+                  {info.row.original.shared_to_user && (
+                    <Badge pill bg="light" text="secondary" className="border">
+                      shared with me <FaUsers className="ms-1" />
+                    </Badge>
+                  )}
+                  {info.row.original.shared && (
+                    <Badge pill bg="light" text="secondary" className="border">
+                      shared <FaUsers className="ms-1" />
+                    </Badge>
+                  )}
+                </>
+              );
+            },
             enableColumnFilter: false,
           },
           {
@@ -374,6 +414,15 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       <FaDownload />
                     </Button>
                     <Button
+                      id={`share-button-${item.id}`}
+                      className="btn cat-action-reject-link btn-sm btn-secondary"
+                      onClick={() => {
+                        handleShareOpenModal(item);
+                      }}
+                    >
+                      <FaShare />
+                    </Button>
+                    <Button
                       id={`delete-button-${item.id}`}
                       className="btn btn-secondary cat-action-reject-link btn-sm "
                       onClick={() => {
@@ -429,7 +478,15 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   }, [userObjects]);
 
   return (
-    <div className="mt-4">
+    <div>
+      <ShareModal
+        show={shareModalConfig.show}
+        name={shareModalConfig.name}
+        id={shareModalConfig.id}
+        onHide={() => {
+          setShareModalConfig({ id: "", name: "", show: false });
+        }}
+      />
       <DeleteModal
         show={deleteModalConfig.show}
         title={deleteModalConfig.title}
@@ -441,14 +498,16 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         }}
         onDelete={handleDeleteConfirmed}
       />
-      <div className="d-flex justify-content-between my-2 container">
-        <h3 className="cat-view-heading">
-          <FaCheckCircle className="me-2" />
-          {/* if component is used in public list mode display the actor name */}
-          {listPublic && actorName && <span>{actorName} </span>}
-          assessments
-        </h3>
-        <div>
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col">
+          <h2 className="cat-view-heading text-muted">
+            {/* if component is used in public list mode display the actor name */}
+            {listPublic && actorName && <span>{actorName} </span>}
+            Assessments
+            <p className="lead cat-view-lead">Manage your own assessments.</p>
+          </h2>
+        </div>
+        <div className="col-md-auto cat-heading-right">
           <>
             <Button
               variant="secondary"
@@ -462,16 +521,10 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           </>
           {!listPublic && (
             <>
-              <Link
-                to="/assessments/create"
-                className="btn btn-light border-black ms-3"
-              >
+              <Link to="/assessments/create" className="btn btn-warning  ms-3">
                 <FaPlus /> <span className="align-middle">Create New</span>
               </Link>
-              <Link
-                to="/assessments/import"
-                className="btn btn-light border-black ms-3"
-              >
+              <Link to="/assessments/import" className="btn btn-dark  ms-3">
                 <FaFileImport /> <span className="align-middle">Import</span>
               </Link>
             </>

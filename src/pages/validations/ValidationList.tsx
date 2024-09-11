@@ -1,301 +1,223 @@
-import { useMemo, useContext, useState, useRef } from "react";
-import {
-  useAdminValidations,
-  useGetValidationList,
-  useValidationStatusUpdate,
-} from "@/api";
+import { useContext, useState, useEffect } from "react";
+import { useGetValidationList } from "@/api";
 import { AuthContext } from "@/auth";
-import { ColumnDef } from "@tanstack/react-table";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { ValidationResponse } from "@/types";
+import { Link } from "react-router-dom";
 import {
   FaCheck,
   FaList,
   FaTimes,
   FaExclamationTriangle,
   FaPlus,
-  FaIdBadge,
+  FaArrowLeft,
+  FaArrowRight,
+  FaGlasses,
 } from "react-icons/fa";
-import { CustomTable } from "@/components";
-import {
-  ValidationResponse,
-  AlertInfo,
-  ValidationProps,
-  ValidationStatus,
-} from "@/types";
 
-import { toast } from "react-hot-toast";
+import { Alert, Table } from "react-bootstrap";
 
-function ValidationList(props: ValidationProps) {
-  const navigate = useNavigate();
-  const alert = useRef<AlertInfo>({
-    message: "",
-  });
-  const params = useParams();
+type ValidationState = {
+  sortOrder: string;
+  sortBy: string;
+  type: string;
+  page: number;
+  size: number;
+  search: string;
+  status: string;
+};
 
-  const isAdmin = useRef<boolean>(false);
-  const [reviewStatus, setReviewStatus] = useState<string>("");
+// create a validation status badge for approved, rejected, pending
+const ValidationStatusBadge = (status: string) => {
+  if (status === "APPROVED") {
+    return (
+      <span className="badge bg-success">
+        <FaCheck /> Approved
+      </span>
+    );
+  } else if (status === "REJECTED") {
+    return (
+      <span className="badge bg-danger">
+        <FaTimes /> Rejected
+      </span>
+    );
+  } else if (status === "REVIEW") {
+    return (
+      <span className="badge bg-primary">
+        <FaGlasses /> Pending Review
+      </span>
+    );
+  } else {
+    return null;
+  }
+};
+
+function ValidationList() {
   const { keycloak, registered } = useContext(AuthContext)!;
 
-  const { mutateAsync: mutateValidationUpdateStatus } =
-    useValidationStatusUpdate({
-      validation_id: params.id!,
-      status: reviewStatus,
-      token: keycloak?.token || "",
-      isRegistered: registered,
-    });
+  const [opts, setOpts] = useState<ValidationState>({
+    sortBy: "",
+    sortOrder: "",
+    type: "",
+    page: 1,
+    size: 20,
+    search: "",
+    status: "",
+  });
 
-  if (props.admin) {
-    isAdmin.current = true;
-  }
+  // handler for changing page size
+  const handleChangePageSize = (evt: { target: { value: string } }) => {
+    setOpts({ ...opts, page: 1, size: parseInt(evt.target.value) });
+  };
 
-  const cols = useMemo<ColumnDef<ValidationResponse>[]>(() => {
-    const setAdminPrefix = (url: string) => {
-      if (props.admin) {
-        return "/admin" + url;
-      }
-      return url;
-    };
+  // data get admin users
+  const { isLoading, data, refetch } = useGetValidationList({
+    size: opts.size,
+    page: opts.page,
+    sortBy: opts.sortBy,
+    sortOrder: opts.sortOrder,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
 
-    return [
-      {
-        accessorKey: "id",
-        header: () => <span>ID</span>,
-        cell: (info) => info.getValue(),
-        footer: (props) => props.column.id,
-        enableColumnFilter: false,
-      },
-      {
-        accessorFn: (row) => row.user_id,
-        id: "user_id",
-        cell: (info) => info.getValue(),
-        header: () => <span>User ID</span>,
-        footer: (props) => props.column.id,
-        enableColumnFilter: true,
-      },
-      {
-        accessorFn: (row) => row.organisation_name,
-        id: "organisation_name",
-        cell: (info) => info.getValue(),
-        header: () => <span>Organisation Name</span>,
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorFn: (row) => row.organisation_role,
-        id: "organisation_role",
-        cell: (info) => info.getValue(),
-        header: () => <span>Organisation Role</span>,
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorFn: (row) => row.actor_name,
-        id: "actor_name",
-        cell: (info) => info.getValue(),
-        header: () => <span>Actor</span>,
-        footer: (props) => props.column.id,
-        enableColumnFilter: true,
-      },
-      {
-        accessorFn: (row) => row.status,
-        id: "status",
-        cell: (info) => info.getValue(),
-        header: () => <span>Status</span>,
-        footer: (props) => props.column.id,
-      },
-      {
-        id: "action",
-        cell: (props) => {
-          if (isAdmin.current) {
-            return (
-              <div className="edit-buttons btn-group shadow">
-                <Link
-                  className="btn btn-secondary cat-action-view-link btn-sm "
-                  to={setAdminPrefix(`/validations/${props.row.original.id}`)}
-                >
-                  <FaList />
-                </Link>
-                {props.row.original.status === "REVIEW" ? (
-                  <Link
-                    className="btn btn-secondary cat-action-approve-link btn-sm "
-                    to={setAdminPrefix(
-                      `/validations/${props.row.original.id}/approve#alert-spot`,
-                    )}
-                  >
-                    <FaCheck />
-                  </Link>
-                ) : null}
-                {props.row.original.status === "REVIEW" ? (
-                  <Link
-                    className="btn btn-secondary cat-action-reject-link btn-sm "
-                    to={setAdminPrefix(
-                      `/validations/${props.row.original.id}/reject/#alert-spot`,
-                    )}
-                  >
-                    <FaTimes />
-                  </Link>
-                ) : null}
-              </div>
-            );
-          } else {
-            return (
-              <div className="edit-buttons btn-group shadow">
-                <Link
-                  className="btn btn-secondary btn-sm "
-                  to={setAdminPrefix(`/validations/${props.row.original.id}`)}
-                >
-                  <FaList />
-                </Link>
-              </div>
-            );
-          }
-        },
+  // refetch users when parameters change
+  useEffect(() => {
+    refetch();
+  }, [opts, refetch]);
 
-        header: () => <span>Actions</span>,
-        enableColumnFilter: false,
-      },
-    ];
-  }, [props.admin]);
-
-  let rejectCard = null;
-  let approveCard = null;
-
-  if (props.toReject) {
-    rejectCard = (
-      <div className="container">
-        <div className="card border-danger mb-2">
-          <div className="card-header border-danger text-danger text-center">
-            <h5 id="reject-alert">
-              <FaExclamationTriangle className="mx-3" />
-              <strong>Validation Request Rejection</strong>
-            </h5>
-          </div>
-          <div className=" card-body border-danger text-center">
-            Are you sure you want to reject validation with ID:{" "}
-            <strong>{params.id}</strong> ?
-          </div>
-          <div className="card-footer border-danger text-danger text-center">
-            <button
-              className="btn btn-danger mr-2"
-              onClick={() => {
-                setReviewStatus(ValidationStatus.REJECTED);
-                const promise = mutateValidationUpdateStatus()
-                  .catch((err) => {
-                    alert.current = {
-                      message: "Error during validation rejection.",
-                    };
-                    throw err;
-                  })
-                  .then(() => {
-                    alert.current = {
-                      message: "Validation successfully rejected.",
-                    };
-                  })
-                  .finally(() => navigate("/validations"));
-                toast.promise(promise, {
-                  loading: "Rejecting",
-                  success: () => `${alert.current.message}`,
-                  error: () => `${alert.current.message}`,
-                });
-              }}
-            >
-              Reject
-            </button>
-            <button
-              onClick={() => {
-                navigate("/admin/validations");
-              }}
-              className="btn btn-dark"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (props.toApprove) {
-    approveCard = (
-      <div className="container">
-        <div className="card border-success mb-2">
-          <div className="card-header border-success text-success text-center">
-            <h5 id="approve-alert">
-              <FaExclamationTriangle className="mx-3" />
-              <strong>Validation Request Approval</strong>
-            </h5>
-          </div>
-          <div className=" card-body border-info text-center">
-            Are you sure you want to approve validation with ID:{" "}
-            <strong>{params.id}</strong> ?
-          </div>
-          <div className="card-footer border-success text-success text-center">
-            <button
-              className="btn btn-success mr-2"
-              onClick={() => {
-                setReviewStatus(ValidationStatus.REJECTED);
-                const promise = mutateValidationUpdateStatus()
-                  .catch((err) => {
-                    alert.current = {
-                      message: "Error during validation approval.",
-                    };
-                    throw err;
-                  })
-                  .then(() => {
-                    alert.current = {
-                      message: "Validation successfully approved.",
-                    };
-                  })
-                  .finally(() => navigate("/validations"));
-                toast.promise(promise, {
-                  loading: "Approving",
-                  success: () => `${alert.current.message}`,
-                  error: () => `${alert.current.message}`,
-                });
-              }}
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => {
-                navigate("/admin/validations");
-              }}
-              className="btn btn-dark"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // get the validation data to create the table
+  const validations: ValidationResponse[] = data ? data?.content : [];
 
   return (
-    <div className="mt-4">
-      {rejectCard}
-      {approveCard}
-      <div
-        className={`${
-          props.admin && "alert alert-primary"
-        } d-flex justify-content-between`}
-      >
-        <h3 className={`${!props.admin && "cat-view-heading"}`}>
-          <FaIdBadge /> validation requests
-        </h3>
-        {props.admin ? (
-          <h3 className="opacity-50">admin mode</h3>
-        ) : (
-          <Link
-            to="/validations/request"
-            className="btn btn-light border-black mx-3"
-          >
+    <div>
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col">
+          <h2 className="cat-view-heading text-muted">
+            Validation Requests
+            <p className="lead cat-view-lead">
+              All validation Requests in one place.
+            </p>
+          </h2>
+        </div>
+        <div className="col-md-auto cat-heading-right">
+          <Link to="/validations/request" className="btn btn-warning mx-2">
             <FaPlus /> Create New
           </Link>
+        </div>
+      </div>
+      <div className="py-2 px-2">
+        <Table hover>
+          <thead>
+            <tr className="table-light">
+              <th>
+                <span>ID</span>
+              </th>
+              <th>
+                <span>Organization Name </span>
+              </th>
+              <th>
+                <span>Organisation Role</span>
+              </th>
+              <th>
+                <span>Actor Name</span>
+              </th>
+              <th>
+                <span>Status</span>
+              </th>
+              <th>
+                <span>Actions </span>
+              </th>
+            </tr>
+          </thead>
+          {validations.length > 0 ? (
+            <tbody>
+              {validations.map((item) => {
+                return (
+                  <tr key={item.id}>
+                    <td className="align-middle">{item.id}</td>
+                    <td className="align-middle">{item.organisation_name}</td>
+                    <td className="align-middle">{item.organisation_role}</td>
+                    <td className="align-middle">{item.actor_name}</td>
+                    <td className="align-middle">
+                      <td className="align-middle">
+                        {ValidationStatusBadge(item.status)}
+                      </td>
+                    </td>
+                    <td>
+                      <div className="d-flex flex-nowrap">
+                        <Link
+                          className="btn btn-light btn-sm m-1"
+                          to={`/validations/${item.id}`}
+                        >
+                          <FaList />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          ) : null}
+        </Table>
+      </div>
+      {!isLoading && validations.length === 0 && (
+        <Alert variant="warning" className="text-center mx-auto">
+          <h3>
+            <FaExclamationTriangle />
+          </h3>
+          <h5>No data found...</h5>
+        </Alert>
+      )}
+      <div className="d-flex justify-content-end">
+        <div>
+          <span className="mx-1">rows per page: </span>
+          <select
+            name="per-page"
+            value={opts.size.toString() || "20"}
+            id="per-page"
+            onChange={handleChangePageSize}
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+
+        {data && data.number_of_page && data.total_pages && (
+          <div className="ms-4">
+            <span>
+              {(data.number_of_page - 1) * opts.size + 1} -{" "}
+              {(data.number_of_page - 1) * opts.size + data.size_of_page} of{" "}
+              {data.total_elements}
+            </span>
+            <span
+              onClick={() => {
+                setOpts({ ...opts, page: opts.page - 1 });
+              }}
+              className={`ms-4 btn py-0 btn-light btn-small ${
+                opts.page === 1 ? "disabled text-muted" : null
+              }`}
+            >
+              <FaArrowLeft />
+            </span>
+            <span
+              onClick={() => {
+                setOpts({ ...opts, page: opts.page + 1 });
+              }}
+              className={`btn py-0 btn-light btn-small" ${
+                data?.total_pages > data?.number_of_page
+                  ? null
+                  : "disabled text-muted"
+              }`}
+            >
+              <FaArrowRight />
+            </span>
+          </div>
         )}
       </div>
-      {isAdmin.current && keycloak ? (
-        <CustomTable columns={cols} dataSource={useAdminValidations} />
-      ) : (
-        <CustomTable columns={cols} dataSource={useGetValidationList} />
-      )}
+      <div className="row py-3 p-4">
+        <div className="col"></div>
+      </div>
     </div>
   );
 }

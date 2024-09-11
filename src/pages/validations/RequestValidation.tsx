@@ -16,7 +16,7 @@ import { useContext, useState, useRef, useEffect } from "react";
 import { OverlayTrigger, Tooltip, Row, Col, InputGroup } from "react-bootstrap";
 import { useForm, SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
-import { FaInfoCircle, FaIdBadge } from "react-icons/fa";
+import { FaInfoCircle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import Select, { SingleValue } from "react-select";
 
@@ -204,11 +204,19 @@ function RequestValidation() {
   );
 
   return (
-    <div className="mt-4">
-      <h3 className="cat-view-heading">
-        <FaIdBadge /> create new validation request
-      </h3>
-      <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
+    <div>
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col">
+          <h2 className="cat-view-heading text-muted">
+            Create new validation request
+            <p className="lead cat-view-lead">
+              Fill in the required inputs for a new validation request.
+            </p>
+          </h2>
+        </div>
+        <div className="col-md-auto cat-heading-right"></div>
+      </div>
+      <form className="mt-4 py-4 px-4" onSubmit={handleSubmit(onSubmit)}>
         <Row>
           <Col className="mt-3" xs={12} md={6}>
             <label
