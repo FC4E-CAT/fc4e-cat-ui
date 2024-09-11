@@ -208,7 +208,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         ...deleteModalConfig,
         show: true,
         itemId: item.id,
-        itemName: "test",
+        itemName: item.name,
       });
     };
 
