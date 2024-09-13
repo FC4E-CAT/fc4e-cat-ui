@@ -28,6 +28,7 @@ import AdminValidations from "./pages/admin/AdminValidations";
 import PidSelection from "./pages/PidSelection";
 import AssessmentsTable from "./pages/admin/AssessmentsTable";
 import ViewUsers from "./pages/admin/ViewUsers";
+import Motivations from "./pages/motivations/Motivations";
 
 const queryClient = new QueryClient();
 
@@ -188,6 +189,9 @@ function App() {
                         <ValidationDetails admin={true} toApprove={true} />
                       }
                     />
+                  </Route>
+                  <Route path="/motivations" element={<ProtectedRoute />}>
+                    <Route index element={<Motivations />} />
                   </Route>
                   <Route path="/login" element={<ProtectedRoute />}>
                     <Route index element={<Profile />} />
