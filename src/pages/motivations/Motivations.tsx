@@ -1,6 +1,6 @@
 import { AuthContext } from "@/auth";
 import { useContext, useEffect, useState } from "react";
-import { Alert, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import { Alert, Button, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import {
   FaArrowLeft,
   FaArrowRight,
@@ -12,6 +12,7 @@ import {
 import { useGetMotivations } from "@/api/services/motivations";
 import { Motivation } from "@/types";
 import { Link } from "react-router-dom";
+import { MotivationModal } from "./components/MotivationModal";
 
 type Pagination = {
   page: number;
@@ -28,6 +29,8 @@ export default function Motivations() {
     page: 1,
     size: 10,
   });
+
+  const [showCreate, setShowCreate] = useState(false);
 
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
@@ -52,6 +55,12 @@ export default function Motivations() {
 
   return (
     <div>
+      <MotivationModal
+        show={showCreate}
+        onHide={() => {
+          setShowCreate(false);
+        }}
+      />
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="text-muted cat-view-heading ">
@@ -60,9 +69,14 @@ export default function Motivations() {
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
-          <Link to="/motivations/create" className="btn btn-warning mx-2">
+          <Button
+            variant="warning"
+            onClick={() => {
+              setShowCreate(true);
+            }}
+          >
             <FaPlus /> Create New
-          </Link>
+          </Button>
         </div>
       </div>
       <div>
