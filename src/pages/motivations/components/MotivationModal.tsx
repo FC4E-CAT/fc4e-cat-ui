@@ -1,9 +1,15 @@
 import {
   useCreateMotivation,
   useGetMotivationTypes,
+  useUpdateMotivation,
 } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
-import { AlertInfo, MotivationInput, MotivationType } from "@/types";
+import {
+  AlertInfo,
+  Motivation,
+  MotivationInput,
+  MotivationType,
+} from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -19,6 +25,7 @@ import toast from "react-hot-toast";
 import { FaFile, FaInfoCircle } from "react-icons/fa";
 
 interface MotivationModalProps {
+  motivation: Motivation | null;
   show: boolean;
   onHide: () => void;
 }
@@ -61,17 +68,33 @@ export function MotivationModal(props: MotivationModalProps) {
     motivationInput,
   );
 
+  const mutateUpdate = useUpdateMotivation(
+    keycloak?.token || "",
+    props.motivation?.id || "",
+    motivationInput,
+  );
+
   useEffect(() => {
     if (props.show) {
-      setMotivationInput({
-        mtv: "",
-        label: "",
-        description: "",
-        motivation_type_id: "",
-      });
+      if (props.motivation) {
+        setMotivationInput({
+          mtv: props.motivation.mtv,
+          label: props.motivation.label,
+          description: props.motivation.description,
+          motivation_type_id: props.motivation.motivation_type_id || "",
+        });
+      } else {
+        setMotivationInput({
+          mtv: "",
+          label: "",
+          description: "",
+          motivation_type_id: "",
+        });
+      }
+
       setShowErrors(false);
     }
-  }, [props.show]);
+  }, [props.show, props.motivation]);
 
   useEffect(() => {
     // gather all actor/org/type mappings in one array
@@ -113,6 +136,29 @@ export function MotivationModal(props: MotivationModalProps) {
     });
   }
 
+  // handle backend call to update an existing motivation
+  function handleUpdate() {
+    const promise = mutateUpdate
+      .mutateAsync()
+      .catch((err) => {
+        alert.current = {
+          message: "Error: " + err.response.data.message,
+        };
+        throw err;
+      })
+      .then(() => {
+        props.onHide();
+        alert.current = {
+          message: "Motivation Updated!",
+        };
+      });
+    toast.promise(promise, {
+      loading: "Updating Motivation...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  }
+
   return (
     <Modal
       {...props}
@@ -122,7 +168,8 @@ export function MotivationModal(props: MotivationModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaFile className="me-2" /> Create new Motivation
+          <FaFile className="me-2" />{" "}
+          {props.motivation === null ? "Create new" : "Edit"} Motivation
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -296,11 +343,15 @@ export function MotivationModal(props: MotivationModalProps) {
           className="btn-success"
           onClick={() => {
             if (handleValidate() === true) {
-              handleCreate();
+              if (props.motivation === null) {
+                handleCreate();
+              } else {
+                handleUpdate();
+              }
             }
           }}
         >
-          Create
+          {props.motivation === null ? "Create" : "Update"}
         </Button>
       </Modal.Footer>
     </Modal>

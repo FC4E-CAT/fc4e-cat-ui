@@ -29,6 +29,7 @@ import PidSelection from "./pages/PidSelection";
 import AssessmentsTable from "./pages/admin/AssessmentsTable";
 import ViewUsers from "./pages/admin/ViewUsers";
 import Motivations from "./pages/motivations/Motivations";
+import MotivationDetails from "./pages/motivations/MotivationDetails";
 
 const queryClient = new QueryClient();
 
@@ -192,6 +193,9 @@ function App() {
                   </Route>
                   <Route path="/motivations" element={<ProtectedRoute />}>
                     <Route index element={<Motivations />} />
+                  </Route>
+                  <Route path="/motivations/:id" element={<ProtectedRoute />}>
+                    <Route index element={<MotivationDetails />} />
                   </Route>
                   <Route path="/login" element={<ProtectedRoute />}>
                     <Route index element={<Profile />} />
