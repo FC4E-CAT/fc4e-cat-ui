@@ -56,6 +56,7 @@ export default function Motivations() {
   return (
     <div>
       <MotivationModal
+        motivation={null}
         show={showCreate}
         onHide={() => {
           setShowCreate(false);
@@ -102,7 +103,7 @@ export default function Motivations() {
             <tbody>
               {motivations.map((item) => {
                 return (
-                  <tr key={item.mtv}>
+                  <tr key={item.id}>
                     <td className="align-middle">{item.mtv}</td>
                     <td className="align-middle">{item.label}</td>
 
