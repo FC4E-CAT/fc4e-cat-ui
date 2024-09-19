@@ -1,5 +1,5 @@
 import { Modal, Button, ListGroup, ListGroupItem } from "react-bootstrap";
-import { FaTimes } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 
 interface DeleteModalProps {
   title: string;
@@ -27,7 +27,7 @@ export function DeleteModal(props: DeleteModalProps) {
     >
       <Modal.Header className="bg-danger text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaTimes className="me-2" /> {props.title}
+          <FaTrash className="me-2" /> {props.title}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

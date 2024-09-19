@@ -89,16 +89,6 @@ export default function MotivationDetails() {
             )}
           </h2>
         </Col>
-        <Col md="auto">
-          <Button
-            variant="secondary"
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            Back
-          </Button>
-        </Col>
       </div>
       <Row className="mt-4 border-bottom pb-4">
         <Col md="auto">
@@ -109,7 +99,7 @@ export default function MotivationDetails() {
             onClick={() => {
               setShowUpdate(true);
             }}
-            className="btn-light border"
+            className="btn-light border-black"
           >
             Update Details
           </Button>
@@ -189,6 +179,16 @@ export default function MotivationDetails() {
           )}
         </div>
       </Row>
+      <div className="mt-4">
+        <Button
+          variant="secondary"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          Back
+        </Button>
+      </div>
     </div>
   );
 }
