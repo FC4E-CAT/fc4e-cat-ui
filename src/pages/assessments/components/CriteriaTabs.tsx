@@ -23,10 +23,10 @@ import {
   FaHeartPulse,
 } from "react-icons/fa6";
 import {
+  AssessmentPrinciple,
   AssessmentTest,
   CriterionImperative,
   // MetricAlgorithm,
-  Principle,
 } from "@/types";
 import {
   TestBinaryForm,
@@ -37,7 +37,7 @@ import { useEffect, useState } from "react";
 import { CriterionProgress } from "./CriterionProgress";
 
 type CriteriaTabsProps = {
-  principles: Principle[];
+  principles: AssessmentPrinciple[];
   resetActiveTab: boolean;
   handleGuide(id: string, title: string, text: string): void;
   handleGuideClose(): void;

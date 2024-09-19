@@ -95,6 +95,9 @@ function Header() {
                         <Dropdown.Item as={Link} to="/motivations">
                           <FaShieldAlt /> Motivations
                         </Dropdown.Item>
+                        <Dropdown.Item as={Link} to="/principles">
+                          <FaShieldAlt /> Principles
+                        </Dropdown.Item>
                         <Dropdown.Item as={Link} to="/admin/users">
                           <FaShieldAlt /> Users
                         </Dropdown.Item>

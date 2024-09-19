@@ -33,7 +33,7 @@ export interface Assessment {
   actor: AssessmentActor;
   organisation: AssessmentOrg;
   result: AssessmentResult;
-  principles: Principle[];
+  principles: AssessmentPrinciple[];
   published: boolean;
   shared_with_user: boolean;
 }
@@ -76,7 +76,7 @@ export interface AssessmentResult {
 }
 
 /** An assessment contains a list of principles */
-export interface Principle {
+export interface AssessmentPrinciple {
   id: string;
   name: string;
   criteria: Criterion[];

@@ -30,6 +30,8 @@ import AssessmentsTable from "./pages/admin/AssessmentsTable";
 import ViewUsers from "./pages/admin/ViewUsers";
 import Motivations from "./pages/motivations/Motivations";
 import MotivationDetails from "./pages/motivations/MotivationDetails";
+import Principles from "./pages/principles/Principles";
+import PrincipleDetails from "./pages/principles/PrincipleDetails";
 
 const queryClient = new QueryClient();
 
@@ -196,6 +198,12 @@ function App() {
                   </Route>
                   <Route path="/motivations/:id" element={<ProtectedRoute />}>
                     <Route index element={<MotivationDetails />} />
+                  </Route>
+                  <Route path="/principles" element={<ProtectedRoute />}>
+                    <Route index element={<Principles />} />
+                  </Route>
+                  <Route path="/principles/:id" element={<ProtectedRoute />}>
+                    <Route index element={<PrincipleDetails />} />
                   </Route>
                   <Route path="/login" element={<ProtectedRoute />}>
                     <Route index element={<Profile />} />
