@@ -14,6 +14,7 @@ import {
   MotivationInput,
   MotivationResponse,
   MotivationTypeResponse,
+  PrincipleResponse,
   RelationResponse,
 } from "@/types";
 
@@ -95,6 +96,33 @@ export const useGetAllActors = ({ token, isRegistered, size }: ApiOptions) =>
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<MotivationActorResponse>(
         `/registry/actors?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
+export const useGetAllPrinciples = ({
+  token,
+  isRegistered,
+  size,
+}: ApiOptions) =>
+  useInfiniteQuery({
+    queryKey: ["all-principles"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<PrincipleResponse>(
+        `/registry/principles?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -210,6 +238,37 @@ export const useMotivationAddActor = (
         [
           {
             actor_id: actorId,
+            relation: relation,
+          },
+        ],
+      );
+      return response.data;
+    },
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["motivation", motivationId]);
+      },
+    },
+  );
+};
+
+export const useMotivationAddPrinciple = (
+  token: string,
+  motivationId: string,
+  prId: string,
+  relation: string,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await APIClient(token).post<MotivationResponse>(
+        `/registry/motivations/${motivationId}/principles`,
+        [
+          {
+            principle_id: prId,
             relation: relation,
           },
         ],

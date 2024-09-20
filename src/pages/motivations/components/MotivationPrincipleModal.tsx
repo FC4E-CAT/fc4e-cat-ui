@@ -1,7 +1,7 @@
-import { useMotivationAddActor } from "@/api/services/motivations";
+import { useMotivationAddPrinciple } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
-import { relMtvActorId } from "@/config";
-import { AlertInfo, MotivationActor } from "@/types";
+import { relMtvPrincipleId } from "@/config";
+import { AlertInfo, Principle } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -14,10 +14,10 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import toast from "react-hot-toast";
-import { FaInfoCircle, FaUser } from "react-icons/fa";
+import { FaFile, FaInfoCircle } from "react-icons/fa";
 
-interface MotivationActorModalProps {
-  motivationActors: MotivationActor[];
+interface MotivationPrincipleModalProps {
+  motivationPrinciples: Principle[];
   id: string;
   show: boolean;
   onHide: () => void;
@@ -25,40 +25,40 @@ interface MotivationActorModalProps {
 /**
  * Modal component for adding an actor to motivation
  */
-export function MotivationActorModal(props: MotivationActorModalProps) {
+export function MotivationPrincipleModal(props: MotivationPrincipleModalProps) {
   const alert = useRef<AlertInfo>({
     message: "",
   });
 
   const { keycloak } = useContext(AuthContext)!;
 
-  const [actorId, setActorId] = useState("");
+  const [prId, setPrId] = useState("");
   const [showErrors, setShowErrors] = useState(false);
 
-  const mutateAddActor = useMotivationAddActor(
+  const mutateAddPrinciple = useMotivationAddPrinciple(
     keycloak?.token || "",
     props.id,
-    actorId,
-    relMtvActorId,
+    prId,
+    relMtvPrincipleId,
   );
 
   function handleValidate() {
     setShowErrors(true);
-    return actorId !== "";
+    return prId !== "" && prId !== "";
   }
 
   useEffect(() => {
     if (props.show) {
       {
-        setActorId("");
+        setPrId("");
       }
       setShowErrors(false);
     }
   }, [props.show]);
 
-  // handle backend call to add an actor to the motivation
-  function handleAddActor() {
-    const promise = mutateAddActor
+  // handle backend call to add a principle to the motivation
+  function handleCreate() {
+    const promise = mutateAddPrinciple
       .mutateAsync()
       .catch((err) => {
         alert.current = {
@@ -69,11 +69,11 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Actor Added!",
+          message: "Principle Added!",
         };
       });
     toast.promise(promise, {
-      loading: "Adding Actor to motivation...",
+      loading: "Adding Principle...",
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -89,7 +89,7 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaUser className="me-2" /> Add Actor to Motivation
+          <FaFile className="me-2" /> Add Principle to Motivation
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -99,35 +99,33 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
               <OverlayTrigger
                 key="top"
                 placement="top"
-                overlay={
-                  <Tooltip id={`tooltip-top`}>Select the type of actor</Tooltip>
-                }
+                overlay={<Tooltip id={`tooltip-top`}>Select Principle</Tooltip>}
               >
                 <InputGroup.Text id="label-actor-type">
-                  <FaInfoCircle className="me-2" /> Actor (*):
+                  <FaInfoCircle className="me-2" /> Principle (*):
                 </InputGroup.Text>
               </OverlayTrigger>
               <Form.Select
                 id="input-actor-type"
                 aria-describedby="label-actor-type"
-                value={actorId ? actorId : ""}
+                value={prId ? prId : ""}
                 onChange={(e) => {
-                  setActorId(e.target.value);
+                  setPrId(e.target.value);
                 }}
               >
                 <>
                   <option value="" disabled>
-                    Select Actor type
+                    Select Principle
                   </option>
-                  {props.motivationActors.map((item) => (
+                  {props.motivationPrinciples.map((item) => (
                     <option key={item.id} value={item.id}>
-                      {item.label}
+                      {item.pri} - {item.label}
                     </option>
                   ))}
                 </>
               </Form.Select>
             </InputGroup>
-            {showErrors && actorId === "" && (
+            {showErrors && prId === "" && (
               <span className="text-danger">Required</span>
             )}
           </Col>
@@ -141,7 +139,7 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
           className="btn-success"
           onClick={() => {
             if (handleValidate() === true) {
-              handleAddActor();
+              handleCreate();
             }
           }}
         >

@@ -3,4 +3,6 @@ import { ApiT } from "./types";
 
 const API: ApiT = config.api;
 
-export { API };
+const relMtvActorId = config.relation_ids.motivation_actor;
+const relMtvPrincipleId = config.relation_ids.motivation_principle;
+export { API, relMtvActorId, relMtvPrincipleId };
