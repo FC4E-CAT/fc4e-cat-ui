@@ -1,14 +1,19 @@
 import { AuthContext } from "@/auth";
-import { Motivation, MotivationActor } from "@/types";
+import { Motivation, MotivationActor, Principle } from "@/types";
 import { useState, useContext, useEffect } from "react";
 import { Alert, Button, Col, ListGroup, Row } from "react-bootstrap";
 
 import { FaFile, FaUser, FaPlus, FaExclamationTriangle } from "react-icons/fa";
 
 import { useParams, useNavigate } from "react-router-dom";
-import { useGetAllActors, useGetMotivation } from "@/api/services/motivations";
+import {
+  useGetAllActors,
+  useGetAllPrinciples,
+  useGetMotivation,
+} from "@/api/services/motivations";
 import { MotivationActorModal } from "./components/MotivationActorModal";
 import { MotivationModal } from "./components/MotivationModal";
+import { MotivationPrincipleModal } from "./components/MotivationPrincipleModal";
 
 export default function MotivationDetails() {
   const navigate = useNavigate();
@@ -17,8 +22,12 @@ export default function MotivationDetails() {
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const [motivation, setMotivation] = useState<Motivation>();
-  const [avaliableActors, setAvailableActors] = useState<MotivationActor[]>([]);
+  const [availableActors, setAvailableActors] = useState<MotivationActor[]>([]);
+  const [availablePrinciples, setAvailablePrinciples] = useState<Principle[]>(
+    [],
+  );
   const [showAddActor, setShowAddActor] = useState(false);
+  const [showAddPrinciple, setShowAddPrinciple] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const { data: motivationData } = useGetMotivation({
     id: params.id!,
@@ -35,6 +44,38 @@ export default function MotivationDetails() {
     token: keycloak?.token || "",
     isRegistered: registered,
   });
+
+  const {
+    data: priData,
+    fetchNextPage: priFetchNextPage,
+    hasNextPage: priHasNextPage,
+  } = useGetAllPrinciples({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    // gather all principles in one array
+    let tmpPri: Principle[] = [];
+    const mtvPrinciples =
+      motivation?.principles.map((item) => {
+        return item.id;
+      }) || [];
+
+    // iterate over backend pages and gather all items in the principles array
+    if (priData?.pages) {
+      priData.pages.map((page) => {
+        tmpPri = [...tmpPri, ...page.content];
+      });
+      if (priHasNextPage) {
+        priFetchNextPage();
+      }
+    }
+    setAvailablePrinciples(
+      tmpPri.filter((item) => !mtvPrinciples.includes(item.id)),
+    );
+  }, [priData, priHasNextPage, priFetchNextPage, motivation]);
 
   useEffect(() => {
     // gather all actors in one array
@@ -63,8 +104,16 @@ export default function MotivationDetails() {
   return (
     <div className="pb-4">
       <div className="cat-view-heading-block row border-bottom">
+        <MotivationPrincipleModal
+          motivationPrinciples={availablePrinciples}
+          id={motivation?.id || ""}
+          show={showAddPrinciple}
+          onHide={() => {
+            setShowAddPrinciple(false);
+          }}
+        />
         <MotivationActorModal
-          motivationActors={avaliableActors}
+          motivationActors={availableActors}
           id={motivation?.id || ""}
           show={showAddActor}
           onHide={() => {
@@ -128,6 +177,59 @@ export default function MotivationDetails() {
           </div>
         </Col>
       </Row>
+      {/* Included principles */}
+      <Row className="border-bottom pb-4">
+        <div className="px-5 mt-4">
+          <div className="d-flex justify-content-between mb-2">
+            <h4 className="text-muted cat-view-heading ">
+              <FaFile className="me-2" /> Principles
+            </h4>
+            <Button
+              variant="warning"
+              onClick={() => {
+                setShowAddPrinciple(true);
+              }}
+              disabled={availableActors.length == 0}
+            >
+              <FaPlus /> Add Principle
+            </Button>
+          </div>
+          {motivation?.principles.length === 0 ? (
+            <Alert variant="warning" className="text-center mx-auto">
+              <h3>
+                <FaExclamationTriangle />
+              </h3>
+              <h5>No principles connected to this motivation... </h5>
+              <div>
+                <span className="align-baseline">
+                  Please use the button above or{" "}
+                </span>
+                <Button
+                  variant="link"
+                  className="p-0 m-0 align-baseline"
+                  onClick={() => {
+                    setShowAddPrinciple(true);
+                  }}
+                >
+                  click here
+                </Button>
+                <span className="align-baseline"> to add new ones</span>
+              </div>
+            </Alert>
+          ) : (
+            <ListGroup className="mt-2">
+              {motivation?.principles.map((item) => {
+                return (
+                  <ListGroup.Item key={item.id}>
+                    {item.pri} - {item.label}
+                  </ListGroup.Item>
+                );
+              })}
+            </ListGroup>
+          )}
+        </div>
+      </Row>
+      {/* Included actors */}
       <Row>
         <div className="px-5 mt-4">
           <div className="d-flex justify-content-between mb-2">
@@ -139,7 +241,7 @@ export default function MotivationDetails() {
               onClick={() => {
                 setShowAddActor(true);
               }}
-              disabled={avaliableActors.length == 0}
+              disabled={availableActors.length == 0}
             >
               <FaPlus /> Add Actor
             </Button>

@@ -1,4 +1,5 @@
 import { ResponsePage } from "./common";
+import { Principle } from "./principle";
 
 export interface Motivation {
   id: string;
@@ -11,6 +12,7 @@ export interface Motivation {
   populated_by: string | null;
   last_touch: string;
   actors: MotivationActor[];
+  principles: Principle[];
 }
 
 export interface MotivationInput {
