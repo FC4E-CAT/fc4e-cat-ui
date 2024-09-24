@@ -254,34 +254,3 @@ export const useMotivationAddActor = (
     },
   );
 };
-
-export const useMotivationAddPrinciple = (
-  token: string,
-  motivationId: string,
-  prId: string,
-  relation: string,
-) => {
-  const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
-      const response = await APIClient(token).post<MotivationResponse>(
-        `/registry/motivations/${motivationId}/principles`,
-        [
-          {
-            principle_id: prId,
-            relation: relation,
-          },
-        ],
-      );
-      return response.data;
-    },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["motivation", motivationId]);
-      },
-    },
-  );
-};
