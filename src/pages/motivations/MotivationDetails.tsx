@@ -5,7 +5,7 @@ import { Alert, Button, Col, ListGroup, Row } from "react-bootstrap";
 
 import { FaFile, FaUser, FaPlus, FaExclamationTriangle } from "react-icons/fa";
 
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useGetAllActors, useGetMotivation } from "@/api/services/motivations";
 import { MotivationActorModal } from "./components/MotivationActorModal";
 import { MotivationModal } from "./components/MotivationModal";
@@ -172,7 +172,19 @@ export default function MotivationDetails() {
               {motivation?.actors.map((item) => {
                 return (
                   <ListGroup.Item key={item.id}>
-                    {item.act} - {item.label}
+                    <Row>
+                      <Col>
+                        {item.act} - {item.label}
+                      </Col>
+                      <Col md="auto">
+                        <Link
+                          className="btn btn-dark"
+                          to={`/motivations/${params.id}/actors/${item.id}`}
+                        >
+                          Manage Criteria
+                        </Link>
+                      </Col>
+                    </Row>
                   </ListGroup.Item>
                 );
               })}

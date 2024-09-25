@@ -7,10 +7,10 @@ import {
   AssessmentSubject,
   AssessmentTest,
   CriterionImperative,
-  Criterion,
   AlertInfo,
   AssessmentEditMode,
   ActorOrgAsmtType,
+  AssessmentCriterion,
 } from "@/types";
 import { useParams } from "react-router";
 import {
@@ -484,7 +484,7 @@ const AssessmentEdit = ({
       const newPrinciples = assessment?.principles.map((principle) => {
         if (principle.id === principleID) {
           const newCriteria = principle.criteria.map((criterion) => {
-            let resultCriterion: Criterion;
+            let resultCriterion: AssessmentCriterion;
             if (criterion.id === criterionID) {
               const newTests = criterion.metric.tests.map((test) => {
                 if (test.id === newTest.id) {

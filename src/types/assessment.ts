@@ -79,12 +79,12 @@ export interface AssessmentResult {
 export interface AssessmentPrinciple {
   id: string;
   name: string;
-  criteria: Criterion[];
+  criteria: AssessmentCriterion[];
   description: string;
 }
 
 /** Each principle contains a list of criteria */
-export interface Criterion {
+export interface AssessmentCriterion {
   id: string;
   name: string;
   imperative: CriterionImperative;

@@ -17,6 +17,7 @@ import {
   PrincipleResponse,
   RelationResponse,
 } from "@/types";
+import { CriterionResponse } from "@/types/criterion";
 
 export const useGetMotivations = ({
   size,
@@ -254,3 +255,29 @@ export const useMotivationAddActor = (
     },
   );
 };
+
+export const useGetMotivationCriteria = (
+  mtvId: string,
+  { token, isRegistered, size }: ApiOptions,
+) =>
+  useInfiniteQuery({
+    queryKey: ["motivation-criteria"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<CriterionResponse>(
+        `/registry/motivations/${mtvId}/criteria?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });

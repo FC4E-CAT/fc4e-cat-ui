@@ -32,6 +32,11 @@
   color: #3b3b3b;
 }
 
+.cat-select-item:hover {
+  cursor: pointer;
+  background: #e8e8e8;
+}
+
 .cat-test-div {
   padding: 1rem;
   border-left: 0.8rem solid rgb(240 240 240);
@@ -290,6 +295,10 @@ footer a {
 
 .w-max-content {
   width: max-content;
+}
+
+.cat-vh-60 {
+  height: 60vh;
 }
 
 @media (width < 1600px) {
