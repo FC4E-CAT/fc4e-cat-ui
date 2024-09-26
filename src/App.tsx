@@ -32,6 +32,7 @@ import Motivations from "./pages/motivations/Motivations";
 import MotivationDetails from "./pages/motivations/MotivationDetails";
 import Principles from "./pages/principles/Principles";
 import PrincipleDetails from "./pages/principles/PrincipleDetails";
+import MotivationActorCriteria from "./pages/motivations/MotivationActorCriteria";
 
 const queryClient = new QueryClient();
 
@@ -198,6 +199,12 @@ function App() {
                   </Route>
                   <Route path="/motivations/:id" element={<ProtectedRoute />}>
                     <Route index element={<MotivationDetails />} />
+                  </Route>
+                  <Route
+                    path="/motivations/:mtvId/actors/:actId"
+                    element={<ProtectedRoute />}
+                  >
+                    <Route index element={<MotivationActorCriteria />} />
                   </Route>
                   <Route path="/principles" element={<ProtectedRoute />}>
                     <Route index element={<Principles />} />
