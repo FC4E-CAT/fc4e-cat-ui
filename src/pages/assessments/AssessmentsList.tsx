@@ -18,6 +18,7 @@ import {
   FaFileImport,
   FaUsers,
   FaShare,
+  FaEye,
 } from "react-icons/fa";
 import {
   Collapse,
@@ -287,6 +288,13 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
               ) : (
                 <>
                   <div className="edit-buttons btn-group shadow">
+                    <Link
+                      id={`view-button-${item.id}`}
+                      className="btn btn-secondary cat-action-view-link btn-sm "
+                      to={`/public-assessments/${item.id}/view`}
+                    >
+                      <FaEye />
+                    </Link>
                     <Button
                       className="btn btn-secondary cat-action-reject-link btn-sm "
                       onClick={() => {
@@ -397,6 +405,13 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
               return !listPublic ? (
                 <>
                   <div className="edit-buttons btn-group shadow">
+                    <Link
+                      id={`view-button-${item.id}`}
+                      className="btn btn-secondary cat-action-view-link btn-sm "
+                      to={`/assessments/${item.id}/view`}
+                    >
+                      <FaEye />
+                    </Link>
                     <Link
                       id={`edit-button-${item.id}`}
                       className="btn btn-secondary cat-action-view-link btn-sm "
