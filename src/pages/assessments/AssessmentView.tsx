@@ -8,7 +8,6 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
 import Accordion from "react-bootstrap/Accordion";
-import Badge from "react-bootstrap/Badge";
 
 /** AssessmentView page that displays the results of an assessment */
 const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
