@@ -45,7 +45,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 <img src={imgAssessmentPass} />
               ) : (
                 <p>
-                  <span className="fs-1 text-primary bold">"unknown"</span>
+                  <span className="fs-1 text-primary bold">unknown</span>
                 </p>
               )}
             </Col>
