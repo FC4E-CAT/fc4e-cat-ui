@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 
 import { useGetAssessment } from "@/api";
 import { DebugJSON } from "./components/DebugJSON";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
 
@@ -34,7 +34,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
             <Col>
               <h2 className="cat-view-heading text-muted  ">
                 {assessment.name}
-                <p className="lead cat-view-lead fs-6">{assessment.id}</p>
+                <p className="lead cat-view-lead fs-6 ">{assessment.id}</p>
               </h2>
             </Col>
             <Col className="col col-lg-1 ">
@@ -73,19 +73,79 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               )}
             </Col>
           </Row>
-          <Row className="mt-2">
-            <hr className="my-2" />
-          </Row>
           <Row>
-            <Button
-              variant="secondary my-4"
-              onClick={() => {
-                navigate(-1);
-              }}
-            >
-              Back
-            </Button>
+            <Col className="col-sm-3">
+              <Card style={{ width: "18rem" }}>
+                <Card.Body>
+                  <Card.Title>Details</Card.Title>
+                  <Card.Text>
+                    <span>
+                      Actor: <strong>{assessment.actor.name}</strong>
+                    </span>
+                    <span>
+                      Organization:{" "}
+                      <strong>{assessment.organisation.name}</strong>
+                    </span>
+                    <span>
+                      Subject:{" "}
+                      <strong>
+                        {assessment.subject.name} - (type:{" "}
+                        {assessment.subject.type})
+                      </strong>
+                    </span>
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col className="col-sm-9">
+              <Row>
+                <h3>Statistics</h3>
+                <Col className="text-center">
+                  <span className="font-weight-500 text-xs text-gray-500">
+                    Principles
+                  </span>
+                  <p>
+                    <span className="fs-1 text-primary bold">9</span>
+                  </p>
+                </Col>
+                <Col className="text-center">
+                  <span className="font-weight-500 text-xs text-gray-500">
+                    Criteria
+                  </span>
+                  <p>
+                    <span className="fs-1 text-primary bold">9</span>
+                    <span className="fs-6 text-secondary">/10</span>
+                  </p>
+                </Col>
+                <Col className="text-center">
+                  <span className="font-weight-500 text-xs text-gray-500">
+                    Mandatory
+                  </span>
+                  <p>
+                    <span className="fs-1 text-primary bold">8</span>
+                    <span className="fs-6 text-secondary">/10</span>
+                  </p>
+                </Col>
+                <Col className="col-md-auto col col-lg-1  text-center">
+                  <span className="font-weight-500 text-xs text-gray-500">
+                    Optional
+                  </span>
+                  <p>
+                    <span className="fs-1 text-primary bold">8</span>
+                    <span className="fs-6 text-secondary">/10</span>
+                  </p>
+                </Col>
+              </Row>
+            </Col>
           </Row>
+          <Button
+            variant="secondary my-4"
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            Back
+          </Button>
         </div>
       )}
       ;{/* Debug info here - display assessment json */}
