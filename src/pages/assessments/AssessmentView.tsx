@@ -8,6 +8,7 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
 import Accordion from "react-bootstrap/Accordion";
+import Badge from "react-bootstrap/Badge";
 
 /** AssessmentView page that displays the results of an assessment */
 const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
@@ -152,21 +153,24 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     {pri.criteria.map((cri) => (
                       <Accordion.Item eventKey={cri.id} key={cri.id}>
                         <Accordion.Header>
-                          {cri.id} - {cri.name} ({cri.imperative})
+                          {cri.id} - {cri.name}
+                          {cri.imperative === "must" ? (
+                            <Badge bg="warning" text="dark">
+                              {cri.imperative}
+                            </Badge>
+                          ) : (
+                            <Badge bg="Primary">{cri.imperative}</Badge>
+                          )}
+                          <span className="float-end">
+                            Result:{" "}
+                            <strong>{cri.metric.result || "unknown"}</strong>
+                          </span>
                         </Accordion.Header>
                         <Accordion.Body>
-                          <h4 className="mb-0">
-                            {cri.id} - {cri.name} ({cri.imperative})
-                          </h4>
                           <small className="text-muted">
                             {cri.description}
                           </small>
-                          <div>
-                            <span>
-                              Result:{" "}
-                              <strong>{cri.metric.result || "unknown"}</strong>
-                            </span>
-                          </div>
+
                           <div className="m-3">
                             {cri.metric.tests.map((test) => (
                               <div key={test.id}>
@@ -208,7 +212,6 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                         </Accordion.Body>
                       </Accordion.Item>
                     ))}
-                    ;
                   </Accordion>
                 </div>
               </div>
