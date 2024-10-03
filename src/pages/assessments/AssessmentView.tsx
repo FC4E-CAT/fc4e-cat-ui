@@ -162,9 +162,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                         <Accordion.Header>
                           {cri.id} - {cri.name}
                           {cri.imperative === "must" ? (
-                            <span
-                              className="ms-2 badge rounded-pill text-bg-light text-dark"
-                            >
+                            <span className="ms-2 badge rounded-pill text-bg-light text-dark">
                               {cri.imperative}
                             </span>
                           ) : (
