@@ -37,21 +37,27 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 <p className="lead cat-view-lead fs-6">{assessment.id}</p>
               </h2>
             </Col>
-            <Col className="col-md-auto cat-heading-right">
+            <Col className="col col-lg-1 ">
               <span className="font-weight-500 text-xs text-gray-500">
                 Compliance
               </span>
               {assessment.result.compliance ? (
-                <img src={imgAssessmentPass} />
+                <p className="text-center">
+                  <img
+                    src={imgAssessmentPass}
+                    className="text-center m-1"
+                    width="60%"
+                  />
+                </p>
               ) : (
                 <p>
-                  <span className="fs-1 text-primary bold">unknown</span>
+                  <span className="fs-6 text-warning bold">unknown</span>
                 </p>
               )}
             </Col>
-            <Col className="col-md-auto cat-heading-right col text-center">
+            <Col className="col-md-auto col col-lg-1 text-center">
               <span className="font-weight-500 text-xs text-gray-500">
-                Ranking:
+                Ranking
               </span>
               {assessment.result.ranking ? (
                 <p>
@@ -62,7 +68,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 </p>
               ) : (
                 <p>
-                  <span className="fs-1 text-primary bold">unknown</span>
+                  <span className="fs-6 text-warning bold">unknown</span>
                 </p>
               )}
             </Col>
