@@ -150,7 +150,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 <div className="m-3">
                   <Accordion defaultActiveKey="0">
                     {pri.criteria.map((cri) => (
-                      <Accordion.Item eventKey={cri.id}>
+                      <Accordion.Item eventKey="0" key={cri.id}>
                         <Accordion.Header>
                           {cri.id} - {cri.name} ({cri.imperative})
                         </Accordion.Header>
