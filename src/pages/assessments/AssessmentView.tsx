@@ -74,8 +74,11 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
             </Col>
           </Row>
           <Row>
-            <Col className="col-sm-3">
-              <Card style={{ width: "18rem" }}>
+            <col></col>
+          </Row>
+          <Row>
+            <Col className="col-sm-3 py-3">
+              <Card>
                 <Card.Body>
                   <Card.Title>Details</Card.Title>
                   <Card.Text>
@@ -87,7 +90,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                       <strong className="text-gray-dark">Organization:</strong>
                       {assessment.organisation.name}
                     </p>
-                    <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                    <p className="media-body pb-3 mb-0 small lh-125">
                       <strong className="text-gray-dark">Subject:</strong>
                       {assessment.subject.name} - (type:{" "}
                       {assessment.subject.type})
@@ -135,6 +138,17 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 </Col>
               </Row>
             </Col>
+          </Row>
+          <Row className="cat-view-heading-block border-bottom">
+            {assessment.principles.map((pri) => (
+              <div key={pri.id}>
+                <h3 className="mb-0">
+                  {pri.id} - {pri.name}
+                </h3>
+                <small className="text-muted">{pri.description}</small>
+              </div>
+            ))}
+            ;
           </Row>
           <Button
             variant="secondary my-4"
