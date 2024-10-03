@@ -148,7 +148,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 </h6>
                 <small className="text-muted">{pri.description}</small>
                 <div className="m-3">
-                  <Accordion defaultActiveKey={pri.id}>
+                  <Accordion defaultActiveKey="0">
                     {pri.criteria.map((cri) => (
                       <Accordion.Item eventKey={cri.id}>
                         <Accordion.Header>
