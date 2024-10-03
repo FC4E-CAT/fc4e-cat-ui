@@ -148,12 +148,12 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
           <Row className="cat-view-heading-block border-bottom">
             {assessment.principles.map((pri) => (
               <div key={pri.id}>
-                <span className="m-3">
+                <div className="m-3">
                   <h6 className="mb-0">
                     {pri.id} - {pri.name}
                   </h6>
                   <small className="text-muted">{pri.description}</small>
-                </span>
+                </div>
 
                 <div className="m-3">
                   <Accordion defaultActiveKey="0">
@@ -162,23 +162,18 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                         <Accordion.Header>
                           {cri.id} - {cri.name}
                           {cri.imperative === "must" ? (
-                            <Badge
-                              className="ms-2 badge rounded-pill text-bg-light text-warning border align-middle"
-                              text="dark"
+                            <span
+                              className="ms-2 badge rounded-pill text-bg-light text-dark"
                             >
                               {cri.imperative}
-                            </Badge>
+                            </span>
                           ) : (
-                            <Badge className="ms-2 badge rounded-pill text-bg-light text-danger border align-middle">
+                            <span className="ms-2 badge rounded-pill text-bg-light text-warning">
                               {cri.imperative}
-                            </Badge>
+                            </span>
                           )}
                           {cri.metric.result === 1 ? (
                             <span className="ms-5 align-middle ">
-                              <Badge className="badge-pill bg-success me-1 flex-1">
-                                {" "}
-                                -
-                              </Badge>
                               <small className="ms-2">
                                 <strong>
                                   <span className="text-success">Passed</span>
