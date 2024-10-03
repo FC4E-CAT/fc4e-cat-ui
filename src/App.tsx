@@ -33,6 +33,7 @@ import MotivationDetails from "./pages/motivations/MotivationDetails";
 import Principles from "./pages/principles/Principles";
 import PrincipleDetails from "./pages/principles/PrincipleDetails";
 import MotivationActorCriteria from "./pages/motivations/MotivationActorCriteria";
+import AssessmentView from "./pages/assessments/AssessmentView";
 
 const queryClient = new QueryClient();
 
@@ -111,6 +112,16 @@ function App() {
                     />
                   </Route>
                   <Route
+                    path="/assessments/:asmtId/view"
+                    element={<ProtectedRoute />}
+                  >
+                    {/* Use AssessmentView component with isPublic = false */}
+                    <Route
+                      index
+                      element={<AssessmentView isPublic={false} />}
+                    />
+                  </Route>
+                  <Route
                     path="/assessments/:asmtId"
                     element={<ProtectedRoute />}
                   >
@@ -130,6 +141,11 @@ function App() {
                     path="/public-assessments"
                     element={<AssessmentsList listPublic={true} />}
                   />
+                  <Route
+                    path="/public-assessments/:asmtId/view"
+                    element={<AssessmentView isPublic={true} />}
+                  />
+
                   <Route path="/assessments/view" element={<ProtectedRoute />}>
                     <Route index element={<AssessmentsTable />} />
                   </Route>
