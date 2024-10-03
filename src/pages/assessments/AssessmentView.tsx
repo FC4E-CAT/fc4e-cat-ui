@@ -7,6 +7,7 @@ import { DebugJSON } from "./components/DebugJSON";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
+import Accordion from "react-bootstrap/Accordion";
 
 /** AssessmentView page that displays the results of an assessment */
 const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
@@ -142,14 +143,79 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
           <Row className="cat-view-heading-block border-bottom">
             {assessment.principles.map((pri) => (
               <div key={pri.id}>
-                <h3 className="mb-0">
+                <h6 className="mb-0">
                   {pri.id} - {pri.name}
-                </h3>
+                </h6>
                 <small className="text-muted">{pri.description}</small>
+                <div className="m-3">
+                  <Accordion defaultActiveKey={pri.id}>
+                    {pri.criteria.map((cri) => (
+                      <Accordion.Item eventKey={cri.id}>
+                        <Accordion.Header>
+                          {cri.id} - {cri.name} ({cri.imperative})
+                        </Accordion.Header>
+                        <Accordion.Body>
+                          <h4 className="mb-0">
+                            {cri.id} - {cri.name} ({cri.imperative})
+                          </h4>
+                          <small className="text-muted">
+                            {cri.description}
+                          </small>
+                          <div>
+                            <span>
+                              Result:{" "}
+                              <strong>{cri.metric.result || "unknown"}</strong>
+                            </span>
+                          </div>
+                          <div className="m-3">
+                            {cri.metric.tests.map((test) => (
+                              <div key={test.id}>
+                                <h5>
+                                  {test.id} - {test.name}
+                                </h5>
+
+                                <div className="ms-4 border-start ps-2">
+                                  <em>{test.text}</em>
+                                </div>
+                                <span className="p-2">
+                                  Result:{" "}
+                                  <strong>{test.result || "unknown"}</strong>
+                                </span>
+                                {test.evidence_url &&
+                                  test.evidence_url?.length > 0 && (
+                                    <div>
+                                      <h6>Evidence:</h6>
+                                      <ul>
+                                        {test.evidence_url.map((ev) => (
+                                          <li key={ev.url}>
+                                            <div>
+                                              url: <pre>{ev.url}</pre>
+                                            </div>
+                                            {ev.description && (
+                                              <div>
+                                                description:{" "}
+                                                <em>{ev.description}</em>
+                                              </div>
+                                            )}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                              </div>
+                            ))}
+                          </div>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    ))}
+                    ;
+                  </Accordion>
+                </div>
               </div>
             ))}
-            ;
+            ;{/* Assessemt Principles for loop */}
           </Row>
+          {/* Row of Principles closes*/}
           <Button
             variant="secondary my-4"
             onClick={() => {
