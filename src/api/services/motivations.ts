@@ -9,6 +9,7 @@ import {
 import { handleBackendError } from "@/utils";
 import {
   ApiOptions,
+  CriImp,
   Motivation,
   MotivationActorResponse,
   MotivationInput,
@@ -281,3 +282,50 @@ export const useGetMotivationCriteria = (
     retry: false,
     enabled: isRegistered,
   });
+
+export const useGetMotivationActorCriteria = (
+  mtvId: string,
+  actId: string,
+  { token, isRegistered, size }: ApiOptions,
+) =>
+  useInfiniteQuery({
+    queryKey: ["motivation-actor-criteria"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<CriterionResponse>(
+        `/registry/motivations/${mtvId}/actors/${actId}/criteria?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
+export function useUpdateMotivationActorCriteria(
+  token: string,
+  mtvId: string,
+  actId: string,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (putData: CriImp[]) => {
+      return APIClient(token).put(
+        `/registry/motivations/${mtvId}/actors/${actId}/criteria`,
+        putData,
+      );
+    },
+    // on change refresh motivation-actor-criteria list
+    onSuccess: () => {
+      queryClient.invalidateQueries(["motivation-actor-criteria"]);
+    },
+  });
+}

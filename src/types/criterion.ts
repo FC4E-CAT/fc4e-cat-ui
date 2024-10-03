@@ -2,6 +2,7 @@ import { ResponsePage } from "./common";
 import { Principle } from "./principle";
 
 export interface Criterion {
+  id: string;
   cri: string;
   label: string;
   description: string;
