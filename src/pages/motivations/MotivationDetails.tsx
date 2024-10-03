@@ -1,206 +1,193 @@
 import { AuthContext } from "@/auth";
-import { Motivation, MotivationActor } from "@/types";
-import { useState, useContext, useEffect } from "react";
-import { Alert, Button, Col, ListGroup, Row } from "react-bootstrap";
+import { useContext, useEffect, useState } from "react";
+import { Alert, Button, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaBars,
+  FaExclamationTriangle,
+  FaPlus,
+} from "react-icons/fa";
 
-import { FaFile, FaUser, FaPlus, FaExclamationTriangle } from "react-icons/fa";
-
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { useGetAllActors, useGetMotivation } from "@/api/services/motivations";
-import { MotivationActorModal } from "./components/MotivationActorModal";
+import { useGetMotivations } from "@/api/services/motivations";
+import { Motivation } from "@/types";
+import { Link } from "react-router-dom";
 import { MotivationModal } from "./components/MotivationModal";
 
-export default function MotivationDetails() {
-  const navigate = useNavigate();
-  const params = useParams();
+type Pagination = {
+  page: number;
+  size: number;
+};
 
+const tooltipView = <Tooltip id="tip-restore">View Motivation Details</Tooltip>;
+
+// the main component that lists the motivations in a table
+export default function Motivations() {
   const { keycloak, registered } = useContext(AuthContext)!;
 
-  const [motivation, setMotivation] = useState<Motivation>();
-  const [availableActors, setAvailableActors] = useState<MotivationActor[]>([]);
-  const [showAddActor, setShowAddActor] = useState(false);
-  const [showUpdate, setShowUpdate] = useState(false);
-  const { data: motivationData } = useGetMotivation({
-    id: params.id!,
+  const [opts, setOpts] = useState<Pagination>({
+    page: 1,
+    size: 10,
+  });
+
+  const [showCreate, setShowCreate] = useState(false);
+
+  // handler for changing page size
+  const handleChangePageSize = (evt: { target: { value: string } }) => {
+    setOpts({ ...opts, page: 1, size: parseInt(evt.target.value) });
+  };
+
+  // data get list of motivations
+  const { isLoading, data, refetch } = useGetMotivations({
+    size: opts.size,
+    page: opts.page,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
 
-  const {
-    data: actorData,
-    fetchNextPage: actorFetchNextPage,
-    hasNextPage: actorHasNextPage,
-  } = useGetAllActors({
-    size: 5,
-    token: keycloak?.token || "",
-    isRegistered: registered,
-  });
-
+  // refetch users when parameters change
   useEffect(() => {
-    // gather all actors in one array
-    let tmpAct: MotivationActor[] = [];
-    const mtvActors =
-      motivation?.actors.map((item) => {
-        return item.id;
-      }) || [];
+    refetch();
+  }, [opts, refetch]);
 
-    // iterate over backend pages and gather all items in the actors array
-    if (actorData?.pages) {
-      actorData.pages.map((page) => {
-        tmpAct = [...tmpAct, ...page.content];
-      });
-      if (actorHasNextPage) {
-        actorFetchNextPage();
-      }
-    }
-    setAvailableActors(tmpAct.filter((item) => !mtvActors.includes(item.id)));
-  }, [actorData, actorHasNextPage, actorFetchNextPage, motivation]);
-
-  useEffect(() => {
-    setMotivation(motivationData);
-  }, [motivationData]);
+  // get the motivation data to create the table
+  const motivations: Motivation[] = data ? data?.content : [];
 
   return (
-    <div className="pb-4">
+    <div>
+      <MotivationModal
+        motivation={null}
+        show={showCreate}
+        onHide={() => {
+          setShowCreate(false);
+        }}
+      />
       <div className="cat-view-heading-block row border-bottom">
-        <MotivationActorModal
-          motivationActors={availableActors}
-          id={motivation?.id || ""}
-          show={showAddActor}
-          onHide={() => {
-            setShowAddActor(false);
-          }}
-        />
-        <MotivationModal
-          motivation={motivation || null}
-          show={showUpdate}
-          onHide={() => {
-            setShowUpdate(false);
-          }}
-        />
-        <Col>
+        <div className="col">
           <h2 className="text-muted cat-view-heading ">
-            Motivation Details
-            {motivation && (
-              <p className="lead cat-view-lead">
-                Motivation id:{" "}
-                <strong className="badge bg-secondary">{motivation.id}</strong>
-              </p>
-            )}
+            Motivations
+            <p className="lead cat-view-lead">Manage motivations.</p>
           </h2>
-        </Col>
-      </div>
-      <Row className="mt-4 border-bottom pb-4">
-        <Col md="auto">
-          <div className="p-3 text-center">
-            <FaFile size={"4rem"} className="text-secondary" />
-          </div>
+        </div>
+        <div className="col-md-auto cat-heading-right">
           <Button
+            variant="warning"
             onClick={() => {
-              setShowUpdate(true);
+              setShowCreate(true);
             }}
-            className="btn-light border-black"
           >
-            Update Details
+            <FaPlus /> Create New
           </Button>
-        </Col>
-        <Col>
-          <div>
-            <strong>MTV:</strong> {motivation?.mtv}
-          </div>
-          <div>
-            <strong>Label:</strong> {motivation?.label}
-          </div>
-          <div>
-            <div>
-              <strong>Description:</strong>
-            </div>
-            <div>
-              <small>{motivation?.description}</small>
-            </div>
-          </div>
-          <hr />
-          <div>
-            <div>
-              <strong>Motivation Type:</strong>
-            </div>
-            <div>{motivation?.motivation_type.label}</div>
-          </div>
-        </Col>
-      </Row>
-      {/* Included actors */}
-      <Row>
-        <div className="px-5 mt-4">
-          <div className="d-flex justify-content-between mb-2">
-            <h4 className="text-muted cat-view-heading ">
-              <FaUser className="me-2" /> Included Actors
-            </h4>
-            <Button
-              variant="warning"
-              onClick={() => {
-                setShowAddActor(true);
-              }}
-              disabled={availableActors.length == 0}
-            >
-              <FaPlus /> Add Actor
-            </Button>
-          </div>
-          {motivation?.actors.length === 0 ? (
-            <Alert variant="warning" className="text-center mx-auto">
-              <h3>
-                <FaExclamationTriangle />
-              </h3>
-              <h5>No actors included in this motivation... </h5>
-              <div>
-                <span className="align-baseline">
-                  Please use the button above or{" "}
-                </span>
-                <Button
-                  variant="link"
-                  className="p-0 m-0 align-baseline"
-                  onClick={() => {
-                    setShowAddActor(true);
-                  }}
-                >
-                  click here
-                </Button>
-                <span className="align-baseline"> to add new ones</span>
-              </div>
-            </Alert>
-          ) : (
-            <ListGroup className="mt-2">
-              {motivation?.actors.map((item) => {
+        </div>
+      </div>
+      <div>
+        <Table hover>
+          <thead>
+            <tr className="table-light">
+              <th>
+                <span>MTV</span>
+              </th>
+              <th>
+                <span>Label</span>
+              </th>
+              <th>
+                <span>Description</span>
+              </th>
+              <th>
+                <span>Modified</span>
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          {motivations.length > 0 ? (
+            <tbody>
+              {motivations.map((item) => {
                 return (
-                  <ListGroup.Item key={item.id}>
-                    <Row>
-                      <Col>
-                        {item.act} - {item.label}
-                      </Col>
-                      <Col md="auto">
-                        <Link
-                          className="btn btn-dark"
-                          to={`/motivations/${params.id}/actors/${item.id}`}
-                        >
-                          Manage Criteria
-                        </Link>
-                      </Col>
-                    </Row>
-                  </ListGroup.Item>
+                  <tr key={item.id}>
+                    <td className="align-middle">{item.mtv}</td>
+                    <td className="align-middle">{item.label}</td>
+
+                    <td className="align-middle">{item.description}</td>
+                    <td className="align-middle">
+                      <small>{item.last_touch.split(".")[0]}</small>
+                    </td>
+                    <td>
+                      <div className="d-flex flex-nowrap">
+                        <OverlayTrigger placement="top" overlay={tooltipView}>
+                          <Link
+                            className="btn btn-light btn-sm m-1"
+                            to={`/motivations/${item.id}`}
+                          >
+                            <FaBars />
+                          </Link>
+                        </OverlayTrigger>
+                      </div>
+                    </td>
+                  </tr>
                 );
               })}
-            </ListGroup>
+            </tbody>
+          ) : null}
+        </Table>
+        {!isLoading && motivations.length === 0 && (
+          <Alert variant="warning" className="text-center mx-auto">
+            <h3>
+              <FaExclamationTriangle />
+            </h3>
+            <h5>No data found...</h5>
+          </Alert>
+        )}
+        <div className="d-flex justify-content-end">
+          <div>
+            <span className="mx-1">rows per page: </span>
+            <select
+              name="per-page"
+              value={opts.size.toString() || "20"}
+              id="per-page"
+              onChange={handleChangePageSize}
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+
+          {data && data.number_of_page && data.total_pages && (
+            <div className="ms-4">
+              <span>
+                {(data.number_of_page - 1) * opts.size + 1} -{" "}
+                {(data.number_of_page - 1) * opts.size + data.size_of_page} of{" "}
+                {data.total_elements}
+              </span>
+              <span
+                onClick={() => {
+                  setOpts({ ...opts, page: opts.page - 1 });
+                }}
+                className={`ms-4 btn py-0 btn-light btn-small ${
+                  opts.page === 1 ? "disabled text-muted" : null
+                }`}
+              >
+                <FaArrowLeft />
+              </span>
+              <span
+                onClick={() => {
+                  setOpts({ ...opts, page: opts.page + 1 });
+                }}
+                className={`btn py-0 btn-light btn-small" ${
+                  data?.total_pages > data?.number_of_page
+                    ? null
+                    : "disabled text-muted"
+                }`}
+              >
+                <FaArrowRight />
+              </span>
+            </div>
           )}
         </div>
-      </Row>
-      <div className="mt-4">
-        <Button
-          variant="secondary"
-          onClick={() => {
-            navigate(-1);
-          }}
-        >
-          Back
-        </Button>
+      </div>
+      <div className="row py-3 p-4">
+        <div className="col"></div>
       </div>
     </div>
   );
