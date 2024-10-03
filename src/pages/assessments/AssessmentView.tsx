@@ -6,6 +6,7 @@ import { useGetAssessment } from "@/api";
 import { DebugJSON } from "./components/DebugJSON";
 import { Button, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import imgAssessmentPass from "@/assets/assessment-pass.png";
 
 /** AssessmentView page that displays the results of an assessment */
 const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
@@ -33,18 +34,37 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
             <Col>
               <h2 className="cat-view-heading text-muted  ">
                 {assessment.name}
-                <p className="lead cat-view-lead">{assessment.id}</p>
+                <p className="lead cat-view-lead fs-6">{assessment.id}</p>
               </h2>
             </Col>
             <Col className="col-md-auto cat-heading-right">
-              <span>
-                Compliance:{" "}
-                <strong>{assessment.result.compliance || "unknown"}</strong>
+              <span className="font-weight-500 text-xs text-gray-500">
+                Compliance
               </span>
-              <span>
-                Ranking:{" "}
-                <strong>{assessment.result.ranking || "unknown"}</strong>
+              {assessment.result.compliance ? (
+                <img src={imgAssessmentPass} />
+              ) : (
+                <p>
+                  <span className="fs-1 text-primary bold">"unknown"</span>
+                </p>
+              )}
+            </Col>
+            <Col className="col-md-auto cat-heading-right col text-center">
+              <span className="font-weight-500 text-xs text-gray-500">
+                Ranking:
               </span>
+              {assessment.result.ranking ? (
+                <p>
+                  <span className="fs-1 text-primary bold">
+                    {assessment.result.ranking}
+                  </span>
+                  <span className="fs-6 text-secondary">/10</span>
+                </p>
+              ) : (
+                <p>
+                  <span className="fs-1 text-primary bold">"unknown"</span>
+                </p>
+              )}
             </Col>
           </Row>
           <Row className="mt-2">
