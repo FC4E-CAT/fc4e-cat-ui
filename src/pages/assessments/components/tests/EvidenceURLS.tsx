@@ -97,7 +97,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
               id="input-add-url"
               value={newURL.url}
               onChange={(e) => {
-                setNewURL({ ...newURL, url: e.target.value });
+                setNewURL({ ...newURL, url: e.target.value.trim() });
                 setError("");
               }}
               aria-describedby="label-add-url"
