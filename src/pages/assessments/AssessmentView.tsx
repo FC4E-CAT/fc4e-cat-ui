@@ -191,7 +191,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                               <small className="ms-2">
                                 <strong>
                                   <span className="text-danger">
-                                    not answer
+                                    not answered
                                   </span>
                                 </strong>
                               </small>
@@ -206,38 +206,15 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                           <div className="m-3">
                             {cri.metric.tests.map((test) => (
                               <div key={test.id}>
-                                <h5>
+                                <span className="badge rounded-pill text-bg-light text-info">
                                   {test.id} - {test.name}
-                                </h5>
-
-                                <div className="ms-4 border-start ps-2">
-                                  <em>{test.text}</em>
-                                </div>
-                                <span className="p-2">
-                                  Result:{" "}
-                                  <strong>{test.result || "unknown"}</strong>
                                 </span>
-                                {test.evidence_url &&
-                                  test.evidence_url?.length > 0 && (
-                                    <div>
-                                      <h6>Evidence:</h6>
-                                      <ul>
-                                        {test.evidence_url.map((ev) => (
-                                          <li key={ev.url}>
-                                            <div>
-                                              url: <pre>{ev.url}</pre>
-                                            </div>
-                                            {ev.description && (
-                                              <div>
-                                                description:{" "}
-                                                <em>{ev.description}</em>
-                                              </div>
-                                            )}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                  )}
+                                <strong>Q.</strong>
+                                {test.text}
+                                <br />
+                                <strong>A.</strong>
+                                {test.result || "n/a"}
+                                <br />
                               </div>
                             ))}
                           </div>
