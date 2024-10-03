@@ -79,28 +79,27 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 <Card.Body>
                   <Card.Title>Details</Card.Title>
                   <Card.Text>
-                    <span>
-                      Actor: <strong>{assessment.actor.name}</strong>
-                    </span>
-                    <span>
-                      Organization:{" "}
-                      <strong>{assessment.organisation.name}</strong>
-                    </span>
-                    <span>
-                      Subject:{" "}
-                      <strong>
-                        {assessment.subject.name} - (type:{" "}
-                        {assessment.subject.type})
-                      </strong>
-                    </span>
+                    <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                      <strong className="text-gray-dark">Actor:</strong>
+                      {assessment.actor.name}
+                    </p>
+                    <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                      <strong className="text-gray-dark">Organization:</strong>
+                      {assessment.organisation.name}
+                    </p>
+                    <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                      <strong className="text-gray-dark">Subject:</strong>
+                      {assessment.subject.name} - (type:{" "}
+                      {assessment.subject.type})
+                    </p>
                   </Card.Text>
                 </Card.Body>
               </Card>
             </Col>
             <Col className="col-sm-9">
               <Row>
-                <h3>Statistics</h3>
-                <Col className="text-center">
+                <div className="card-title h5 py-3">Statistics</div>
+                <Col className="text-center col-lg-2">
                   <span className="font-weight-500 text-xs text-gray-500">
                     Principles
                   </span>
@@ -108,30 +107,29 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     <span className="fs-1 text-primary bold">9</span>
                   </p>
                 </Col>
-                <Col className="text-center">
+                <Col className="text-center col-lg-2">
                   <span className="font-weight-500 text-xs text-gray-500">
                     Criteria
                   </span>
                   <p>
                     <span className="fs-1 text-primary bold">9</span>
-                    <span className="fs-6 text-secondary">/10</span>
                   </p>
                 </Col>
-                <Col className="text-center">
+                <Col className="text-center col-lg-2">
                   <span className="font-weight-500 text-xs text-gray-500">
                     Mandatory
                   </span>
                   <p>
-                    <span className="fs-1 text-primary bold">8</span>
+                    <span className="fs-1 text-danger bold">8</span>
                     <span className="fs-6 text-secondary">/10</span>
                   </p>
                 </Col>
-                <Col className="col-md-auto col col-lg-1  text-center">
+                <Col className="col-md-auto col col-lg-2  text-center">
                   <span className="font-weight-500 text-xs text-gray-500">
                     Optional
                   </span>
                   <p>
-                    <span className="fs-1 text-primary bold">8</span>
+                    <span className="fs-1 text-success bold">8</span>
                     <span className="fs-6 text-secondary">/10</span>
                   </p>
                 </Col>
@@ -148,7 +146,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
           </Button>
         </div>
       )}
-      ;{/* Debug info here - display assessment json */}
+      {/* Debug info here - display assessment json */}
       <DebugJSON assessment={assessment} />
     </div>
   );
