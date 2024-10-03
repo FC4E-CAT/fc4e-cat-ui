@@ -77,7 +77,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
           <Row>
             <col></col>
           </Row>
-          <Row>
+          <Row className="bg-light">
             <Col className="col-sm-3 py-3">
               <Card>
                 <Card.Body>
@@ -150,7 +150,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 <div className="m-3">
                   <Accordion defaultActiveKey="0">
                     {pri.criteria.map((cri) => (
-                      <Accordion.Item eventKey="0" key={cri.id}>
+                      <Accordion.Item eventKey={cri.id} key={cri.id}>
                         <Accordion.Header>
                           {cri.id} - {cri.name} ({cri.imperative})
                         </Accordion.Header>
@@ -213,7 +213,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 </div>
               </div>
             ))}
-            ;{/* Assessemt Principles for loop */}
+            {/* Assessemt Principles for loop */}
           </Row>
           {/* Row of Principles closes*/}
           <Button
