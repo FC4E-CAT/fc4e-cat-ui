@@ -49,6 +49,11 @@ export interface Relation {
   url: string | null;
 }
 
+export interface CriImp {
+  criterion_id: string;
+  imperative_id: string;
+}
+
 export type RelationResponse = ResponsePage<Relation[]>;
 
 export type MotivationResponse = ResponsePage<Motivation[]>;

@@ -1,8 +1,14 @@
-import { useGetMotivationCriteria } from "@/api/services/motivations";
+import {
+  useGetMotivationActorCriteria,
+  useGetMotivationCriteria,
+  useUpdateMotivationActorCriteria,
+} from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
-import { Criterion } from "@/types";
-import { useState, useContext, useEffect } from "react";
+import { AlertInfo, Criterion } from "@/types";
+import { useState, useContext, useEffect, useRef } from "react";
 import { Button, Col, Row } from "react-bootstrap";
+import toast from "react-hot-toast";
+import { FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 import { FaStar } from "react-icons/fa6";
 
 import { useParams, useNavigate } from "react-router-dom";
@@ -15,6 +21,17 @@ export default function MotivationActorCriteria() {
 
   const [availableCriteria, setAvailableCriteria] = useState<Criterion[]>([]);
   const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
+
+  const mutationUpdate = useUpdateMotivationActorCriteria(
+    keycloak?.token || "",
+    params.mtvId || "",
+    params.actId || "",
+  );
+
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+
   const {
     data: criData,
     fetchNextPage: criFetchNextPage,
@@ -24,6 +41,32 @@ export default function MotivationActorCriteria() {
     token: keycloak?.token || "",
     isRegistered: registered,
   });
+
+  const {
+    data: selCriData,
+    fetchNextPage: selCriFetchNextPage,
+    hasNextPage: selCriHasNextPage,
+  } = useGetMotivationActorCriteria(params.mtvId || "", params.actId || "", {
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    // gather all motivation actor criteria in one array
+    let tmpSelCri: Criterion[] = [];
+
+    // iterate over backend pages and gather all items in the mtv array
+    if (selCriData?.pages) {
+      selCriData.pages.map((page) => {
+        tmpSelCri = [...tmpSelCri, ...page.content];
+      });
+      if (selCriHasNextPage) {
+        selCriFetchNextPage();
+      }
+    }
+    setSelectedCriteria(tmpSelCri);
+  }, [selCriData, selCriHasNextPage, selCriFetchNextPage]);
 
   useEffect(() => {
     // gather all motivation criteria in one array
@@ -45,6 +88,34 @@ export default function MotivationActorCriteria() {
     }
     setAvailableCriteria(tmpCri.filter((item) => !selCri.includes(item.cri)));
   }, [criData, criHasNextPage, criFetchNextPage, selectedCriteria]);
+
+  function handleUpdate() {
+    if (selectedCriteria.length > 0) {
+      const criImp = selectedCriteria.map((item) => ({
+        criterion_id: item.id,
+        imperative_id: item.imperative,
+      }));
+      const promise = mutationUpdate
+        .mutateAsync(criImp)
+        .catch((err) => {
+          alert.current = {
+            message: "Error during saving Assessment Type Criteria!",
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: "Assessment Type Criteria Saved!",
+          };
+          navigate(-1);
+        });
+      toast.promise(promise, {
+        loading: "Saving Assessment Type Criteria...",
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
+      });
+    }
+  }
 
   return (
     <div className="pb-4">
@@ -69,7 +140,15 @@ export default function MotivationActorCriteria() {
       </div>
       <Row className="mt-4 border-bottom pb-4">
         <Col className="px-4">
-          <p>Available Criteria in this motivation:</p>
+          <div>
+            Available Criteria in this motivation: ({availableCriteria.length})
+          </div>
+          <div className="alert alert-light p-2 mt-1">
+            <small>
+              <FaPlusCircle className="me-2" /> Click an item below to add it to
+              this assessment type...
+            </small>
+          </div>
           <div className="cat-vh-60 overflow-auto">
             {availableCriteria?.map((item) => (
               <div
@@ -84,6 +163,9 @@ export default function MotivationActorCriteria() {
                   <strong>
                     {item.cri} - {item.label}
                   </strong>
+                  <span className="ms-2 badge badge-sm bg-success">
+                    imp: {item.imperative}
+                  </span>
                 </div>
 
                 <div className="text-muted">{item.description}</div>
@@ -102,7 +184,16 @@ export default function MotivationActorCriteria() {
           </div>
         </Col>
         <Col>
-          <p>Criteria included in the Assessment Type:</p>
+          <div>
+            Criteria included in the Assessment Type: ({selectedCriteria.length}
+            )
+          </div>
+          <div className="alert alert-light p-2 mt-1">
+            <small>
+              <FaMinusCircle className="me-2" /> Click an item below to remove
+              it from this assessment type...
+            </small>
+          </div>
           <div>
             <div className="cat-vh-60 overflow-auto">
               {selectedCriteria?.map((item) => (
@@ -122,6 +213,9 @@ export default function MotivationActorCriteria() {
                     <strong>
                       {item.cri} - {item.label}
                     </strong>
+                    <span className="ms-2 badge badge-sm bg-success">
+                      imp: {item.imperative}
+                    </span>
                   </div>
 
                   <div className="text-muted">{item.description}</div>
@@ -141,7 +235,7 @@ export default function MotivationActorCriteria() {
           </div>
         </Col>
       </Row>
-      <div className="mt-4">
+      <div className="d-flex justify-content-between">
         <Button
           variant="secondary"
           onClick={() => {
@@ -149,6 +243,14 @@ export default function MotivationActorCriteria() {
           }}
         >
           Back
+        </Button>
+        <Button
+          variant="success"
+          onClick={() => {
+            handleUpdate();
+          }}
+        >
+          Save
         </Button>
       </div>
     </div>
