@@ -62,7 +62,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 </p>
               ) : (
                 <p>
-                  <span className="fs-1 text-primary bold">"unknown"</span>
+                  <span className="fs-1 text-primary bold">unknown</span>
                 </p>
               )}
             </Col>
