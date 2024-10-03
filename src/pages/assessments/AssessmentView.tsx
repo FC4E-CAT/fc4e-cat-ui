@@ -155,13 +155,15 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                         <Accordion.Header>
                           {cri.id} - {cri.name}
                           {cri.imperative === "must" ? (
-                            <Badge bg="warning" text="dark">
+                            <Badge bg="warning" className="ms-2" text="dark">
                               {cri.imperative}
                             </Badge>
                           ) : (
-                            <Badge bg="Primary">{cri.imperative}</Badge>
+                            <Badge bg="primary" className="ms-2">
+                              {cri.imperative}
+                            </Badge>
                           )}
-                          <span className="float-end">
+                          <span className="ms-5 align-middle ">
                             Result:{" "}
                             <strong>{cri.metric.result || "unknown"}</strong>
                           </span>
