@@ -209,12 +209,27 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                 <span className="badge rounded-pill text-bg-light text-info">
                                   {test.id} - {test.name}
                                 </span>
+                                <br />
                                 <strong>Q.</strong>
                                 {test.text}
                                 <br />
                                 <strong>A.</strong>
                                 {test.result || "n/a"}
                                 <br />
+                                {test.evidence_url &&
+                                  test.evidence_url?.length > 0 && (
+                                    <span>
+                                      {test.evidence_url.map((ev) => (
+                                        <span key={ev.url}>
+                                          {" "}
+                                          <a href={ev.url}>{ev.url}</a>
+                                          {ev.description && (
+                                            <span>{ev.description}</span>
+                                          )}
+                                        </span>
+                                      ))}
+                                    </span>
+                                  )}
                               </div>
                             ))}
                           </div>
