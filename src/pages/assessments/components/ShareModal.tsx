@@ -89,9 +89,9 @@ export function ShareModal(props: ShareModalProps) {
             {props.id}
           </ListGroup.Item>
         </ListGroup>
-        <ListGroup>
-          <ListGroup.Item>
-            <div className="mt-2">
+        <div className="mt-2">
+          <ListGroup>
+            <ListGroup.Item>
               <span className="text-black-50">
                 <small>
                   <strong>Share the URL</strong>
@@ -113,18 +113,15 @@ export function ShareModal(props: ShareModalProps) {
                         color: "#FF7F50",
                         cursor: "pointer",
                         marginLeft: "10px",
-                        borderRadius: "20%",
-                        border: "1px solid grey",
                       }}
                       onMouseLeave={() => setCopySuccess("")}
                     />
                   </CopyToClipboard>
                 </OverlayTrigger>
               </span>
-            </div>
-          </ListGroup.Item>
-        </ListGroup>
-
+            </ListGroup.Item>
+          </ListGroup>
+        </div>
         <div className="mt-2 bg-light p-3 rounded border">
           <InputGroup>
             <InputGroup.Text id="label-share-user">Share with:</InputGroup.Text>
