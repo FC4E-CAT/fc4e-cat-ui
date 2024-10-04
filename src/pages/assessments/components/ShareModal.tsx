@@ -4,7 +4,10 @@ import { AlertInfo } from "@/types";
 import { useContext, useRef, useState } from "react";
 import { Modal, Button, ListGroup, Form, InputGroup } from "react-bootstrap";
 import toast from "react-hot-toast";
-import { FaShare, FaUserAlt } from "react-icons/fa";
+import { FaShare, FaUserAlt, FaCopy } from "react-icons/fa";
+import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { trimField } from "@/utils/admin";
 
 interface ShareModalProps {
   name: string;
@@ -29,6 +32,16 @@ export function ShareModal(props: ShareModalProps) {
   });
   const mutateShare = useShareAssessment(keycloak?.token || "", props.id);
   const [email, setEmail] = useState("");
+
+  const [copySuccess, setCopySuccess] = useState("");
+
+  const domainName =
+    window.location.protocol + "://" + window.location.hostname;
+  const renderTooltip = (props: TooltipProps) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {copySuccess ? "Copied!" : "Copy to clipboard"}
+    </Tooltip>
+  );
 
   function handleShare() {
     const promise = mutateShare
@@ -75,6 +88,29 @@ export function ShareModal(props: ShareModalProps) {
           <ListGroup.Item>
             <strong>ID: </strong>
             {props.id}
+
+            <span className="text-black-50">
+              <strong>url:</strong> {trimField(domainName, 10)}
+              <OverlayTrigger
+                placement="top"
+                delay={{ show: 250, hide: 400 }}
+                overlay={renderTooltip}
+              >
+                <CopyToClipboard
+                  text={`${domainName}/assessments/${props.id}`}
+                  onCopy={() => setCopySuccess("Copied!")}
+                >
+                  <FaCopy
+                    style={{
+                      color: "#FF7F50",
+                      cursor: "pointer",
+                      marginLeft: "10px",
+                    }}
+                    onMouseLeave={() => setCopySuccess("")}
+                  />
+                </CopyToClipboard>
+              </OverlayTrigger>
+            </span>
           </ListGroup.Item>
         </ListGroup>
 
