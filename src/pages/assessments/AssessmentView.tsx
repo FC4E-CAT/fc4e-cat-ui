@@ -8,6 +8,51 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
 import Accordion from "react-bootstrap/Accordion";
+import { Assessment, CriterionImperative } from "@/types";
+
+interface Stats {
+  total_principles: number;
+  total_criteria: number;
+  total_mandatory: number;
+  total_optional: number;
+  completed_mandatory: number;
+  completed_optional: number;
+}
+
+// dig through the assessment and collect the completion statistics
+function gatherStats(assessment: Assessment | undefined): Stats {
+  let total_principles = 0;
+  let total_criteria = 0;
+  let total_mandatory = 0;
+  let total_optional = 0;
+  let completed_mandatory = 0;
+  let completed_optional = 0;
+
+  if (assessment) {
+    total_principles = assessment.principles.length;
+    assessment.principles.forEach((pri) => {
+      total_criteria += pri.criteria.length;
+      pri.criteria.forEach((cri) => {
+        if (cri.imperative == CriterionImperative.Must) {
+          total_mandatory += 1;
+          if (cri.metric.result !== null) completed_mandatory = +1;
+        } else {
+          total_optional += 1;
+          if (cri.metric.result !== null) completed_optional = +1;
+        }
+      });
+    });
+  }
+
+  return {
+    total_principles: total_principles,
+    total_criteria: total_criteria,
+    total_mandatory: total_mandatory,
+    total_optional: total_optional,
+    completed_mandatory: completed_mandatory,
+    completed_optional: completed_optional,
+  };
+}
 
 /** AssessmentView page that displays the results of an assessment */
 const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
@@ -27,6 +72,8 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
 
   const assessment = qAssessment.data?.assessment_doc;
 
+  const stats = gatherStats(assessment);
+
   return (
     <div>
       {assessment && (
@@ -35,8 +82,8 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
             <Col>
               <h2 className="cat-view-heading text-muted  ">
                 {assessment.name}
-                <p className="lead cat-view-lead fs-6 ">{assessment.id}</p>
               </h2>
+              <p className="lead cat-view-lead fs-6 ">{assessment.id}</p>
             </Col>
             <Col className="col col-lg-1 ">
               <span className="font-weight-500 text-xs text-gray-500">
@@ -75,32 +122,31 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
             </Col>
           </Row>
           <Row>
-            <col></col>
+            <Col></Col>
           </Row>
           <Row className="bg-light">
             <Col className="col-sm-3 py-3">
               <Card>
                 <Card.Body>
-                  <Card.Title>Details</Card.Title>
-                  <Card.Text>
-                    <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                      <strong className="text-gray-dark">Assess for:</strong>
-                      EOSC PID Policy
-                    </p>
-                    <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                      <strong className="text-gray-dark">Actor:</strong>
-                      {assessment.actor.name}
-                    </p>
-                    <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                      <strong className="text-gray-dark">Organization:</strong>
-                      {assessment.organisation.name}
-                    </p>
-                    <p className="media-body pb-3 mb-0 small lh-125">
-                      <strong className="text-gray-dark">Subject:</strong>
-                      {assessment.subject.name} - (type:{" "}
-                      {assessment.subject.type})
-                    </p>
-                  </Card.Text>
+                  <h5>Details</h5>
+
+                  <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                    <strong className="text-gray-dark">Assess for:</strong>
+                    EOSC PID Policy
+                  </p>
+                  <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                    <strong className="text-gray-dark">Actor:</strong>
+                    {assessment.actor.name}
+                  </p>
+                  <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                    <strong className="text-gray-dark">Organization:</strong>
+                    {assessment.organisation.name}
+                  </p>
+                  <p className="media-body pb-3 mb-0 small lh-125">
+                    <strong className="text-gray-dark">Subject:</strong>
+                    {assessment.subject.name} - (type: {assessment.subject.type}
+                    )
+                  </p>
                 </Card.Body>
               </Card>
             </Col>
@@ -112,7 +158,9 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     Principles
                   </span>
                   <p>
-                    <span className="fs-1 text-primary bold">9</span>
+                    <span className="fs-1 text-primary bold">
+                      {stats.total_principles}
+                    </span>
                   </p>
                 </Col>
                 <Col className="text-center col-lg-2">
@@ -120,7 +168,9 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     Criteria
                   </span>
                   <p>
-                    <span className="fs-1 text-primary bold">9</span>
+                    <span className="fs-1 text-primary bold">
+                      {stats.total_criteria}
+                    </span>
                   </p>
                 </Col>
                 <Col className="text-center col-lg-2">
@@ -128,8 +178,12 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     Mandatory
                   </span>
                   <p>
-                    <span className="fs-1 text-danger bold">8</span>
-                    <span className="fs-6 text-secondary">/10</span>
+                    <span className="fs-1 text-danger bold">
+                      {stats.completed_mandatory}
+                    </span>
+                    <span className="fs-6 text-secondary">
+                      /{stats.total_mandatory}
+                    </span>
                   </p>
                 </Col>
                 <Col className="col-md-auto col col-lg-2  text-center">
@@ -137,8 +191,12 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     Optional
                   </span>
                   <p>
-                    <span className="fs-1 text-success bold">8</span>
-                    <span className="fs-6 text-secondary">/10</span>
+                    <span className="fs-1 text-success bold">
+                      {stats.completed_optional}
+                    </span>
+                    <span className="fs-6 text-secondary">
+                      /{stats.total_optional}
+                    </span>
                   </p>
                 </Col>
               </Row>
