@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import { FaShare, FaUserAlt, FaCopy } from "react-icons/fa";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { trimField } from "@/utils/admin";
 
 interface ShareModalProps {
   name: string;
@@ -88,29 +87,6 @@ export function ShareModal(props: ShareModalProps) {
           <ListGroup.Item>
             <strong>ID: </strong>
             {props.id}
-
-            <span className="text-black-50">
-              <strong>url:</strong> {trimField(domainName, 10)}
-              <OverlayTrigger
-                placement="top"
-                delay={{ show: 250, hide: 400 }}
-                overlay={renderTooltip}
-              >
-                <CopyToClipboard
-                  text={`${domainName}/assessments/${props.id}`}
-                  onCopy={() => setCopySuccess("Copied!")}
-                >
-                  <FaCopy
-                    style={{
-                      color: "#FF7F50",
-                      cursor: "pointer",
-                      marginLeft: "10px",
-                    }}
-                    onMouseLeave={() => setCopySuccess("")}
-                  />
-                </CopyToClipboard>
-              </OverlayTrigger>
-            </span>
           </ListGroup.Item>
         </ListGroup>
 
@@ -135,6 +111,35 @@ export function ShareModal(props: ShareModalProps) {
               Confirm
             </Button>
           </InputGroup>
+          <div className="mt-2">
+            <span className="text-black-50">
+              <small>
+                <strong>Share the URL</strong>
+                <br />
+                You can also share the url to the users that already have access
+                via the url{" "}
+              </small>
+              <OverlayTrigger
+                placement="top"
+                delay={{ show: 250, hide: 400 }}
+                overlay={renderTooltip}
+              >
+                <CopyToClipboard
+                  text={`${domainName}/assessments/${props.id}`}
+                  onCopy={() => setCopySuccess("Copied!")}
+                >
+                  <FaCopy
+                    style={{
+                      color: "#FF7F50",
+                      cursor: "pointer",
+                      marginLeft: "10px",
+                    }}
+                    onMouseLeave={() => setCopySuccess("")}
+                  />
+                </CopyToClipboard>
+              </OverlayTrigger>
+            </span>
+          </div>
           {qShares.data && (
             <div className="mt-2">
               <small>
