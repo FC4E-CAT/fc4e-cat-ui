@@ -89,6 +89,41 @@ export function ShareModal(props: ShareModalProps) {
             {props.id}
           </ListGroup.Item>
         </ListGroup>
+        <ListGroup>
+          <ListGroup.Item>
+            <div className="mt-2">
+              <span className="text-black-50">
+                <small>
+                  <strong>Share the URL</strong>
+                  <br />
+                  You can also share the URL with users who already have access
+                  through the link.{" "}
+                </small>
+                <OverlayTrigger
+                  placement="top"
+                  delay={{ show: 250, hide: 400 }}
+                  overlay={renderTooltip}
+                >
+                  <CopyToClipboard
+                    text={`${domainName}/assessments/${props.id}`}
+                    onCopy={() => setCopySuccess("Copied!")}
+                  >
+                    <FaCopy
+                      style={{
+                        color: "#FF7F50",
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                        borderRadius: "20%",
+                        border: "1px solid grey",
+                      }}
+                      onMouseLeave={() => setCopySuccess("")}
+                    />
+                  </CopyToClipboard>
+                </OverlayTrigger>
+              </span>
+            </div>
+          </ListGroup.Item>
+        </ListGroup>
 
         <div className="mt-2 bg-light p-3 rounded border">
           <InputGroup>
@@ -111,35 +146,7 @@ export function ShareModal(props: ShareModalProps) {
               Confirm
             </Button>
           </InputGroup>
-          <div className="mt-2">
-            <span className="text-black-50">
-              <small>
-                <strong>Share the URL</strong>
-                <br />
-                You can also share the url to the users that already have access
-                via the url{" "}
-              </small>
-              <OverlayTrigger
-                placement="top"
-                delay={{ show: 250, hide: 400 }}
-                overlay={renderTooltip}
-              >
-                <CopyToClipboard
-                  text={`${domainName}/assessments/${props.id}`}
-                  onCopy={() => setCopySuccess("Copied!")}
-                >
-                  <FaCopy
-                    style={{
-                      color: "#FF7F50",
-                      cursor: "pointer",
-                      marginLeft: "10px",
-                    }}
-                    onMouseLeave={() => setCopySuccess("")}
-                  />
-                </CopyToClipboard>
-              </OverlayTrigger>
-            </span>
-          </div>
+
           {qShares.data && (
             <div className="mt-2">
               <small>
