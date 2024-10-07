@@ -1,14 +1,15 @@
 import {
+  useGetAllImperatives,
   useGetMotivationActorCriteria,
   useGetMotivationCriteria,
   useUpdateMotivationActorCriteria,
 } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
-import { AlertInfo, Criterion } from "@/types";
+import { AlertInfo, Criterion, Imperative } from "@/types";
 import { useState, useContext, useEffect, useRef } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import toast from "react-hot-toast";
-import { FaMinusCircle, FaPlusCircle } from "react-icons/fa";
+import { FaMinusCircle, FaPlusCircle, FaTimes } from "react-icons/fa";
 import { FaStar } from "react-icons/fa6";
 
 import { useParams, useNavigate } from "react-router-dom";
@@ -19,6 +20,9 @@ export default function MotivationActorCriteria() {
 
   const { keycloak, registered } = useContext(AuthContext)!;
 
+  const [imperatives, setImperatives] = useState<Map<string, Imperative>>(
+    new Map(),
+  );
   const [availableCriteria, setAvailableCriteria] = useState<Criterion[]>([]);
   const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
 
@@ -30,6 +34,16 @@ export default function MotivationActorCriteria() {
 
   const alert = useRef<AlertInfo>({
     message: "",
+  });
+
+  const {
+    data: impData,
+    fetchNextPage: impFetchNextPage,
+    hasNextPage: impHasNextPage,
+  } = useGetAllImperatives({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
   });
 
   const {
@@ -51,6 +65,23 @@ export default function MotivationActorCriteria() {
     token: keycloak?.token || "",
     isRegistered: registered,
   });
+
+  useEffect(() => {
+    // gather all imperatives in one dictionary
+    const tmpImp: Map<string, Imperative> = new Map();
+    // iterate over backend pages and gather all items in the imp dictionary, keyed by imp id
+    if (impData?.pages) {
+      impData.pages.map((page) => {
+        page.content.forEach((item) => {
+          tmpImp.set(item.id, item);
+        });
+      });
+      if (impHasNextPage) {
+        impFetchNextPage();
+      }
+    }
+    setImperatives(tmpImp);
+  }, [impData, impHasNextPage, impFetchNextPage]);
 
   useEffect(() => {
     // gather all motivation actor criteria in one array
@@ -89,11 +120,28 @@ export default function MotivationActorCriteria() {
     setAvailableCriteria(tmpCri.filter((item) => !selCri.includes(item.cri)));
   }, [criData, criHasNextPage, criFetchNextPage, selectedCriteria]);
 
+  function handleUpdateImperative(
+    index: number,
+    criImp: Imperative | undefined,
+  ) {
+    if (criImp === undefined) return;
+    setSelectedCriteria((prevSelCriteria) =>
+      prevSelCriteria.map((selCri, selCriIndx) =>
+        selCriIndx === index
+          ? {
+              ...selCri,
+              imperative: criImp,
+            }
+          : selCri,
+      ),
+    );
+  }
+
   function handleUpdate() {
     if (selectedCriteria.length > 0) {
       const criImp = selectedCriteria.map((item) => ({
         criterion_id: item.id,
-        imperative_id: item.imperative,
+        imperative_id: item.imperative.id,
       }));
       const promise = mutationUpdate
         .mutateAsync(criImp)
@@ -164,7 +212,7 @@ export default function MotivationActorCriteria() {
                     {item.cri} - {item.label}
                   </strong>
                   <span className="ms-2 badge badge-sm bg-success">
-                    imp: {item.imperative}
+                    {item.imperative.label}
                   </span>
                 </div>
 
@@ -196,26 +244,45 @@ export default function MotivationActorCriteria() {
           </div>
           <div>
             <div className="cat-vh-60 overflow-auto">
-              {selectedCriteria?.map((item) => (
-                <div
-                  key={item.cri}
-                  className="mb-4 p-2 cat-select-item"
-                  onClick={() => {
-                    setSelectedCriteria(
-                      selectedCriteria.filter(
-                        (selItem) => selItem.cri != item.cri,
-                      ),
-                    );
-                  }}
-                >
+              {selectedCriteria?.map((item, index) => (
+                <div key={item.cri} className="mb-4 p-2 cat-select-item">
                   <div className="d-inline-flex align-items-center">
-                    <FaStar className="me-2" />
-                    <strong>
-                      {item.cri} - {item.label}
-                    </strong>
-                    <span className="ms-2 badge badge-sm bg-success">
-                      imp: {item.imperative}
-                    </span>
+                    <div>
+                      <FaStar className="me-2" />
+                      <strong>
+                        {item.cri} - {item.label}
+                      </strong>
+                      <select
+                        className="ms-2 badge badge-sm bg-success"
+                        value={item.imperative.id}
+                        onChange={(e) => {
+                          handleUpdateImperative(
+                            index,
+                            imperatives.get(e.target.value),
+                          );
+                        }}
+                      >
+                        {Array.from(imperatives.values()).map((impItem) => (
+                          <option key={impItem.id} value={impItem.id}>
+                            {impItem.label}
+                          </option>
+                        ))}
+                      </select>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        className="ms-4"
+                        onClick={() => {
+                          setSelectedCriteria(
+                            selectedCriteria.filter(
+                              (selItem) => selItem.cri != item.cri,
+                            ),
+                          );
+                        }}
+                      >
+                        <FaTimes />
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="text-muted">{item.description}</div>

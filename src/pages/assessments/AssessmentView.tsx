@@ -8,7 +8,7 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
 import Accordion from "react-bootstrap/Accordion";
-import { Assessment, CriterionImperative } from "@/types";
+import { Assessment, AssessmentCriterionImperative } from "@/types";
 
 interface Stats {
   total_principles: number;
@@ -33,7 +33,7 @@ function gatherStats(assessment: Assessment | undefined): Stats {
     assessment.principles.forEach((pri) => {
       total_criteria += pri.criteria.length;
       pri.criteria.forEach((cri) => {
-        if (cri.imperative == CriterionImperative.Must) {
+        if (cri.imperative == AssessmentCriterionImperative.Must) {
           total_mandatory += 1;
           if (cri.metric.result !== null) completed_mandatory = +1;
         } else {

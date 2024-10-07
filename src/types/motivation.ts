@@ -42,6 +42,15 @@ export interface MotivationType {
   version: string;
 }
 
+export interface Imperative {
+  id: string;
+  imp: string;
+  label: string;
+  description: string;
+  populated_by: string;
+  last_touch: string;
+}
+
 export interface Relation {
   id: string;
   label: string;
@@ -53,6 +62,8 @@ export interface CriImp {
   criterion_id: string;
   imperative_id: string;
 }
+
+export type ImperativeResponse = ResponsePage<Imperative[]>;
 
 export type RelationResponse = ResponsePage<Relation[]>;
 

@@ -87,13 +87,13 @@ export interface AssessmentPrinciple {
 export interface AssessmentCriterion {
   id: string;
   name: string;
-  imperative: CriterionImperative;
+  imperative: AssessmentCriterionImperative;
   metric: Metric;
   description?: string;
 }
 
 /** Each criterion can be either mandatory (must) or optional (should) */
-export enum CriterionImperative {
+export enum AssessmentCriterionImperative {
   Must = "must",
   Should = "should",
 }
