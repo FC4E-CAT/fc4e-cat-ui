@@ -25,7 +25,7 @@ import {
 import {
   AssessmentPrinciple,
   AssessmentTest,
-  CriterionImperative,
+  AssessmentCriterionImperative,
   // MetricAlgorithm,
 } from "@/types";
 import {
@@ -135,7 +135,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
               <div className="d-flex">
                 <h6
                   className={
-                    criterion.imperative === CriterionImperative.Must
+                    criterion.imperative === AssessmentCriterionImperative.Must
                       ? "fw-bold"
                       : ""
                   }
@@ -149,7 +149,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                     <FaCheckCircle className="ms-2 text-success" />
                   )}
                 </h6>
-                {criterion.imperative === CriterionImperative.Must && (
+                {criterion.imperative ===
+                  AssessmentCriterionImperative.Must && (
                   <div>
                     <small
                       style={{ fontSize: "0.6rem" }}
@@ -220,7 +221,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   {criterion.id}: {criterion.name}
                 </span>
 
-                {criterion.imperative === CriterionImperative.Must ? (
+                {criterion.imperative === AssessmentCriterionImperative.Must ? (
                   <span className="badge bg-success bg-small ms-4 align-middle">
                     Required
                   </span>

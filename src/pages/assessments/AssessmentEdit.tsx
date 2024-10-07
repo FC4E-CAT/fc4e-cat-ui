@@ -6,7 +6,7 @@ import {
   Assessment,
   AssessmentSubject,
   AssessmentTest,
-  CriterionImperative,
+  AssessmentCriterionImperative,
   AlertInfo,
   AssessmentEditMode,
   ActorOrgAsmtType,
@@ -519,7 +519,7 @@ const AssessmentEdit = ({
       // update criteria result reference tables
       newAssessment.principles.forEach((principle) => {
         principle.criteria.forEach((criterion) => {
-          if (criterion.imperative === CriterionImperative.Must) {
+          if (criterion.imperative === AssessmentCriterionImperative.Must) {
             mandatory.push(criterion.metric.result);
           } else {
             optional.push(criterion.metric.result);

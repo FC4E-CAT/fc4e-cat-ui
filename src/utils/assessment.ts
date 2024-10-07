@@ -2,7 +2,7 @@
 
 import {
   Assessment,
-  CriterionImperative,
+  AssessmentCriterionImperative,
   Metric,
   ResultStats,
   AssessmentTest,
@@ -58,7 +58,7 @@ export function evalAssessment(
   if (assessment.principles) {
     assessment.principles.forEach((principle) => {
       principle.criteria.forEach((criterion) => {
-        if (criterion.imperative === CriterionImperative.Must) {
+        if (criterion.imperative === AssessmentCriterionImperative.Must) {
           mandatory.push(criterion.metric.result);
         } else {
           optional.push(criterion.metric.result);
