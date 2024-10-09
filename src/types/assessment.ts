@@ -219,6 +219,7 @@ export interface AssessmentListItem {
   template_id: number;
   published: boolean;
   shared_to_user: boolean;
+  shared_by_user: boolean;
   shared: boolean;
   subject_type: string;
   subject_name: string;

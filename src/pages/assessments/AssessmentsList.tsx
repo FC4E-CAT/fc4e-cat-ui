@@ -11,6 +11,7 @@ import {
   FaFileImport,
   FaShare,
   FaEye,
+  FaUsers,
 } from "react-icons/fa";
 import {
   Alert,
@@ -21,6 +22,7 @@ import {
   OverlayTrigger,
   Tooltip,
   Table,
+  Badge,
 } from "react-bootstrap";
 import { AssessmentListItem, AssessmentFiltersType, AlertInfo } from "@/types";
 import {
@@ -302,7 +304,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     setFilters({ ...filters, subject_type: e.target.value });
                     refetch();
                   }}
-                  defaultValue=""
                   value={filters.subject_type}
                 >
                   <option value="">Select subject type...</option>
@@ -333,7 +334,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     setFilters({ ...filters, subject_name: e.target.value });
                     refetch();
                   }}
-                  defaultValue=""
                   value={filters.subject_name}
                 >
                   <option value={""}>Select subject name...</option>
@@ -400,7 +400,29 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 {assessments.map((item) => {
                   return (
                     <tr key={item.id}>
-                      <td className="align-middle">{item.name}</td>
+                      <td className="align-middle">
+                        <div>{item.name}</div>
+                        {item.shared_to_user && (
+                          <Badge
+                            pill
+                            bg="light"
+                            text="secondary"
+                            className="border"
+                          >
+                            shared with me <FaUsers className="ms-1" />
+                          </Badge>
+                        )}
+                        {item.shared_by_user && (
+                          <Badge
+                            pill
+                            bg="light"
+                            text="secondary"
+                            className="border"
+                          >
+                            shared <FaUsers className="ms-1" />
+                          </Badge>
+                        )}
+                      </td>
                       <td className="align-middle">{item.type}</td>
                       <td className="align-middle">
                         {item.compliance === null ? (
