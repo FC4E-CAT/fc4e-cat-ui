@@ -293,10 +293,16 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
     >
       <Row className="border p-0">
         <Col sm={4} className="cat-crit-sidebar p-0">
-          <Nav className="flex-column cat-asmt-nav">{navs}</Nav>
+          <div className="cat-viewport-scroll cat-view-reverse">
+            <div className="cat-view-reverse-reverse">
+              <Nav className="flex-column cat-asmt-nav">{navs}</Nav>
+            </div>
+          </div>
         </Col>
         <Col sm={8}>
-          <Tab.Content>{tabs}</Tab.Content>
+          <div className="cat-viewport-scroll">
+            <Tab.Content>{tabs}</Tab.Content>
+          </div>
         </Col>
       </Row>
     </Tab.Container>
