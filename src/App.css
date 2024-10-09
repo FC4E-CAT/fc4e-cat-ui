@@ -311,3 +311,70 @@ footer a {
     padding-bottom: 0 !important;
   }
 }
+
+.box-ribbon-report {
+  position: relative;
+  background: #fff;
+  box-shadow: 0 0 15px rgba(0 0 0 /10%);
+}
+
+/* common */
+.ribbon-report {
+  position: absolute;
+  width: 150px;
+  height: 200px;
+  overflow: hidden;
+}
+
+.ribbon-report span {
+  position: absolute;
+  display: block;
+  width: 225px;
+  padding: 15px 0;
+  font:
+    700 18px/1 Lato,
+    sans-serif;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0 0 0 /20%);
+  text-transform: uppercase;
+  box-shadow: 0 5px 10px rgba(0 0 0 /10%);
+}
+
+a.plain {
+  color: rgb(108 117 125);
+  text-decoration: none;
+}
+
+a.plain:hover {
+  color: #00a0c6;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ribbon-report-top-right {
+  top: -10px;
+  right: -10px;
+}
+
+.ribbon-report-top-right::before,
+.ribbon-report-top-right::after {
+  border-top-color: transparent;
+  border-right-color: transparent;
+}
+
+.ribbon-report-top-right::before {
+  top: 0;
+  left: 0;
+}
+
+.ribbon-report-top-right::after {
+  right: 0;
+  bottom: 0;
+}
+
+.ribbon-report-top-right span {
+  top: 30px;
+  left: -25px;
+  transform: rotate(45deg);
+}
