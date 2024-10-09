@@ -72,6 +72,8 @@ export default function MotivationDetails() {
           }}
         />
         <MotivationModal
+          cloneId={null}
+          cloneName=""
           motivation={motivation || null}
           show={showUpdate}
           onHide={() => {

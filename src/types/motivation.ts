@@ -20,6 +20,7 @@ export interface MotivationInput {
   label: string;
   description: string;
   motivation_type_id: string;
+  based_on: string | null;
 }
 
 export interface MotivationActor {

@@ -20,11 +20,15 @@ import {
   Col,
   OverlayTrigger,
   Tooltip,
+  Alert,
 } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { FaFile, FaInfoCircle } from "react-icons/fa";
+import { FaTriangleExclamation } from "react-icons/fa6";
 
 interface MotivationModalProps {
+  cloneId: string | null;
+  cloneName: string;
   motivation: Motivation | null;
   show: boolean;
   onHide: () => void;
@@ -44,6 +48,7 @@ export function MotivationModal(props: MotivationModalProps) {
     label: "",
     description: "",
     motivation_type_id: "",
+    based_on: props.cloneId,
   });
   const [motivationTypes, setMotivationTypes] = useState<MotivationType[]>([]);
   const [showErrors, setShowErrors] = useState(false);
@@ -82,6 +87,7 @@ export function MotivationModal(props: MotivationModalProps) {
           label: props.motivation.label,
           description: props.motivation.description,
           motivation_type_id: props.motivation.motivation_type_id || "",
+          based_on: props.cloneId,
         });
       } else {
         setMotivationInput({
@@ -89,12 +95,13 @@ export function MotivationModal(props: MotivationModalProps) {
           label: "",
           description: "",
           motivation_type_id: "",
+          based_on: props.cloneId,
         });
       }
 
       setShowErrors(false);
     }
-  }, [props.show, props.motivation]);
+  }, [props.show, props.motivation, props.cloneId]);
 
   useEffect(() => {
     // gather all actor/org/type mappings in one array
@@ -161,7 +168,8 @@ export function MotivationModal(props: MotivationModalProps) {
 
   return (
     <Modal
-      {...props}
+      show={props.show}
+      onHide={props.onHide}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
@@ -174,6 +182,15 @@ export function MotivationModal(props: MotivationModalProps) {
       </Modal.Header>
       <Modal.Body>
         <div>
+          {props.cloneId && (
+            <Alert variant="success">
+              <FaTriangleExclamation /> The new motivation will be based on:{" "}
+              <strong className="ms-2">{props.cloneName}</strong>{" "}
+              <span className="badge bg-light ms-2 border">
+                <code>{props.cloneId}</code>
+              </span>
+            </Alert>
+          )}
           <Row>
             <Col xs={3}>
               <InputGroup className="mt-2">
