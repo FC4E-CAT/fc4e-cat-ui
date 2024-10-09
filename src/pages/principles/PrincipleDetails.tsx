@@ -95,7 +95,7 @@ export default function PrincipleDetails() {
         onHide={() => {
           setDeleteModalConfig({ ...deleteModalConfig, show: false });
         }}
-        onDelete={handleDeleteConfirmed}
+        handleDelete={handleDeleteConfirmed}
       />
       <PrincipleModal
         principle={principle || null}

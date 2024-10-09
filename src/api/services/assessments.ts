@@ -10,13 +10,14 @@ import {
   ApiOptions,
   Assessment,
   AssessmentDetailsResponse,
-  AssessmentFiltersType,
   AssessmentListResponse,
   AssessmentSubjectListResponse,
   AssessmentAdminDetailsResponse,
   AssessmentTypeResponse,
   SharedUsers,
   AssessmentCommentResponse,
+  ApiAssessments,
+  ApiObjects,
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
@@ -70,62 +71,37 @@ export function useUpdateAssessment(
   });
 }
 
-export function useGetAssessments({
+export const useGetAssessments = ({
   size,
   page,
-  sortBy,
   token,
   isRegistered,
-  ...filters
-}: ApiOptions & AssessmentFiltersType) {
-  let url = `/assessments?size=${size}&page=${page}&sortby=${sortBy}`;
-  Object.keys(filters).forEach((k: string) => {
-    if (filters[k as keyof typeof filters] !== "") {
-      url = url.concat(`&${k}=${filters[k as keyof typeof filters]}`);
-    }
-  });
-  return useQuery({
-    queryKey: ["assessments"],
-    queryFn: async () => {
-      const response = await APIClient(token).get<AssessmentListResponse>(url);
-      return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
-    enabled: !!token && isRegistered,
-  });
-}
-
-export function useGetPublicAssessments({
-  size,
-  page,
-  sortBy,
-  assessmentTypeId,
+  subject_name,
+  subject_type,
+  isPublic,
   actorId,
-  ...filters
-}: ApiOptions) {
-  let url = `/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}&sortby=${sortBy}`;
-  Object.keys(filters).forEach((k: string) => {
-    if (filters[k as keyof typeof filters] !== "") {
-      url = url.concat(`&${k}=${filters[k as keyof typeof filters]}`);
-    }
-  });
-  return useQuery({
-    queryKey: [
-      "public-owner-assessments",
-      { size, page, sortBy, assessmentTypeId, actorId, ...filters },
-    ],
+  assessmentTypeId,
+}: ApiAssessments) =>
+  useQuery({
+    queryKey: ["users"],
     queryFn: async () => {
-      const response = await APIClient().get<AssessmentListResponse>(url);
+      let url = isPublic
+        ? `/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
+        : `/assessments?size=${size}&page=${page}`;
+
+      subject_name ? (url = `${url}&subject_name=${subject_name}`) : null;
+      subject_type ? (url = `${url}&subject_type=${subject_type}`) : null;
+
+      const response = await APIClient(
+        isPublic ? "" : token,
+      ).get<AssessmentListResponse>(url);
       return response.data;
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
-    enabled: !!actorId && actorId > 0,
+    enabled: isPublic || (!!token && isRegistered),
   });
-}
 
 export function useGetAssessmentShares({
   id,
@@ -259,60 +235,28 @@ export function useGetAdminAssessmentById({
   });
 }
 
-export function useGetObjectsByActor({
-  size,
-  page,
-  sortBy,
-  token,
-  isRegistered,
-  actorId,
-}: ApiOptions) {
-  return useQuery({
-    queryKey: ["objects", { size, page, sortBy, actorId }],
-    queryFn: async () => {
-      if (actorId && actorId > 0) {
-        const response = await APIClient(
-          token,
-        ).get<AssessmentSubjectListResponse>(
-          `/assessments/objects/by-actor/${actorId}?size=${size}&page=${page}&sortby=${sortBy}`,
-        );
-        return response.data;
-      } else return { content: [] };
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
-    enabled: !!token && isRegistered && !!actorId && actorId > 0,
-  });
-}
-
 export function useGetObjects({
   size,
   page,
   token,
   assessmentTypeId,
   actorId,
-}: ApiOptions) {
-  let url = "/assessments";
-  if (actorId && actorId > 0) {
-    url = url.concat(
-      `/public-objects/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`,
-    );
-  } else {
-    url = url.concat(`/objects?size=${size}&page=${page}`);
-  }
+}: ApiObjects) {
+  const url = actorId
+    ? `/assessments/public-objects/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
+    : `/assessments/objects?size=${size}&page=${page}`;
 
   return useQuery({
-    queryKey: ["objects", { size, page, assessmentTypeId, actorId }],
+    queryKey: ["objects"],
     queryFn: async () => {
-      const response =
-        await APIClient(token).get<AssessmentSubjectListResponse>(url);
+      const response = await APIClient(
+        actorId ? "" : token,
+      ).get<AssessmentSubjectListResponse>(url);
       return response.data;
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
-    enabled: !!actorId,
   });
 }
 

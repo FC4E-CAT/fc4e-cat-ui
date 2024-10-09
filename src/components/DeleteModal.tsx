@@ -8,7 +8,7 @@ interface DeleteModalProps {
   itemName: string;
   show: boolean;
   onHide: () => void;
-  onDelete: () => void;
+  handleDelete: () => void;
 }
 /**
  * Implements a simple component that displays a modal (popup window) when
@@ -20,7 +20,8 @@ interface DeleteModalProps {
 export function DeleteModal(props: DeleteModalProps) {
   return (
     <Modal
-      {...props}
+      show={props.show}
+      onHide={props.onHide}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
@@ -44,7 +45,7 @@ export function DeleteModal(props: DeleteModalProps) {
         </ListGroup>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
-        <Button className="btn-danger me-4" onClick={props.onDelete}>
+        <Button className="btn-danger me-4" onClick={props.handleDelete}>
           Confirm Delete
         </Button>
         <Button className="btn-secondary" onClick={props.onHide}>

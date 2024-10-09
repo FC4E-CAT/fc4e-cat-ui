@@ -210,13 +210,19 @@ export interface AssessmentListItem {
   id: string;
   name: string;
   user_id: string;
+  type: string;
+  compliance: string;
+  ranking: number;
   validation_id: number;
-  created_on: number;
+  created_on: string;
   updated_on: string;
   template_id: number;
   published: boolean;
   shared_to_user: boolean;
   shared: boolean;
+  subject_type: string;
+  subject_name: string;
+  organisation: string;
 }
 
 export type AsmtEligibilityResponse = ResponsePage<ActorOrgAsmtType[]>;
