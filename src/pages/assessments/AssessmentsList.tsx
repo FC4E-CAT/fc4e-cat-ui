@@ -6,7 +6,6 @@ import {
   FaEdit,
   FaInfoCircle,
   FaPlus,
-  FaFilter,
   FaTimes,
   FaDownload,
   FaFileImport,
@@ -15,7 +14,6 @@ import {
 } from "react-icons/fa";
 import {
   Alert,
-  Collapse,
   Button,
   Form,
   Row,
@@ -108,8 +106,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     name: "",
     id: "",
   });
-
-  const [filtersToggle, setFiltersToggle] = useState(false);
 
   const [filters, setFilters] = useState<AssessmentFiltersType>({
     subject_name: "",
@@ -266,17 +262,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
-          <>
-            <Button
-              variant="secondary"
-              onClick={() => setFiltersToggle(!filtersToggle)}
-              aria-controls="filter-collapse-div"
-              aria-expanded={filtersToggle}
-            >
-              <FaFilter className="me-2" />
-              Filter
-            </Button>
-          </>
           {!listPublic && (
             <>
               <Link to="/assessments/create" className="btn btn-warning  ms-3">
@@ -289,94 +274,92 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           )}
         </div>
       </div>
-      <Collapse in={filtersToggle}>
-        <div className="row cat-view-search-block justify-content-center">
-          <Col md="auto">
-            <Row>
-              <Col md="auto">
-                <div className="d-flex align-items-center">
-                  <OverlayTrigger
-                    key="overlay-subject-type"
-                    placement="top"
-                    overlay={
-                      <Tooltip id={`tooltip-subject-type`}>
-                        Filter by the type of the Subject (such as a web
-                        resource identified by the Owner) or a service provided
-                        by an Authority, Provider, or Manager, the assessment
-                        will be done for.
-                      </Tooltip>
-                    }
-                  >
-                    <span>
-                      <FaInfoCircle className="me-2" />
-                    </span>
-                  </OverlayTrigger>
+      <div className="row cat-view-search-block justify-content-center">
+        <Col md="auto">
+          <Row>
+            <Col md="auto">
+              <div className="d-flex align-items-center">
+                <OverlayTrigger
+                  key="overlay-subject-type"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-subject-type`}>
+                      Filter by the type of the Subject (such as a web resource
+                      identified by the Owner) or a service provided by an
+                      Authority, Provider, or Manager, the assessment will be
+                      done for.
+                    </Tooltip>
+                  }
+                >
+                  <span>
+                    <FaInfoCircle className="me-2" />
+                  </span>
+                </OverlayTrigger>
 
-                  <Form.Select
-                    aria-label="Filter by subject type"
-                    onChange={(e) => {
-                      setFilters({ ...filters, subject_type: e.target.value });
-                      refetch();
-                    }}
-                    defaultValue=""
-                    value={filters.subject_type}
-                  >
-                    <option value="">Select subject type...</option>
-                    {renderSubjectTypeOptions()}
-                  </Form.Select>
-                </div>
-              </Col>
-              <Col md="auto">
-                <div className="d-flex align-items-center">
-                  <OverlayTrigger
-                    key="top"
-                    placement="top"
-                    overlay={
-                      <Tooltip id={`tooltip-subject-name`}>
-                        Filter by the name of the Subject the assessment will be
-                        done for
-                      </Tooltip>
-                    }
-                  >
-                    <span>
-                      <FaInfoCircle className="me-2" />
-                    </span>
-                  </OverlayTrigger>
-
-                  <Form.Select
-                    aria-label="Filter by subject name"
-                    onChange={(e) => {
-                      setFilters({ ...filters, subject_name: e.target.value });
-                      refetch();
-                    }}
-                    defaultValue=""
-                    value={filters.subject_name}
-                  >
-                    <option value={""}>Select subject name...</option>
-                    {renderSubjectNameOptions()}
-                  </Form.Select>
-                </div>
-              </Col>
-              <Col className="d-flex justify-content-end filter-div">
-                <Button
-                  id="clear_filter_button"
-                  className="btn btn-primary btn centerButton"
-                  type="submit"
-                  onClick={() => {
-                    setFilters({
-                      subject_name: "",
-                      subject_type: "",
-                    });
+                <Form.Select
+                  aria-label="Filter by subject type"
+                  onChange={(e) => {
+                    setFilters({ ...filters, subject_type: e.target.value });
                     refetch();
                   }}
+                  defaultValue=""
+                  value={filters.subject_type}
                 >
-                  Clear
-                </Button>
-              </Col>
-            </Row>
-          </Col>
-        </div>
-      </Collapse>
+                  <option value="">Select subject type...</option>
+                  {renderSubjectTypeOptions()}
+                </Form.Select>
+              </div>
+            </Col>
+            <Col md="auto">
+              <div className="d-flex align-items-center">
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-subject-name`}>
+                      Filter by the name of the Subject the assessment will be
+                      done for
+                    </Tooltip>
+                  }
+                >
+                  <span>
+                    <FaInfoCircle className="me-2" />
+                  </span>
+                </OverlayTrigger>
+
+                <Form.Select
+                  aria-label="Filter by subject name"
+                  onChange={(e) => {
+                    setFilters({ ...filters, subject_name: e.target.value });
+                    refetch();
+                  }}
+                  defaultValue=""
+                  value={filters.subject_name}
+                >
+                  <option value={""}>Select subject name...</option>
+                  {renderSubjectNameOptions()}
+                </Form.Select>
+              </div>
+            </Col>
+            <Col className="d-flex justify-content-end filter-div">
+              <Button
+                id="clear_filter_button"
+                className="btn btn-primary btn centerButton"
+                type="submit"
+                onClick={() => {
+                  setFilters({
+                    subject_name: "",
+                    subject_type: "",
+                  });
+                  refetch();
+                }}
+              >
+                Clear
+              </Button>
+            </Col>
+          </Row>
+        </Col>
+      </div>
       <>
         <div className="mt-2">
           <Table hover>
