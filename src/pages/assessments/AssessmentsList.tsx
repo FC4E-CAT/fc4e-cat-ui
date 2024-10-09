@@ -1,14 +1,8 @@
+import { useRef, useState, useCallback, useContext, useEffect } from "react";
 import {
-  useRef,
-  useMemo,
-  useState,
-  useCallback,
-  useContext,
-  useEffect,
-} from "react";
-import { ColumnDef } from "@tanstack/react-table";
-import { CustomTable } from "@/components";
-import {
+  FaExclamationTriangle,
+  FaArrowRight,
+  FaArrowLeft,
   FaEdit,
   FaInfoCircle,
   FaPlus,
@@ -16,27 +10,23 @@ import {
   FaTimes,
   FaDownload,
   FaFileImport,
-  FaUsers,
   FaShare,
   FaEye,
 } from "react-icons/fa";
 import {
+  Alert,
   Collapse,
   Button,
-  InputGroup,
   Form,
-  Container,
   Row,
   Col,
-  FloatingLabel,
   OverlayTrigger,
   Tooltip,
-  Badge,
+  Table,
 } from "react-bootstrap";
 import { AssessmentListItem, AssessmentFiltersType, AlertInfo } from "@/types";
 import {
   useGetAssessments,
-  useGetPublicAssessments,
   useGetObjects,
   useDeleteAssessment,
   useGetAssessment,
@@ -49,23 +39,11 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
 
-/**
- * ComplianceBadge gets a compliance value (null, false, true) and renders
- * a corresponding badge
- */
-function ComplianceBadge({
-  compliance,
-}: {
-  compliance: boolean | null | unknown;
-}) {
-  return compliance === null ? (
-    <span className="badge bg-secondary ms-2">UNKNOWN</span>
-  ) : compliance ? (
-    <span className="badge bg-success ms-2">PASS</span>
-  ) : (
-    <span className="badge bg-danger ms-2">FAIL</span>
-  );
-}
+type Pagination = {
+  page: number;
+  size: number;
+  sortBy: string;
+};
 
 /**
  * employ additional props so that the component can be used both for
@@ -98,6 +76,17 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const actorIdParam = urlParams.get("actor-id");
   const assessmentTypeIdParam = urlParams.get("assessment-type-id");
 
+  const [opts, setOpts] = useState<Pagination>({
+    page: 1,
+    size: 10,
+    sortBy: "",
+  });
+
+  // handler for changing page size
+  const handleChangePageSize = (evt: { target: { value: string } }) => {
+    setOpts({ ...opts, page: 1, size: parseInt(evt.target.value) });
+  };
+
   const alert = useRef<AlertInfo>({
     message: "",
   });
@@ -120,27 +109,38 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     id: "",
   });
 
-  const actorId = actorIdParam ? parseInt(actorIdParam, 10) : -1;
-  const assessmentTypeId = assessmentTypeIdParam
-    ? parseInt(assessmentTypeIdParam, 10)
-    : -1;
-
   const [filtersToggle, setFiltersToggle] = useState(false);
-  const formData = useRef<AssessmentFiltersType>({
-    subject_name: "",
-    subject_type: "",
-  });
+
   const [filters, setFilters] = useState<AssessmentFiltersType>({
     subject_name: "",
     subject_type: "",
   });
 
+  // data get list of motivations
+  const { isLoading, data, refetch } = useGetAssessments({
+    size: opts.size,
+    page: opts.page,
+    sortBy: opts.sortBy,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+    subject_name: filters.subject_name,
+    subject_type: filters.subject_type,
+    isPublic: listPublic,
+    actorId: actorIdParam || "",
+    assessmentTypeId: assessmentTypeIdParam || "",
+  });
+
+  // refetch users when parameters change
+  useEffect(() => {
+    refetch();
+  }, [opts, filters, refetch]);
+
   const { data: userObjects } = useGetObjects({
     size: 100,
     page: 1,
     token: keycloak?.token || "",
-    assessmentTypeId: assessmentTypeId,
-    actorId: actorId,
+    assessmentTypeId: assessmentTypeIdParam || "",
+    actorId: actorIdParam || "",
   });
 
   const [asmtNumID, setAsmtNumID] = useState<string>("");
@@ -163,14 +163,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       link.click();
     }
   }, [qAssessment]);
-
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const handleReset = () => {
-    if (formRef && formRef.current) {
-      formRef.current.reset();
-    }
-  };
 
   const mutationDeleteAssessment = useDeleteAssessment(keycloak?.token || "");
 
@@ -203,273 +195,21 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     }
   };
 
-  const cols = useMemo<ColumnDef<AssessmentListItem>[]>(() => {
-    const handleDeleteOpenModal = (item: AssessmentListItem) => {
-      setDeleteModalConfig({
-        ...deleteModalConfig,
-        show: true,
-        itemId: item.id,
-        itemName: item.name,
-      });
-    };
+  const handleDeleteOpenModal = (item: AssessmentListItem) => {
+    setDeleteModalConfig({
+      ...deleteModalConfig,
+      show: true,
+      itemId: item.id,
+      itemName: item.name,
+    });
+  };
 
-    const handleShareOpenModal = (item: AssessmentListItem) => {
-      setShareModalConfig({
-        show: true,
-        name: item.name,
-        id: item.id,
-      });
-    };
-
-    return listPublic
-      ? [
-          {
-            accessorKey: "name",
-            header: () => <span>name</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "type",
-            header: () => <span>type</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "subject_type",
-            header: () => <span>subject type</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "subject_name",
-            header: () => <span>subject name</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "organisation",
-            header: () => <span>organisation</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "created_on",
-            cell: (info) => (
-              <span className="cat-date-cell">
-                {String(info.getValue()).split(" ")[0]}
-              </span>
-            ),
-            header: () => <span>Created On</span>,
-            enableColumnFilter: false,
-          },
-          {
-            id: "action",
-            accessorFn: (row) => row,
-            enableColumnFilter: false,
-            header: () => <span>Actions</span>,
-            show: !listPublic,
-            cell: (info) => {
-              const item: AssessmentListItem =
-                info.getValue() as AssessmentListItem;
-              return !listPublic ? (
-                <>
-                  <div className="edit-buttons btn-group shadow">
-                    <Button
-                      className="btn btn-secondary cat-action-reject-link btn-sm "
-                      onClick={() => {
-                        setAsmtNumID(item["id"]);
-                      }}
-                    >
-                      <FaDownload />
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="edit-buttons btn-group shadow">
-                    <Link
-                      id={`view-button-${item.id}`}
-                      className="btn btn-secondary cat-action-view-link btn-sm "
-                      to={`/public-assessments/${item.id}/view`}
-                    >
-                      <FaEye />
-                    </Link>
-                    <Button
-                      className="btn btn-secondary cat-action-reject-link btn-sm "
-                      onClick={() => {
-                        setAsmtNumID(item["id"]);
-                      }}
-                    >
-                      <FaDownload />
-                    </Button>
-                  </div>
-                </>
-              );
-            },
-          },
-        ]
-      : [
-          {
-            accessorKey: "name",
-            header: () => <span>Name</span>,
-            cell: (info) => {
-              return (
-                <>
-                  <div>{info.getValue() + ""}</div>
-                  {info.row.original.shared_to_user && (
-                    <Badge pill bg="light" text="secondary" className="border">
-                      shared with me <FaUsers className="ms-1" />
-                    </Badge>
-                  )}
-                  {info.row.original.shared && (
-                    <Badge pill bg="light" text="secondary" className="border">
-                      shared <FaUsers className="ms-1" />
-                    </Badge>
-                  )}
-                </>
-              );
-            },
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "type",
-            header: () => <span>Type</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "compliance",
-            header: () => <span>Compliance</span>,
-            cell: (info) => <ComplianceBadge compliance={info.getValue()} />,
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "ranking",
-            header: () => <span>Ranking</span>,
-            cell: (info) => {
-              return info.getValue() === null ? (
-                <ComplianceBadge compliance={null} />
-              ) : (
-                info.getValue()
-              );
-            },
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "published",
-            header: () => <span>Access</span>,
-            cell: (info) => {
-              return info.getValue() === true ? "Public" : "Private";
-            },
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "subject_type",
-            header: () => <span>Subject Type</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "subject_name",
-            header: () => <span>Subject Name</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
-          },
-          {
-            accessorKey: "organisation",
-            header: () => <span>Organisation</span>,
-            cell: (info) => info.getValue(),
-            enableColumnFilter: false,
-          },
-          {
-            accessorFn: (row) => row.created_on,
-            id: "created_on",
-            cell: (info) => (
-              <span className="cat-date-cell" title={String(info.getValue())}>
-                {String(info.getValue()).split(" ")[0]}
-              </span>
-            ),
-            header: () => <span>Created On</span>,
-            enableColumnFilter: false,
-          },
-          {
-            id: "action",
-            accessorFn: (row) => row,
-            enableColumnFilter: false,
-            header: () => <span>Actions</span>,
-            show: !listPublic,
-            cell: (info) => {
-              const item: AssessmentListItem =
-                info.getValue() as AssessmentListItem;
-              return !listPublic ? (
-                <>
-                  <div className="edit-buttons btn-group shadow">
-                    <Link
-                      id={`view-button-${item.id}`}
-                      className="btn btn-secondary cat-action-view-link btn-sm "
-                      to={`/assessments/${item.id}/view`}
-                    >
-                      <FaEye />
-                    </Link>
-                    <Link
-                      id={`edit-button-${item.id}`}
-                      className="btn btn-secondary cat-action-view-link btn-sm "
-                      to={`/assessments/${item.id}`}
-                    >
-                      <FaEdit />
-                    </Link>
-                    <Button
-                      id={`download-button-${item.id}`}
-                      className="btn btn-secondary cat-action-reject-link btn-sm "
-                      onClick={() => {
-                        setAsmtNumID(item["id"]);
-                      }}
-                    >
-                      <FaDownload />
-                    </Button>
-                    <Button
-                      id={`share-button-${item.id}`}
-                      className="btn cat-action-reject-link btn-sm btn-secondary"
-                      onClick={() => {
-                        handleShareOpenModal(item);
-                      }}
-                    >
-                      <FaShare />
-                    </Button>
-                    <Button
-                      id={`delete-button-${item.id}`}
-                      className="btn btn-secondary cat-action-reject-link btn-sm "
-                      onClick={() => {
-                        handleDeleteOpenModal(item);
-                      }}
-                    >
-                      <FaTimes />
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="edit-buttons btn-group shadow">
-                    <Button
-                      className="btn btn-secondary cat-action-reject-link btn-sm "
-                      onClick={() => {
-                        setAsmtNumID(item["id"]);
-                      }}
-                    >
-                      <FaDownload />
-                    </Button>
-                  </div>
-                </>
-              );
-            },
-          },
-        ];
-  }, [listPublic, deleteModalConfig]);
-
-  const formSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setFilters({ ...filters, ...formData.current });
+  const handleShareOpenModal = (item: AssessmentListItem) => {
+    setShareModalConfig({
+      show: true,
+      name: item.name,
+      id: item.id,
+    });
   };
 
   const renderSubjectNameOptions = useCallback(() => {
@@ -492,6 +232,9 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     }
   }, [userObjects]);
 
+  // get the assessment data to create the table
+  const assessments: AssessmentListItem[] = data ? data?.content : [];
+
   return (
     <div>
       <ShareModal
@@ -511,7 +254,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         onHide={() => {
           setDeleteModalConfig({ ...deleteModalConfig, show: false });
         }}
-        onDelete={handleDeleteConfirmed}
+        handleDelete={handleDeleteConfirmed}
       />
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
@@ -546,145 +289,326 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           )}
         </div>
       </div>
-      <div>
-        <Collapse in={filtersToggle} className="bg-light">
-          <Form
-            onSubmit={(e: React.FormEvent<HTMLFormElement>) => formSubmit(e)}
-            ref={formRef}
-          >
-            <Container className="p-2">
-              <Row>
-                <Col xs={5}>
-                  <InputGroup className="mb-3">
-                    <OverlayTrigger
-                      key="top"
-                      placement="top"
-                      overlay={
-                        <Tooltip id={`tooltip-top`}>
-                          The type of the Subject (such as a web resource
-                          identified by the Owner) or a service provided by an
-                          Authority, Provider, or Manager, the assessment will
-                          be done for.
-                        </Tooltip>
-                      }
-                    >
-                      <InputGroup.Text id="subject-type-input">
-                        <FaInfoCircle className="me-2" /> Subject Type
-                      </InputGroup.Text>
-                    </OverlayTrigger>
-                    <FloatingLabel
-                      controlId="floatingSelectSubjectType"
-                      label="The type of the Subject of the issued assessment"
-                    >
-                      <Form.Select
-                        aria-label="Floating label select example"
-                        onChange={(e) => {
-                          formData.current = {
-                            ...formData.current,
-                            subject_type: e.target.value,
-                          };
-                        }}
-                        defaultValue={formData.current["subject_type"]}
-                      >
-                        <option disabled value="">
-                          Select Subject Type
-                        </option>
-                        {renderSubjectTypeOptions()}
-                      </Form.Select>
-                    </FloatingLabel>
-                  </InputGroup>
-                </Col>
-                <Col xs={5}>
-                  <InputGroup className="mb-3">
-                    <OverlayTrigger
-                      key="top"
-                      placement="top"
-                      overlay={
-                        <Tooltip id={`tooltip-top`}>
-                          The name of the Subject the assessment will be done
-                          for
-                        </Tooltip>
-                      }
-                    >
-                      <InputGroup.Text id="subject-type-input">
-                        <FaInfoCircle className="me-2" /> Subject Name
-                      </InputGroup.Text>
-                    </OverlayTrigger>
-                    <FloatingLabel
-                      controlId="floatingSelectSubjectName"
-                      label="The name of the Subject for the issued assessment"
-                    >
-                      <Form.Select
-                        aria-label="Floating label select example"
-                        onChange={(e) => {
-                          formData.current = {
-                            ...formData.current,
-                            subject_name: e.target.value,
-                          };
-                        }}
-                        defaultValue={""}
-                      >
-                        <option disabled value={""}>
-                          Select Subject Name
-                        </option>
-                        {renderSubjectNameOptions()}
-                      </Form.Select>
-                    </FloatingLabel>
-                  </InputGroup>
-                </Col>
-                <Col className="d-flex justify-content-end filter-div">
-                  <InputGroup className="mb-3">
-                    <Button
-                      id="apply_filter_button"
-                      className="btn btn-success btn centerButton"
-                      type="submit"
-                    >
-                      Apply
-                    </Button>
-                  </InputGroup>
-                  <InputGroup className="mb-3">
-                    <Button
-                      id="clear_filter_button"
-                      className="btn btn-primary btn centerButton"
-                      type="submit"
-                      onClick={() => {
-                        formData.current = {
-                          ...formData.current,
-                          subject_type: "",
-                          subject_name: "",
-                        };
-                        handleReset();
-                      }}
-                    >
-                      Clear
-                    </Button>
-                  </InputGroup>
-                </Col>
-              </Row>
-            </Container>
-          </Form>
-        </Collapse>
-      </div>
-      {/* if list public call the Custom table with extra properties and the correct data function */}
-      {listPublic ? (
-        <CustomTable
-          columns={cols}
-          dataSource={useGetPublicAssessments}
-          goBackLoc="/assess"
-          extraDataOps={{
-            actorId: actorId,
-            assessmentTypeId: assessmentTypeId,
-            ...filters,
-          }}
-        />
-      ) : (
-        <CustomTable
-          columns={cols}
-          dataSource={useGetAssessments}
-          extraDataOps={filters}
-          goBackLoc="/assess"
-        />
-      )}
+      <Collapse in={filtersToggle}>
+        <div className="row cat-view-search-block justify-content-center">
+          <Col md="auto">
+            <Row>
+              <Col md="auto">
+                <div className="d-flex align-items-center">
+                  <OverlayTrigger
+                    key="overlay-subject-type"
+                    placement="top"
+                    overlay={
+                      <Tooltip id={`tooltip-subject-type`}>
+                        Filter by the type of the Subject (such as a web
+                        resource identified by the Owner) or a service provided
+                        by an Authority, Provider, or Manager, the assessment
+                        will be done for.
+                      </Tooltip>
+                    }
+                  >
+                    <span>
+                      <FaInfoCircle className="me-2" />
+                    </span>
+                  </OverlayTrigger>
+
+                  <Form.Select
+                    aria-label="Filter by subject type"
+                    onChange={(e) => {
+                      setFilters({ ...filters, subject_type: e.target.value });
+                      refetch();
+                    }}
+                    defaultValue=""
+                    value={filters.subject_type}
+                  >
+                    <option value="">Select subject type...</option>
+                    {renderSubjectTypeOptions()}
+                  </Form.Select>
+                </div>
+              </Col>
+              <Col md="auto">
+                <div className="d-flex align-items-center">
+                  <OverlayTrigger
+                    key="top"
+                    placement="top"
+                    overlay={
+                      <Tooltip id={`tooltip-subject-name`}>
+                        Filter by the name of the Subject the assessment will be
+                        done for
+                      </Tooltip>
+                    }
+                  >
+                    <span>
+                      <FaInfoCircle className="me-2" />
+                    </span>
+                  </OverlayTrigger>
+
+                  <Form.Select
+                    aria-label="Filter by subject name"
+                    onChange={(e) => {
+                      setFilters({ ...filters, subject_name: e.target.value });
+                      refetch();
+                    }}
+                    defaultValue=""
+                    value={filters.subject_name}
+                  >
+                    <option value={""}>Select subject name...</option>
+                    {renderSubjectNameOptions()}
+                  </Form.Select>
+                </div>
+              </Col>
+              <Col className="d-flex justify-content-end filter-div">
+                <Button
+                  id="clear_filter_button"
+                  className="btn btn-primary btn centerButton"
+                  type="submit"
+                  onClick={() => {
+                    setFilters({
+                      subject_name: "",
+                      subject_type: "",
+                    });
+                    refetch();
+                  }}
+                >
+                  Clear
+                </Button>
+              </Col>
+            </Row>
+          </Col>
+        </div>
+      </Collapse>
+      <>
+        <div className="mt-2">
+          <Table hover>
+            <thead>
+              <tr className="table-light">
+                <th>
+                  <span>Name</span>
+                </th>
+                <th>
+                  <span>Type</span>
+                </th>
+                <th>
+                  <span>Compliance</span>
+                </th>
+                <th>
+                  <span>Ranking</span>
+                </th>
+                <th>
+                  <span>Access</span>
+                </th>
+                <th>
+                  <span>Subject Type</span>
+                </th>
+                <th>
+                  <span>Subject Name</span>
+                </th>
+                <th>
+                  <span>Organization</span>
+                </th>
+                <th>
+                  <span>Created On</span>
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            {assessments.length > 0 ? (
+              <tbody>
+                {assessments.map((item) => {
+                  return (
+                    <tr key={item.id}>
+                      <td className="align-middle">{item.name}</td>
+                      <td className="align-middle">{item.type}</td>
+                      <td className="align-middle">
+                        {item.compliance === null ? (
+                          <span className="badge bg-secondary">UNKNOWN</span>
+                        ) : item.compliance ? (
+                          <span className="badge bg-success">PASS</span>
+                        ) : (
+                          <span className="badge bg-danger">FAIL</span>
+                        )}
+                      </td>
+                      <td className="align-middle">
+                        {item.ranking === null ? (
+                          <span className="badge bg-secondary">UNKNOWN</span>
+                        ) : (
+                          item.ranking
+                        )}
+                      </td>
+                      <td className="align-middle">
+                        {item.published ? "Public" : "Private"}
+                      </td>
+                      <td className="align-middle">{item.subject_type}</td>
+                      <td className="align-middle">{item.subject_name}</td>
+                      <td className="align-middle">{item.organisation}</td>
+                      <td className="align-middle">
+                        <small>{item.created_on.split(" ")[0]}</small>
+                      </td>
+                      <td>
+                        <div className="d-flex flex-nowrap">
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-view">
+                                View Assessment Results
+                              </Tooltip>
+                            }
+                          >
+                            <Link
+                              id={`view-button-${item.id}`}
+                              className="btn btn-light btn-sm m-1"
+                              to={`/assessments/${item.id}/view`}
+                            >
+                              <FaEye />
+                            </Link>
+                          </OverlayTrigger>
+                          {!listPublic && (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="tip-edit">Edit Assessment</Tooltip>
+                              }
+                            >
+                              <Link
+                                id={`edit-button-${item.id}`}
+                                className="btn btn-light btn-sm m-1"
+                                to={`/assessments/${item.id}`}
+                              >
+                                <FaEdit />
+                              </Link>
+                            </OverlayTrigger>
+                          )}
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-export">
+                                Export & Download Assessment
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              id={`download-button-${item.id}`}
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() => {
+                                setAsmtNumID(item["id"]);
+                              }}
+                            >
+                              <FaDownload />
+                            </Button>
+                          </OverlayTrigger>
+                          {!listPublic && (
+                            <>
+                              <OverlayTrigger
+                                placement="top"
+                                overlay={
+                                  <Tooltip id="tip-share">
+                                    Share Assessment
+                                  </Tooltip>
+                                }
+                              >
+                                <Button
+                                  id={`share-button-${item.id}`}
+                                  className="btn btn-light btn-sm m-1"
+                                  onClick={() => {
+                                    handleShareOpenModal(item);
+                                  }}
+                                >
+                                  <FaShare />
+                                </Button>
+                              </OverlayTrigger>
+                              <OverlayTrigger
+                                placement="top"
+                                overlay={
+                                  <Tooltip id="tip-delete">
+                                    Delete Assessment
+                                  </Tooltip>
+                                }
+                              >
+                                <Button
+                                  id={`delete-button-${item.id}`}
+                                  className="btn btn-light btn-sm m-1"
+                                  onClick={() => {
+                                    handleDeleteOpenModal(item);
+                                  }}
+                                >
+                                  <FaTimes />
+                                </Button>
+                              </OverlayTrigger>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            ) : null}
+          </Table>
+          {!isLoading && assessments.length === 0 && (
+            <Alert variant="warning" className="text-center mx-auto">
+              <h3>
+                <FaExclamationTriangle />
+              </h3>
+              <h5>No data found...</h5>
+            </Alert>
+          )}
+          <div className="d-flex justify-content-between pb-4">
+            <div>
+              <Link className="btn btn-secondary" to="/assess">
+                Back
+              </Link>
+            </div>
+            <div className="d-flex justify-content-end">
+              <div>
+                <span className="mx-1">rows per page: </span>
+                <select
+                  name="per-page"
+                  value={opts.size.toString() || "20"}
+                  id="per-page"
+                  onChange={handleChangePageSize}
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="15">15</option>
+                  <option value="20">20</option>
+                </select>
+              </div>
+
+              {data && data.number_of_page && data.total_pages && (
+                <div className="ms-4">
+                  <span>
+                    {(data.number_of_page - 1) * opts.size + 1} -{" "}
+                    {(data.number_of_page - 1) * opts.size + data.size_of_page}{" "}
+                    of {data.total_elements}
+                  </span>
+                  <span
+                    onClick={() => {
+                      setOpts({ ...opts, page: opts.page - 1 });
+                    }}
+                    className={`ms-4 btn py-0 btn-light btn-small ${
+                      opts.page === 1 ? "disabled text-muted" : null
+                    }`}
+                  >
+                    <FaArrowLeft />
+                  </span>
+                  <span
+                    onClick={() => {
+                      setOpts({ ...opts, page: opts.page + 1 });
+                    }}
+                    className={`btn py-0 btn-light btn-small" ${
+                      data?.total_pages > data?.number_of_page
+                        ? null
+                        : "disabled text-muted"
+                    }`}
+                  >
+                    <FaArrowRight />
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </>
     </div>
   );
 }
