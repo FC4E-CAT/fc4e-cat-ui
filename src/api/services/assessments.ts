@@ -83,7 +83,7 @@ export const useGetAssessments = ({
   assessmentTypeId,
 }: ApiAssessments) =>
   useQuery({
-    queryKey: ["users"],
+    queryKey: ["assessments"],
     queryFn: async () => {
       let url = isPublic
         ? `/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
