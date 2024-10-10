@@ -378,3 +378,31 @@ a.plain:hover {
   left: -25px;
   transform: rotate(45deg);
 }
+
+.rounded-full {
+  border-radius: 50%;
+}
+
+.radio-card-icon img {
+  width: 40px;
+  padding: 2px;
+  border: 1px solid grey;
+  border-radius: 10px;
+}
+
+.text-xs {
+  font-size: 10px !important;
+}
+
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.flex {
+  display: flex !important;
+}

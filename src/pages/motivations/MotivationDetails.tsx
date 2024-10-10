@@ -1,14 +1,36 @@
 import { AuthContext } from "@/auth";
 import { Motivation, MotivationActor } from "@/types";
 import { useState, useContext, useEffect } from "react";
-import { Alert, Button, Col, ListGroup, Row } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  Col,
+  ListGroup,
+  Row,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
 
-import { FaFile, FaUser, FaPlus, FaExclamationTriangle } from "react-icons/fa";
-
+import {
+  FaFile,
+  FaPlus,
+  FaExclamationTriangle,
+  FaBars,
+  FaAward,
+  FaBorderNone,
+  FaTags,
+} from "react-icons/fa";
+import schemesImg from "@/assets/thumb_scheme.png";
+import authImg from "@/assets/thumb_auth.png";
+import serviceImg from "@/assets/thumb_service.png";
+import manageImg from "@/assets/thumb_manage.png";
+import ownersImg from "@/assets/thumb_user.png";
+import notavailImg from "@/assets/thumb_notavail.png";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useGetAllActors, useGetMotivation } from "@/api/services/motivations";
 import { MotivationActorModal } from "./components/MotivationActorModal";
 import { MotivationModal } from "./components/MotivationModal";
+import { FaTrashCan } from "react-icons/fa6";
 
 export default function MotivationDetails() {
   const navigate = useNavigate();
@@ -25,7 +47,23 @@ export default function MotivationDetails() {
     token: keycloak?.token || "",
     isRegistered: registered,
   });
-
+  const tooltipView = (
+    <Tooltip id="tip-restore">View Assesment Details</Tooltip>
+  );
+  const tooltipManagePrinciples = (
+    <Tooltip id="tip-restore">Manage Principles</Tooltip>
+  );
+  const tooltipManageCriteria = (
+    <Tooltip id="tip-restore">Manage Criteria</Tooltip>
+  );
+  const tooltipManageMetrics = (
+    <Tooltip id="tip-restore">Manage Metrics</Tooltip>
+  );
+  const tooltipDeleteActor = (
+    <Tooltip id="tip-restore">
+      Delete the connection with the motivation
+    </Tooltip>
+  );
   const {
     data: actorData,
     fetchNextPage: actorFetchNextPage,
@@ -81,71 +119,94 @@ export default function MotivationDetails() {
           }}
         />
         <Col>
-          <h2 className="text-muted cat-view-heading ">
+          <h2 className="cat-view-heading text-muted">
             Motivation Details
             {motivation && (
               <p className="lead cat-view-lead">
-                Motivation id:{" "}
-                <strong className="badge bg-secondary">{motivation.id}</strong>
+                {motivation?.mtv} - {motivation?.label}
+                <br />
+                <span className="text-sm">
+                  Motivations are the main Capability of the service for
+                  different assessment foci. Motivations provide much of the Why
+                  - the reason an assessment is being performed.
+                </span>
               </p>
             )}
           </h2>
         </Col>
       </div>
-      <Row className="mt-4 border-bottom pb-4">
-        <Col md="auto">
-          <div className="p-3 text-center">
-            <FaFile size={"4rem"} className="text-secondary" />
+      <Row>
+        <Col className="col col-lg-3 border-right  border-dashed">
+          <div className="d-flex flex-column align-items-center text-center p-1 py-1">
+            <div className="py-3 mt-2">
+              <span className="p-2 text-center">
+                <FaFile size={"4rem"} className="text-secondary" />
+              </span>
+            </div>
+            <span className="font-weight-bold"> </span>
+            <span className="text-black-50">
+              {motivation?.mtv} - {motivation?.label}
+            </span>
+
+            <span
+              id="validated"
+              className="badge rounded-pill text-bg-light text-secondary"
+            >
+              {motivation?.motivation_type.label}
+            </span>
+
+            <Link
+              id="profile-update-button"
+              to="#"
+              onClick={() => {
+                setShowUpdate(true);
+              }}
+              className="btn btn-lt border-black mt-4"
+            >
+              Update Details
+            </Link>
           </div>
-          <Button
-            onClick={() => {
-              setShowUpdate(true);
-            }}
-            className="btn-light border-black"
-          >
-            Update Details
-          </Button>
         </Col>
-        <Col>
-          <div>
-            <strong>MTV:</strong> {motivation?.mtv}
-          </div>
-          <div>
-            <strong>Label:</strong> {motivation?.label}
-          </div>
-          <div>
-            <div>
-              <strong>Description:</strong>
-            </div>
-            <div>
+        <Col className="col-md-auto col-lg-9 border-right">
+          <div className="p-3">
+            <Row className="py-3 mt-4">
               <small>{motivation?.description}</small>
-            </div>
-          </div>
-          <hr />
-          <div>
-            <div>
-              <strong>Motivation Type:</strong>
-            </div>
-            <div>{motivation?.motivation_type.label}</div>
+            </Row>
           </div>
         </Col>
       </Row>
+      <Row className="mt-4 border-bottom pb-4"></Row>
+      <Row></Row>
       {/* Included actors */}
       <Row>
         <div className="px-5 mt-4">
           <div className="d-flex justify-content-between mb-2">
-            <h4 className="text-muted cat-view-heading ">
-              <FaUser className="me-2" /> Included Actors
-            </h4>
-            <Button
-              variant="warning"
-              onClick={() => {
-                setShowAddActor(true);
-              }}
-              disabled={availableActors.length == 0}
-            >
-              <FaPlus /> Add Actor
-            </Button>
+            <h5 className="text-muted cat-view-heading ">
+              List of Assessments under: {motivation?.mtv} - {motivation?.label}
+              <p className="lead cat-view-lead">
+                <span className="text-sm">
+                  In order to start the creation of an assessment please start
+                  relating actors to this Motivation.{" "}
+                </span>
+              </p>
+            </h5>
+            {availableActors.length > 0 ? (
+              <div>
+                <Button
+                  variant="warning"
+                  onClick={() => {
+                    setShowAddActor(true);
+                  }}
+                  disabled={availableActors.length == 0}
+                >
+                  <FaPlus /> Add Actor
+                </Button>
+              </div>
+            ) : (
+              <span className="text-secondary text-sm">
+                No available actors
+              </span>
+            )}
           </div>
           {motivation?.actors.length === 0 ? (
             <Alert variant="warning" className="text-center mx-auto">
@@ -176,15 +237,111 @@ export default function MotivationDetails() {
                   <ListGroup.Item key={item.id}>
                     <Row>
                       <Col>
-                        {item.act} - {item.label}
+                        <div className="flex items-center ng-star-inserted">
+                          <div className="margin-right-8 flex justify-center items-center ng-star-inserted radio-card-icon">
+                            {item.label === "PID Service Provider (Role)" ? (
+                              <img
+                                src={serviceImg}
+                                className="text-center m-1 rounded-full"
+                                width="60%"
+                              />
+                            ) : item.label === "PID Manager (Role)" ? (
+                              <img
+                                src={manageImg}
+                                className="text-center m-1 rounded-full"
+                                width="60%"
+                              />
+                            ) : item.label === "PID Scheme (Component)" ? (
+                              <img
+                                src={schemesImg}
+                                className="text-center m-1 rounded-full"
+                                width="60%"
+                              />
+                            ) : item.label === "PID Authority (Role)" ? (
+                              <img
+                                src={authImg}
+                                className="text-center m-1 rounded-full"
+                                width="60%"
+                              />
+                            ) : item.label === "PID Owner (Role)" ? (
+                              <img
+                                src={ownersImg}
+                                className="text-center m-1 rounded-full"
+                                width="60%"
+                              />
+                            ) : (
+                              <img
+                                src={notavailImg}
+                                className="text-center m-1 rounded-full"
+                                width="60%"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <div className="flex text-sm text-gray-900 font-weight-500 items-center cursor-pointer">
+                              {item.label}
+                            </div>
+                            <div className="text-xs text-gray-600 ng-star-inserted">
+                              {item.act}
+                            </div>
+                          </div>
+                        </div>
                       </Col>
                       <Col md="auto">
-                        <Link
-                          className="btn btn-dark"
-                          to={`/motivations/${params.id}/actors/${item.id}`}
-                        >
-                          Manage Criteria
-                        </Link>
+                        <div className="d-flex flex-nowrap">
+                          <OverlayTrigger placement="top" overlay={tooltipView}>
+                            <Link
+                              className="btn btn-light btn-sm m-1"
+                              to={`/motivations/${item.id}`}
+                            >
+                              <FaBars />
+                            </Link>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={tooltipManagePrinciples}
+                          >
+                            <Link
+                              className="btn btn-light btn-sm m-1"
+                              to={`/motivations/${params.id}/actors/${item.id}`}
+                            >
+                              <FaTags />
+                            </Link>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={tooltipManageCriteria}
+                          >
+                            <Link
+                              className="btn btn-light btn-sm m-1"
+                              to={`/motivations/${params.id}/actors/${item.id}`}
+                            >
+                              <FaAward />
+                            </Link>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={tooltipManageMetrics}
+                          >
+                            <Link
+                              className="btn btn-light btn-sm m-1"
+                              to={`/motivations/${params.id}/actors/${item.id}`}
+                            >
+                              <FaBorderNone />
+                            </Link>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={tooltipDeleteActor}
+                          >
+                            <Link
+                              className="btn btn-light btn-sm m-1"
+                              to={`/motivations/${params.id}/actors/${item.id}`}
+                            >
+                              <FaTrashCan className="text-danger" />
+                            </Link>
+                          </OverlayTrigger>
+                        </div>
                       </Col>
                     </Row>
                   </ListGroup.Item>
