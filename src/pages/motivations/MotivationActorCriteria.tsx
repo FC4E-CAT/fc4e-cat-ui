@@ -7,11 +7,11 @@ import {
 import { AuthContext } from "@/auth";
 import { AlertInfo, Criterion, Imperative } from "@/types";
 import { useState, useContext, useEffect, useRef } from "react";
-import { Button, Col, Row , OverlayTrigger,  Tooltip} from "react-bootstrap";
+import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { FaInfo, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 import { FaStar, FaTrashCan } from "react-icons/fa6";
-import {  } from "react-icons/fa6";
+import {} from "react-icons/fa6";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function MotivationActorCriteria() {
@@ -177,7 +177,6 @@ export default function MotivationActorCriteria() {
         <Col>
           <h2 className="text-muted cat-view-heading ">
             Manage Criteria
-          
             {params.mtvId && params.actId && (
               <p className="lead cat-view-lead">
                 For Motivation:
@@ -188,41 +187,51 @@ export default function MotivationActorCriteria() {
                 <strong className="badge bg-secondary ms-2">
                   {params.actId}
                 </strong>
-                <br/>
-                <span className="text-sm">The desirable properties or outcome of a specific motivation is usually expressed 
-                  as a set of Criteria.These criteria serve to verify that principles are adhered to or objectives are met. 
-                  Meeting criteria is considered to signal compliance with a principle or alignment with/ support of the objective. 
+                <br />
+                <span className="text-sm">
+                  The desirable properties or outcome of a specific motivation
+                  is usually expressed as a set of Criteria.These criteria serve
+                  to verify that principles are adhered to or objectives are
+                  met. Meeting criteria is considered to signal compliance with
+                  a principle or alignment with/ support of the objective.
                 </span>
-                </p>
-                
+              </p>
             )}
           </h2>
         </Col>
       </Row>
       <Row className=" border-bottom pb-2 bg-light">
-      <Col className="mt-2 px-2">
-        <FaInfo className="text-warning float-start" size={40}/>
-        <span className="text-sm">
-        One of the basic characteristics of the assessment is to have criteria. The Criteria shall match the compliance of the specific actor <span className="">{params.actId}</span>
-        <br/>Please follow the  steps in order to start filling up the assessment type.</span>
+        <Col className="mt-2 px-2">
+          <FaInfo className="text-warning float-start" size={40} />
+          <span className="text-sm">
+            One of the basic characteristics of the assessment is to have
+            criteria. The Criteria shall match the compliance of the specific
+            actor <span className="">{params.actId}</span>
+            <br />
+            Please follow the steps in order to start filling up the assessment
+            type.
+          </span>
         </Col>
         <Col className="mt-2 px-2">
-        <span className="text-sm">
-        <ol>
-          <li>Read and Select the Criteria for your actor</li>
-          <li>Move the Criteria from left to the right list</li>
-          <li>Update the imperative of the Criteria and click Save</li>
-        </ol>
-        </span>
+          <span className="text-sm">
+            <ol>
+              <li>Read and Select the Criteria for your actor</li>
+              <li>Move the Criteria from left to the right list</li>
+              <li>Update the imperative of the Criteria and click Save</li>
+            </ol>
+          </span>
         </Col>
       </Row>
       <Row className="mt-4  pb-4">
         <Col className="px-4">
           <div>
-           <strong className="p-1">Available Criteria in this motivation   </strong>
-           <span className="badge bg-primary rounded-pill fs-6">{availableCriteria.length}</span>
-           
-           </div>
+            <strong className="p-1">
+              Available Criteria in this motivation{" "}
+            </strong>
+            <span className="badge bg-primary rounded-pill fs-6">
+              {availableCriteria.length}
+            </span>
+          </div>
           <div className="alert alert-primary p-2 mt-1">
             <small>
               <FaPlusCircle className="me-2" /> Click an item below to add it to
@@ -265,9 +274,12 @@ export default function MotivationActorCriteria() {
         </Col>
         <Col>
           <div>
-           <strong className="p-1">Criteria included in the Assessment Type</strong>
-           <span className="badge bg-primary rounded-pill fs-6">{selectedCriteria.length}</span>
-    
+            <strong className="p-1">
+              Criteria included in the Assessment Type
+            </strong>
+            <span className="badge bg-primary rounded-pill fs-6">
+              {selectedCriteria.length}
+            </span>
           </div>
           <div className="alert alert-primary p-2 mt-1">
             <small>
@@ -302,24 +314,23 @@ export default function MotivationActorCriteria() {
                         ))}
                       </select>
                       <OverlayTrigger
-                            placement="top"
-                            overlay={tooltipDeletePrinciple}
-                          >
-                      <Button
-                        size="sm"
-                        variant="light"
-                        className="ms-4"
-                        onClick={() => {
-                          setSelectedCriteria(
-                            selectedCriteria.filter(
-                              (selItem) => selItem.cri != item.cri,
-                            ),
-                          );
-                        }}
+                        placement="top"
+                        overlay={tooltipDeletePrinciple}
                       >
-                       <FaTrashCan className="text-danger" />                              
-
-                      </Button>
+                        <Button
+                          size="sm"
+                          variant="light"
+                          className="ms-4"
+                          onClick={() => {
+                            setSelectedCriteria(
+                              selectedCriteria.filter(
+                                (selItem) => selItem.cri != item.cri,
+                              ),
+                            );
+                          }}
+                        >
+                          <FaTrashCan className="text-danger" />
+                        </Button>
                       </OverlayTrigger>
                     </div>
                   </div>
