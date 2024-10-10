@@ -1,6 +1,13 @@
 import { AuthContext } from "@/auth";
 import { useContext, useEffect, useState } from "react";
-import { Alert, Button, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  OverlayTrigger,
+  Table,
+  Tooltip,
+  Form,
+} from "react-bootstrap";
 import {
   FaArrowLeft,
   FaArrowRight,
@@ -8,6 +15,9 @@ import {
   FaExclamationTriangle,
   FaPlus,
   FaRegClone,
+  FaArrowUp,
+  FaArrowDown,
+  FaArrowsAltV,
 } from "react-icons/fa";
 
 import { useGetMotivations } from "@/api/services/motivations";
@@ -15,10 +25,26 @@ import { Motivation } from "@/types";
 import { Link } from "react-router-dom";
 import { MotivationModal } from "./components/MotivationModal";
 
-type Pagination = {
+type MotivationState = {
+  sortOrder: string;
+  sortBy: string;
   page: number;
   size: number;
+  search: string;
+  status: string;
 };
+
+export function SortMarker(
+  field: string,
+  sortField: string,
+  sortOrder: string,
+) {
+  if (field === sortField) {
+    if (sortOrder === "DESC") return <FaArrowUp />;
+    else if (sortOrder === "ASC") return <FaArrowDown />;
+  }
+  return <FaArrowsAltV className="text-secondary opacity-50" />;
+}
 
 type Clone = {
   id: string | null;
@@ -29,9 +55,13 @@ type Clone = {
 export default function Motivations() {
   const { keycloak, registered } = useContext(AuthContext)!;
 
-  const [opts, setOpts] = useState<Pagination>({
+  const [opts, setOpts] = useState<MotivationState>({
     page: 1,
     size: 10,
+    sortBy: "mtv",
+    sortOrder: "ASC",
+    search: "",
+    status: "",
   });
 
   const [showCreate, setShowCreate] = useState(false);
@@ -45,6 +75,8 @@ export default function Motivations() {
   // data get list of motivations
   const { isLoading, data, refetch } = useGetMotivations({
     size: opts.size,
+    sortBy: opts.sortBy,
+    sortOrder: opts.sortOrder,
     page: opts.page,
     token: keycloak?.token || "",
     isRegistered: registered,
@@ -55,6 +87,18 @@ export default function Motivations() {
     refetch();
   }, [opts, refetch]);
 
+  // handler for clicking to sort
+  const handleSortClick = (field: string) => {
+    if (field === opts.sortBy) {
+      if (opts.sortOrder === "ASC") {
+        setOpts({ ...opts, sortOrder: "DESC" });
+      } else {
+        setOpts({ ...opts, sortOrder: "ASC" });
+      }
+    } else {
+      setOpts({ ...opts, sortOrder: "ASC", sortBy: field });
+    }
+  };
   // get the motivation data to create the table
   const motivations: Motivation[] = data ? data?.content : [];
 
@@ -89,20 +133,60 @@ export default function Motivations() {
         </div>
       </div>
       <div>
+        <Form className="mb-3">
+          <div className="row cat-view-search-block border-bottom">
+            <div className="col col-lg-3"></div>
+            <div className="col md-auto col-lg-9">
+              <div className="d-flex justify-content-center">
+                <Form.Control
+                  placeholder="Search ..."
+                  onChange={(e) => {
+                    setOpts({ ...opts, search: e.target.value });
+                  }}
+                  value={opts.search}
+                />
+                <Button
+                  onClick={() => {
+                    setOpts({ ...opts, search: "" });
+                  }}
+                  className="ms-4"
+                >
+                  Clear
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Form>
         <Table hover>
           <thead>
             <tr className="table-light">
               <th>
-                <span>MTV</span>
+                <span
+                  onClick={() => handleSortClick("mtv")}
+                  className="cat-cursor-pointer"
+                >
+                  MTV {SortMarker("mtv", opts.sortBy, opts.sortOrder)}
+                </span>
               </th>
               <th>
-                <span>Label</span>
+                <span
+                  onClick={() => handleSortClick("label")}
+                  className="cat-cursor-pointer"
+                >
+                  label {SortMarker("label", opts.sortBy, opts.sortOrder)}
+                </span>
               </th>
               <th>
                 <span>Description</span>
               </th>
               <th>
-                <span>Modified</span>
+                <span
+                  onClick={() => handleSortClick("lastTouch")}
+                  className="cat-cursor-pointer"
+                >
+                  Modified{" "}
+                  {SortMarker("lastTouch", opts.sortBy, opts.sortOrder)}
+                </span>
               </th>
               <th></th>
             </tr>
@@ -117,7 +201,7 @@ export default function Motivations() {
 
                     <td className="align-middle">{item.description}</td>
                     <td className="align-middle">
-                      <small>{item.last_touch.split(".")[0]}</small>
+                      <small>{item.last_touch.split("T")[0]}</small>
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">
