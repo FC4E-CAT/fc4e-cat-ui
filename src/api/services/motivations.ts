@@ -195,7 +195,7 @@ export const useGetRelations = ({ token, isRegistered, size }: ApiOptions) =>
 
 export const useCreateMotivation = (
   token: string,
-  { mtv, label, description, motivation_type_id }: MotivationInput,
+  { mtv, label, description, motivation_type_id, based_on }: MotivationInput,
 ) => {
   const queryClient = useQueryClient();
   return useMutation(
@@ -207,6 +207,7 @@ export const useCreateMotivation = (
           label,
           description,
           motivation_type_id,
+          based_on,
         },
       );
       return response.data;

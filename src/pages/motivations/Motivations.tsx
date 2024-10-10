@@ -7,6 +7,7 @@ import {
   FaBars,
   FaExclamationTriangle,
   FaPlus,
+  FaRegClone,
 } from "react-icons/fa";
 
 import { useGetMotivations } from "@/api/services/motivations";
@@ -19,7 +20,10 @@ type Pagination = {
   size: number;
 };
 
-const tooltipView = <Tooltip id="tip-restore">View Motivation Details</Tooltip>;
+type Clone = {
+  id: string | null;
+  name: string;
+};
 
 // the main component that lists the motivations in a table
 export default function Motivations() {
@@ -31,6 +35,7 @@ export default function Motivations() {
   });
 
   const [showCreate, setShowCreate] = useState(false);
+  const [clone, setClone] = useState<Clone>({ id: null, name: "" });
 
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
@@ -56,10 +61,13 @@ export default function Motivations() {
   return (
     <div>
       <MotivationModal
+        cloneId={clone.id}
+        cloneName={clone.name}
         motivation={null}
         show={showCreate}
         onHide={() => {
           setShowCreate(false);
+          setClone({ id: null, name: "" });
         }}
       />
       <div className="cat-view-heading-block row border-bottom">
@@ -113,13 +121,38 @@ export default function Motivations() {
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">
-                        <OverlayTrigger placement="top" overlay={tooltipView}>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-view">
+                              View Motivation Details
+                            </Tooltip>
+                          }
+                        >
                           <Link
                             className="btn btn-light btn-sm m-1"
                             to={`/motivations/${item.id}`}
                           >
                             <FaBars />
                           </Link>
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-clone">
+                              Create a new motivation based on this one (clone)
+                            </Tooltip>
+                          }
+                        >
+                          <span
+                            className="btn btn-light btn-sm m-1"
+                            onClick={() => {
+                              setClone({ id: item.id, name: item.label });
+                              setShowCreate(true);
+                            }}
+                          >
+                            <FaRegClone />
+                          </span>
                         </OverlayTrigger>
                       </div>
                     </td>
