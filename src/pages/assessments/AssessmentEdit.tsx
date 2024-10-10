@@ -936,6 +936,7 @@ const AssessmentEdit = ({
                     assessmentResult={assessment.result}
                   />
                 )}
+
                 <CriteriaTabs
                   principles={assessment?.principles || []}
                   resetActiveTab={resetCriterionTab}
