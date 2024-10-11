@@ -86,10 +86,14 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               <h2 className="cat-view-heading text-muted  ">
                 {assessment.name}
               </h2>
-              <p className="lead cat-view-lead fs-6 ">{assessment.id}</p>
+              <p className="lead cat-view-lead fs-6 ">
+                <span className="text-gray-dark">
+                  Compliance Policy: {assessment.assessment_type.name}{" "}
+                </span>
+              </p>
             </Col>
             <Col className="col col-lg-1 ">
-              <span className="font-weight-500 text-xs text-gray-500 bold">
+              <span className="font-weight-500 text-gray-500 bold">
                 Compliance
               </span>
 
@@ -120,7 +124,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               )}
             </Col>
             <Col className="col-md-auto col col-lg-1 text-center">
-              <span className="font-weight-500 text-xs text-gray-500 bold">
+              <span className="font-weight-500 text-gray-500 bold">
                 Ranking
               </span>
               {assessment.result.ranking ? (
@@ -158,10 +162,6 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                   <h5>Details</h5>
 
                   <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                    <strong className="text-gray-dark">Assess for:</strong>
-                    {assessment.assessment_type.name}
-                  </p>
-                  <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <strong className="text-gray-dark">Actor:</strong>
                     {assessment.actor.name}
                   </p>
@@ -171,8 +171,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                   </p>
                   <p className="media-body pb-3 mb-0 small lh-125">
                     <strong className="text-gray-dark">Subject:</strong>
-                    {assessment.subject.name} - (type: {assessment.subject.type}
-                    )
+                    {assessment.subject.name} / ({assessment.subject.type})
                   </p>
                 </Card.Body>
               </Card>
@@ -180,32 +179,28 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
             <Col className="col-sm-9">
               <Row>
                 <div className="card-title h5 py-3">Statistics</div>
-                <Col className="text-center col-lg-2">
-                  <span className="font-weight-500 text-xs text-gray-500">
-                    Principles
-                  </span>
-                  <p>
-                    <span className="fs-1 text-primary bold">
-                      {stats.total_principles}
+                <Col className="text-center col-lg-1">
+                  <span className="font-weight-500 fs-5 text-gray-500">
+                    Principles:
+                    <span className="fs-5  bold ms-2">
+                      <strong>{stats.total_principles}</strong>
                     </span>
-                  </p>
-                </Col>
-                <Col className="text-center col-lg-2">
-                  <span className="font-weight-500 text-xs text-gray-500">
-                    Criteria
                   </span>
-                  <p>
-                    <span className="fs-1 text-primary bold">
-                      {stats.total_criteria}
+                  <br />
+                  <span className="font-weight-500  fs-5 text-gray-500">
+                    Criteria:
+                    <span className="fs-5  bold ms-2">
+                      <strong>{stats.total_criteria}</strong>
                     </span>
-                  </p>
+                  </span>
                 </Col>
+                <Col className="text-center col-lg-1"></Col>
                 <Col className="text-center col-lg-2">
-                  <span className="font-weight-500 text-xs text-gray-500">
-                    Mandatory
+                  <span className="font-weight-500  text-gray-500">
+                    <strong> Mandatory</strong>
                   </span>
                   <p>
-                    <span className="fs-1 text-danger bold">
+                    <span className="fs-1 text-success bold">
                       {stats.completed_mandatory}
                     </span>
                     <span className="fs-6 text-secondary">
@@ -214,11 +209,11 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                   </p>
                 </Col>
                 <Col className="col-md-auto col col-lg-2  text-center">
-                  <span className="font-weight-500 text-xs text-gray-500">
-                    Optional
+                  <span className="font-weight-500  text-gray-500">
+                    <strong> Optional</strong>
                   </span>
                   <p>
-                    <span className="fs-1 text-success bold">
+                    <span className="fs-1 text-warning bold">
                       {stats.completed_optional}
                     </span>
                     <span className="fs-6 text-secondary">
@@ -226,11 +221,11 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     </span>
                   </p>
                 </Col>
-                <Col className="col-md-auto col col-lg-3  float-end">
+                <Col className="col-md-auto col col-lg-4  float-end">
                   {assessment.published == true ? (
-                    <img src={imgAssessmentBadgePassed} width="90%" />
+                    <img src={imgAssessmentBadgePassed} width="80%" />
                   ) : (
-                    <img src={imgAssessmentBadgeWip} width="90%" />
+                    <img src={imgAssessmentBadgeWip} width="80%" />
                   )}
                 </Col>
               </Row>
@@ -251,42 +246,52 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     {pri.criteria.map((cri) => (
                       <Accordion.Item eventKey={cri.id} key={cri.id}>
                         <Accordion.Header>
-                          {cri.id} - {cri.name}
-                          {cri.imperative === "must" ? (
-                            <span className="ms-2 badge rounded-pill text-bg-light text-dark">
-                              {cri.imperative}
-                            </span>
-                          ) : (
-                            <span className="ms-2 badge rounded-pill text-bg-light text-warning">
-                              {cri.imperative}
-                            </span>
-                          )}
-                          {cri.metric.result === 1 ? (
-                            <span className="ms-5 align-middle ">
-                              <small className="ms-2">
-                                <strong>
-                                  <span className="text-success">Passed</span>
-                                </strong>
-                              </small>
-                            </span>
-                          ) : cri.metric.result === 0 ? (
-                            <span className="ms-5 align-middle ">
-                              <span className="badge badge-pill bg-danger me-1 flex-1"></span>
-                              <small className="ms-2">
-                                <strong>
-                                  <span className="text-danger">Failed</span>
-                                </strong>
-                              </small>
-                            </span>
-                          ) : (
-                            <span className="ms-5 align-middle">
-                              <small className="ms-2">
-                                <strong>
-                                  <span className="text-warning">n/a</span>
-                                </strong>
-                              </small>
-                            </span>
-                          )}
+                          <div className="col-md-10 d-flex justify-content-between">
+                            <div className="float-start">
+                              {cri.id} - {cri.name}
+                            </div>
+                            <div>
+                              {cri.imperative === "must" ? (
+                                <span className="ms-2 badge rounded-pill text-bg-light text-success">
+                                  {cri.imperative}
+                                </span>
+                              ) : (
+                                <span className="ms-2 badge rounded-pill text-bg-light text-warning">
+                                  {cri.imperative}
+                                </span>
+                              )}
+                              {cri.metric.result === 1 ? (
+                                <span className="ms-5 align-middle ">
+                                  <small className="ms-2">
+                                    <strong>
+                                      <span className="text-success">
+                                        Passed
+                                      </span>
+                                    </strong>
+                                  </small>
+                                </span>
+                              ) : cri.metric.result === 0 ? (
+                                <span className="ms-5 align-middle ">
+                                  <span className="badge badge-pill bg-danger me-1 flex-1"></span>
+                                  <small className="ms-2">
+                                    <strong>
+                                      <span className="text-danger">
+                                        Failed
+                                      </span>
+                                    </strong>
+                                  </small>
+                                </span>
+                              ) : (
+                                <span className="ms-5 align-middle">
+                                  <small className="ms-2">
+                                    <strong>
+                                      <span className="text-warning">n/a</span>
+                                    </strong>
+                                  </small>
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </Accordion.Header>
                         <Accordion.Body>
                           <div>
