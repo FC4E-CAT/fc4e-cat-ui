@@ -16,7 +16,6 @@ export function evalMetric(metric: Metric): {
   // Usage only for metrics of type number
   let value: number | null = null,
     result: number | null = null;
-  if (metric.type !== "number") return { result: result, value: value };
 
   // if metric algo indicates sum calculate the sum of test scores
   if (metric.algorithm === "sum" || metric.algorithm === "single") {
@@ -32,10 +31,21 @@ export function evalMetric(metric: Metric): {
       if (max === null || item.result === null) return null;
       return Math.max(item.result, max);
     }, -Infinity);
+  } else {
+    // same as sum
+    // if one of the tests in not filled yet the result of the metric should be -1 (unresolved)
+    value = metric.tests.reduce((sum: number | null, item: AssessmentTest) => {
+      // if any of the test values are null (not filled-in) designate the whole metric value/result as null
+      if (sum === null || item.result === null) return null;
+      return sum + item.result;
+    }, 0);
   }
   // if all the tests are filled-in and a value has been produced calculate also the rating
   if (value !== null) {
-    if (
+    // new templates have benchmark_value parameter
+    if (metric.benchmark_value !== undefined) {
+      result = value && value >= metric.benchmark_value ? 1 : 0;
+    } else if (
       "equal_greater_than" in metric.benchmark &&
       typeof metric.benchmark["equal_greater_than"] === "number"
     ) {
@@ -58,7 +68,14 @@ export function evalAssessment(
   if (assessment.principles) {
     assessment.principles.forEach((principle) => {
       principle.criteria.forEach((criterion) => {
-        if (criterion.imperative === AssessmentCriterionImperative.Must) {
+        // if criterion has an array of metrics use the one as single nested element
+        if (Array.isArray(criterion.metric)) {
+          criterion.metric = criterion.metric[0];
+        }
+        if (
+          criterion.imperative === AssessmentCriterionImperative.Must ||
+          criterion.imperative === AssessmentCriterionImperative.MUST
+        ) {
           mandatory.push(criterion.metric.result);
         } else {
           optional.push(criterion.metric.result);

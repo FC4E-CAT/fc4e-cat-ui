@@ -36,6 +36,10 @@ function gatherStats(assessment: Assessment | undefined): Stats {
     assessment.principles.forEach((pri) => {
       total_criteria += pri.criteria.length;
       pri.criteria.forEach((cri) => {
+        // if criterion has an array of metrics use the one as single nested element
+        if (Array.isArray(cri.metric)) {
+          cri.metric = cri.metric[0];
+        }
         if (cri.imperative == AssessmentCriterionImperative.Must) {
           total_mandatory += 1;
           if (cri.metric.result !== null) completed_mandatory = +1;
@@ -243,122 +247,133 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
 
                 <div className="m-3">
                   <Accordion defaultActiveKey="0">
-                    {pri.criteria.map((cri) => (
-                      <Accordion.Item eventKey={cri.id} key={cri.id}>
-                        <Accordion.Header>
-                          <div className="col-md-10 d-flex justify-content-between">
-                            <div className="float-start">
-                              {cri.id} - {cri.name}
-                            </div>
-                            <div>
-                              {cri.imperative === "must" ? (
-                                <span className="ms-2 badge rounded-pill text-bg-light text-success">
-                                  {cri.imperative}
-                                </span>
-                              ) : (
-                                <span className="ms-2 badge rounded-pill text-bg-light text-warning">
-                                  {cri.imperative}
-                                </span>
-                              )}
-                              {cri.metric.result === 1 ? (
-                                <span className="ms-5 align-middle ">
-                                  <small className="ms-2">
-                                    <strong>
-                                      <span className="text-success">
-                                        Passed
-                                      </span>
-                                    </strong>
-                                  </small>
-                                </span>
-                              ) : cri.metric.result === 0 ? (
-                                <span className="ms-5 align-middle ">
-                                  <span className="badge badge-pill bg-danger me-1 flex-1"></span>
-                                  <small className="ms-2">
-                                    <strong>
-                                      <span className="text-danger">
-                                        Failed
-                                      </span>
-                                    </strong>
-                                  </small>
-                                </span>
-                              ) : (
-                                <span className="ms-5 align-middle">
-                                  <small className="ms-2">
-                                    <strong>
-                                      <span className="text-warning">n/a</span>
-                                    </strong>
-                                  </small>
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </Accordion.Header>
-                        <Accordion.Body>
-                          <div>
-                            <small className="text-muted">
-                              {cri.description}
-                            </small>
-                          </div>
-                          <div className="m-1">
-                            {cri.metric.tests.map((test) => (
-                              <div key={test.id} className="mb-4">
-                                <span className="badge rounded-pill text-bg-light text-info">
-                                  {test.id} - {test.name}
-                                </span>
-                                <br />
-                                <strong>Q.</strong>
-                                <span className="text-secondary p-2">
-                                  {test.text}
-                                </span>
-                                <br />
-                                <strong>A.</strong>
-                                {test.type === "value" ? (
-                                  <span className="text-primary p-2">
-                                    <strong>F=</strong>
-                                    {test.value} <strong>P=</strong>
-                                    {test.threshold}
-                                  </span>
-                                ) : test.result === 1 ? (
-                                  <span className="text-primary p-2">
-                                    <strong>YES</strong>
-                                  </span>
-                                ) : test.result === 0 ? (
-                                  <span className="text-primary p-2">
-                                    <strong>NO</strong>
+                    {pri.criteria.map((cri) => {
+                      // if criterion has an array of metrics use the one as single nested element
+                      if (Array.isArray(cri.metric)) {
+                        cri.metric = cri.metric[0];
+                      }
+                      return (
+                        <Accordion.Item eventKey={cri.id} key={cri.id}>
+                          <Accordion.Header>
+                            <div className="col-md-10 d-flex justify-content-between">
+                              <div className="float-start">
+                                {cri.id} - {cri.name}
+                              </div>
+                              <div>
+                                {cri.imperative === "must" ? (
+                                  <span className="ms-2 badge rounded-pill text-bg-light text-success">
+                                    {cri.imperative}
                                   </span>
                                 ) : (
-                                  <span className="text-warning p-2">
-                                    <strong>N/A</strong>
+                                  <span className="ms-2 badge rounded-pill text-bg-light text-warning">
+                                    {cri.imperative}
                                   </span>
                                 )}
-                                <br />
-
-                                {test.evidence_url &&
-                                  test.evidence_url?.length > 0 && (
-                                    <div>
-                                      {test.evidence_url.map((ev) => (
-                                        <div key={ev.url}>
-                                          {" "}
-                                          <a href={ev.url}>
-                                            <span className="p-2">
-                                              <FaArrowUpRightFromSquare />
-                                            </span>
-                                          </a>
-                                          {ev.description && (
-                                            <a href={ev.url} className="plain">
-                                              <span>{ev.description}</span>
-                                            </a>
-                                          )}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
+                                {cri.metric.result === 1 ? (
+                                  <span className="ms-5 align-middle ">
+                                    <small className="ms-2">
+                                      <strong>
+                                        <span className="text-success">
+                                          Passed
+                                        </span>
+                                      </strong>
+                                    </small>
+                                  </span>
+                                ) : cri.metric.result === 0 ? (
+                                  <span className="ms-5 align-middle ">
+                                    <span className="badge badge-pill bg-danger me-1 flex-1"></span>
+                                    <small className="ms-2">
+                                      <strong>
+                                        <span className="text-danger">
+                                          Failed
+                                        </span>
+                                      </strong>
+                                    </small>
+                                  </span>
+                                ) : (
+                                  <span className="ms-5 align-middle">
+                                    <small className="ms-2">
+                                      <strong>
+                                        <span className="text-warning">
+                                          n/a
+                                        </span>
+                                      </strong>
+                                    </small>
+                                  </span>
+                                )}
                               </div>
-                            ))}
-                          </div>
-                        </Accordion.Body>
-                      </Accordion.Item>
-                    ))}
+                            </div>
+                          </Accordion.Header>
+                          <Accordion.Body>
+                            <div>
+                              <small className="text-muted">
+                                {cri.description}
+                              </small>
+                            </div>
+                            <div className="m-1">
+                              {cri.metric.tests.map((test) => (
+                                <div key={test.id} className="mb-4">
+                                  <span className="badge rounded-pill text-bg-light text-info">
+                                    {test.id} - {test.name}
+                                  </span>
+                                  <br />
+                                  <strong>Q.</strong>
+                                  <span className="text-secondary p-2">
+                                    {test.text}
+                                  </span>
+                                  <br />
+                                  <strong>A.</strong>
+                                  {test.type === "value" ? (
+                                    <span className="text-primary p-2">
+                                      <strong>F=</strong>
+                                      {test.value} <strong>P=</strong>
+                                      {test.threshold}
+                                    </span>
+                                  ) : test.result === 1 ? (
+                                    <span className="text-primary p-2">
+                                      <strong>YES</strong>
+                                    </span>
+                                  ) : test.result === 0 ? (
+                                    <span className="text-primary p-2">
+                                      <strong>NO</strong>
+                                    </span>
+                                  ) : (
+                                    <span className="text-warning p-2">
+                                      <strong>N/A</strong>
+                                    </span>
+                                  )}
+                                  <br />
+
+                                  {test.evidence_url &&
+                                    test.evidence_url?.length > 0 && (
+                                      <div>
+                                        {test.evidence_url.map((ev) => (
+                                          <div key={ev.url}>
+                                            {" "}
+                                            <a href={ev.url}>
+                                              <span className="p-2">
+                                                <FaArrowUpRightFromSquare />
+                                              </span>
+                                            </a>
+                                            {ev.description && (
+                                              <a
+                                                href={ev.url}
+                                                className="plain"
+                                              >
+                                                <span>{ev.description}</span>
+                                              </a>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                </div>
+                              ))}
+                            </div>
+                          </Accordion.Body>
+                        </Accordion.Item>
+                      );
+                    })}
                   </Accordion>
                 </div>
               </div>
