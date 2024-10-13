@@ -24,14 +24,16 @@ import { CriterionResponse } from "@/types/criterion";
 export const useGetMotivations = ({
   size,
   page,
+  sortBy,
+  sortOrder,
   token,
   isRegistered,
 }: ApiOptions) =>
   useQuery({
-    queryKey: ["motivations", { size, page }],
+    queryKey: ["motivations", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient(token).get<MotivationResponse>(
-        `/registry/motivations?size=${size}&page=${page}`,
+        `/registry/motivations?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`,
       );
       return response.data;
     },
