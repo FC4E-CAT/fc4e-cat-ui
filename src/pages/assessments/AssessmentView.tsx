@@ -36,10 +36,6 @@ function gatherStats(assessment: Assessment | undefined): Stats {
     assessment.principles.forEach((pri) => {
       total_criteria += pri.criteria.length;
       pri.criteria.forEach((cri) => {
-        // if criterion has an array of metrics use the one as single nested element
-        if (Array.isArray(cri.metric)) {
-          cri.metric = cri.metric[0];
-        }
         if (cri.imperative == AssessmentCriterionImperative.Must) {
           total_mandatory += 1;
           if (cri.metric.result !== null) completed_mandatory = +1;
@@ -248,10 +244,6 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 <div className="m-3">
                   <Accordion defaultActiveKey="0">
                     {pri.criteria.map((cri) => {
-                      // if criterion has an array of metrics use the one as single nested element
-                      if (Array.isArray(cri.metric)) {
-                        cri.metric = cri.metric[0];
-                      }
                       return (
                         <Accordion.Item eventKey={cri.id} key={cri.id}>
                           <Accordion.Header>

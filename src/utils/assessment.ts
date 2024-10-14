@@ -68,10 +68,6 @@ export function evalAssessment(
   if (assessment.principles) {
     assessment.principles.forEach((principle) => {
       principle.criteria.forEach((criterion) => {
-        // if criterion has an array of metrics use the one as single nested element
-        if (Array.isArray(criterion.metric)) {
-          criterion.metric = criterion.metric[0];
-        }
         if (
           criterion.imperative === AssessmentCriterionImperative.Must ||
           criterion.imperative === AssessmentCriterionImperative.MUST
