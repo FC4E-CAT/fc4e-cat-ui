@@ -1,12 +1,12 @@
 /**
- * Component to display and edit a specific binary test
+ * Component to display and edit a specific binary test with parameters
  */
 
 // import { useState } from "react"
-import { Col, Form, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
+import { Col, Form, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
+import { TestToolTip } from "./TestToolTip";
 import { AssessmentTest, EvidenceURL, TestBinaryParam } from "@/types";
-import { FaQuestionCircle } from "react-icons/fa";
 
 interface AssessmentTestProps {
   test: TestBinaryParam;
@@ -18,25 +18,6 @@ interface AssessmentTestProps {
     newTest: AssessmentTest,
   ): void;
 }
-
-const TestToolTip = ({
-  tipId,
-  tipText,
-}: {
-  tipId: string;
-  tipText: string;
-}) => {
-  return (
-    <OverlayTrigger
-      placement="top"
-      overlay={<Tooltip id={tipId}>{tipText}</Tooltip>}
-    >
-      <span>
-        <FaQuestionCircle className="text-secondary opacity-50" />
-      </span>
-    </OverlayTrigger>
-  );
-};
 
 export const TestBinaryParamForm = (props: AssessmentTestProps) => {
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +37,7 @@ export const TestBinaryParamForm = (props: AssessmentTestProps) => {
     props.onTestChange(props.principleId, props.criterionId, newTest);
   }
 
-  // break descriptions
+  // break parameters
   const textParams = props.test.text.split("|");
   const tipParams = props.test.tool_tip.split("|");
   const testParams = props.test.params.split("|");
