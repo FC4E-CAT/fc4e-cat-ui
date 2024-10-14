@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { DebugJSON } from "./components/DebugJSON";
 import { CriteriaTabs } from "./components";
-import { Button, Col } from "react-bootstrap";
+import { Alert, Button, Col } from "react-bootstrap";
 import {
   Assessment,
   AssessmentCriterion,
@@ -13,6 +13,7 @@ import {
 } from "@/types";
 import { evalAssessment, evalMetric } from "@/utils";
 import { AssessmentEvalStats } from "./components/AssessmentEvalStats";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 export const MotivationAssessmentEditor = () => {
   // get actId and mtvId as routing parameters
@@ -20,7 +21,7 @@ export const MotivationAssessmentEditor = () => {
   const [resetCriterionTab, setResetCriterionTab] = useState(false);
   const { keycloak, registered } = useContext(AuthContext)!;
   const [assessment, setAssessment] = useState<Assessment>();
-  const { data } = useGetMotivationAssessmentType(
+  const { data, isLoading } = useGetMotivationAssessmentType(
     params.mtvId || "",
     params.actId || "",
     keycloak?.token || "",
@@ -48,10 +49,6 @@ export const MotivationAssessmentEditor = () => {
           const newCriteria = principle.criteria.map((criterion) => {
             let resultCriterion: AssessmentCriterion;
             if (criterion.id === criterionID) {
-              // if criterion has an array of metrics use the one as single nested element
-              if (Array.isArray(criterion.metric)) {
-                criterion.metric = criterion.metric[0];
-              }
               const newTests = criterion.metric.tests.map((test) => {
                 if (test.id === newTest.id) {
                   return newTest;
@@ -86,10 +83,6 @@ export const MotivationAssessmentEditor = () => {
 
       newAssessment.principles.forEach((principle) => {
         principle.criteria.forEach((criterion) => {
-          // if criterion has an array of metrics use the one as single nested element
-          if (Array.isArray(criterion.metric)) {
-            criterion.metric = criterion.metric[0];
-          }
           if (
             criterion.imperative === AssessmentCriterionImperative.Must ||
             criterion.imperative === AssessmentCriterionImperative.MUST
@@ -149,7 +142,11 @@ export const MotivationAssessmentEditor = () => {
           </h2>
         </Col>
       </div>
-      {assessment ? (
+      {isLoading ? (
+        <div>
+          <Alert variant="light">Loading ...</Alert>
+        </div>
+      ) : assessment ? (
         <div className="p-4">
           {evalResult && assessment?.result && (
             <AssessmentEvalStats
@@ -169,7 +166,12 @@ export const MotivationAssessmentEditor = () => {
           <DebugJSON assessment={assessment} />
         </div>
       ) : (
-        <span>No data</span>
+        <div>
+          <Alert variant="warning">
+            <FaExclamationTriangle />
+            No Data found ...
+          </Alert>
+        </div>
       )}
       <Button
         variant="secondary"

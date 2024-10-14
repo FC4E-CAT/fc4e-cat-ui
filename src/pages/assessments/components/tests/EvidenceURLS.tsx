@@ -29,7 +29,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
         const updatedURLs = [...urlList, newURL];
         setUrlList(updatedURLs);
         props.onListChange(updatedURLs);
-        setNewURL({ url: "" });
+        setNewURL({ url: "", description: "" });
         setError("");
       } else {
         setError(

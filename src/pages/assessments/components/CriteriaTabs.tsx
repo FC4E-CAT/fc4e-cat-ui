@@ -126,10 +126,6 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       </div>,
     );
     principle.criteria.forEach((criterion) => {
-      // if criterion has an array of metrics use the one as single nested element
-      if (Array.isArray(criterion.metric)) {
-        criterion.metric = criterion.metric[0];
-      }
       navs.push(
         <Nav.Item key={principle.id + criterion.id} className="cat-crit-tab">
           <Nav.Link

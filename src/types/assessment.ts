@@ -88,7 +88,7 @@ export interface AssessmentCriterion {
   id: string;
   name: string;
   imperative: AssessmentCriterionImperative;
-  metric: Metric | Metric[];
+  metric: Metric;
   description?: string;
 }
 
