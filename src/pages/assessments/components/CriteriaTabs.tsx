@@ -3,9 +3,11 @@ import {
   Col,
   ListGroup,
   Nav,
+  OverlayTrigger,
   // OverlayTrigger,
   Row,
   Tab,
+  Tooltip,
   // Tooltip,
 } from "react-bootstrap";
 import {
@@ -29,6 +31,7 @@ import {
   TestBinary,
   TestValue,
   TestBinaryParam,
+  TestValueParam,
   // MetricAlgorithm,
 } from "@/types";
 import {
@@ -39,6 +42,7 @@ import { FaCheckCircle, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { CriterionProgress } from "./CriterionProgress";
 import { TestBinaryParamForm } from "./tests/TestBinaryParam";
+import { TestValueFormParam } from "./tests/TestValueFormParam";
 
 type CriteriaTabsProps = {
   principles: AssessmentPrinciple[];
@@ -213,11 +217,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                 </div>
               </div>,
             );
-          } else if (
-            test.type === "value" ||
-            test.type === "Number-Manual" ||
-            test.type === "Number-Auto"
-          ) {
+          } else if (test.type === "value") {
             testList.push(
               <div className="border mt-4" key={test.id}>
                 <div className="cat-test-div">
@@ -227,6 +227,26 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                     criterionId={criterion.id}
                     principleId={principle.id}
                     handleGuide={props.handleGuide}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (
+            test.type === "Number-Manual" ||
+            test.type === "Number-Auto" ||
+            test.type === "Ratio-Manual" ||
+            test.type === "Percent-Manual" ||
+            test.type === "TRL-Manual" ||
+            test.type === "Years-Manual"
+          ) {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestValueFormParam
+                    test={test as TestValueParam}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
                   />
                 </div>
               </div>,
@@ -270,11 +290,18 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   <span className="align-middle">
                     part of principle {principle.id}: {principle.name}{" "}
                   </span>
-
-                  <FaInfoCircle
-                    title={principle.description}
-                    className="text-secondary opacity-50 align-middle"
-                  />
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip id={`tip-pri-${principle.id}`}>
+                        {principle.description}
+                      </Tooltip>
+                    }
+                  >
+                    <span>
+                      <FaInfoCircle className="text-secondary opacity-50 align-middle" />
+                    </span>
+                  </OverlayTrigger>
                 </div>
               </div>
             </div>

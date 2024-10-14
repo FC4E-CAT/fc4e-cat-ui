@@ -158,7 +158,7 @@ export interface TestValue {
   name: string;
   description?: string;
   guidance?: Guidance;
-  type: "value" | "Number-Manual" | "Number-Auto";
+  type: "value";
   text: string;
   result: number | null;
   value: number | null;
@@ -169,6 +169,38 @@ export interface TestValue {
   benchmark: Benchmark;
   evidence_url?: EvidenceURL[];
 }
+
+export interface TestValueParam {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type:
+    | "Number-Manual"
+    | "Number-Auto"
+    | "Ratio-Manual"
+    | "Percent-Manual"
+    | "TRL-Manual"
+    | "Years-Manual";
+  text: string;
+  result: number | null;
+  value: number | null;
+  threshold?: number | null;
+  value_name: string;
+  threshold_name?: string;
+  threshold_locked?: boolean;
+  tool_tip: string;
+  params: string;
+  benchmark: Benchmark;
+  evidence_url?: EvidenceURL[];
+}
+
+/** Supported tests: Binary | Value | BinaryParam | ValueParam **/
+export type AssessmentTest =
+  | TestValue
+  | TestBinary
+  | TestBinaryParam
+  | TestValueParam;
 
 export interface EvidenceURL {
   url: string;
@@ -255,9 +287,6 @@ export interface AssessmentDetailsResponse {
   shared_to_user: boolean;
   assessment_doc: Assessment;
 }
-
-/** Each assessment test will gonna have different types - right now only two types: binary/value test are supported  */
-export type AssessmentTest = TestValue | TestBinary | TestBinaryParam;
 
 export interface ObjectListItem {
   id: string;
