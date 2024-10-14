@@ -12,8 +12,8 @@ import {
   FaShare,
   FaEye,
   FaEyeSlash,
-  FaUsers,
   FaBars,
+  FaSlideshare,
 } from "react-icons/fa";
 import {
   Alert,
@@ -24,7 +24,6 @@ import {
   OverlayTrigger,
   Tooltip,
   Table,
-  Badge,
 } from "react-bootstrap";
 import { AssessmentListItem, AssessmentFiltersType, AlertInfo } from "@/types";
 import {
@@ -289,8 +288,8 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           )}
         </div>
       </div>
-      <div className="row cat-view-search-block justify-content-center">
-        <Col md="auto">
+      <div className="row cat-view-search-block ">
+        <Col>
           <Row>
             <Col md="auto" className="col-lg-5">
               <div className="d-flex ">
@@ -410,33 +409,43 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     <tr key={item.id}>
                       <td className="align-middle">
                         <div>
-                          {item.name}
+                          <span className="text-black float-start">
+                            {item.name}
+                            {item.shared_to_user && (
+                              <OverlayTrigger
+                                key="shared-with-others"
+                                placement="top"
+                                overlay={
+                                  <Tooltip id={`tip-shared-with-others`}>
+                                    This assessment is shared by you with others
+                                  </Tooltip>
+                                }
+                              >
+                                <FaSlideshare className="ms-2 fs-5 float-end text-info" />
+                              </OverlayTrigger>
+                            )}
+                            {item.shared_by_user && (
+                              <OverlayTrigger
+                                key="shared-from-others"
+                                placement="top"
+                                overlay={
+                                  <Tooltip id={`tip-shared-from-others`}>
+                                    This assessment is shared with you by
+                                    someone else
+                                  </Tooltip>
+                                }
+                              >
+                                <FaSlideshare className="ms-2 fs-5 float-end text-info" />
+                              </OverlayTrigger>
+                            )}
+                          </span>
+                          <br />
                           <div>
                             <span className="text-muted text-xs">
                               {item.type}
                             </span>
                           </div>
                         </div>
-                        {item.shared_to_user && (
-                          <Badge
-                            pill
-                            bg="light"
-                            text="secondary"
-                            className="border"
-                          >
-                            shared with me <FaUsers className="ms-1" />
-                          </Badge>
-                        )}
-                        {item.shared_by_user && (
-                          <Badge
-                            pill
-                            bg="light"
-                            text="secondary"
-                            className="border"
-                          >
-                            shared <FaUsers className="ms-1" />
-                          </Badge>
-                        )}
                       </td>
                       <td className="align-middle text-center">
                         {item.compliance === null ? (
@@ -485,7 +494,12 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       </td>
                       <td className="align-middle">
                         {item.subject_name}
+
                         <span className="mt-2">({item.subject_type})</span>
+                        <br />
+                        <span className="text-secondary text-sm">
+                          as: {item.actor}{" "}
+                        </span>
                       </td>
                       <td className="align-middle ">
                         <span className="text-sm">{item.organisation}</span>
@@ -495,96 +509,101 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       </td>
                       <td>
                         <div className="d-flex flex-nowrap">
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={
-                              <Tooltip id="tip-view">
-                                View Assessment Results
-                              </Tooltip>
-                            }
-                          >
-                            <Link
-                              id={`view-button-${item.id}`}
-                              className="btn btn-light btn-sm m-1"
-                              to={`/assessments/${item.id}/view`}
-                            >
-                              <FaBars />
-                            </Link>
-                          </OverlayTrigger>
-                          {!listPublic && (
+                          <p>
+                            {" "}
                             <OverlayTrigger
                               placement="top"
                               overlay={
-                                <Tooltip id="tip-edit">Edit Assessment</Tooltip>
+                                <Tooltip id="tip-view">
+                                  View Assessment Results
+                                </Tooltip>
                               }
                             >
                               <Link
-                                id={`edit-button-${item.id}`}
+                                id={`view-button-${item.id}`}
                                 className="btn btn-light btn-sm m-1"
-                                to={`/assessments/${item.id}`}
+                                to={`/assessments/${item.id}/view`}
                               >
-                                <FaEdit />
+                                <FaBars />
                               </Link>
                             </OverlayTrigger>
-                          )}
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={
-                              <Tooltip id="tip-export">
-                                Export & Download Assessment
-                              </Tooltip>
-                            }
-                          >
-                            <Button
-                              id={`download-button-${item.id}`}
-                              className="btn btn-light btn-sm m-1"
-                              onClick={() => {
-                                setAsmtNumID(item["id"]);
-                              }}
-                            >
-                              <FaDownload />
-                            </Button>
-                          </OverlayTrigger>
-                          {!listPublic && (
-                            <>
+                            {!listPublic && (
                               <OverlayTrigger
                                 placement="top"
                                 overlay={
-                                  <Tooltip id="tip-share">
-                                    Share Assessment
+                                  <Tooltip id="tip-edit">
+                                    Edit Assessment
                                   </Tooltip>
                                 }
                               >
-                                <Button
-                                  id={`share-button-${item.id}`}
+                                <Link
+                                  id={`edit-button-${item.id}`}
                                   className="btn btn-light btn-sm m-1"
-                                  onClick={() => {
-                                    handleShareOpenModal(item);
-                                  }}
+                                  to={`/assessments/${item.id}`}
                                 >
-                                  <FaShare />
-                                </Button>
+                                  <FaEdit />
+                                </Link>
                               </OverlayTrigger>
-                              <OverlayTrigger
-                                placement="top"
-                                overlay={
-                                  <Tooltip id="tip-delete">
-                                    Delete Assessment
-                                  </Tooltip>
-                                }
+                            )}
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="tip-export">
+                                  Export & Download Assessment
+                                </Tooltip>
+                              }
+                            >
+                              <Button
+                                id={`download-button-${item.id}`}
+                                className="btn btn-light btn-sm m-1"
+                                onClick={() => {
+                                  setAsmtNumID(item["id"]);
+                                }}
                               >
-                                <Button
-                                  id={`delete-button-${item.id}`}
-                                  className="btn btn-light btn-sm m-1 text-danger"
-                                  onClick={() => {
-                                    handleDeleteOpenModal(item);
-                                  }}
+                                <FaDownload />
+                              </Button>
+                            </OverlayTrigger>
+                            {!listPublic && (
+                              <>
+                                <OverlayTrigger
+                                  placement="top"
+                                  overlay={
+                                    <Tooltip id="tip-share">
+                                      Share Assessment
+                                    </Tooltip>
+                                  }
                                 >
-                                  <FaTimes />
-                                </Button>
-                              </OverlayTrigger>
-                            </>
-                          )}
+                                  <Button
+                                    id={`share-button-${item.id}`}
+                                    className="btn btn-light btn-sm m-1"
+                                    onClick={() => {
+                                      handleShareOpenModal(item);
+                                    }}
+                                  >
+                                    <FaShare />
+                                  </Button>
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                  placement="top"
+                                  overlay={
+                                    <Tooltip id="tip-delete">
+                                      Delete Assessment
+                                    </Tooltip>
+                                  }
+                                >
+                                  <Button
+                                    id={`delete-button-${item.id}`}
+                                    className="btn btn-light btn-sm m-1 text-danger"
+                                    onClick={() => {
+                                      handleDeleteOpenModal(item);
+                                    }}
+                                  >
+                                    <FaTimes />
+                                  </Button>
+                                </OverlayTrigger>
+                              </>
+                            )}
+                          </p>
                         </div>
                       </td>
                     </tr>
