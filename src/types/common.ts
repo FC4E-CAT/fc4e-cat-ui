@@ -96,6 +96,10 @@ export type ApiViewUsers = ApiOptions & {
   id: string;
 };
 
+export type ApiMotivations = ApiOptions & {
+  search: string;
+};
+
 export type ApiUsers = ApiOptions & {
   type: string;
   search: string;
