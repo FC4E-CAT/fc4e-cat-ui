@@ -132,11 +132,25 @@ export interface TestBinary {
   name: string;
   description?: string;
   guidance?: Guidance;
-  type: "binary" | "Binary-Binary" | "Binary-Manual" | "Binary-Manual-Evidence";
+  type: "binary";
   text: string;
   result: number | null;
   value: boolean | null;
   evidence_url?: EvidenceURL[];
+}
+
+export interface TestBinaryParam {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type: "Binary-Binary" | "Binary-Manual" | "Binary-Manual-Evidence";
+  text: string;
+  result: number | null;
+  value: boolean | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
 }
 
 export interface TestValue {
@@ -243,7 +257,7 @@ export interface AssessmentDetailsResponse {
 }
 
 /** Each assessment test will gonna have different types - right now only two types: binary/value test are supported  */
-export type AssessmentTest = TestValue | TestBinary;
+export type AssessmentTest = TestValue | TestBinary | TestBinaryParam;
 
 export interface ObjectListItem {
   id: string;
