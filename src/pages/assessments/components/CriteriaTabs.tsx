@@ -28,6 +28,7 @@ import {
   AssessmentCriterionImperative,
   TestBinary,
   TestValue,
+  TestBinaryParam,
   // MetricAlgorithm,
 } from "@/types";
 import {
@@ -37,6 +38,7 @@ import {
 import { FaCheckCircle, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { CriterionProgress } from "./CriterionProgress";
+import { TestBinaryParamForm } from "./tests/TestBinaryParam";
 
 type CriteriaTabsProps = {
   principles: AssessmentPrinciple[];
@@ -180,12 +182,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
 
       criterion.metric.tests &&
         criterion.metric.tests.forEach((test) => {
-          if (
-            test.type === "binary" ||
-            test.type === "Binary-Manual-Evidence" ||
-            test.type === "Binary-Binary" ||
-            test.type === "Binary-Manual"
-          ) {
+          if (test.type === "binary") {
             testList.push(
               <div className="border mt-4" key={test.id}>
                 <div className="cat-test-div">
@@ -200,11 +197,27 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
               </div>,
             );
           } else if (
+            test.type === "Binary-Manual-Evidence" ||
+            test.type === "Binary-Binary" ||
+            test.type === "Binary-Manual"
+          ) {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestBinaryParamForm
+                    test={test as TestBinaryParam}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (
             test.type === "value" ||
             test.type === "Number-Manual" ||
             test.type === "Number-Auto"
           ) {
-            console.log(criterion.name + " " + test.type);
             testList.push(
               <div className="border mt-4" key={test.id}>
                 <div className="cat-test-div">
