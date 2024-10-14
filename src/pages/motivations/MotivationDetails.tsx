@@ -292,7 +292,7 @@ export default function MotivationDetails() {
                           <OverlayTrigger placement="top" overlay={tooltipView}>
                             <Link
                               className="btn btn-light btn-sm m-1"
-                              to={`/motivations/${item.id}`}
+                              to={`/motivations/${params.id}/templates/actors/${item.id}`}
                             >
                               <FaBars />
                             </Link>

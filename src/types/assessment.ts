@@ -88,13 +88,15 @@ export interface AssessmentCriterion {
   id: string;
   name: string;
   imperative: AssessmentCriterionImperative;
-  metric: Metric;
+  metric: Metric | Metric[];
   description?: string;
 }
 
 /** Each criterion can be either mandatory (must) or optional (should) */
 export enum AssessmentCriterionImperative {
   Must = "must",
+  MUST = "MUST",
+  SHOULD = "SHOULD",
   Should = "should",
 }
 
@@ -106,6 +108,7 @@ export interface Metric {
   value: number | null;
   result: number | null;
   tests: AssessmentTest[];
+  benchmark_value?: number;
 }
 
 /** Each metric has a type. For now, we only deal with type: number  */
@@ -123,12 +126,13 @@ export enum MetricAlgorithm {
 export type Benchmark = Record<string, string | number>;
 
 /** Each metric has a list of tests. Test can be of different kinds */
+
 export interface TestBinary {
   id: string;
   name: string;
   description?: string;
   guidance?: Guidance;
-  type: "binary";
+  type: "binary" | "Binary-Binary" | "Binary-Manual" | "Binary-Manual-Evidence";
   text: string;
   result: number | null;
   value: boolean | null;
@@ -140,7 +144,7 @@ export interface TestValue {
   name: string;
   description?: string;
   guidance?: Guidance;
-  type: "value";
+  type: "value" | "Number-Manual" | "Number-Auto";
   text: string;
   result: number | null;
   value: number | null;

@@ -34,6 +34,7 @@ import Principles from "./pages/principles/Principles";
 import PrincipleDetails from "./pages/principles/PrincipleDetails";
 import MotivationActorCriteria from "./pages/motivations/MotivationActorCriteria";
 import AssessmentView from "./pages/assessments/AssessmentView";
+import { MotivationAssessmentEditor } from "./pages/assessments/MotivationAssessmentEditor";
 
 const queryClient = new QueryClient();
 
@@ -221,6 +222,12 @@ function App() {
                     element={<ProtectedRoute />}
                   >
                     <Route index element={<MotivationActorCriteria />} />
+                  </Route>
+                  <Route
+                    path="/motivations/:mtvId/templates/actors/:actId"
+                    element={<ProtectedRoute />}
+                  >
+                    <Route index element={<MotivationAssessmentEditor />} />
                   </Route>
                   <Route path="/principles" element={<ProtectedRoute />}>
                     <Route index element={<Principles />} />

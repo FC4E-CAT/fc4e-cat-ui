@@ -486,6 +486,10 @@ const AssessmentEdit = ({
           const newCriteria = principle.criteria.map((criterion) => {
             let resultCriterion: AssessmentCriterion;
             if (criterion.id === criterionID) {
+              // if criterion has an array of metrics use the one as single nested element
+              if (Array.isArray(criterion.metric)) {
+                criterion.metric = criterion.metric[0];
+              }
               const newTests = criterion.metric.tests.map((test) => {
                 if (test.id === newTest.id) {
                   return newTest;
@@ -517,8 +521,13 @@ const AssessmentEdit = ({
         principles: newPrinciples,
       };
       // update criteria result reference tables
+
       newAssessment.principles.forEach((principle) => {
         principle.criteria.forEach((criterion) => {
+          // if criterion has an array of metrics use the one as single nested element
+          if (Array.isArray(criterion.metric)) {
+            criterion.metric = criterion.metric[0];
+          }
           if (criterion.imperative === AssessmentCriterionImperative.Must) {
             mandatory.push(criterion.metric.result);
           } else {
@@ -936,6 +945,10 @@ const AssessmentEdit = ({
                     assessmentResult={assessment.result}
                   />
                 )}
+                <div
+                  className="row bg-secondary"
+                  style={{ height: "1px" }}
+                ></div>
                 <CriteriaTabs
                   principles={assessment?.principles || []}
                   resetActiveTab={resetCriterionTab}

@@ -1,0 +1,184 @@
+import { useGetMotivationAssessmentType } from "@/api";
+import { AuthContext } from "@/auth";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { DebugJSON } from "./components/DebugJSON";
+import { CriteriaTabs } from "./components";
+import { Button, Col } from "react-bootstrap";
+import {
+  Assessment,
+  AssessmentCriterion,
+  AssessmentCriterionImperative,
+  AssessmentTest,
+} from "@/types";
+import { evalAssessment, evalMetric } from "@/utils";
+import { AssessmentEvalStats } from "./components/AssessmentEvalStats";
+
+export const MotivationAssessmentEditor = () => {
+  // get actId and mtvId as routing parameters
+  const params = useParams();
+  const [resetCriterionTab, setResetCriterionTab] = useState(false);
+  const { keycloak, registered } = useContext(AuthContext)!;
+  const [assessment, setAssessment] = useState<Assessment>();
+  const { data } = useGetMotivationAssessmentType(
+    params.mtvId || "",
+    params.actId || "",
+    keycloak?.token || "",
+    registered,
+  );
+
+  const navigate = useNavigate();
+
+  function handleResetCriterionTabComplete() {
+    setResetCriterionTab(false);
+  }
+
+  function handleCriterionChange(
+    principleID: string,
+    criterionID: string,
+    newTest: AssessmentTest,
+  ) {
+    // update criterion change
+    const mandatory: (number | null)[] = [];
+    const optional: (number | null)[] = [];
+
+    if (assessment) {
+      const newPrinciples = assessment?.principles.map((principle) => {
+        if (principle.id === principleID) {
+          const newCriteria = principle.criteria.map((criterion) => {
+            let resultCriterion: AssessmentCriterion;
+            if (criterion.id === criterionID) {
+              // if criterion has an array of metrics use the one as single nested element
+              if (Array.isArray(criterion.metric)) {
+                criterion.metric = criterion.metric[0];
+              }
+              const newTests = criterion.metric.tests.map((test) => {
+                if (test.id === newTest.id) {
+                  return newTest;
+                }
+                return test;
+              });
+              let newMetric = { ...criterion.metric, tests: newTests };
+              const { result, value } = evalMetric(newMetric);
+              newMetric = { ...newMetric, result: result, value: value };
+              // create a new criterion object with updates due to changes
+              resultCriterion = { ...criterion, metric: newMetric };
+            } else {
+              // use the old object with no changes
+              resultCriterion = criterion;
+            }
+
+            return resultCriterion;
+          });
+
+          return { ...principle, criteria: newCriteria };
+        }
+        return principle;
+      });
+
+      let compliance: boolean | null;
+
+      const newAssessment = {
+        ...assessment,
+        principles: newPrinciples,
+      };
+      // update criteria result reference tables
+
+      newAssessment.principles.forEach((principle) => {
+        principle.criteria.forEach((criterion) => {
+          // if criterion has an array of metrics use the one as single nested element
+          if (Array.isArray(criterion.metric)) {
+            criterion.metric = criterion.metric[0];
+          }
+          if (
+            criterion.imperative === AssessmentCriterionImperative.Must ||
+            criterion.imperative === AssessmentCriterionImperative.MUST
+          ) {
+            mandatory.push(criterion.metric.result);
+          } else {
+            optional.push(criterion.metric.result);
+          }
+        });
+      });
+
+      if (mandatory.some((result) => result === null)) {
+        compliance = null;
+      } else {
+        compliance = mandatory.every((result) => result === 1);
+      }
+
+      const ranking: number | null = optional.reduce((sum, result) => {
+        if (sum === null || result === null) return null;
+        return sum + result;
+      }, 0);
+
+      setAssessment({
+        ...newAssessment,
+        result: { compliance: compliance, ranking: ranking },
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (data) {
+      setAssessment(data);
+      setResetCriterionTab(true);
+    }
+  }, [data]);
+
+  const evalResult = evalAssessment(assessment);
+
+  return (
+    <div>
+      <div className="cat-view-heading-block row border-bottom">
+        <Col>
+          <h2 className="text-muted cat-view-heading ">
+            Preview Assessment
+            {params.mtvId && params.actId && (
+              <p className="lead cat-view-lead">
+                For Motivation: <strong>{data?.assessment_type.name}</strong>
+                <strong className="badge bg-secondary mx-2">
+                  {params.mtvId}
+                </strong>
+                and Actor: <strong>{data?.actor.name}</strong>
+                <strong className="badge bg-secondary ms-2">
+                  {params.actId}
+                </strong>
+              </p>
+            )}
+          </h2>
+        </Col>
+      </div>
+      {assessment ? (
+        <div className="p-4">
+          {evalResult && assessment?.result && (
+            <AssessmentEvalStats
+              evalResult={evalResult}
+              assessmentResult={assessment.result}
+            />
+          )}
+          <div className="row bg-secondary" style={{ height: "1px" }}></div>
+          <CriteriaTabs
+            principles={assessment.principles || []}
+            resetActiveTab={resetCriterionTab}
+            onTestChange={handleCriterionChange}
+            onResetActiveTab={handleResetCriterionTabComplete}
+            handleGuide={() => {}}
+            handleGuideClose={() => {}}
+          />
+          <DebugJSON assessment={assessment} />
+        </div>
+      ) : (
+        <span>No data</span>
+      )}
+      <Button
+        variant="secondary"
+        onClick={() => {
+          navigate(-1);
+        }}
+      >
+        Back
+      </Button>
+    </div>
+  );
+};

@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { TemplateResponse } from "@/types";
+import { Assessment, TemplateResponse } from "@/types";
 import { APIClient } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
@@ -23,5 +23,27 @@ export const useGetTemplate = (
       return handleBackendError(error);
     },
     enabled: !!token && isRegistered && actorId !== undefined,
+    refetchOnWindowFocus: false,
+  });
+
+export const useGetMotivationAssessmentType = (
+  mtvId: string,
+  actId: string,
+  token: string,
+  isRegistered: boolean,
+) =>
+  useQuery({
+    queryKey: ["assessment-type"],
+    queryFn: async () => {
+      const response = await APIClient(token).get<Assessment>(
+        `/templates/by-motivation/${mtvId}/by-actor/${actId}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled:
+      !!token && isRegistered && mtvId !== undefined && actId !== undefined,
     refetchOnWindowFocus: false,
   });

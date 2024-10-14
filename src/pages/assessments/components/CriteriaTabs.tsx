@@ -26,6 +26,8 @@ import {
   AssessmentPrinciple,
   AssessmentTest,
   AssessmentCriterionImperative,
+  TestBinary,
+  TestValue,
   // MetricAlgorithm,
 } from "@/types";
 import {
@@ -63,7 +65,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       props.principles.length > 0 &&
       props.principles[0].criteria.length > 0
     ) {
-      const firstCriterion = props.principles[0].criteria[0].id;
+      const firstCriterion =
+        props.principles[0].id + props.principles[0].criteria[0].id;
+
       setActiveKey(firstCriterion);
       // when you set the active tab reset the signal to false
       props.onResetActiveTab();
@@ -72,7 +76,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
 
   props.principles.forEach((principle) => {
     navs.push(
-      <div className="cat-menu-principal">
+      <div className="cat-menu-principal" key={principle.id}>
         <span className="cat-menu-principal-name">
           {principle.id === "P1" && (
             <FaCableCar className="met-2" color="green" width="2em" />
@@ -122,10 +126,14 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       </div>,
     );
     principle.criteria.forEach((criterion) => {
+      // if criterion has an array of metrics use the one as single nested element
+      if (Array.isArray(criterion.metric)) {
+        criterion.metric = criterion.metric[0];
+      }
       navs.push(
-        <Nav.Item key={criterion.id} className="cat-crit-tab">
+        <Nav.Item key={principle.id + criterion.id} className="cat-crit-tab">
           <Nav.Link
-            eventKey={criterion.id}
+            eventKey={principle.id + criterion.id}
             className="p-0"
             onClick={() => {
               props.handleGuideClose();
@@ -135,7 +143,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
               <div className="d-flex">
                 <h6
                   className={
-                    criterion.imperative === AssessmentCriterionImperative.Must
+                    criterion.imperative ===
+                      AssessmentCriterionImperative.Must ||
+                    criterion.imperative === AssessmentCriterionImperative.MUST
                       ? "fw-bold"
                       : ""
                   }
@@ -149,8 +159,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                     <FaCheckCircle className="ms-2 text-success" />
                   )}
                 </h6>
-                {criterion.imperative ===
-                  AssessmentCriterionImperative.Must && (
+                {(criterion.imperative === AssessmentCriterionImperative.Must ||
+                  criterion.imperative ===
+                    AssessmentCriterionImperative.MUST) && (
                   <div>
                     <small
                       style={{ fontSize: "0.6rem" }}
@@ -170,44 +181,56 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       const testList: JSX.Element[] = [];
 
       // store state of test results
-      criterion.metric.tests.forEach((test) => {
-        if (test.type === "binary") {
-          testList.push(
-            <div className="border mt-4" key={test.id}>
-              <div className="cat-test-div">
-                <TestBinaryForm
-                  test={test}
-                  onTestChange={props.onTestChange}
-                  criterionId={criterion.id}
-                  principleId={principle.id}
-                  handleGuide={props.handleGuide}
-                />
-              </div>
-            </div>,
-          );
-        } else if (test.type === "value") {
-          testList.push(
-            <div className="border mt-4" key={test.id}>
-              <div className="cat-test-div">
-                <TestValueForm
-                  test={test}
-                  onTestChange={props.onTestChange}
-                  criterionId={criterion.id}
-                  principleId={principle.id}
-                  handleGuide={props.handleGuide}
-                />
-              </div>
-            </div>,
-          );
-        }
-      });
+
+      criterion.metric.tests &&
+        criterion.metric.tests.forEach((test) => {
+          if (
+            test.type === "binary" ||
+            test.type === "Binary-Manual-Evidence" ||
+            test.type === "Binary-Binary" ||
+            test.type === "Binary-Manual"
+          ) {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestBinaryForm
+                    test={test as TestBinary}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                    handleGuide={props.handleGuide}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (
+            test.type === "value" ||
+            test.type === "Number-Manual" ||
+            test.type === "Number-Auto"
+          ) {
+            console.log(criterion.name + " " + test.type);
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestValueForm
+                    test={test as TestValue}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                    handleGuide={props.handleGuide}
+                  />
+                </div>
+              </div>,
+            );
+          }
+        });
 
       // add criterion content
       tabs.push(
         <Tab.Pane
-          key={criterion.id}
+          key={principle.id + criterion.id}
           className="text-dark"
-          eventKey={criterion.id}
+          eventKey={principle.id + criterion.id}
         >
           {/* add a principle info box before criterion content */}
 
@@ -221,7 +244,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   {criterion.id}: {criterion.name}
                 </span>
 
-                {criterion.imperative === AssessmentCriterionImperative.Must ? (
+                {criterion.imperative === AssessmentCriterionImperative.Must ||
+                criterion.imperative === AssessmentCriterionImperative.MUST ? (
                   <span className="badge bg-success bg-small ms-4 align-middle">
                     Required
                   </span>

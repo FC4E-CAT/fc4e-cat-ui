@@ -111,6 +111,34 @@
   background-color: #e8e8e8;
 }
 
+.cat-eval-fail {
+  color: #842029;
+  background: #f8d7da;
+  border: 1px solid #f5c2c7;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.cat-eval-unknown {
+  color: #41464b;
+  background: #e2e3e5;
+  border: 1px solid #d3d6d8;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.cat-eval-pass {
+  color: #0f5132;
+  background: #d1e7dd;
+  border: 1px solid #badbcc;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.cat-eval-separator {
+  border-bottom: 1px solid black;
+}
+
 .cat-hash-link {
   color: grey;
   border-bottom: 1px dotted grey;
