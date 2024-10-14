@@ -11,7 +11,9 @@ import {
   FaFileImport,
   FaShare,
   FaEye,
+  FaEyeSlash,
   FaUsers,
+  FaBars,
 } from "react-icons/fa";
 import {
   Alert,
@@ -38,6 +40,17 @@ import { DeleteModal } from "@/components/DeleteModal";
 
 import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
+
+const tooltipPublic = (
+  <Tooltip id="tip-public">
+    This assessment is public. Everyone can see the results.
+  </Tooltip>
+);
+const tooltipPrivate = (
+  <Tooltip id="tip-private">
+    This assessment is private. Only the owners can see the results.s
+  </Tooltip>
+);
 
 type Pagination = {
   page: number;
@@ -279,8 +292,8 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       <div className="row cat-view-search-block justify-content-center">
         <Col md="auto">
           <Row>
-            <Col md="auto">
-              <div className="d-flex align-items-center">
+            <Col md="auto" className="col-lg-5">
+              <div className="d-flex ">
                 <OverlayTrigger
                   key="overlay-subject-type"
                   placement="top"
@@ -311,7 +324,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 </Form.Select>
               </div>
             </Col>
-            <Col md="auto">
+            <Col md="auto" className="col-lg-5">
               <div className="d-flex align-items-center">
                 <OverlayTrigger
                   key="top"
@@ -368,9 +381,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 <th>
                   <span>Name</span>
                 </th>
-                <th>
-                  <span>Type</span>
-                </th>
+
                 <th>
                   <span>Compliance</span>
                 </th>
@@ -381,10 +392,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   <span>Access</span>
                 </th>
                 <th>
-                  <span>Subject Type</span>
-                </th>
-                <th>
-                  <span>Subject Name</span>
+                  <span>Subject </span>
                 </th>
                 <th>
                   <span>Organization</span>
@@ -401,7 +409,14 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   return (
                     <tr key={item.id}>
                       <td className="align-middle">
-                        <div>{item.name}</div>
+                        <div>
+                          {item.name}
+                          <div>
+                            <span className="text-muted text-xs">
+                              {item.type}
+                            </span>
+                          </div>
+                        </div>
                         {item.shared_to_user && (
                           <Badge
                             pill
@@ -423,29 +438,58 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                           </Badge>
                         )}
                       </td>
-                      <td className="align-middle">{item.type}</td>
-                      <td className="align-middle">
+                      <td className="align-middle text-center">
                         {item.compliance === null ? (
-                          <span className="badge bg-secondary">UNKNOWN</span>
+                          <span className="badge rounded-pill text-bg-light text-warning border border-warning">
+                            N/A
+                          </span>
                         ) : item.compliance ? (
-                          <span className="badge bg-success">PASS</span>
+                          <span className="badge rounded-pill text-bg-light text-success border border-success">
+                            PASS
+                          </span>
                         ) : (
-                          <span className="badge bg-danger">FAIL</span>
+                          <span className="badge rounded-pill text-bg-light text-danger border border-danger">
+                            FAIL
+                          </span>
                         )}
                       </td>
-                      <td className="align-middle">
+                      <td className="align-middle text-center">
                         {item.ranking === null ? (
-                          <span className="badge bg-secondary">UNKNOWN</span>
+                          <h6>
+                            <span className="badge bg-secondary">N/A</span>
+                          </h6>
                         ) : (
-                          item.ranking
+                          <h5>
+                            <span className="badge bg-info">
+                              {item.ranking}
+                            </span>
+                          </h5>
+                        )}
+                      </td>
+                      <td className="align-middle text-center">
+                        {item.published ? (
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={tooltipPublic}
+                          >
+                            <FaEye className="text-success fs-4" />
+                          </OverlayTrigger>
+                        ) : (
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={tooltipPrivate}
+                          >
+                            <FaEyeSlash className="text-secondary fs-4" />
+                          </OverlayTrigger>
                         )}
                       </td>
                       <td className="align-middle">
-                        {item.published ? "Public" : "Private"}
+                        {item.subject_name}
+                        <span className="mt-2">({item.subject_type})</span>
                       </td>
-                      <td className="align-middle">{item.subject_type}</td>
-                      <td className="align-middle">{item.subject_name}</td>
-                      <td className="align-middle">{item.organisation}</td>
+                      <td className="align-middle ">
+                        <span className="text-sm">{item.organisation}</span>
+                      </td>
                       <td className="align-middle">
                         <small>{item.created_on.split(" ")[0]}</small>
                       </td>
@@ -464,7 +508,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                               className="btn btn-light btn-sm m-1"
                               to={`/assessments/${item.id}/view`}
                             >
-                              <FaEye />
+                              <FaBars />
                             </Link>
                           </OverlayTrigger>
                           {!listPublic && (
@@ -531,7 +575,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                               >
                                 <Button
                                   id={`delete-button-${item.id}`}
-                                  className="btn btn-light btn-sm m-1"
+                                  className="btn btn-light btn-sm m-1 text-danger"
                                   onClick={() => {
                                     handleDeleteOpenModal(item);
                                   }}
