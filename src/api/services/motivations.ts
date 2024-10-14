@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
 import {
+  ApiMotivations,
   ApiOptions,
   CriImp,
   ImperativeResponse,
@@ -28,12 +29,13 @@ export const useGetMotivations = ({
   sortOrder,
   token,
   isRegistered,
-}: ApiOptions) =>
+  search,
+}: ApiMotivations) =>
   useQuery({
     queryKey: ["motivations", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient(token).get<MotivationResponse>(
-        `/registry/motivations?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`,
+        `/registry/motivations?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}${search ? "&search=" + search : ""}`,
       );
       return response.data;
     },

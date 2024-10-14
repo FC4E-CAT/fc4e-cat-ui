@@ -80,6 +80,7 @@ export default function Motivations() {
     page: opts.page,
     token: keycloak?.token || "",
     isRegistered: registered,
+    search: opts.search,
   });
 
   // refetch users when parameters change
