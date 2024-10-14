@@ -497,9 +497,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
 
                         <span className="mt-2">({item.subject_type})</span>
                         <br />
-                        <span className="text-secondary text-sm">
-                          as: {item.actor}{" "}
-                        </span>
                       </td>
                       <td className="align-middle ">
                         <span className="text-sm">{item.organisation}</span>
