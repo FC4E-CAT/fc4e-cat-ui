@@ -7,11 +7,11 @@ import {
 import { AuthContext } from "@/auth";
 import { AlertInfo, Criterion, Imperative } from "@/types";
 import { useState, useContext, useEffect, useRef } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
-import { FaMinusCircle, FaPlusCircle, FaTimes } from "react-icons/fa";
-import { FaStar } from "react-icons/fa6";
-
+import { FaInfo, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
+import { FaStar, FaTrashCan } from "react-icons/fa6";
+import {} from "react-icons/fa6";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function MotivationActorCriteria() {
@@ -35,6 +35,12 @@ export default function MotivationActorCriteria() {
   const alert = useRef<AlertInfo>({
     message: "",
   });
+
+  const tooltipDeletePrinciple = (
+    <Tooltip id="tip-restore">
+      Delete this principle from the list of Principles for this actor.
+    </Tooltip>
+  );
 
   const {
     data: impData,
@@ -167,7 +173,7 @@ export default function MotivationActorCriteria() {
 
   return (
     <div className="pb-4">
-      <div className="cat-view-heading-block row border-bottom">
+      <Row className="cat-view-heading-block row border-bottom">
         <Col>
           <h2 className="text-muted cat-view-heading ">
             Manage Criteria
@@ -175,23 +181,58 @@ export default function MotivationActorCriteria() {
               <p className="lead cat-view-lead">
                 For Motivation:
                 <strong className="badge bg-secondary mx-2">
-                  {params.mtvId}
+                  {params.mtvId} {params.motivation}
                 </strong>
                 and Actor:
                 <strong className="badge bg-secondary ms-2">
                   {params.actId}
                 </strong>
+                <br />
+                <span className="text-sm">
+                  The desirable properties or outcome of a specific motivation
+                  is usually expressed as a set of Criteria.These criteria serve
+                  to verify that principles are adhered to or objectives are
+                  met. Meeting criteria is considered to signal compliance with
+                  a principle or alignment with/ support of the objective.
+                </span>
               </p>
             )}
           </h2>
         </Col>
-      </div>
-      <Row className="mt-4 border-bottom pb-4">
+      </Row>
+      <Row className=" border-bottom pb-2 bg-light">
+        <Col className="mt-2 px-2">
+          <FaInfo className="text-warning float-start" size={40} />
+          <span className="text-sm">
+            One of the basic characteristics of the assessment is to have
+            criteria. The Criteria shall match the compliance of the specific
+            actor <span className="">{params.actId}</span>
+            <br />
+            Please follow the steps in order to start filling up the assessment
+            type.
+          </span>
+        </Col>
+        <Col className="mt-2 px-2">
+          <span className="text-sm">
+            <ol>
+              <li>Read and Select the Criteria for your actor</li>
+              <li>Move the Criteria from left to the right list</li>
+              <li>Update the imperative of the Criteria and click Save</li>
+            </ol>
+          </span>
+        </Col>
+      </Row>
+      <Row className="mt-4  pb-4">
         <Col className="px-4">
           <div>
-            Available Criteria in this motivation: ({availableCriteria.length})
+            <strong className="p-1">
+              Available Criteria in this motivation{" "}
+            </strong>
+            <span className="badge bg-primary rounded-pill fs-6">
+              {availableCriteria.length}
+            </span>
           </div>
-          <div className="alert alert-light p-2 mt-1">
+          <div className="alert alert-primary p-2 mt-1">
             <small>
               <FaPlusCircle className="me-2" /> Click an item below to add it to
               this assessment type...
@@ -211,17 +252,17 @@ export default function MotivationActorCriteria() {
                   <strong>
                     {item.cri} - {item.label}
                   </strong>
-                  <span className="ms-2 badge badge-sm bg-success">
+                  <span className="ms-2 badge badge-sm bg-light text-success border border-success">
                     {item.imperative.label}
                   </span>
                 </div>
 
-                <div className="text-muted">{item.description}</div>
+                <div className="text-muted text-sm">{item.description}</div>
                 <div>
                   {item.principles.map((principle) => (
                     <span
                       key={principle.id}
-                      className="badge bg-secondary bg-small me-1"
+                      className="badge bg-light text-dark me-1 text-ms border"
                     >
                       {principle.pri} - {principle.label}
                     </span>
@@ -233,10 +274,14 @@ export default function MotivationActorCriteria() {
         </Col>
         <Col>
           <div>
-            Criteria included in the Assessment Type: ({selectedCriteria.length}
-            )
+            <strong className="p-1">
+              Criteria included in the Assessment Type
+            </strong>
+            <span className="badge bg-primary rounded-pill fs-6">
+              {selectedCriteria.length}
+            </span>
           </div>
-          <div className="alert alert-light p-2 mt-1">
+          <div className="alert alert-primary p-2 mt-1">
             <small>
               <FaMinusCircle className="me-2" /> Click an item below to remove
               it from this assessment type...
@@ -253,7 +298,7 @@ export default function MotivationActorCriteria() {
                         {item.cri} - {item.label}
                       </strong>
                       <select
-                        className="ms-2 badge badge-sm bg-success"
+                        className="ms-2 badge badge-sm bg-light text-success border border-success"
                         value={item.imperative.id}
                         onChange={(e) => {
                           handleUpdateImperative(
@@ -268,29 +313,34 @@ export default function MotivationActorCriteria() {
                           </option>
                         ))}
                       </select>
-                      <Button
-                        size="sm"
-                        variant="danger"
-                        className="ms-4"
-                        onClick={() => {
-                          setSelectedCriteria(
-                            selectedCriteria.filter(
-                              (selItem) => selItem.cri != item.cri,
-                            ),
-                          );
-                        }}
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={tooltipDeletePrinciple}
                       >
-                        <FaTimes />
-                      </Button>
+                        <Button
+                          size="sm"
+                          variant="light"
+                          className="ms-4"
+                          onClick={() => {
+                            setSelectedCriteria(
+                              selectedCriteria.filter(
+                                (selItem) => selItem.cri != item.cri,
+                              ),
+                            );
+                          }}
+                        >
+                          <FaTrashCan className="text-danger" />
+                        </Button>
+                      </OverlayTrigger>
                     </div>
                   </div>
 
-                  <div className="text-muted">{item.description}</div>
+                  <div className="text-muted text-sm">{item.description}</div>
                   <div>
                     {item.principles.map((principle) => (
                       <span
                         key={principle.pri}
-                        className="badge bg-secondary bg-small me-1"
+                        className="badge bg-light text-dark me-1 text-ms border"
                       >
                         {principle.pri} - {principle.label}
                       </span>
