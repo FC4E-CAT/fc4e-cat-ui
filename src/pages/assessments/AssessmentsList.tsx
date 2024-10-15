@@ -47,7 +47,7 @@ const tooltipPublic = (
 );
 const tooltipPrivate = (
   <Tooltip id="tip-private">
-    This assessment is private. Only the owners can see the results.s
+    This assessment is private. Only the owners can see the results.
   </Tooltip>
 );
 
@@ -292,7 +292,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         <Col>
           <Row>
             <Col md="auto" className="col-lg-5">
-              <div className="d-flex ">
+              <div className="d-flex align-items-center">
                 <OverlayTrigger
                   key="overlay-subject-type"
                   placement="top"
@@ -421,7 +421,9 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                   </Tooltip>
                                 }
                               >
-                                <FaSlideshare className="ms-2 fs-5 float-end text-info" />
+                                <span>
+                                  <FaSlideshare className="ms-2 fs-5 float-end text-info" />
+                                </span>
                               </OverlayTrigger>
                             )}
                             {item.shared_by_user && (
@@ -435,7 +437,9 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                   </Tooltip>
                                 }
                               >
-                                <FaSlideshare className="ms-2 fs-5 float-end text-info" />
+                                <span>
+                                  <FaSlideshare className="ms-2 fs-5 float-end text-info" />
+                                </span>
                               </OverlayTrigger>
                             )}
                           </span>
@@ -481,14 +485,18 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                             placement="top"
                             overlay={tooltipPublic}
                           >
-                            <FaEye className="text-success fs-4" />
+                            <span>
+                              <FaEye className="text-success fs-4" />
+                            </span>
                           </OverlayTrigger>
                         ) : (
                           <OverlayTrigger
                             placement="top"
                             overlay={tooltipPrivate}
                           >
-                            <FaEyeSlash className="text-secondary fs-4" />
+                            <span>
+                              <FaEyeSlash className="text-secondary fs-4" />
+                            </span>
                           </OverlayTrigger>
                         )}
                       </td>
