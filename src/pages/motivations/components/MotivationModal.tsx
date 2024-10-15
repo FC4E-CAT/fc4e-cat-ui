@@ -86,7 +86,7 @@ export function MotivationModal(props: MotivationModalProps) {
           mtv: props.motivation.mtv,
           label: props.motivation.label,
           description: props.motivation.description,
-          motivation_type_id: props.motivation.motivation_type_id || "",
+          motivation_type_id: props.motivation.motivation_type.id || "",
           based_on: props.cloneId,
         });
       } else {
