@@ -527,7 +527,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                               <Link
                                 id={`view-button-${item.id}`}
                                 className="btn btn-light btn-sm m-1"
-                                to={`/assessments/${item.id}/view`}
+                                to={`/${listPublic ? "public-" : ""}assessments/${item.id}/view`}
                               >
                                 <FaBars />
                               </Link>
