@@ -78,6 +78,19 @@
   border-right: 3px solid yellow;
 }
 
+.cat-viewport-scroll {
+  max-height: 80vh;
+  overflow: auto;
+}
+
+.cat-view-reverse {
+  direction: rtl;
+}
+
+.cat-view-reverse-reverse {
+  direction: ltr;
+}
+
 .cat-view-heading-block {
   padding: 7px;
 }
