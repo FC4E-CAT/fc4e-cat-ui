@@ -12,6 +12,10 @@
   border-bottom: solid 2px #919191;
 }
 
+.assessment-card .nav-link.active {
+  color: #0b5ed7 !important;
+}
+
 .cat-cursor-pointer {
   cursor: pointer;
 }
@@ -81,6 +85,43 @@
 .cat-viewport-scroll {
   max-height: 80vh;
   overflow: auto;
+}
+
+#motivation-tabs .nav-tabs {
+  color: #0b0101;
+  border: none;
+}
+
+#motivation-tabs .nav-tabs .nav-item .nav-link {
+  font-size: 15px;
+  color: #0b0101;
+  text-transform: uppercase;
+  border: none;
+  border-bottom: 3px solid #f8cd47;
+}
+
+#motivation-tabs .nav-tabs .nav-item .nav-link.active {
+  color: #000;
+  background-color: #dddfe0;
+  border-bottom: 4px solid #314a92;
+  border-radius: 0%;
+}
+
+#motivation-tabs .nav-tabs .nav-item .nav-link:hover {
+  border-bottom: 4px solid #314a92;
+}
+
+#motivation-tabs .tab-content {
+  padding: 15px;
+  border: 1px solid #60b9d8;
+  border-top: transparent;
+}
+
+#motivation-tabs .tab-content .tab-pane {
+  height: auto;
+  min-height: 200px;
+  color: #000 !important;
+  background-color: #fff;
 }
 
 .cat-view-reverse {
@@ -308,10 +349,6 @@ footer a {
 .disabled-div {
   pointer-events: none; /* Prevent mouse interactions */
   opacity: 0.5; /* Reduce opacity to make it appear disabled */
-}
-
-.assessment-card .nav-link.active {
-  color: #0b5ed7 !important;
 }
 
 .assessment-card .nav-link.disabled {
