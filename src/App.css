@@ -434,3 +434,47 @@ a.plain:hover {
 .flex {
   display: flex !important;
 }
+
+.nav-tabs {
+  color: #0b0101;
+  border: none;
+}
+
+.nav-tabs .nav-item .nav-link {
+  font-size: 15px;
+  color: #0b0101;
+  text-transform: uppercase;
+  border: none;
+  border-bottom: 3px solid #f8cd47;
+}
+
+.nav-tabs .nav-item .nav-link.active {
+  color: #000;
+  background-color: #dddfe0;
+  border-bottom: 4px solid #314a92;
+  border-radius: 0%;
+}
+
+.nav-tabs .nav-item .nav-link:hover {
+  border-bottom: 4px solid #314a92;
+}
+
+.tab-content {
+  padding: 15px;
+  border: 1px solid #60b9d8;
+  border-top: transparent;
+}
+
+.tab-content .tab-pane {
+  height: auto;
+  min-height: 200px;
+  color: #000 !important;
+  background-color: #fff;
+}
+
+#controlled-tab-example-tab-actors::before {
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font: var(--fa-font-brands);
+}
