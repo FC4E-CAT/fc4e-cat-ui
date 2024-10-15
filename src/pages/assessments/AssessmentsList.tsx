@@ -13,7 +13,7 @@ import {
   FaEye,
   FaEyeSlash,
   FaBars,
-  FaSlideshare,
+  FaUsers,
 } from "react-icons/fa";
 import {
   Alert,
@@ -422,7 +422,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                 }
                               >
                                 <span>
-                                  <FaSlideshare className="ms-2 fs-5 float-end text-info" />
+                                  <FaUsers className="ms-2 fs-5 float-end text-info" />
                                 </span>
                               </OverlayTrigger>
                             )}
@@ -438,7 +438,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                 }
                               >
                                 <span>
-                                  <FaSlideshare className="ms-2 fs-5 float-end text-info" />
+                                  <FaUsers className="ms-2 fs-5 float-end text-info" />
                                 </span>
                               </OverlayTrigger>
                             )}
