@@ -180,11 +180,11 @@ export default function MotivationActorCriteria() {
             {params.mtvId && params.actId && (
               <p className="lead cat-view-lead">
                 For Motivation:
-                <strong className="badge bg-secondary mx-2">
-                  {params.mtvId} {params.motivation}
+                <strong className="badge bg-light text-secondary mx-2">
+                  {params.mtvId}
                 </strong>
                 and Actor:
-                <strong className="badge bg-secondary ms-2">
+                <strong className="badge bg-light text-secondary ms-2">
                   {params.actId}
                 </strong>
                 <br />

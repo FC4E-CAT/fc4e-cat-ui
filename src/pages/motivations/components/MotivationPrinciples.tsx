@@ -14,7 +14,7 @@ export const MotivationPrinciples = ({ mtvId }: { mtvId: string }) => {
     fetchNextPage: priFetchNextPage,
     hasNextPage: priHasNextPage,
   } = useGetMotivationPrinciples(mtvId, {
-    size: 5,
+    size: 20,
     token: keycloak?.token || "",
     isRegistered: registered,
   });

@@ -377,7 +377,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           <Table hover>
             <thead>
               <tr className="table-light">
-                <th>
+                <th className="col-lg-2">
                   <span>Name</span>
                 </th>
 
@@ -396,10 +396,12 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 <th>
                   <span>Organization</span>
                 </th>
-                <th>
+                <th className="col-lg-1">
                   <span>Created On</span>
                 </th>
-                <th></th>
+                <th className="col-lg-2">
+                  <span>Actions</span>
+                </th>
               </tr>
             </thead>
             {assessments.length > 0 ? (
