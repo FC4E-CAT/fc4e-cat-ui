@@ -290,6 +290,32 @@ export const useMotivationAddActor = (
   );
 };
 
+export const useGetMotivationPrinciples = (
+  mtvId: string,
+  { token, isRegistered, size }: ApiOptions,
+) =>
+  useInfiniteQuery({
+    queryKey: ["motivation-principles"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<PrincipleResponse>(
+        `/registry/motivations/${mtvId}/principles?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
 export const useGetMotivationCriteria = (
   mtvId: string,
   { token, isRegistered, size }: ApiOptions,

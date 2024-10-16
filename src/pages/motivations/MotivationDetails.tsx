@@ -34,6 +34,8 @@ import { useGetAllActors, useGetMotivation } from "@/api/services/motivations";
 import { MotivationActorModal } from "./components/MotivationActorModal";
 import { MotivationModal } from "./components/MotivationModal";
 import { FaTrashCan } from "react-icons/fa6";
+import { MotivationPrinciples } from "./components/MotivationPrinciples";
+import { MotivationCriteria } from "./components/MotivationCriteria";
 
 export default function MotivationDetails() {
   const navigate = useNavigate();
@@ -393,7 +395,7 @@ export default function MotivationDetails() {
               </span>
             }
           >
-            Tab content for Principles
+            <MotivationPrinciples mtvId={params.id || ""} />
           </Tab>
           <Tab
             eventKey="criteria"
@@ -406,7 +408,7 @@ export default function MotivationDetails() {
               </span>
             }
           >
-            Tab content for criteria
+            <MotivationCriteria mtvId={params.id || ""} />
           </Tab>
           <Tab
             eventKey="Metrics"
