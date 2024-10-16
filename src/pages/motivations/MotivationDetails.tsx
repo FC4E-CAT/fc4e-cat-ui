@@ -19,7 +19,6 @@ import {
   FaExclamationTriangle,
   FaBars,
   FaAward,
-  FaBorderNone,
   FaTags,
   FaInfo,
 } from "react-icons/fa";
@@ -33,7 +32,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useGetAllActors, useGetMotivation } from "@/api/services/motivations";
 import { MotivationActorModal } from "./components/MotivationActorModal";
 import { MotivationModal } from "./components/MotivationModal";
-import { FaTrashCan } from "react-icons/fa6";
+
 import { MotivationPrinciples } from "./components/MotivationPrinciples";
 import { MotivationCriteria } from "./components/MotivationCriteria";
 
@@ -57,20 +56,20 @@ export default function MotivationDetails() {
   const tooltipView = (
     <Tooltip id="tip-restore">View Assesment Details</Tooltip>
   );
-  const tooltipManagePrinciples = (
-    <Tooltip id="tip-restore">Manage Principles</Tooltip>
-  );
   const tooltipManageCriteria = (
     <Tooltip id="tip-restore">Manage Criteria</Tooltip>
   );
-  const tooltipManageMetrics = (
-    <Tooltip id="tip-restore">Manage Metrics</Tooltip>
-  );
-  const tooltipDeleteActor = (
-    <Tooltip id="tip-restore">
-      Delete the connection with the motivation
-    </Tooltip>
-  );
+  // const tooltipManagePrinciples = (
+  //   <Tooltip id="tip-restore">Manage Principles</Tooltip>
+  // );
+  // const tooltipManageMetrics = (
+  //   <Tooltip id="tip-restore">Manage Metrics</Tooltip>
+  // );
+  // const tooltipDeleteActor = (
+  //   <Tooltip id="tip-restore">
+  //     Delete the connection with the motivation
+  //   </Tooltip>
+  // );
   const {
     data: actorData,
     fetchNextPage: actorFetchNextPage,
