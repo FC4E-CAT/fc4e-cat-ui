@@ -329,6 +329,7 @@ export default function MotivationDetails() {
                                     <FaBars />
                                   </Link>
                                 </OverlayTrigger>
+                                {/*
                                 <OverlayTrigger
                                   placement="top"
                                   overlay={tooltipManagePrinciples}
@@ -340,6 +341,7 @@ export default function MotivationDetails() {
                                     <FaTags />
                                   </Link>
                                 </OverlayTrigger>
+                                */}
                                 <OverlayTrigger
                                   placement="top"
                                   overlay={tooltipManageCriteria}
@@ -351,6 +353,7 @@ export default function MotivationDetails() {
                                     <FaAward />
                                   </Link>
                                 </OverlayTrigger>
+                                {/*
                                 <OverlayTrigger
                                   placement="top"
                                   overlay={tooltipManageMetrics}
@@ -373,6 +376,7 @@ export default function MotivationDetails() {
                                     <FaTrashCan className="text-danger" />
                                   </Link>
                                 </OverlayTrigger>
+                                */}
                               </div>
                             </Col>
                           </Row>
@@ -410,6 +414,7 @@ export default function MotivationDetails() {
           >
             <MotivationCriteria mtvId={params.id || ""} />
           </Tab>
+          {/*
           <Tab
             eventKey="Metrics"
             title={
@@ -423,6 +428,7 @@ export default function MotivationDetails() {
           >
             Tab content for Metrics
           </Tab>
+          */}
         </Tabs>
       </div>
 
