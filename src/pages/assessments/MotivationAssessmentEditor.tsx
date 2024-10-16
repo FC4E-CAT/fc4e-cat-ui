@@ -130,11 +130,11 @@ export const MotivationAssessmentEditor = () => {
             {params.mtvId && params.actId && (
               <p className="lead cat-view-lead">
                 For Motivation: <strong>{data?.assessment_type.name}</strong>
-                <strong className="badge bg-secondary mx-2">
+                <strong className="badge bg-light text-secondary mx-2 text-ms">
                   {params.mtvId}
                 </strong>
                 and Actor: <strong>{data?.actor.name}</strong>
-                <strong className="badge bg-secondary ms-2">
+                <strong className="badge bg-light text-secondary mx-2 text-ms">
                   {params.actId}
                 </strong>
               </p>
