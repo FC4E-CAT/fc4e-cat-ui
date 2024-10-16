@@ -142,13 +142,13 @@ export default function Motivations() {
                 <Form.Control
                   placeholder="Search ..."
                   onChange={(e) => {
-                    setOpts({ ...opts, search: e.target.value });
+                    setOpts({ ...opts, search: e.target.value, page: 1 });
                   }}
                   value={opts.search}
                 />
                 <Button
                   onClick={() => {
-                    setOpts({ ...opts, search: "" });
+                    setOpts({ ...opts, search: "", page: 1 });
                   }}
                   className="ms-4"
                 >
