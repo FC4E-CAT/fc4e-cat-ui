@@ -6,11 +6,11 @@ import {
   Assessment,
   AssessmentSubject,
   AssessmentTest,
-  CriterionImperative,
-  Criterion,
+  AssessmentCriterionImperative,
   AlertInfo,
   AssessmentEditMode,
   ActorOrgAsmtType,
+  AssessmentCriterion,
 } from "@/types";
 import { useParams } from "react-router";
 import {
@@ -484,7 +484,7 @@ const AssessmentEdit = ({
       const newPrinciples = assessment?.principles.map((principle) => {
         if (principle.id === principleID) {
           const newCriteria = principle.criteria.map((criterion) => {
-            let resultCriterion: Criterion;
+            let resultCriterion: AssessmentCriterion;
             if (criterion.id === criterionID) {
               const newTests = criterion.metric.tests.map((test) => {
                 if (test.id === newTest.id) {
@@ -517,9 +517,10 @@ const AssessmentEdit = ({
         principles: newPrinciples,
       };
       // update criteria result reference tables
+
       newAssessment.principles.forEach((principle) => {
         principle.criteria.forEach((criterion) => {
-          if (criterion.imperative === CriterionImperative.Must) {
+          if (criterion.imperative === AssessmentCriterionImperative.Must) {
             mandatory.push(criterion.metric.result);
           } else {
             optional.push(criterion.metric.result);
@@ -936,6 +937,10 @@ const AssessmentEdit = ({
                     assessmentResult={assessment.result}
                   />
                 )}
+                <div
+                  className="row bg-secondary"
+                  style={{ height: "1px" }}
+                ></div>
                 <CriteriaTabs
                   principles={assessment?.principles || []}
                   resetActiveTab={resetCriterionTab}

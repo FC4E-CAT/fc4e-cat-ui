@@ -1,5 +1,5 @@
 import { Modal, Button, ListGroup, ListGroupItem } from "react-bootstrap";
-import { FaTimes } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 
 interface DeleteModalProps {
   title: string;
@@ -8,7 +8,7 @@ interface DeleteModalProps {
   itemName: string;
   show: boolean;
   onHide: () => void;
-  onDelete: () => void;
+  handleDelete: () => void;
 }
 /**
  * Implements a simple component that displays a modal (popup window) when
@@ -20,14 +20,15 @@ interface DeleteModalProps {
 export function DeleteModal(props: DeleteModalProps) {
   return (
     <Modal
-      {...props}
+      show={props.show}
+      onHide={props.onHide}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
       <Modal.Header className="bg-danger text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaTimes className="me-2" /> {props.title}
+          <FaTrash className="me-2" /> {props.title}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -44,7 +45,7 @@ export function DeleteModal(props: DeleteModalProps) {
         </ListGroup>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
-        <Button className="btn-danger me-4" onClick={props.onDelete}>
+        <Button className="btn-danger me-4" onClick={props.handleDelete}>
           Confirm Delete
         </Button>
         <Button className="btn-secondary" onClick={props.onHide}>

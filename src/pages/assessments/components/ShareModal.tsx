@@ -4,7 +4,9 @@ import { AlertInfo } from "@/types";
 import { useContext, useRef, useState } from "react";
 import { Modal, Button, ListGroup, Form, InputGroup } from "react-bootstrap";
 import toast from "react-hot-toast";
-import { FaShare, FaUserAlt } from "react-icons/fa";
+import { FaShare, FaUserAlt, FaCopy } from "react-icons/fa";
+import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 interface ShareModalProps {
   name: string;
@@ -29,6 +31,16 @@ export function ShareModal(props: ShareModalProps) {
   });
   const mutateShare = useShareAssessment(keycloak?.token || "", props.id);
   const [email, setEmail] = useState("");
+
+  const [copySuccess, setCopySuccess] = useState("");
+
+  const domainName =
+    window.location.protocol + "://" + window.location.hostname;
+  const renderTooltip = (props: TooltipProps) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {copySuccess ? "Copied!" : "Copy to clipboard"}
+    </Tooltip>
+  );
 
   function handleShare() {
     const promise = mutateShare
@@ -77,7 +89,39 @@ export function ShareModal(props: ShareModalProps) {
             {props.id}
           </ListGroup.Item>
         </ListGroup>
-
+        <div className="mt-2">
+          <ListGroup>
+            <ListGroup.Item>
+              <span className="text-black-50">
+                <small>
+                  <strong>Share the URL</strong>
+                  <br />
+                  You can also share the URL with users who already have access
+                  through the link.{" "}
+                </small>
+                <OverlayTrigger
+                  placement="top"
+                  delay={{ show: 250, hide: 400 }}
+                  overlay={renderTooltip}
+                >
+                  <CopyToClipboard
+                    text={`${domainName}/assessments/${props.id}`}
+                    onCopy={() => setCopySuccess("Copied!")}
+                  >
+                    <FaCopy
+                      style={{
+                        color: "#FF7F50",
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                      }}
+                      onMouseLeave={() => setCopySuccess("")}
+                    />
+                  </CopyToClipboard>
+                </OverlayTrigger>
+              </span>
+            </ListGroup.Item>
+          </ListGroup>
+        </div>
         <div className="mt-2 bg-light p-3 rounded border">
           <InputGroup>
             <InputGroup.Text id="label-share-user">Share with:</InputGroup.Text>
@@ -99,6 +143,7 @@ export function ShareModal(props: ShareModalProps) {
               Confirm
             </Button>
           </InputGroup>
+
           {qShares.data && (
             <div className="mt-2">
               <small>

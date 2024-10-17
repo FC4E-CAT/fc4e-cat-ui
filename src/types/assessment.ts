@@ -33,7 +33,7 @@ export interface Assessment {
   actor: AssessmentActor;
   organisation: AssessmentOrg;
   result: AssessmentResult;
-  principles: Principle[];
+  principles: AssessmentPrinciple[];
   published: boolean;
   shared_with_user: boolean;
 }
@@ -76,25 +76,27 @@ export interface AssessmentResult {
 }
 
 /** An assessment contains a list of principles */
-export interface Principle {
+export interface AssessmentPrinciple {
   id: string;
   name: string;
-  criteria: Criterion[];
+  criteria: AssessmentCriterion[];
   description: string;
 }
 
 /** Each principle contains a list of criteria */
-export interface Criterion {
+export interface AssessmentCriterion {
   id: string;
   name: string;
-  imperative: CriterionImperative;
+  imperative: AssessmentCriterionImperative;
   metric: Metric;
   description?: string;
 }
 
 /** Each criterion can be either mandatory (must) or optional (should) */
-export enum CriterionImperative {
+export enum AssessmentCriterionImperative {
   Must = "must",
+  MUST = "MUST",
+  SHOULD = "SHOULD",
   Should = "should",
 }
 
@@ -106,6 +108,7 @@ export interface Metric {
   value: number | null;
   result: number | null;
   tests: AssessmentTest[];
+  benchmark_value?: number;
 }
 
 /** Each metric has a type. For now, we only deal with type: number  */
@@ -123,6 +126,7 @@ export enum MetricAlgorithm {
 export type Benchmark = Record<string, string | number>;
 
 /** Each metric has a list of tests. Test can be of different kinds */
+
 export interface TestBinary {
   id: string;
   name: string;
@@ -133,6 +137,20 @@ export interface TestBinary {
   result: number | null;
   value: boolean | null;
   evidence_url?: EvidenceURL[];
+}
+
+export interface TestBinaryParam {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type: "Binary-Binary" | "Binary-Manual" | "Binary-Manual-Evidence";
+  text: string;
+  result: number | null;
+  value: boolean | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
 }
 
 export interface TestValue {
@@ -151,6 +169,38 @@ export interface TestValue {
   benchmark: Benchmark;
   evidence_url?: EvidenceURL[];
 }
+
+export interface TestValueParam {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type:
+    | "Number-Manual"
+    | "Number-Auto"
+    | "Ratio-Manual"
+    | "Percent-Manual"
+    | "TRL-Manual"
+    | "Years-Manual";
+  text: string;
+  result: number | null;
+  value: number | null;
+  threshold?: number | null;
+  value_name: string;
+  threshold_name?: string;
+  threshold_locked?: boolean;
+  tool_tip: string;
+  params: string;
+  benchmark: Benchmark;
+  evidence_url?: EvidenceURL[];
+}
+
+/** Supported tests: Binary | Value | BinaryParam | ValueParam **/
+export type AssessmentTest =
+  | TestValue
+  | TestBinary
+  | TestBinaryParam
+  | TestValueParam;
 
 export interface EvidenceURL {
   url: string;
@@ -210,13 +260,20 @@ export interface AssessmentListItem {
   id: string;
   name: string;
   user_id: string;
+  type: string;
+  compliance: string;
+  ranking: number;
   validation_id: number;
-  created_on: number;
+  created_on: string;
   updated_on: string;
   template_id: number;
   published: boolean;
   shared_to_user: boolean;
+  shared_by_user: boolean;
   shared: boolean;
+  subject_type: string;
+  subject_name: string;
+  organisation: string;
 }
 
 export type AsmtEligibilityResponse = ResponsePage<ActorOrgAsmtType[]>;
@@ -230,9 +287,6 @@ export interface AssessmentDetailsResponse {
   shared_to_user: boolean;
   assessment_doc: Assessment;
 }
-
-/** Each assessment test will gonna have different types - right now only two types: binary/value test are supported  */
-export type AssessmentTest = TestValue | TestBinary;
 
 export interface ObjectListItem {
   id: string;

@@ -3,9 +3,11 @@ import {
   Col,
   ListGroup,
   Nav,
+  OverlayTrigger,
   // OverlayTrigger,
   Row,
   Tab,
+  Tooltip,
   // Tooltip,
 } from "react-bootstrap";
 import {
@@ -23,10 +25,14 @@ import {
   FaHeartPulse,
 } from "react-icons/fa6";
 import {
+  AssessmentPrinciple,
   AssessmentTest,
-  CriterionImperative,
+  AssessmentCriterionImperative,
+  TestBinary,
+  TestValue,
+  TestBinaryParam,
+  TestValueParam,
   // MetricAlgorithm,
-  Principle,
 } from "@/types";
 import {
   TestBinaryForm,
@@ -35,9 +41,11 @@ import {
 import { FaCheckCircle, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { CriterionProgress } from "./CriterionProgress";
+import { TestBinaryParamForm } from "./tests/TestBinaryParam";
+import { TestValueFormParam } from "./tests/TestValueFormParam";
 
 type CriteriaTabsProps = {
-  principles: Principle[];
+  principles: AssessmentPrinciple[];
   resetActiveTab: boolean;
   handleGuide(id: string, title: string, text: string): void;
   handleGuideClose(): void;
@@ -63,7 +71,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       props.principles.length > 0 &&
       props.principles[0].criteria.length > 0
     ) {
-      const firstCriterion = props.principles[0].criteria[0].id;
+      const firstCriterion =
+        props.principles[0].id + props.principles[0].criteria[0].id;
+
       setActiveKey(firstCriterion);
       // when you set the active tab reset the signal to false
       props.onResetActiveTab();
@@ -72,7 +82,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
 
   props.principles.forEach((principle) => {
     navs.push(
-      <div className="cat-menu-principal">
+      <div className="cat-menu-principal" key={principle.id}>
         <span className="cat-menu-principal-name">
           {principle.id === "P1" && (
             <FaCableCar className="met-2" color="green" width="2em" />
@@ -123,9 +133,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
     );
     principle.criteria.forEach((criterion) => {
       navs.push(
-        <Nav.Item key={criterion.id} className="cat-crit-tab">
+        <Nav.Item key={principle.id + criterion.id} className="cat-crit-tab">
           <Nav.Link
-            eventKey={criterion.id}
+            eventKey={principle.id + criterion.id}
             className="p-0"
             onClick={() => {
               props.handleGuideClose();
@@ -135,7 +145,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
               <div className="d-flex">
                 <h6
                   className={
-                    criterion.imperative === CriterionImperative.Must
+                    criterion.imperative ===
+                      AssessmentCriterionImperative.Must ||
+                    criterion.imperative === AssessmentCriterionImperative.MUST
                       ? "fw-bold"
                       : ""
                   }
@@ -149,7 +161,9 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                     <FaCheckCircle className="ms-2 text-success" />
                   )}
                 </h6>
-                {criterion.imperative === CriterionImperative.Must && (
+                {(criterion.imperative === AssessmentCriterionImperative.Must ||
+                  criterion.imperative ===
+                    AssessmentCriterionImperative.MUST) && (
                   <div>
                     <small
                       style={{ fontSize: "0.6rem" }}
@@ -169,44 +183,83 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
       const testList: JSX.Element[] = [];
 
       // store state of test results
-      criterion.metric.tests.forEach((test) => {
-        if (test.type === "binary") {
-          testList.push(
-            <div className="border mt-4" key={test.id}>
-              <div className="cat-test-div">
-                <TestBinaryForm
-                  test={test}
-                  onTestChange={props.onTestChange}
-                  criterionId={criterion.id}
-                  principleId={principle.id}
-                  handleGuide={props.handleGuide}
-                />
-              </div>
-            </div>,
-          );
-        } else if (test.type === "value") {
-          testList.push(
-            <div className="border mt-4" key={test.id}>
-              <div className="cat-test-div">
-                <TestValueForm
-                  test={test}
-                  onTestChange={props.onTestChange}
-                  criterionId={criterion.id}
-                  principleId={principle.id}
-                  handleGuide={props.handleGuide}
-                />
-              </div>
-            </div>,
-          );
-        }
-      });
+
+      criterion.metric.tests &&
+        criterion.metric.tests.forEach((test) => {
+          if (test.type === "binary") {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestBinaryForm
+                    test={test as TestBinary}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                    handleGuide={props.handleGuide}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (
+            test.type === "Binary-Manual-Evidence" ||
+            test.type === "Binary-Binary" ||
+            test.type === "Binary-Manual"
+          ) {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestBinaryParamForm
+                    test={test as TestBinaryParam}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (test.type === "value") {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestValueForm
+                    test={test as TestValue}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                    handleGuide={props.handleGuide}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (
+            test.type === "Number-Manual" ||
+            test.type === "Number-Auto" ||
+            test.type === "Ratio-Manual" ||
+            test.type === "Percent-Manual" ||
+            test.type === "TRL-Manual" ||
+            test.type === "Years-Manual"
+          ) {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestValueFormParam
+                    test={test as TestValueParam}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          }
+        });
 
       // add criterion content
       tabs.push(
         <Tab.Pane
-          key={criterion.id}
+          key={principle.id + criterion.id}
           className="text-dark"
-          eventKey={criterion.id}
+          eventKey={principle.id + criterion.id}
         >
           {/* add a principle info box before criterion content */}
 
@@ -220,7 +273,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   {criterion.id}: {criterion.name}
                 </span>
 
-                {criterion.imperative === CriterionImperative.Must ? (
+                {criterion.imperative === AssessmentCriterionImperative.Must ||
+                criterion.imperative === AssessmentCriterionImperative.MUST ? (
                   <span className="badge bg-success bg-small ms-4 align-middle">
                     Required
                   </span>
@@ -236,11 +290,18 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                   <span className="align-middle">
                     part of principle {principle.id}: {principle.name}{" "}
                   </span>
-
-                  <FaInfoCircle
-                    title={principle.description}
-                    className="text-secondary opacity-50 align-middle"
-                  />
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip id={`tip-pri-${principle.id}`}>
+                        {principle.description}
+                      </Tooltip>
+                    }
+                  >
+                    <span>
+                      <FaInfoCircle className="text-secondary opacity-50 align-middle" />
+                    </span>
+                  </OverlayTrigger>
                 </div>
               </div>
             </div>
@@ -259,10 +320,16 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
     >
       <Row className="border p-0">
         <Col sm={4} className="cat-crit-sidebar p-0">
-          <Nav className="flex-column cat-asmt-nav">{navs}</Nav>
+          <div className="cat-viewport-scroll cat-view-reverse">
+            <div className="cat-view-reverse-reverse">
+              <Nav className="flex-column cat-asmt-nav">{navs}</Nav>
+            </div>
+          </div>
         </Col>
         <Col sm={8}>
-          <Tab.Content>{tabs}</Tab.Content>
+          <div className="cat-viewport-scroll">
+            <Tab.Content>{tabs}</Tab.Content>
+          </div>
         </Col>
       </Row>
     </Tab.Container>

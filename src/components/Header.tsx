@@ -92,6 +92,12 @@ function Header() {
                     {userProfile?.user_type === "Admin" && (
                       <>
                         <Dropdown.Divider />
+                        <Dropdown.Item as={Link} to="/motivations">
+                          <FaShieldAlt /> Motivations
+                        </Dropdown.Item>
+                        <Dropdown.Item as={Link} to="/principles">
+                          <FaShieldAlt /> Principles
+                        </Dropdown.Item>
                         <Dropdown.Item as={Link} to="/admin/users">
                           <FaShieldAlt /> Users
                         </Dropdown.Item>

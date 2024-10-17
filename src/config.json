@@ -5,5 +5,9 @@
   },
   "embedded_views": {
     "pid_selection_view": ""
+  },
+  "relation_ids": {
+    "motivation_principle": "isSupportedBy",
+    "motivation_actor": "dcterms:isRequiredBy"
   }
 }

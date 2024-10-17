@@ -28,6 +28,13 @@ import AdminValidations from "./pages/admin/AdminValidations";
 import PidSelection from "./pages/PidSelection";
 import AssessmentsTable from "./pages/admin/AssessmentsTable";
 import ViewUsers from "./pages/admin/ViewUsers";
+import Motivations from "./pages/motivations/Motivations";
+import MotivationDetails from "./pages/motivations/MotivationDetails";
+import Principles from "./pages/principles/Principles";
+import PrincipleDetails from "./pages/principles/PrincipleDetails";
+import MotivationActorCriteria from "./pages/motivations/MotivationActorCriteria";
+import AssessmentView from "./pages/assessments/AssessmentView";
+import { MotivationAssessmentEditor } from "./pages/assessments/MotivationAssessmentEditor";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +113,16 @@ function App() {
                     />
                   </Route>
                   <Route
+                    path="/assessments/:asmtId/view"
+                    element={<ProtectedRoute />}
+                  >
+                    {/* Use AssessmentView component with isPublic = false */}
+                    <Route
+                      index
+                      element={<AssessmentView isPublic={false} />}
+                    />
+                  </Route>
+                  <Route
                     path="/assessments/:asmtId"
                     element={<ProtectedRoute />}
                   >
@@ -125,6 +142,11 @@ function App() {
                     path="/public-assessments"
                     element={<AssessmentsList listPublic={true} />}
                   />
+                  <Route
+                    path="/public-assessments/:asmtId/view"
+                    element={<AssessmentView isPublic={true} />}
+                  />
+
                   <Route path="/assessments/view" element={<ProtectedRoute />}>
                     <Route index element={<AssessmentsTable />} />
                   </Route>
@@ -188,6 +210,30 @@ function App() {
                         <ValidationDetails admin={true} toApprove={true} />
                       }
                     />
+                  </Route>
+                  <Route path="/motivations" element={<ProtectedRoute />}>
+                    <Route index element={<Motivations />} />
+                  </Route>
+                  <Route path="/motivations/:id" element={<ProtectedRoute />}>
+                    <Route index element={<MotivationDetails />} />
+                  </Route>
+                  <Route
+                    path="/motivations/:mtvId/actors/:actId"
+                    element={<ProtectedRoute />}
+                  >
+                    <Route index element={<MotivationActorCriteria />} />
+                  </Route>
+                  <Route
+                    path="/motivations/:mtvId/templates/actors/:actId"
+                    element={<ProtectedRoute />}
+                  >
+                    <Route index element={<MotivationAssessmentEditor />} />
+                  </Route>
+                  <Route path="/principles" element={<ProtectedRoute />}>
+                    <Route index element={<Principles />} />
+                  </Route>
+                  <Route path="/principles/:id" element={<ProtectedRoute />}>
+                    <Route index element={<PrincipleDetails />} />
                   </Route>
                   <Route path="/login" element={<ProtectedRoute />}>
                     <Route index element={<Profile />} />

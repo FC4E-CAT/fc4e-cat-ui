@@ -9,6 +9,7 @@ import { InputGroup, Form, Row, Col } from "react-bootstrap";
 interface EvidenceURLSProps {
   urls: EvidenceURL[];
   onListChange(newURLs: EvidenceURL[]): void;
+  noTitle?: boolean;
 }
 
 export const EvidenceURLS = (props: EvidenceURLSProps) => {
@@ -29,7 +30,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
         const updatedURLs = [...urlList, newURL];
         setUrlList(updatedURLs);
         props.onListChange(updatedURLs);
-        setNewURL({ url: "" });
+        setNewURL({ url: "", description: "" });
         setError("");
       } else {
         setError(
@@ -40,10 +41,12 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
   };
 
   return (
-    <div className="mt-4">
-      <small>
-        <strong>Evidence:</strong>
-      </small>
+    <div className="mt-1">
+      {!props.noTitle && (
+        <small>
+          <strong>Evidence:</strong>
+        </small>
+      )}
 
       {urlList.length > 0 && (
         <ul className="list-group mt-2">
@@ -97,7 +100,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
               id="input-add-url"
               value={newURL.url}
               onChange={(e) => {
-                setNewURL({ ...newURL, url: e.target.value });
+                setNewURL({ ...newURL, url: e.target.value.trim() });
                 setError("");
               }}
               aria-describedby="label-add-url"
