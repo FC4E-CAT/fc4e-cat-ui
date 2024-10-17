@@ -2,6 +2,61 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v2.0.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v2.0.0) (2024-10-16)
+
+### Added:
+
+- CAT-494 Display list of motivations ([#339](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/339))
+- CAT-495 Create new motivation ([#340](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/340))
+- CAT-494 Display motivation Details. CAT-497 Add actor to motivation ([#341](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/341))
+- CAT 505 - Support crud of principles ([#342](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/342))
+- CAT-510 Add principles to motivations ([#343](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/343))
+- CAT-517 Manage criteria for a specific assessment type ([#345](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/345))
+- CAT-520 View assessment results ([#346](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/346))
+- CAT-520: A more user-friendly way of viewing completed assessments ([#367](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/367))
+- CAT-517 Manage Criteria for specific assessment type update ([#354](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/354))
+- CAT-529: Add Share URL in modal ([#371](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/371))
+- CAT-545 Add clone motivation button ([#379](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/379))
+- CAT-526: Motivation View Admin Area ([#383](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/383))
+- Cat 559:Update motivation / criteria per actor page ([#384](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/384))
+- Motivation: added sorting parameters, search option ([#385](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/385))
+- CAT-549 View Assessment per Assessment Type in Motivation Details ([#386](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/386))
+
+### Changed:
+
+- CAT-513 Remove functionality of adding principle to motivation ([#344](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/344))
+- CAT-529: Move the copy function and updated the text ([#372](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/372))
+- CAT:529 Moved copy to a group ([#373](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/373))
+- CAT-544 Make Assessment View statistics dynamic ([#374](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/374))
+- CAT-529: Update css / html ([#375](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/375))
+- CAT-546 Select Imperative when adding new Criteria to Assessment Type ([#376](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/376))
+- CAT-520: Changes to display all different parts of the report ([#377](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/377))
+- CAT-456 Assessment List table in same format as other tables ([#378](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/378))
+- CAT-553 Remove filter toggle functionality from assessment list ([#380](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/380))
+- CAT-525 Avoid scrollups between criteria tabs and test content ([#382](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/382))
+- CAT-456 - User Assessments should follow the same table approach . ([#388](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/388))
+- CAT-566 Update metric to be single object instead of array in assessm… ([#389](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/389))
+- CAT-567 In BinaryTests manage list of params and tooltips given ([#391](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/391))
+- CAT-568 Manage parameters in Value Tests ([#393](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/393))
+- CAT-561 Enable search in motivations list ([#394](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/394))
+- CAT-571: Tabs in motivation ([#395](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/395))
+- CAT-572 Enable hover buttons in assessment lists ([#396](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/396))
+- Update share icon ([#397](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/397))
+- CAT-574 Tabs in motivation details ([#400](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/400))
+- CAT-575 Add Principles & Criteria lists in Motivation Details view ([#401](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/401))
+- update scheme icon ([#404](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/404))
+
+### Fixed:
+
+- CAT-521 Fix evidence url validation - trim input ([#347](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/347))
+- CAT-542 Reinstate MotivationDetails component ([#370](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/370))
+- CAT-555 Fix share badges in new Assessment Table ([#381](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/381))
+- CAT-557 Update motivation-type-id in update motivation details modal ([#398](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/398))
+- CAT-562 Link to correct path for public assessment results ([#399](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/399))
+- various fixes ([#402](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/402))
+- Small fixes ([#403](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/403))
+- CAT-578 fix motivations search and pagination ([#405](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/405))
+
 ## [v1.3.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.3.1) (2024-09-11)
 
 ### Fixed:
