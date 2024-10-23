@@ -8,6 +8,7 @@
   },
   "relation_ids": {
     "motivation_principle": "isSupportedBy",
-    "motivation_actor": "dcterms:isRequiredBy"
+    "motivation_actor": "dcterms:isRequiredBy",
+    "motivation_principle_criterion": "maintainedBy"
   }
 }

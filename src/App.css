@@ -375,6 +375,10 @@ footer a {
   width: max-content;
 }
 
+.cat-vh-40 {
+  height: 40vh;
+}
+
 .cat-vh-60 {
   height: 60vh;
 }
