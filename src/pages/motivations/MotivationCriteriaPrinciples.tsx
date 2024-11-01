@@ -1,9 +1,3 @@
-import {
-  useGetAllCriteria,
-  useGetAllPrinciples,
-  useGetMotivationCriteria,
-  useUpdateMotivationPrinciplesCriteria,
-} from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
 import { AlertInfo, Criterion, Principle } from "@/types";
 import { useState, useContext, useEffect, useRef } from "react";
@@ -22,6 +16,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import MotivationPrinciplesModal from "./components/MotivationPrinciplesModal";
 
 import { relMtvPrincpleCriterion } from "@/config";
+import {
+  useGetAllCriteria,
+  useGetAllPrinciples,
+  useGetMotivationCriteria,
+  useUpdateMotivationPrinciplesCriteria,
+} from "@/api";
 
 export default function MotivationCriteriaPrinciples() {
   const navigate = useNavigate();
