@@ -36,6 +36,8 @@ import MotivationActorCriteria from "./pages/motivations/MotivationActorCriteria
 import AssessmentView from "./pages/assessments/AssessmentView";
 import { MotivationAssessmentEditor } from "./pages/assessments/MotivationAssessmentEditor";
 import MotivationCriteriaPrinciples from "./pages/motivations/MotivationCriteriaPrinciples";
+import Criteria from "./pages/criteria/Criteria";
+import CriterionDetails from "./pages/criteria/CriterionDetails";
 
 const queryClient = new QueryClient();
 
@@ -241,6 +243,12 @@ function App() {
                   </Route>
                   <Route path="/principles/:id" element={<ProtectedRoute />}>
                     <Route index element={<PrincipleDetails />} />
+                  </Route>
+                  <Route path="/criteria" element={<ProtectedRoute />}>
+                    <Route index element={<Criteria />} />
+                  </Route>
+                  <Route path="/criteria/:id" element={<ProtectedRoute />}>
+                    <Route index element={<CriterionDetails />} />
                   </Route>
                   <Route path="/login" element={<ProtectedRoute />}>
                     <Route index element={<Profile />} />

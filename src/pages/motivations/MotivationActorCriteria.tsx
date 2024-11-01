@@ -3,7 +3,8 @@ import {
   useGetMotivationActorCriteria,
   useGetMotivationCriteria,
   useUpdateMotivationActorCriteria,
-} from "@/api/services/motivations";
+} from "@/api";
+
 import { AuthContext } from "@/auth";
 import { AlertInfo, Criterion, Imperative } from "@/types";
 import { useState, useContext, useEffect, useRef } from "react";

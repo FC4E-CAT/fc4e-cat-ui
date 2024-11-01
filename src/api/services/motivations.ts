@@ -11,7 +11,6 @@ import {
   ApiMotivations,
   ApiOptions,
   CriImp,
-  ImperativeResponse,
   Motivation,
   MotivationActorResponse,
   MotivationInput,
@@ -104,83 +103,6 @@ export const useGetAllActors = ({ token, isRegistered, size }: ApiOptions) =>
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<MotivationActorResponse>(
         `/registry/actors?size=${size}&page=${pageParam}`,
-      );
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
-      } else {
-        return undefined;
-      }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
-    retry: false,
-    enabled: isRegistered,
-  });
-
-export const useGetAllCriteria = ({ token, isRegistered, size }: ApiOptions) =>
-  useInfiniteQuery({
-    queryKey: ["all-criteria"],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await APIClient(token).get<CriterionResponse>(
-        `/registry/criteria?size=${size}&page=${pageParam}`,
-      );
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
-      } else {
-        return undefined;
-      }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
-    retry: false,
-    enabled: isRegistered,
-  });
-
-export const useGetAllPrinciples = ({
-  token,
-  isRegistered,
-  size,
-}: ApiOptions) =>
-  useInfiniteQuery({
-    queryKey: ["all-principles"],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await APIClient(token).get<PrincipleResponse>(
-        `/registry/principles?size=${size}&page=${pageParam}`,
-      );
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
-      } else {
-        return undefined;
-      }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
-    retry: false,
-    enabled: isRegistered,
-  });
-
-export const useGetAllImperatives = ({
-  token,
-  isRegistered,
-  size,
-}: ApiOptions) =>
-  useInfiniteQuery({
-    queryKey: ["all-imperatives"],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await APIClient(token).get<ImperativeResponse>(
-        `/registry/imperatives?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },

@@ -10,5 +10,9 @@
     "motivation_principle": "isSupportedBy",
     "motivation_actor": "dcterms:isRequiredBy",
     "motivation_principle_criterion": "maintainedBy"
+  },
+  "default_values": {
+    "criterion_type": "Criterion",
+    "criterion_imperative": "MUST"
   }
 }
