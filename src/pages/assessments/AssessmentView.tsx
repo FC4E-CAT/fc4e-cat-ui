@@ -185,11 +185,11 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                       </span>
                     </Col>
                     <Col className="text-center col-lg-2"></Col>
-                    <Col className="text-center col-lg-4">
+                    <Col className="align-items-center col-lg-4">
                       <span className="font-weight-500  text-gray-500">
                         <strong> Mandatory</strong>
                       </span>
-                      <p>
+                      <p className="circle-70-grey">
                         <span className="fs-1 text-success bold">
                           {stats.completed_mandatory}
                         </span>
@@ -198,11 +198,11 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                         </span>
                       </p>
                     </Col>
-                    <Col className="col-md-auto col col-lg-4  text-center">
+                    <Col className="col-md-auto col col-lg-4  align-items-center">
                       <span className="font-weight-500  text-gray-500">
                         <strong> Optional</strong>
                       </span>
-                      <p>
+                      <p className="circle-70-grey">
                         <span className="fs-1 text-warning bold">
                           {stats.completed_optional}
                         </span>
