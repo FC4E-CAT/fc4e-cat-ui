@@ -1,63 +1,84 @@
-import {
-  useGetAllImperatives,
-  useGetMotivationActorCriteria,
-  useGetMotivationCriteria,
-  useUpdateMotivationActorCriteria,
-} from "@/api";
-
 import { AuthContext } from "@/auth";
-import { AlertInfo, Criterion, Imperative } from "@/types";
+import { AlertInfo, Criterion, Principle } from "@/types";
 import { useState, useContext, useEffect, useRef } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
-import { FaAward, FaInfo, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
+import {
+  FaAward,
+  FaExclamationTriangle,
+  FaInfo,
+  FaMinusCircle,
+  FaPlusCircle,
+  FaTags,
+} from "react-icons/fa";
 import { FaTrashCan } from "react-icons/fa6";
-import {} from "react-icons/fa6";
 import { useParams, useNavigate } from "react-router-dom";
+import MotivationPrinciplesModal from "./components/MotivationPrinciplesModal";
 
-export default function MotivationActorCriteria() {
+import { relMtvPrincpleCriterion } from "@/config";
+import {
+  useGetAllCriteria,
+  useGetAllPrinciples,
+  useGetMotivationCriteria,
+  useUpdateMotivationPrinciplesCriteria,
+} from "@/api";
+
+export default function MotivationCriteriaPrinciples() {
   const navigate = useNavigate();
   const params = useParams();
 
   const { keycloak, registered } = useContext(AuthContext)!;
 
-  const [imperatives, setImperatives] = useState<Map<string, Imperative>>(
-    new Map(),
-  );
   const [availableCriteria, setAvailableCriteria] = useState<Criterion[]>([]);
-  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
-
-  const mutationUpdate = useUpdateMotivationActorCriteria(
-    keycloak?.token || "",
-    params.mtvId || "",
-    params.actId || "",
+  const [availablePrinciples, setAvailablePrinciples] = useState<Principle[]>(
+    [],
   );
+  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
+  const [targetCriterion, setTargetCriterion] = useState<Criterion | null>(
+    null,
+  );
+  const [showManagePrinciples, setShowManagePrinciples] = useState(false);
 
   const alert = useRef<AlertInfo>({
     message: "",
   });
 
-  const tooltipDeletePrinciple = (
-    <Tooltip id="tip-restore">
-      Delete this principle from the list of Principles for this actor.
-    </Tooltip>
-  );
-
   const {
-    data: impData,
-    fetchNextPage: impFetchNextPage,
-    hasNextPage: impHasNextPage,
-  } = useGetAllImperatives({
+    data: priData,
+    fetchNextPage: priFetchNextPage,
+    hasNextPage: priHasNextPage,
+  } = useGetAllPrinciples({
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
 
+  useEffect(() => {
+    // gather all available principles in one array
+    let tmpPri: Principle[] = [];
+
+    // iterate over backend pages and gather all items in the pri array
+    if (priData?.pages) {
+      priData.pages.map((page) => {
+        tmpPri = [...tmpPri, ...page.content];
+      });
+      if (priHasNextPage) {
+        priFetchNextPage();
+      }
+    }
+    setAvailablePrinciples(tmpPri);
+  }, [priData, priHasNextPage, priFetchNextPage]);
+
+  const mutationUpdate = useUpdateMotivationPrinciplesCriteria(
+    keycloak?.token || "",
+    params.mtvId || "",
+  );
+
   const {
     data: criData,
     fetchNextPage: criFetchNextPage,
     hasNextPage: criHasNextPage,
-  } = useGetMotivationCriteria(params.mtvId || "", {
+  } = useGetAllCriteria({
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
@@ -67,28 +88,11 @@ export default function MotivationActorCriteria() {
     data: selCriData,
     fetchNextPage: selCriFetchNextPage,
     hasNextPage: selCriHasNextPage,
-  } = useGetMotivationActorCriteria(params.mtvId || "", params.actId || "", {
+  } = useGetMotivationCriteria(params.mtvId || "", {
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
-
-  useEffect(() => {
-    // gather all imperatives in one dictionary
-    const tmpImp: Map<string, Imperative> = new Map();
-    // iterate over backend pages and gather all items in the imp dictionary, keyed by imp id
-    if (impData?.pages) {
-      impData.pages.map((page) => {
-        page.content.forEach((item) => {
-          tmpImp.set(item.id, item);
-        });
-      });
-      if (impHasNextPage) {
-        impFetchNextPage();
-      }
-    }
-    setImperatives(tmpImp);
-  }, [impData, impHasNextPage, impFetchNextPage]);
 
   useEffect(() => {
     // gather all motivation actor criteria in one array
@@ -127,53 +131,68 @@ export default function MotivationActorCriteria() {
     setAvailableCriteria(tmpCri.filter((item) => !selCri.includes(item.cri)));
   }, [criData, criHasNextPage, criFetchNextPage, selectedCriteria]);
 
-  function handleUpdateImperative(
-    index: number,
-    criImp: Imperative | undefined,
-  ) {
-    if (criImp === undefined) return;
-    setSelectedCriteria((prevSelCriteria) =>
-      prevSelCriteria.map((selCri, selCriIndx) =>
-        selCriIndx === index
-          ? {
-              ...selCri,
-              imperative: criImp,
-            }
-          : selCri,
-      ),
-    );
-  }
-
   function handleUpdate() {
-    if (selectedCriteria.length > 0) {
-      const criImp = selectedCriteria.map((item) => ({
-        criterion_id: item.id,
-        imperative_id: item.imperative.id,
-      }));
+    if (selectedCriteria) {
+      const priCri = selectedCriteria.flatMap((cri) =>
+        cri.principles.map((pri) => ({
+          criterion_id: cri.id,
+          principle_id: pri.id,
+          annotation_url: "",
+          annotation_text: "",
+          relation: relMtvPrincpleCriterion,
+        })),
+      );
       const promise = mutationUpdate
-        .mutateAsync(criImp)
+        .mutateAsync(priCri)
         .catch((err) => {
           alert.current = {
-            message: "Error during saving Assessment Type Criteria!",
+            message: "Error during saving Motivation Criteria & Principles!",
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Assessment Type Criteria Saved!",
+            message: "Motivation Criteria & Principles Saved!",
           };
-          navigate(-1);
+          navigate(`/motivations/${params.mtvId}`);
         });
       toast.promise(promise, {
-        loading: "Saving Assessment Type Criteria...",
+        loading: "Saving Motivation Criteria & Principles...",
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
     }
   }
 
+  const handleUpdatePrinciples = (
+    criterionId: string,
+    principles: Principle[],
+  ) => {
+    setSelectedCriteria((prevSelCriteria) =>
+      prevSelCriteria.map((criterion) =>
+        criterion.id === criterionId
+          ? { ...criterion, principles: principles }
+          : criterion,
+      ),
+    );
+  };
+
+  const allPrinciplesSet = selectedCriteria.every(
+    (item) => item.principles && item.principles.length > 0,
+  );
+
   return (
     <div className="pb-4">
+      <MotivationPrinciplesModal
+        principles={availablePrinciples}
+        criterion={targetCriterion}
+        show={showManagePrinciples}
+        onHide={() => {
+          setShowManagePrinciples(false);
+          setTargetCriterion(null);
+        }}
+        handleUpdatePrinciples={handleUpdatePrinciples}
+      />
       <Row className="cat-view-heading-block row border-bottom">
         <Col>
           <h2 className="text-muted cat-view-heading ">
@@ -226,17 +245,15 @@ export default function MotivationActorCriteria() {
       <Row className="mt-4  pb-4">
         <Col className="px-4">
           <div>
-            <strong className="p-1">
-              Available Criteria in this motivation{" "}
-            </strong>
-            <span className="badge bg-primary rounded-pill fs-6">
+            <strong className="p-1">Available Criteria</strong>
+            <span className="ms-1 badge bg-primary rounded-pill fs-6">
               {availableCriteria.length}
             </span>
           </div>
           <div className="alert alert-primary p-2 mt-1">
             <small>
               <FaPlusCircle className="me-2" /> Click an item below to add it to
-              this assessment type...
+              this Motivation...
             </small>
           </div>
           <div className="cat-vh-60 overflow-auto">
@@ -260,14 +277,15 @@ export default function MotivationActorCriteria() {
 
                 <div className="text-muted text-sm">{item.description}</div>
                 <div>
-                  {item.principles.map((principle) => (
-                    <span
-                      key={principle.id}
-                      className="badge bg-light text-dark me-1 text-ms border"
-                    >
-                      {principle.pri} - {principle.label}
-                    </span>
-                  ))}
+                  {item.principles &&
+                    item.principles.map((principle) => (
+                      <span
+                        key={principle.id}
+                        className="badge bg-light text-dark me-1 text-ms border"
+                      >
+                        {principle.pri} - {principle.label}
+                      </span>
+                    ))}
                 </div>
               </div>
             ))}
@@ -276,7 +294,7 @@ export default function MotivationActorCriteria() {
         <Col>
           <div>
             <strong className="p-1">
-              Criteria included in the Assessment Type
+              Criteria included in this motivation
             </strong>
             <span className="badge bg-primary rounded-pill fs-6">
               {selectedCriteria.length}
@@ -290,38 +308,49 @@ export default function MotivationActorCriteria() {
           </div>
           <div>
             <div className="cat-vh-60 overflow-auto">
-              {selectedCriteria?.map((item, index) => (
-                <div key={item.cri} className="mb-4 p-2 cat-select-item">
+              {selectedCriteria?.map((item) => (
+                <div
+                  key={item.cri}
+                  className={`mb-4 p-2 cat-select-item ${!item.principles || item.principles.length === 0 ? "border rounded border-danger" : null}`}
+                >
+                  {(!item.principles || item.principles.length === 0) && (
+                    <div className="text-danger mb-1">
+                      <small>
+                        <FaExclamationTriangle /> No principles defined! -
+                        Please use the button below to manage them...
+                      </small>
+                    </div>
+                  )}
                   <div className="d-inline-flex align-items-center">
                     <div>
                       <FaAward className="me-2" />
                       <strong>
                         {item.cri} - {item.label}
                       </strong>
-                      <select
-                        className="ms-2 badge badge-sm bg-light text-success border border-success"
-                        value={item.imperative.id}
-                        onChange={(e) => {
-                          handleUpdateImperative(
-                            index,
-                            imperatives.get(e.target.value),
-                          );
-                        }}
-                      >
-                        {Array.from(imperatives.values()).map((impItem) => (
-                          <option key={impItem.id} value={impItem.id}>
-                            {impItem.label}
-                          </option>
-                        ))}
-                      </select>
                       <OverlayTrigger
                         placement="top"
-                        overlay={tooltipDeletePrinciple}
+                        overlay={<Tooltip>Manage Principles</Tooltip>}
                       >
                         <Button
                           size="sm"
                           variant="light"
                           className="ms-4"
+                          onClick={() => {
+                            setTargetCriterion(item);
+                            setShowManagePrinciples(true);
+                          }}
+                        >
+                          <FaTags className="text-dark" />
+                        </Button>
+                      </OverlayTrigger>
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip>Delete Criterion</Tooltip>}
+                      >
+                        <Button
+                          size="sm"
+                          variant="light"
+                          className="ms-2"
                           onClick={() => {
                             setSelectedCriteria(
                               selectedCriteria.filter(
@@ -338,14 +367,15 @@ export default function MotivationActorCriteria() {
 
                   <div className="text-muted text-sm">{item.description}</div>
                   <div>
-                    {item.principles.map((principle) => (
-                      <span
-                        key={principle.pri}
-                        className="badge bg-light text-dark me-1 text-ms border"
-                      >
-                        {principle.pri} - {principle.label}
-                      </span>
-                    ))}
+                    {item.principles &&
+                      item.principles.map((principle) => (
+                        <span
+                          key={principle.pri}
+                          className="badge bg-light text-dark me-1 text-ms border"
+                        >
+                          {principle.pri} - {principle.label}
+                        </span>
+                      ))}
                   </div>
                 </div>
               ))}
@@ -357,7 +387,7 @@ export default function MotivationActorCriteria() {
         <Button
           variant="secondary"
           onClick={() => {
-            navigate(-1);
+            navigate(`/motivations/${params.mtvId}`);
           }}
         >
           Back
@@ -367,6 +397,7 @@ export default function MotivationActorCriteria() {
           onClick={() => {
             handleUpdate();
           }}
+          disabled={!allPrinciplesSet}
         >
           Save
         </Button>

@@ -1,6 +1,11 @@
 import { AxiosError } from "axios";
 import { APIClient } from "@/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
 import {
   ApiOptions,
@@ -52,6 +57,33 @@ export const useGetPrinciple = ({
       return handleBackendError(error);
     },
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
+  });
+
+export const useGetAllPrinciples = ({
+  token,
+  isRegistered,
+  size,
+}: ApiOptions) =>
+  useInfiniteQuery({
+    queryKey: ["all-principles"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<PrincipleResponse>(
+        `/registry/principles?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
   });
 
 export const useCreatePrinciple = (

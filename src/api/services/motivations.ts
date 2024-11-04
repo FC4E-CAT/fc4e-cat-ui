@@ -11,12 +11,12 @@ import {
   ApiMotivations,
   ApiOptions,
   CriImp,
-  ImperativeResponse,
   Motivation,
   MotivationActorResponse,
   MotivationInput,
   MotivationResponse,
   MotivationTypeResponse,
+  PrincipleCriterion,
   PrincipleResponse,
   RelationResponse,
 } from "@/types";
@@ -103,60 +103,6 @@ export const useGetAllActors = ({ token, isRegistered, size }: ApiOptions) =>
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<MotivationActorResponse>(
         `/registry/actors?size=${size}&page=${pageParam}`,
-      );
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
-      } else {
-        return undefined;
-      }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
-    retry: false,
-    enabled: isRegistered,
-  });
-
-export const useGetAllPrinciples = ({
-  token,
-  isRegistered,
-  size,
-}: ApiOptions) =>
-  useInfiniteQuery({
-    queryKey: ["all-principles"],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await APIClient(token).get<PrincipleResponse>(
-        `/registry/principles?size=${size}&page=${pageParam}`,
-      );
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
-      } else {
-        return undefined;
-      }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
-    retry: false,
-    enabled: isRegistered,
-  });
-
-export const useGetAllImperatives = ({
-  token,
-  isRegistered,
-  size,
-}: ApiOptions) =>
-  useInfiniteQuery({
-    queryKey: ["all-imperatives"],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await APIClient(token).get<ImperativeResponse>(
-        `/registry/imperatives?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -385,6 +331,25 @@ export function useUpdateMotivationActorCriteria(
     // on change refresh motivation-actor-criteria list
     onSuccess: () => {
       queryClient.invalidateQueries(["motivation-actor-criteria"]);
+    },
+  });
+}
+
+export function useUpdateMotivationPrinciplesCriteria(
+  token: string,
+  mtvId: string,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (putData: PrincipleCriterion[]) => {
+      return APIClient(token).put(
+        `/registry/motivations/${mtvId}/principles-criteria`,
+        putData,
+      );
+    },
+    // on change refresh motivation-principle-criteria list
+    onSuccess: () => {
+      queryClient.invalidateQueries(["motivation-principles-criteria"]);
     },
   });
 }
