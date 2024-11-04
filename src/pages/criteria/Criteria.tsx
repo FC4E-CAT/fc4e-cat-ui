@@ -185,7 +185,7 @@ export default function Criteria() {
                         <OverlayTrigger placement="top" overlay={tooltipView}>
                           <Link
                             className="btn btn-light btn-sm m-1"
-                            to={`/criteria/${item.id}`}
+                            to={`/admin/criteria/${item.id}`}
                           >
                             <FaBars />
                           </Link>

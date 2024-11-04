@@ -228,7 +228,23 @@
   transition: all 0.2s ease-in;
 }
 
+.cat-menu-selected {
+  background-color: #e2e1e2;
+}
+
 .cat-nav-link:hover {
+  background-color: #e2e1e2;
+}
+
+.cat-nav-link-light {
+  display: block;
+  padding: 5px;
+  color: black;
+  text-decoration: none;
+  transition: all 0.2s ease-in;
+}
+
+.cat-nav-link-light:hover {
   background-color: #e2e1e2;
 }
 

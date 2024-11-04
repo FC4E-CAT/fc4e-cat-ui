@@ -61,61 +61,51 @@ function Assessments() {
   }
 
   return (
-    <div>
-      <>
-        <div className="cat-view-heading-block row border-bottom">
-          <div className="col">
-            <h2 className="cat-view-heading text-muted">
-              Assessments
-              <p className="lead cat-view-lead">
-                Read about different actors in the ecosystem before starting.
-              </p>
-            </h2>
-          </div>
-          {authenticated && (
-            <div className="col-md-auto cat-heading-right">
-              <Link
-                id="view_assessments_button"
-                to="/assessments"
-                className="btn btn-light border-black me-3"
-              >
-                <FaList />{" "}
-                <span className="align-middle">View your Assessments</span>
-              </Link>
-              <Link
-                id="assessment_form_button"
-                to={`/assessments/create`}
-                className="btn btn-warning me-3"
-              >
-                <FaPlus /> <span className="align-middle">Create New</span>
-              </Link>
-              <Link
-                id="assessment_form_button"
-                to={`/assessments/import`}
-                className="btn btn-info"
-              >
-                <FaFileImport /> <span className="align-middle">Import</span>
-              </Link>
-            </div>
-          )}
+    <div className="container rounded bg-white mt-1 mb-5">
+      <div className="cat-view-heading-block row border-bottom">
+        <div className="col">
+          <h2 className="cat-view-heading text-muted">
+            Assessments
+            <p className="lead cat-view-lead">
+              Read about different actors in the ecosystem before starting.
+            </p>
+          </h2>
         </div>
-      </>
-      <>
-        <Row
-          xs={2}
-          sm={2}
-          md={3}
-          lg={4}
-          xl={5}
-          className="px-4 g-4 d-flex mt-2"
-        >
-          {cardProps.map((c, index) => (
-            <Col key={index}>
-              <ActorCard key={index} {...c} />
-            </Col>
-          ))}
-        </Row>
-      </>
+        {authenticated && (
+          <div className="col-md-auto cat-heading-right">
+            <Link
+              id="view_assessments_button"
+              to="/assessments"
+              className="btn btn-light border-black me-3"
+            >
+              <FaList />{" "}
+              <span className="align-middle">View your Assessments</span>
+            </Link>
+            <Link
+              id="assessment_form_button"
+              to={`/assessments/create`}
+              className="btn btn-warning me-3"
+            >
+              <FaPlus /> <span className="align-middle">Create New</span>
+            </Link>
+            <Link
+              id="assessment_form_button"
+              to={`/assessments/import`}
+              className="btn btn-info"
+            >
+              <FaFileImport /> <span className="align-middle">Import</span>
+            </Link>
+          </div>
+        )}
+      </div>
+      <Row xs={2} sm={2} md={3} lg={4} xl={5} className="px-4 g-4 d-flex mt-2">
+        {cardProps.map((c, index) => (
+          <Col key={index}>
+            <ActorCard key={index} {...c} />
+          </Col>
+        ))}
+      </Row>
+
       <div className="row py-2 mt-2"></div>
     </div>
   );

@@ -92,13 +92,13 @@ function Header() {
                     {userProfile?.user_type === "Admin" && (
                       <>
                         <Dropdown.Divider />
-                        <Dropdown.Item as={Link} to="/motivations">
+                        <Dropdown.Item as={Link} to="/admin/motivations">
                           <FaShieldAlt /> Motivations
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/principles">
+                        <Dropdown.Item as={Link} to="/admin/principles">
                           <FaShieldAlt /> Principles
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/criteria">
+                        <Dropdown.Item as={Link} to="/admin/criteria">
                           <FaShieldAlt /> Criteria
                         </Dropdown.Item>
                         <Dropdown.Item as={Link} to="/admin/users">
@@ -111,7 +111,7 @@ function Header() {
                         >
                           <FaShieldAlt /> Validations
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/assessments/view">
+                        <Dropdown.Item as={Link} to="/admin/assessments">
                           <FaShieldAlt /> Assessments
                         </Dropdown.Item>
                         <Dropdown.Divider />

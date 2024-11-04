@@ -154,7 +154,7 @@ export default function MotivationCriteriaPrinciples() {
           alert.current = {
             message: "Motivation Criteria & Principles Saved!",
           };
-          navigate(`/motivations/${params.mtvId}`);
+          navigate(`/admin/motivations/${params.mtvId}`);
         });
       toast.promise(promise, {
         loading: "Saving Motivation Criteria & Principles...",
@@ -387,7 +387,7 @@ export default function MotivationCriteriaPrinciples() {
         <Button
           variant="secondary"
           onClick={() => {
-            navigate(`/motivations/${params.mtvId}`);
+            navigate(`/admin/motivations/${params.mtvId}`);
           }}
         >
           Back

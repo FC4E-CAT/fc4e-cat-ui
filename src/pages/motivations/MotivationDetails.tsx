@@ -175,7 +175,7 @@ export default function MotivationDetails() {
             {motivation !== undefined && (
               <Link
                 id="manage-motivation-criteria-principles"
-                to={`/motivations/${motivation.id}/manage-criteria-principles`}
+                to={`/admin/motivations/${motivation.id}/manage-criteria-principles`}
                 className="btn btn-dark mt-4"
               >
                 Manage Criteria & Principles
@@ -332,7 +332,7 @@ export default function MotivationDetails() {
                                 >
                                   <Link
                                     className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/templates/actors/${item.id}`}
+                                    to={`/admin/motivations/${params.id}/templates/actors/${item.id}`}
                                   >
                                     <FaBars />
                                   </Link>
@@ -356,7 +356,7 @@ export default function MotivationDetails() {
                                 >
                                   <Link
                                     className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/actors/${item.id}`}
+                                    to={`/admin/motivations/${params.id}/actors/${item.id}`}
                                   >
                                     <FaAward />
                                   </Link>
@@ -444,7 +444,7 @@ export default function MotivationDetails() {
         <Button
           variant="secondary"
           onClick={() => {
-            navigate(`/motivations`);
+            navigate(`/admin/motivations`);
           }}
         >
           Back

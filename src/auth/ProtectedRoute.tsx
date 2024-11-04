@@ -4,10 +4,13 @@ import { AuthContext } from "@/auth";
 import Keycloak from "keycloak-js";
 import KeycloakConfig from "@/keycloak.json";
 import { useUserRegister, useGetProfile } from "@/api";
+import { Col, Row } from "react-bootstrap";
+import AdminMenu from "@/components/AdminMenu";
 
 export function ProtectedRoute() {
   // check if the current path leads to an admin-view
   const adminRoute = useLocation().pathname.startsWith("/admin");
+
   // load navigate hook to use it to programmaticaly navigate to profile page if needed
   const navigate = useNavigate();
 
@@ -101,7 +104,24 @@ export function ProtectedRoute() {
   }, [authenticated, adminRoute, profileData, navigate]);
 
   if (authenticated && isSuccess && profileData) {
-    return <Outlet />;
+    return adminRoute ? (
+      <Row>
+        <Col md="auto">
+          <div className="rounded bg-white mt-1 mb-5">
+            <AdminMenu />
+          </div>
+        </Col>
+        <Col>
+          <div className="container rounded bg-white mt-1 mb-5">
+            <Outlet />
+          </div>
+        </Col>
+      </Row>
+    ) : (
+      <div className="container rounded bg-white mt-1 mb-5">
+        <Outlet />
+      </div>
+    );
   } else {
     return <></>;
   }

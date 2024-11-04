@@ -188,7 +188,7 @@ export default function Principles() {
                         <OverlayTrigger placement="top" overlay={tooltipView}>
                           <Link
                             className="btn btn-light btn-sm m-1"
-                            to={`/principles/${item.id}`}
+                            to={`/admin/principles/${item.id}`}
                           >
                             <FaBars />
                           </Link>
