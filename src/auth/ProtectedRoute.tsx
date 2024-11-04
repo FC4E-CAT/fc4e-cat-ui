@@ -47,20 +47,6 @@ export function ProtectedRoute() {
           keycloakInstance.onTokenExpired = () => {
             keycloakInstance.updateToken(5);
           };
-          // check every 60 seconds if token needs refreshing
-          setInterval(() => {
-            keycloakInstance
-              .updateToken(80) // if token expires in 80 seconds please refresh
-              .then((refreshed) => {
-                if (refreshed) {
-                  setKeycloak(keycloakInstance);
-                }
-              })
-              .catch(() => {
-                // if any issues during refresh try login
-                keycloakInstance.login();
-              });
-          }, 60000);
           setKeycloak(keycloakInstance);
           setAuthenticated(authenticated);
         }

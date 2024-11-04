@@ -74,14 +74,6 @@ export type MotivationTypeResponse = ResponsePage<MotivationType[]>;
 
 export type MotivationActorResponse = ResponsePage<MotivationActor[]>;
 
-export type PrincipleCriterion = {
-  criterion_id: string;
-  principle_id: string;
-  annotation_url: string;
-  annotation_text: string;
-  relation: string;
-};
-
 export interface MotivationMessage {
   code: string;
   messages: string[];

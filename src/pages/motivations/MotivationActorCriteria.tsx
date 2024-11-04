@@ -3,15 +3,14 @@ import {
   useGetMotivationActorCriteria,
   useGetMotivationCriteria,
   useUpdateMotivationActorCriteria,
-} from "@/api";
-
+} from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
 import { AlertInfo, Criterion, Imperative } from "@/types";
 import { useState, useContext, useEffect, useRef } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
-import { FaAward, FaInfo, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
-import { FaTrashCan } from "react-icons/fa6";
+import { FaInfo, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
+import { FaStar, FaTrashCan } from "react-icons/fa6";
 import {} from "react-icons/fa6";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -249,7 +248,7 @@ export default function MotivationActorCriteria() {
                 }}
               >
                 <div className="d-inline-flex align-items-center">
-                  <FaAward className="me-2" />
+                  <FaStar className="me-2" />
                   <strong>
                     {item.cri} - {item.label}
                   </strong>
@@ -294,7 +293,7 @@ export default function MotivationActorCriteria() {
                 <div key={item.cri} className="mb-4 p-2 cat-select-item">
                   <div className="d-inline-flex align-items-center">
                     <div>
-                      <FaAward className="me-2" />
+                      <FaStar className="me-2" />
                       <strong>
                         {item.cri} - {item.label}
                       </strong>
