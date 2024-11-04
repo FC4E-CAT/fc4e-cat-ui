@@ -156,77 +156,97 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
             <Col></Col>
           </Row>
           <Row className="bg-light">
-            <Col className="col-sm-3 py-3">
-              <Card>
-                <Card.Body>
-                  <h5>Details</h5>
-
-                  <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                    <strong className="text-gray-dark">Actor:</strong>
-                    {assessment.actor.name}
-                  </p>
-                  <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                    <strong className="text-gray-dark">Organization:</strong>
-                    {assessment.organisation.name}
-                  </p>
-                  <p className="media-body pb-3 mb-0 small lh-125">
-                    <strong className="text-gray-dark">Subject:</strong>
-                    {assessment.subject.name} / ({assessment.subject.type})
-                  </p>
-                </Card.Body>
-              </Card>
+            <Col className="col-md-auto col col-lg-3">
+              {assessment.published == true ? (
+                <img src={imgAssessmentBadgePassed} width="80%" />
+              ) : (
+                <img src={imgAssessmentBadgeWip} width="80%" />
+              )}
             </Col>
+
             <Col className="col-sm-9">
               <Row>
-                <div className="card-title h5 py-3">Statistics</div>
-                <Col className="text-center col-lg-1">
-                  <span className="font-weight-500 fs-5 text-gray-500">
-                    Principles:
-                    <span className="fs-5  bold ms-2">
-                      <strong>{stats.total_principles}</strong>
-                    </span>
-                  </span>
-                  <br />
-                  <span className="font-weight-500  fs-5 text-gray-500">
-                    Criteria:
-                    <span className="fs-5  bold ms-2">
-                      <strong>{stats.total_criteria}</strong>
-                    </span>
-                  </span>
+                <Col lassName="col-sm-6">
+                  <Row>
+                    <div className="card-title h5 py-3">Statistics</div>
+                    <Col className="text-center col-lg-2">
+                      <span className="font-weight-500 fs-5 text-gray-500">
+                        Principles:
+                        <span className="fs-5  bold ms-2">
+                          <strong>{stats.total_principles}</strong>
+                        </span>
+                      </span>
+                      <br />
+                      <span className="font-weight-500  fs-5 text-gray-500">
+                        Criteria:
+                        <span className="fs-5  bold ms-2">
+                          <strong>{stats.total_criteria}</strong>
+                        </span>
+                      </span>
+                    </Col>
+                    <Col className="text-center col-lg-2"></Col>
+                    <Col className="align-items-center col-lg-4">
+                      <span className="font-weight-500  text-gray-500">
+                        <strong> Mandatory</strong>
+                      </span>
+                      <p className="circle-70-grey">
+                        <span className="fs-1 text-success bold">
+                          {stats.completed_mandatory}
+                        </span>
+                        <span className="fs-6 text-success">
+                          /{stats.total_mandatory}
+                        </span>
+                      </p>
+                    </Col>
+                    <Col className="col-md-auto col col-lg-4  align-items-center">
+                      <span className="font-weight-500  text-gray-500">
+                        <strong> Optional</strong>
+                      </span>
+                      <p className="circle-70-grey">
+                        <span className="fs-1 text-warning bold">
+                          {stats.completed_optional}
+                        </span>
+                        <span className="fs-6 text-warning">
+                          /{stats.total_optional}
+                        </span>
+                      </p>
+                    </Col>
+                  </Row>
                 </Col>
-                <Col className="text-center col-lg-1"></Col>
-                <Col className="align-items-center col-lg-2">
-                  <span className="font-weight-500  text-gray-500">
-                    <strong> Mandatory</strong>
-                  </span>
-                  <p className="circle-70-grey">
-                    <span className="fs-1 text-success bold">
-                      {stats.completed_mandatory}
-                    </span>
-                    <span className="fs-6 text-secondary">
-                      /{stats.total_mandatory}
-                    </span>
-                  </p>
-                </Col>
-                <Col className="col-md-auto col col-lg-2 align-items-center">
-                  <span className="font-weight-500  text-gray-500">
-                    <strong> Optional</strong>
-                  </span>
-                  <p className="circle-70-grey">
-                    <span className="fs-1 text-warning bold">
-                      {stats.completed_optional}
-                    </span>
-                    <span className="fs-6 text-secondary">
-                      /{stats.total_optional}
-                    </span>
-                  </p>
-                </Col>
-                <Col className="col-md-auto col col-lg-4  float-end">
-                  {assessment.published == true ? (
-                    <img src={imgAssessmentBadgePassed} width="80%" />
-                  ) : (
-                    <img src={imgAssessmentBadgeWip} width="80%" />
-                  )}
+                <Col className="col-sm-6 py-3">
+                  <Card>
+                    <Card.Body>
+                      <h5>Details</h5>
+
+                      <p className="media-body pb-2 mb-0 small lh-125 border-bottom border-gray">
+                        <strong className="text-gray-dark">Actor:</strong>
+                        <span className="px-2">{assessment.actor.name}</span>
+                      </p>
+                      <p className="media-body pb-2 mb-0 small lh-125 border-bottom border-gray">
+                        <strong className="text-gray-dark">
+                          Organization:
+                        </strong>
+                        <span className="px-2">
+                          {assessment.organisation.name}
+                        </span>
+                      </p>
+                      <p className="media-body pb-2 mb-0 small lh-125 border-bottom border-gray">
+                        <strong className="text-gray-dark">Subject:</strong>
+                        <span className="px-2">
+                          {assessment.subject.name} / ({assessment.subject.type}
+                          )
+                        </span>
+                      </p>
+                      <p className="media-body pb-2 mb-0 small lh-125">
+                        <strong className="text-gray-dark">
+                          Latest Update:
+                        </strong>
+                        <span className="px-2">
+                          <small>{assessment.timestamp.split(" ")[0]}</small>
+                        </span>
+                      </p>
+                    </Card.Body>
+                  </Card>
                 </Col>
               </Row>
             </Col>
