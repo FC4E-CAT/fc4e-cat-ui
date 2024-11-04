@@ -21,22 +21,4 @@ export interface CriterionImperative {
   label: string;
 }
 
-export interface CriterionType {
-  id: string;
-  label: string;
-  description: string;
-  last_touch: string;
-  url: string;
-  populated_by: string | null;
-}
-
-export interface CriterionInput {
-  cri: string;
-  label: string;
-  description: string;
-  imperative: string;
-  type_criterion_id: string;
-}
-
 export type CriterionResponse = ResponsePage<Criterion[]>;
-export type CriterionTypeResponse = ResponsePage<CriterionType[]>;
