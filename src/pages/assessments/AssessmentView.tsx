@@ -189,7 +189,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                       <span className="font-weight-500  text-gray-500">
                         <strong> Mandatory</strong>
                       </span>
-                      <p className="circle-70-grey">
+                      <p>
                         <span className="fs-1 text-success bold">
                           {stats.completed_mandatory}
                         </span>
@@ -202,7 +202,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                       <span className="font-weight-500  text-gray-500">
                         <strong> Optional</strong>
                       </span>
-                      <p className="circle-70-grey">
+                      <p>
                         <span className="fs-1 text-warning bold">
                           {stats.completed_optional}
                         </span>
