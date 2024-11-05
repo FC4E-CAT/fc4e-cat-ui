@@ -105,6 +105,7 @@ export function ProtectedRoute() {
   if (authenticated && isSuccess && profileData) {
     return adminRoute ? (
       <div className="d-flex flex-row flex-min-boby">
+        <div className="p-4 my-4 mb-5 flex-min-menu">&nbsp;</div>
         <div className="bg-light p-4 my-4 mb-5 flex-min-menu">
           <div className="rounded flex-min-menu">
             <AdminMenu />
