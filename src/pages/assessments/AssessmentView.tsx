@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
 import imgAssessmentBadgePassed from "@/assets/badge-passed.png";
 import imgAssessmentBadgeWip from "@/assets/badge-wip.png";
+import imgAssessmentBadgeFailed from "@/assets/badge-failed.png";
 import Accordion from "react-bootstrap/Accordion";
 import { Assessment, AssessmentCriterionImperative } from "@/types";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
@@ -38,10 +39,10 @@ function gatherStats(assessment: Assessment | undefined): Stats {
       pri.criteria.forEach((cri) => {
         if (cri.imperative == AssessmentCriterionImperative.Must) {
           total_mandatory += 1;
-          if (cri.metric.result !== null) completed_mandatory = +1;
+          if (cri.metric.result !== null) completed_mandatory += 1;
         } else {
           total_optional += 1;
-          if (cri.metric.result !== null) completed_optional = +1;
+          if (cri.metric.result !== null) completed_optional += 1;
         }
       });
     });
@@ -98,7 +99,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               </span>
 
               {}
-              {assessment.result.compliance ? (
+              {assessment.result.compliance !== null ? (
                 <p className="text-center">
                   <img
                     src={imgAssessmentPass}
@@ -157,8 +158,12 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
           </Row>
           <Row className="bg-light">
             <Col className="col-md-auto col col-lg-3">
-              {assessment.published == true ? (
-                <img src={imgAssessmentBadgePassed} width="80%" />
+              {assessment.result.compliance !== null ? (
+                assessment.result.compliance ? (
+                  <img src={imgAssessmentBadgePassed} width="80%" />
+                ) : (
+                  <img src={imgAssessmentBadgeFailed} width="80%" />
+                )
               ) : (
                 <img src={imgAssessmentBadgeWip} width="80%" />
               )}
@@ -166,7 +171,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
 
             <Col className="col-sm-9">
               <Row>
-                <Col lassName="col-sm-6">
+                <Col className="col-sm-6">
                   <Row>
                     <div className="card-title h5 py-3">Statistics</div>
                     <Col className="text-center col-lg-2">
