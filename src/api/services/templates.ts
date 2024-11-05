@@ -36,7 +36,7 @@ export const useGetMotivationAssessmentType = (
     queryKey: ["assessment-type"],
     queryFn: async () => {
       const response = await APIClient(token).get<Assessment>(
-        `/templates/by-motivation/${mtvId}/by-actor/${actId}`,
+        `/registry/motivations/${mtvId}/by-actor/${actId}/template`,
       );
       return response.data;
     },
