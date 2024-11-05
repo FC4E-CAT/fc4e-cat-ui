@@ -505,9 +505,32 @@ a.plain:hover {
   display: flex !important;
 }
 
+.flex-column {
+  height: 100%;
+  margin: 0;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-min-boby {
+  min-width: 110vh;
+  min-height: 60vh;
+}
+
+.flex-min-menu {
+  min-width: 280px;
+}
+
 .circle-70-grey {
   width: 70px;
   text-align: center;
   border: 3px solid #d3d3d3;
   border-radius: 100%;
+}
+
+.menu-admin {
+  width: 280px;
+  margin-left: 40px;
 }

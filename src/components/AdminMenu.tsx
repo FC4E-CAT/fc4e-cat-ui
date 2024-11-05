@@ -19,39 +19,8 @@ export default function AdminMenu() {
     <div className="px-3 py-2">
       <ul className="nav flex-column mt-2">
         <h5>
-          <strong>Manage as Admin</strong>
+          <strong>Manage</strong>
         </h5>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "principles") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/principles"
-            className="rounded cat-nav-link-light px-3"
-          >
-            <FaTags className="text-muted me-2" /> Principles
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "criteria") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/criteria"
-            className="rounded cat-nav-link-light px-3"
-          >
-            <FaAward className="text-muted me-2" /> Criteria
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "motivations") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/motivations"
-            className="rounded cat-nav-link-light px-3"
-          >
-            <FaFile className="text-muted me-2" /> Motivations
-          </Link>
-        </li>
-        <hr />
         <li
           className={`nav-item rounded ${isSel(adminPath, "users") ? "cat-menu-selected" : ""}`}
         >
@@ -77,6 +46,41 @@ export default function AdminMenu() {
             className="rounded cat-nav-link-light px-3"
           >
             <FaFileCircleCheck className="text-muted me-2" /> Assessments
+          </Link>
+        </li>
+        <hr />
+
+        <h5>
+          <strong>Library</strong>
+        </h5>
+        <li
+          className={`nav-item rounded ${isSel(adminPath, "motivations") ? "cat-menu-selected" : ""}`}
+        >
+          <Link
+            to="/admin/motivations"
+            className="rounded cat-nav-link-light px-3"
+          >
+            <FaFile className="text-muted me-2" /> Motivations
+          </Link>
+        </li>
+        <li
+          className={`nav-item rounded ${isSel(adminPath, "principles") ? "cat-menu-selected" : ""}`}
+        >
+          <Link
+            to="/admin/principles"
+            className="rounded cat-nav-link-light px-3"
+          >
+            <FaTags className="text-muted me-2" /> Principles
+          </Link>
+        </li>
+        <li
+          className={`nav-item rounded ${isSel(adminPath, "criteria") ? "cat-menu-selected" : ""}`}
+        >
+          <Link
+            to="/admin/criteria"
+            className="rounded cat-nav-link-light px-3"
+          >
+            <FaAward className="text-muted me-2" /> Criteria
           </Link>
         </li>
       </ul>

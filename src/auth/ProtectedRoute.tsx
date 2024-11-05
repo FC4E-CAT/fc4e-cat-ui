@@ -4,7 +4,6 @@ import { AuthContext } from "@/auth";
 import Keycloak from "keycloak-js";
 import KeycloakConfig from "@/keycloak.json";
 import { useUserRegister, useGetProfile } from "@/api";
-import { Col, Row } from "react-bootstrap";
 import AdminMenu from "@/components/AdminMenu";
 
 export function ProtectedRoute() {
@@ -105,18 +104,18 @@ export function ProtectedRoute() {
 
   if (authenticated && isSuccess && profileData) {
     return adminRoute ? (
-      <Row>
-        <Col md="auto">
-          <div className="rounded bg-white mt-1 mb-5">
+      <div className="d-flex flex-row flex-min-boby">
+        <div className="bg-light p-4 my-4 mb-5 flex-min-menu">
+          <div className="rounded flex-min-menu">
             <AdminMenu />
           </div>
-        </Col>
-        <Col>
-          <div className="container rounded bg-white mt-1 mb-5">
+        </div>
+        <div className="d-flex flex-column  flex-min-boby">
+          <div className="container rounded bg-white mt-1 mb-4 flex-min-boby">
             <Outlet />
           </div>
-        </Col>
-      </Row>
+        </div>
+      </div>
     ) : (
       <div className="container rounded bg-white mt-1 mb-5">
         <Outlet />
