@@ -216,7 +216,7 @@ export default function Motivations() {
                         >
                           <Link
                             className="btn btn-light btn-sm m-1"
-                            to={`/motivations/${item.id}`}
+                            to={`/admin/motivations/${item.id}`}
                           >
                             <FaBars />
                           </Link>

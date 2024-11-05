@@ -170,7 +170,7 @@ export default function CriterionDetails() {
         <Button
           variant="secondary"
           onClick={() => {
-            navigate("/criteria");
+            navigate("/admin/criteria");
           }}
         >
           Back

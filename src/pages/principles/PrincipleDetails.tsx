@@ -170,7 +170,7 @@ export default function PrincipleDetails() {
         <Button
           variant="secondary"
           onClick={() => {
-            navigate("/principles");
+            navigate("/admin/principles");
           }}
         >
           Back
