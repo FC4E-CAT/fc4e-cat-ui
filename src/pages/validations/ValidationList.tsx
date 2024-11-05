@@ -138,9 +138,7 @@ function ValidationList() {
                     <td className="align-middle">{item.organisation_role}</td>
                     <td className="align-middle">{item.actor_name}</td>
                     <td className="align-middle">
-                      <td className="align-middle">
-                        {ValidationStatusBadge(item.status)}
-                      </td>
+                      {ValidationStatusBadge(item.status)}
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">
