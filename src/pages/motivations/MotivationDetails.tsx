@@ -81,6 +81,13 @@ export default function MotivationDetails() {
   });
 
   useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === "#principles") {
+      setTabKey("principles");
+    } else if (hash === "#criteria") setTabKey("criteria");
+  }, []);
+
+  useEffect(() => {
     // gather all actors in one array
     let tmpAct: MotivationActor[] = [];
     const mtvActors =

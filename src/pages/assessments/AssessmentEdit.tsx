@@ -174,6 +174,19 @@ const AssessmentEdit = ({
   // Control the disabled tabs on wizard
   const [wizardTabActive, setWizardTabActive] = useState<boolean>(false);
 
+  const extraTab = mode === AssessmentEditMode.Import ? 1 : 0;
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === "#actor") {
+      setActiveTab(1 + extraTab);
+    } else if (hash === "#submission") {
+      setActiveTab(2 + extraTab);
+    } else if (hash === "#assessment") {
+      setActiveTab(3 + extraTab);
+      setResetCriterionTab(true);
+    }
+  }, [extraTab]);
+
   // TODO: Get all available pages in an infinite scroll not all sequentially.
   useEffect(() => {
     // gather all actor/org/type mappings in one array
@@ -548,7 +561,7 @@ const AssessmentEdit = ({
 
   // evaluate the assessment
   const evalResult = evalAssessment(assessment);
-  const extraTab = mode === AssessmentEditMode.Import ? 1 : 0;
+
   let importDone = true;
   if (mode === AssessmentEditMode.Import) {
     importDone = Boolean(importInfo?.actor?.id);
