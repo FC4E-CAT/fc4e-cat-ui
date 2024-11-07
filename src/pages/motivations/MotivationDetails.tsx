@@ -46,7 +46,7 @@ export default function MotivationDetails() {
   const [availableActors, setAvailableActors] = useState<MotivationActor[]>([]);
   const [showAddActor, setShowAddActor] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
-  const [tabKey, setTabKey] = useState("assess-types");
+  const [tabKey, setTabKey] = useState("assessment-types");
 
   const { data: motivationData } = useGetMotivation({
     id: params.id!,
@@ -82,10 +82,25 @@ export default function MotivationDetails() {
 
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash === "#principles") {
+    if (hash === "#assessment-types") {
+      setTabKey("assessment-types");
+    } else if (hash === "#principles") {
       setTabKey("principles");
-    } else if (hash === "#criteria") setTabKey("criteria");
+    } else if (hash === "#criteria") {
+      setTabKey("criteria");
+    }
   }, []);
+
+  // take care of window location hash when tabs change
+  useEffect(() => {
+    if (tabKey === "assessment-types") {
+      window.location.hash = "#assessment-types";
+    } else if (tabKey === "principles") {
+      window.location.hash = "#principles";
+    } else if (tabKey === "criteria") {
+      window.location.hash = "#criteria";
+    }
+  }, [tabKey]);
 
   useEffect(() => {
     // gather all actors in one array
@@ -205,11 +220,11 @@ export default function MotivationDetails() {
         <Tabs
           id="motivation-tabs-inside"
           activeKey={tabKey}
-          onSelect={(tabKey) => setTabKey(tabKey || "assess-types")}
+          onSelect={(tabKey) => setTabKey(tabKey || "assessment-types")}
           fill
         >
           <Tab
-            eventKey="assess-types"
+            eventKey="assessment-types"
             title={
               <span>
                 <span className="fs-6 text-primary">

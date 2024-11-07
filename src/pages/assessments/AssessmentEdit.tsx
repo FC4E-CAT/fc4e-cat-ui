@@ -339,6 +339,17 @@ const AssessmentEdit = ({
     );
   }
 
+  // take care of window location hash when tabs change
+  useEffect(() => {
+    if (activeTab - extraTab === 1) {
+      window.location.hash = "#actor";
+    } else if (activeTab - extraTab === 2) {
+      window.location.hash = "#submission";
+    } else if (activeTab - extraTab === 3) {
+      window.location.hash = "#assessment";
+    }
+  }, [activeTab, extraTab]);
+
   // This is the callback to run upon Actor-Organisation option selection
   const handleActorChange = useCallback(
     (
