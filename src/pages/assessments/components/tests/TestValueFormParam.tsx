@@ -79,7 +79,7 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
         }
       }
 
-      if (newTest.value) {
+      if (newTest.value !== null) {
         if (comparisonMode === "equal_greater_than") {
           result = newTest.value >= comparisonValue ? 1 : 0;
         } else if (comparisonMode === "equal_less_than") {
