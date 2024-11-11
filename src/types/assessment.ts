@@ -341,3 +341,12 @@ export interface AssessmentCommentUser {
   surname: string;
   email: string;
 }
+
+export interface AssessmentStats {
+  total_principles: number;
+  total_criteria: number;
+  total_mandatory: number;
+  total_optional: number;
+  completed_mandatory: number;
+  completed_optional: number;
+}

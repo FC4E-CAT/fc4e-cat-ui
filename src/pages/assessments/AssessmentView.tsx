@@ -11,20 +11,16 @@ import imgAssessmentBadgePassed from "@/assets/badge-passed.png";
 import imgAssessmentBadgeWip from "@/assets/badge-wip.png";
 import imgAssessmentBadgeFailed from "@/assets/badge-failed.png";
 import Accordion from "react-bootstrap/Accordion";
-import { Assessment, AssessmentCriterionImperative } from "@/types";
+import {
+  Assessment,
+  AssessmentCriterionImperative,
+  AssessmentStats,
+} from "@/types";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
-
-interface Stats {
-  total_principles: number;
-  total_criteria: number;
-  total_mandatory: number;
-  total_optional: number;
-  completed_mandatory: number;
-  completed_optional: number;
-}
+import AssessmentPdf from "./AssessmentPdf";
 
 // dig through the assessment and collect the completion statistics
-function gatherStats(assessment: Assessment | undefined): Stats {
+function gatherStats(assessment: Assessment | undefined): AssessmentStats {
   let total_principles = 0;
   let total_criteria = 0;
   let total_mandatory = 0;
@@ -82,6 +78,9 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
     <div>
       {assessment && (
         <div className="">
+          <Row>
+            <AssessmentPdf assessmentDoc={assessment} assessmentStats={stats} />
+          </Row>
           <Row className="box-ribbon-report cat-view-heading-block border-bottom ">
             <Col>
               <h2 className="cat-view-heading text-muted  ">
