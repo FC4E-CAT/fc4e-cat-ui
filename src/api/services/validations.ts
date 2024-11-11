@@ -122,7 +122,7 @@ export const useValidationRequest = ({
   organisation_source,
   organisation_name,
   organisation_website,
-  actor_id,
+  registry_actor_id,
   token,
 }: ValidationRequestParams) =>
   useMutation(
@@ -135,7 +135,7 @@ export const useValidationRequest = ({
           organisation_source,
           organisation_name,
           organisation_website,
-          actor_id,
+          registry_actor_id,
           token,
         },
       );
