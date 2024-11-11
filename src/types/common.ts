@@ -19,12 +19,20 @@ export interface ResponsePage<T> {
   content: T;
 }
 
+export interface RegistryActor {
+  id: string;
+  act: string;
+  label: string;
+  description: string;
+}
+
 export interface Actor {
   id: string;
   name: string;
   description: string;
 }
 
+export type RegistryActorListResponse = ResponsePage<RegistryActor[]>;
 export type ActorListResponse = ResponsePage<Actor[]>;
 export type SubjectListResponse = ResponsePage<Subject[]>;
 

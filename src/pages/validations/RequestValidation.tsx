@@ -1,15 +1,15 @@
 import {
   useGetProfile,
-  useGetActors,
   useValidationRequest,
   useOrganisationRORSearch,
+  useGetAllRegistryActors,
 } from "@/api";
 import { AuthContext } from "@/auth";
 import {
   UserProfile,
   AlertInfo,
-  Actor,
   OrganisationRORSearchResultModified,
+  RegistryActor,
 } from "@/types";
 import { ErrorMessage } from "@hookform/error-message";
 import { useContext, useState, useRef, useEffect } from "react";
@@ -38,16 +38,34 @@ function RequestValidation() {
     setUserProfile(profileData);
   }, [profileData]);
 
-  const { data: actorsData } = useGetActors({
-    size: 100,
-    page: 1,
-    sortBy: "asc",
+  const [actors, setActors] = useState<RegistryActor[]>();
+
+  const {
+    data: actData,
+    fetchNextPage: actFetchNextPage,
+    hasNextPage: actHasNextPage,
+  } = useGetAllRegistryActors({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
   });
 
-  const [actors, setActors] = useState<Actor[]>();
   useEffect(() => {
-    setActors(actorsData?.content);
-  }, [actorsData]);
+    // gather all registry actors types
+    let tmpAct: RegistryActor[] = [];
+
+    // iterate over backend pages and gather all items in the registry actors array
+    if (actData?.pages) {
+      actData.pages.map((page) => {
+        tmpAct = [...tmpAct, ...page.content];
+      });
+      if (actHasNextPage) {
+        actFetchNextPage();
+      }
+    }
+
+    setActors(tmpAct);
+  }, [actData, actHasNextPage, actFetchNextPage]);
 
   type FormValues = {
     organisation_role: string;
@@ -55,15 +73,15 @@ function RequestValidation() {
     organisation_source: string;
     organisation_name: string;
     organisation_website: string;
-    actor_id: number;
+    registry_actor_id: string;
   };
 
-  const [organisation_id, setOrganisationID] = useState("");
-  const [actor_id, setActorID] = useState(-1);
-  const [organisation_name, setOrganisationName] = useState("");
-  const [organisation_role, setOrganisationRole] = useState("");
-  const [organisation_source, setOrganisationSource] = useState("ROR");
-  const [organisation_website, setOrganisationWebsite] = useState("");
+  const [organisationId, setOrganisationID] = useState("");
+  const [registryActorId, setRegistryActorID] = useState("");
+  const [organisationName, setOrganisationName] = useState("");
+  const [organisationRole, setOrganisationRole] = useState("");
+  const [organisationSource, setOrganisationSource] = useState("ROR");
+  const [organisationWebsite, setOrganisationWebsite] = useState("");
   const [inputValue, setInputValue] = useState("");
 
   const {
@@ -74,22 +92,22 @@ function RequestValidation() {
     watch,
   } = useForm<FormValues>({
     defaultValues: {
-      organisation_role: organisation_role,
-      organisation_id: organisation_id,
-      organisation_source: organisation_source,
-      organisation_name: organisation_name,
-      organisation_website: organisation_website,
-      actor_id: actor_id,
+      organisation_role: organisationRole,
+      organisation_id: organisationId,
+      organisation_source: organisationSource,
+      organisation_name: organisationName,
+      organisation_website: organisationWebsite,
+      registry_actor_id: registryActorId,
     },
   });
 
   const { mutateAsync: refetchValidationRequest } = useValidationRequest({
-    organisation_role: organisation_role,
-    organisation_id: organisation_id,
-    organisation_source: organisation_source,
-    organisation_name: organisation_name,
-    organisation_website: organisation_website,
-    actor_id: actor_id,
+    organisation_role: organisationRole,
+    organisation_id: organisationId,
+    organisation_source: organisationSource,
+    organisation_name: organisationName,
+    organisation_website: organisationWebsite,
+    registry_actor_id: registryActorId,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
@@ -107,7 +125,7 @@ function RequestValidation() {
     setOrganisationSource(data.organisation_source);
     setOrganisationName(data.organisation_name);
     setOrganisationWebsite(data.organisation_website);
-    setActorID(data.actor_id);
+    setRegistryActorID(data.registry_actor_id);
     const promise = refetchValidationRequest()
       .catch((err) => {
         console.log(err);
@@ -175,21 +193,21 @@ function RequestValidation() {
         }
       >
         <select
-          className={`form-select ${errors.actor_id ? "is-invalid" : ""}`}
-          id="actor_id"
-          {...register("actor_id", {
+          className={`form-select ${errors.registry_actor_id ? "is-invalid" : ""}`}
+          id="registry_actor_id"
+          {...register("registry_actor_id", {
             required: true,
-            validate: (value) => value > -1 || "Please select an option",
+            validate: (value) => value != "" || "Please select an option",
           })}
         >
-          <option disabled value={-1}>
+          <option disabled value={""}>
             Select Actor
           </option>
           {actors &&
             actors.map((t, i) => {
               return (
                 <option key={`type-${i}`} value={t.id}>
-                  {t.name}
+                  {t.label}
                 </option>
               );
             })}
@@ -197,7 +215,7 @@ function RequestValidation() {
       </OverlayTrigger>
       <ErrorMessage
         errors={errors}
-        name="actor_id"
+        name="registry_actor_id"
         render={({ message }) => <p className="text-danger">{message}</p>}
       />
     </>
