@@ -15,7 +15,7 @@ export const useGetTemplate = (
     queryKey: ["template", templateTypeId],
     queryFn: async () => {
       const response = await APIClient(token).get<TemplateResponse>(
-        `/templates/by-type/${templateTypeId}/by-actor/${actorId}`,
+        `/v1/templates/by-type/${templateTypeId}/by-actor/${actorId}`,
       );
       return response.data;
     },
@@ -26,6 +26,27 @@ export const useGetTemplate = (
     refetchOnWindowFocus: false,
   });
 
+export const useGetMotivationTemplate = (
+  mtvId: string,
+  actId: string,
+  token: string,
+  isRegistered: boolean,
+) =>
+  useQuery({
+    queryKey: ["assessment-type", mtvId, actId],
+    queryFn: async () => {
+      const response = await APIClient(token).get<Assessment>(
+        `/v1/templates/by-motivation/${mtvId}/by-actor/${actId}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered && mtvId !== "" && actId !== "",
+    refetchOnWindowFocus: false,
+  });
+
 export const useGetMotivationAssessmentType = (
   mtvId: string,
   actId: string,
@@ -33,10 +54,10 @@ export const useGetMotivationAssessmentType = (
   isRegistered: boolean,
 ) =>
   useQuery({
-    queryKey: ["assessment-type"],
+    queryKey: ["assessment-type", mtvId, actId],
     queryFn: async () => {
       const response = await APIClient(token).get<Assessment>(
-        `/registry/motivations/${mtvId}/by-actor/${actId}/template`,
+        `/v1/registry/motivations/${mtvId}/by-actor/${actId}/template`,
       );
       return response.data;
     },

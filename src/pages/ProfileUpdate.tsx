@@ -45,7 +45,7 @@ export default function ProfileUpdate() {
     }
     try {
       const response = await APIClient(keycloak?.token || "").put<FormData>(
-        `/users/profile`,
+        `/v1/users/profile`,
         data,
       );
       if (response.status === 200) {

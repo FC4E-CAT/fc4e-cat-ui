@@ -9,20 +9,20 @@ import { ActorOrgAsmtType } from "@/types";
 interface AssessmentSelectActorProps {
   actorMap: ActorOrgAsmtType[];
   asmtId?: string;
-  templateDataActorId?: number;
+  templateDataActorId?: string;
   templateDataOrgId?: string;
-  templateDataAsmtTypeId?: number;
-  actorId?: number;
+  templateDataAsmtTypeId?: string;
+  actorId?: string;
   orgId?: string;
-  asmtTypeId?: number;
-  importAsmtTypeId?: number;
-  importActorId?: number;
+  asmtTypeId?: string;
+  importAsmtTypeId?: string;
+  importActorId?: string;
   onSelectActor: (
-    actorId: number,
+    actorId: string,
     actorName: string,
     orgId: string,
     orgName: string,
-    asmtTypeId: number,
+    asmtTypeId: string,
     asmtTypeName: string,
   ) => void;
 }

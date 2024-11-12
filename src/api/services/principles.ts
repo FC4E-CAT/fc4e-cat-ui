@@ -24,7 +24,7 @@ export const useGetPrinciples = ({
     queryKey: ["principles", { size, page }],
     queryFn: async () => {
       const response = await APIClient(token).get<PrincipleResponse>(
-        `/registry/principles?size=${size}&page=${page}`,
+        `/v1/registry/principles?size=${size}&page=${page}`,
       );
       return response.data;
     },
@@ -49,7 +49,7 @@ export const useGetPrinciple = ({
       let response = null;
 
       response = await APIClient(token).get<Principle>(
-        `/registry/principles/${id}`,
+        `/v1/registry/principles/${id}`,
       );
       return response.data;
     },
@@ -68,7 +68,7 @@ export const useGetAllPrinciples = ({
     queryKey: ["all-principles"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<PrincipleResponse>(
-        `/registry/principles?size=${size}&page=${pageParam}`,
+        `/v1/registry/principles?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -94,7 +94,7 @@ export const useCreatePrinciple = (
   return useMutation(
     async () => {
       const response = await APIClient(token).post<PrincipleResponse>(
-        `/registry/principles`,
+        `/v1/registry/principles`,
         {
           pri,
           label,
@@ -124,7 +124,7 @@ export const useUpdatePrinciple = (
   return useMutation(
     async () => {
       const response = await APIClient(token).patch<PrincipleResponse>(
-        `/registry/principles/${id}`,
+        `/v1/registry/principles/${id}`,
         {
           pri,
           label,

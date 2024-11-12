@@ -10,7 +10,7 @@ export interface TemplateResponse {
 
 /** Assessment type part of TemplateResponse from API */
 export interface AssessmentType {
-  id: number;
+  id: string;
   name: string;
   description: string;
 }
@@ -38,14 +38,14 @@ export interface Assessment {
   shared_with_user: boolean;
 }
 
-/** Reference with numerical id */
-export interface RefNumID {
-  id: number;
+/** Reference with string id */
+export interface RefID {
+  id: string;
   name: string;
 }
 
-export interface AssessmentActor extends RefNumID {}
-export interface AssessmentType extends RefNumID {}
+export interface AssessmentActor extends RefID {}
+export interface AssessmentType extends RefID {}
 
 /** Assessment subject */
 export interface AssessmentSubject {
@@ -221,12 +221,21 @@ export interface ResultStats {
   optional: number;
 }
 
+// export type ActorOrgAsmtType = {
+//   actor_id: number;
+//   actor_name: string;
+//   organisation_id: string;
+//   organisation_name: string;
+//   assessment_type_id: number;
+//   assessment_type_name: string;
+// };
+
 export type ActorOrgAsmtType = {
-  actor_id: number;
+  actor_id: string;
   actor_name: string;
   organisation_id: string;
   organisation_name: string;
-  assessment_type_id: number;
+  assessment_type_id: string;
   assessment_type_name: string;
 };
 

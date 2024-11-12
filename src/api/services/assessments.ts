@@ -26,7 +26,7 @@ export function useCreateAssessment(token: string) {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (postData: { assessment_doc: Assessment }) => {
-      return APIClient(token).post("/assessments", postData);
+      return APIClient(token).post("/v2/assessments", postData);
     },
     // for the time being redirect to assessment list
     onSuccess: () => {
@@ -39,7 +39,7 @@ export function useDeleteAssessment(token: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (assessmentId: string) => {
-      return APIClient(token).delete(`/assessments/${assessmentId}`);
+      return APIClient(token).delete(`/v2/assessments/${assessmentId}`);
     },
     // on success refresh assessments query (so that the deleted assessment dissapears from list)
     onSuccess: () => {
@@ -55,7 +55,7 @@ export function useUpdateAssessment(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (putData: { assessment_doc: Assessment }) => {
-      return APIClient(token).put(`/assessments/${assessmentID}`, putData);
+      return APIClient(token).put(`/v1/assessments/${assessmentID}`, putData);
     },
     // optimistically update the cached data
     onMutate: (newData) => {
@@ -86,8 +86,8 @@ export const useGetAssessments = ({
     queryKey: ["assessments"],
     queryFn: async () => {
       let url = isPublic
-        ? `/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
-        : `/assessments?size=${size}&page=${page}`;
+        ? `/v1/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
+        : `/v2/assessments?size=${size}&page=${page}`;
 
       subject_name ? (url = `${url}&subject_name=${subject_name}`) : null;
       subject_type ? (url = `${url}&subject_type=${subject_type}`) : null;
@@ -115,7 +115,7 @@ export function useGetAssessmentShares({
   return useQuery({
     queryKey: ["assessment-shares", id],
     queryFn: async () => {
-      const url = `/assessments/${id}/shared-users`;
+      const url = `/v1/assessments/${id}/shared-users`;
       const response = await APIClient(token).get<SharedUsers>(url);
       return response.data;
     },
@@ -132,7 +132,7 @@ export function useShareAssessment(token: string, id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (postData: { shared_with_user: string }) => {
-      return APIClient(token).post(`/assessments/${id}/share`, postData);
+      return APIClient(token).post(`/v1/assessments/${id}/share`, postData);
     },
     // for the time being redirect to assessment list
     onSuccess: () => {
@@ -159,9 +159,9 @@ export function useGetAssessment({
     queryFn: async () => {
       let url: string;
       if (isPublic) {
-        url = `/assessments/public/${id}`;
+        url = `/v2/assessments/public/${id}`;
       } else {
-        url = `/assessments/${id}`;
+        url = `/v2/assessments/${id}`;
       }
       const response =
         await APIClient(token).get<AssessmentDetailsResponse>(url);
@@ -192,7 +192,7 @@ export function useGetAdminAssessment({
       let totalPages = 1;
 
       do {
-        const url = `/admin/assessments?page=${page}&size=10`;
+        const url = `/v1/admin/assessments?page=${page}&size=10`;
         const response =
           await APIClient(token).get<AssessmentAdminDetailsResponse>(url);
         const data = response.data;
@@ -223,7 +223,7 @@ export function useGetAdminAssessmentById({
   return useQuery({
     queryKey: ["assessment", id],
     queryFn: async () => {
-      const url = `/admin/assessments/${id}`;
+      const url = `/v1/admin/assessments/${id}`;
       const response =
         await APIClient(token).get<AssessmentDetailsResponse>(url);
       return response.data;
@@ -243,8 +243,8 @@ export function useGetObjects({
   actorId,
 }: ApiObjects) {
   const url = actorId
-    ? `/assessments/public-objects/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
-    : `/assessments/objects?size=${size}&page=${page}`;
+    ? `/v1/assessments/public-objects/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
+    : `/v1/assessments/objects?size=${size}&page=${page}`;
 
   return useQuery({
     queryKey: ["objects"],
@@ -270,7 +270,7 @@ export function useGetAssessmentTypes({
   return useQuery({
     queryKey: ["assessmentTypes"],
     queryFn: async () => {
-      const url = `/codelist/assessment-types?size=100&page=1`;
+      const url = `/v1/codelist/assessment-types?size=100&page=1`;
       const response = await APIClient(token).get<AssessmentTypeResponse>(url);
       return response.data.content;
     },
@@ -290,7 +290,7 @@ export const useGetAssessmentComments = (
     queryKey: ["assessment-comments", id],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<AssessmentCommentResponse>(
-        `/assessments/${id}/comments?size=${size}&page=${pageParam}`,
+        `/v1/assessments/${id}/comments?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -313,7 +313,7 @@ export function useAssessmentCommentAdd(token: string, id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (postData: { text: string }) => {
-      return APIClient(token).post(`/assessments/${id}/comments`, postData);
+      return APIClient(token).post(`/v1/assessments/${id}/comments`, postData);
     },
     // update query cache
     onSuccess: () => {
@@ -332,7 +332,7 @@ export function useAssessmentCommentUpdate(
   return useMutation({
     mutationFn: (putData: { text: string }) => {
       return APIClient(token).put(
-        `/assessments/${id}/comments/${cid}`,
+        `/v1/assessments/${id}/comments/${cid}`,
         putData,
       );
     },
@@ -352,7 +352,7 @@ export function useAssessmentCommentDelete(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
-      return APIClient(token).delete(`/assessments/${id}/comments/${cid}`);
+      return APIClient(token).delete(`/v1/assessments/${id}/comments/${cid}`);
     },
     // update query cache
     onSuccess: () => {

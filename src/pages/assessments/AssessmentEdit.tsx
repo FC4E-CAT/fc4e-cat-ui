@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState, useContext, useCallback } from "react";
 import Markdown from "react-markdown";
 import { AuthContext } from "@/auth";
-import { useGetAsmtEligibility, useGetProfile, useGetTemplate } from "@/api";
+import {
+  useGetAsmtEligibility,
+  useGetMotivationTemplate,
+  useGetProfile,
+} from "@/api";
 import {
   Assessment,
   AssessmentSubject,
@@ -77,14 +81,13 @@ const AssessmentEdit = ({
   const [activeTab, setActiveTab] = useState(1);
   const { keycloak, registered } = useContext(AuthContext)!;
   const [assessment, setAssessment] = useState<Assessment>();
-  const [templateId, setTemplateID] = useState<number>();
-  const [actor, setActor] = useState<{ id: number; name: string }>();
+  const [actor, setActor] = useState<{ id: string; name: string }>();
   const [organisation, setOrganisation] = useState<{
     id: string;
     name: string;
   }>();
   const [asmtType, setAsmtType] = useState<{
-    id: number;
+    id: string;
     name: string;
   }>();
   const alert = useRef<AlertInfo>({
@@ -127,20 +130,13 @@ const AssessmentEdit = ({
   };
 
   const navigate = useNavigate();
-  // const [actorId, setActorId] = useState<number>();
-  // for the time being get the only one assessment template supported
-  // with templateId: 1 (pid policy) and actorId: 6 (for pid owner)
-  // this will be replaced in time with dynamic code
 
-  // signal used in the third step of the wizard in order to trigger
-  // a refresh in the criteria sub-tab component and select the first
-  // criterion as an active sub-tab
   const [resetCriterionTab, setResetCriterionTab] = useState(false);
   const [importInfo, setImportInfo] = useState<Assessment>();
 
-  const qTemplate = useGetTemplate(
-    asmtType?.id || 0,
-    actor?.id,
+  const qTemplate = useGetMotivationTemplate(
+    asmtType?.id || "",
+    actor?.id || "",
     keycloak?.token || "",
     registered,
   );
@@ -233,7 +229,7 @@ const AssessmentEdit = ({
   }
 
   function handleCreateAssessment() {
-    if (templateId && assessment && checkRequiredFields(assessment)) {
+    if (assessment && checkRequiredFields(assessment)) {
       const promise = mutationCreateAssessment
         .mutateAsync({
           assessment_doc: assessment,
@@ -322,11 +318,11 @@ const AssessmentEdit = ({
   }
 
   function handleSelectActor(
-    actorId: number,
+    actorId: string,
     actorName: string,
     orgId: string,
     orgName: string,
-    asmtTypeId: number,
+    asmtTypeId: string,
     asmtTypeName: string,
   ) {
     handleActorChange(
@@ -353,11 +349,11 @@ const AssessmentEdit = ({
   // This is the callback to run upon Actor-Organisation option selection
   const handleActorChange = useCallback(
     (
-      actor_id: number,
+      actor_id: string,
       actor_name: string,
       organisation_id: string,
       organisation_name: string,
-      asmtTypeId: number,
+      asmtTypeId: string,
       asmtTypeName: string,
     ) => {
       if (assessment) {
@@ -395,7 +391,7 @@ const AssessmentEdit = ({
         ...prev_assessment!,
         actor: {
           name: actor?.name || templateData?.actor.name || "",
-          id: actor?.id || templateData?.actor.id || 0,
+          id: actor?.id || templateData?.actor.id || "",
         },
         organisation: {
           name: organisation?.name || templateData?.organisation.name || "",
@@ -408,7 +404,7 @@ const AssessmentEdit = ({
         ...prev_assessment!,
         actor: {
           name: actor?.name || templateData?.actor.name || "",
-          id: actor?.id || templateData?.actor.id || 0,
+          id: actor?.id || templateData?.actor.id || "",
         },
         organisation: {
           name: organisation?.name || templateData?.organisation.name || "",
@@ -416,7 +412,7 @@ const AssessmentEdit = ({
         },
         assessment_type: {
           name: asmtType?.name || templateData?.assessment_type.name || "",
-          id: asmtType?.id || templateData?.assessment_type.id || 0,
+          id: asmtType?.id || templateData?.assessment_type.id || "",
           description: templateData?.assessment_type.description || "",
         },
         principles:
@@ -435,11 +431,10 @@ const AssessmentEdit = ({
   // Handle the resetting of assessment templates
   useEffect(() => {
     if (mode !== AssessmentEditMode.Edit && qTemplate.data) {
-      const data = qTemplate.data?.template_doc;
+      const data = qTemplate.data;
 
       // setAssessment(data);
       setTemplateData(data);
-      setTemplateID(qTemplate.data.id);
       // if not on create mode load assessment itself
     } else if (mode === AssessmentEditMode.Edit && qAssessment.data) {
       const data = qAssessment.data.assessment_doc;
@@ -544,7 +539,10 @@ const AssessmentEdit = ({
 
       newAssessment.principles.forEach((principle) => {
         principle.criteria.forEach((criterion) => {
-          if (criterion.imperative === AssessmentCriterionImperative.Must) {
+          if (
+            criterion.imperative === AssessmentCriterionImperative.Must ||
+            criterion.imperative === AssessmentCriterionImperative.MUST
+          ) {
             mandatory.push(criterion.metric.result);
           } else {
             optional.push(criterion.metric.result);
@@ -934,7 +932,7 @@ const AssessmentEdit = ({
                   name={assessment?.name || ""}
                   actor={
                     assessment?.actor ||
-                    templateData?.actor || { id: 0, name: "" }
+                    templateData?.actor || { id: "", name: "" }
                   }
                   type={assessment?.assessment_type?.name || ""}
                   org={assessment?.organisation?.name || ""}
