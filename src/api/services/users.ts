@@ -22,7 +22,7 @@ export const useGetProfile = ({ token, isRegistered }: ApiOptions) =>
     queryKey: ["profile"],
     queryFn: async () => {
       const response =
-        await APIClient(token).get<UserResponse>(`/users/profile`);
+        await APIClient(token).get<UserResponse>(`/v1/users/profile`);
       return response.data;
     },
     onError: (error: AxiosError) => {
@@ -41,7 +41,7 @@ export const useGetAsmtEligibility = ({
     queryKey: ["assessment-eligibility"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<AsmtEligibilityResponse>(
-        `/users/assessment-eligibility?size=${size}&page=${pageParam}`,
+        `/v1/users/registry-assessment-eligibility?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -70,7 +70,7 @@ export const useGetAdminUsers = ({
     queryKey: ["users", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient(token).get<UserListResponse>(
-        `/admin/users?size=${size}&page=${page}&sort=${sortBy}`,
+        `/v1/admin/users?size=${size}&page=${page}&sort=${sortBy}`,
       );
       return response.data;
     },
@@ -85,7 +85,7 @@ export const useGetViewUsers = ({ id, token, isRegistered }: ApiViewUsers) =>
     queryKey: ["users", { id }],
     queryFn: async () => {
       const response = await APIClient(token).get<UserView>(
-        `/admin/users/${id}`,
+        `/v1/admin/users/${id}`,
       );
       return response.data;
     },
@@ -109,7 +109,7 @@ export const useAdminGetUsers = ({
   useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      let url = `/admin/users?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
+      let url = `/v1/admin/users?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
       search ? (url = `${url}&search=${search}`) : null;
       type ? (url = `${url}&type=${type}`) : null;
       status ? (url = `${url}&status=${status}`) : null;
@@ -127,7 +127,7 @@ export const useUserRegister = () =>
   useMutation(
     async (token: string) => {
       try {
-        const response = await APIClient(token).post(`/users/register`);
+        const response = await APIClient(token).post(`/v1/users/register`);
         if (response.status === 200) {
           return true;
         } else {
@@ -154,7 +154,7 @@ export function useDeleteUser(token: string) {
   return useMutation(
     async (data: UserAccess) => {
       const response = await APIClient(token).put<UserAccess>(
-        "/admin/users/deny-access",
+        "/v1/admin/users/deny-access",
         data,
       );
       if (response.status == 200) {
@@ -176,7 +176,7 @@ export function useRestoreUser(token: string) {
   return useMutation(
     async (data: UserAccess) => {
       const response = await APIClient(token).put<UserAccess>(
-        "/admin/users/permit-access",
+        "/v1/admin/users/permit-access",
         data,
       );
       if (response.status == 200) {

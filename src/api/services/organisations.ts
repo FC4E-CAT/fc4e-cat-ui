@@ -18,7 +18,7 @@ export const useOrganisationRORSearch = ({
       const response = await APIClient(
         token,
       ).get<OrganisationRORSearchResponse>(
-        `/integrations/organisations/ROR/${name}?page=${page}`,
+        `/v1/integrations/organisations/ROR/${name}?page=${page}`,
       );
       return response.data;
     },

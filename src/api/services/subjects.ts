@@ -16,7 +16,7 @@ export const useGetSubjects = ({
     queryKey: ["subjects"],
     queryFn: async () => {
       const response = await APIClient(token).get<SubjectListResponse>(
-        `/subjects?size=${size}&page=${page}&sortby=${sortBy}`,
+        `/v1/subjects?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
     },
@@ -39,7 +39,9 @@ export function useGetSubject({
   return useQuery({
     queryKey: ["subject", id],
     queryFn: async () => {
-      const response = await APIClient(token).get<Subject>(`/subjects/${id}`);
+      const response = await APIClient(token).get<Subject>(
+        `/v1/subjects/${id}`,
+      );
       return response.data;
     },
     onError: (error: AxiosError) => {
@@ -58,7 +60,7 @@ export function useCreateSubject(token: string) {
       name: string;
       type: string;
     }) => {
-      return APIClient(token).post("/subjects", postData);
+      return APIClient(token).post("/v1/subjects", postData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["subjects"]);
@@ -71,7 +73,7 @@ export function useUpdateSubject(token: string) {
   return useMutation(
     async (data: Subject) => {
       const response = await APIClient(token).patch<Subject>(
-        `/subjects/${data.id}`,
+        `/v1/subjects/${data.id}`,
         data,
       );
       if (response.status == 200) {
@@ -92,7 +94,7 @@ export function useDeleteSubject(token: string) {
   const queryClient = useQueryClient();
   return useMutation(
     async (id: number) => {
-      const response = await APIClient(token).delete(`/subjects/${id}`);
+      const response = await APIClient(token).delete(`/v1/subjects/${id}`);
       if (response.status == 200) {
         queryClient.invalidateQueries(["subjects"]);
         queryClient.invalidateQueries(["subject", id]);

@@ -35,7 +35,7 @@ export const useGetMotivations = ({
     queryKey: ["motivations", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient(token).get<MotivationResponse>(
-        `/registry/motivations?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}${search ? "&search=" + search : ""}`,
+        `/v1/registry/motivations?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}${search ? "&search=" + search : ""}`,
       );
       return response.data;
     },
@@ -60,7 +60,7 @@ export const useGetMotivation = ({
       let response = null;
 
       response = await APIClient(token).get<Motivation>(
-        `/registry/motivations/${id}`,
+        `/v1/registry/motivations/${id}`,
       );
       return response.data;
     },
@@ -79,7 +79,7 @@ export const useGetMotivationTypes = ({
     queryKey: ["motivation-types"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<MotivationTypeResponse>(
-        `/registry/motivation-types?size=${size}&page=${pageParam}`,
+        `/v1/registry/motivation-types?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -102,7 +102,7 @@ export const useGetAllActors = ({ token, isRegistered, size }: ApiOptions) =>
     queryKey: ["all-actors"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<MotivationActorResponse>(
-        `/registry/actors?size=${size}&page=${pageParam}`,
+        `/v1/registry/actors?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -125,7 +125,7 @@ export const useGetRelations = ({ token, isRegistered, size }: ApiOptions) =>
     queryKey: ["relations"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<RelationResponse>(
-        `/registry/relations?size=${size}&page=${pageParam}`,
+        `/v1/registry/relations?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -151,7 +151,7 @@ export const useCreateMotivation = (
   return useMutation(
     async () => {
       const response = await APIClient(token).post<MotivationResponse>(
-        `/registry/motivations`,
+        `/v1/registry/motivations`,
         {
           mtv,
           label,
@@ -183,7 +183,7 @@ export const useUpdateMotivation = (
   return useMutation(
     async () => {
       const response = await APIClient(token).patch<MotivationResponse>(
-        `/registry/motivations/${id}`,
+        `/v1/registry/motivations/${id}`,
         {
           mtv,
           label,
@@ -215,7 +215,7 @@ export const useMotivationAddActor = (
   return useMutation(
     async () => {
       const response = await APIClient(token).post<MotivationResponse>(
-        `/registry/motivations/${motivationId}/actors`,
+        `/v1/registry/motivations/${motivationId}/actors`,
         [
           {
             actor_id: actorId,
@@ -244,7 +244,7 @@ export const useGetMotivationPrinciples = (
     queryKey: ["motivation-principles"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<PrincipleResponse>(
-        `/registry/motivations/${mtvId}/principles?size=${size}&page=${pageParam}`,
+        `/v1/registry/motivations/${mtvId}/principles?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -270,7 +270,7 @@ export const useGetMotivationCriteria = (
     queryKey: ["motivation-criteria"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<CriterionResponse>(
-        `/registry/motivations/${mtvId}/criteria?size=${size}&page=${pageParam}`,
+        `/v1/registry/motivations/${mtvId}/criteria?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -297,7 +297,7 @@ export const useGetMotivationActorCriteria = (
     queryKey: ["motivation-actor-criteria"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<CriterionResponse>(
-        `/registry/motivations/${mtvId}/actors/${actId}/criteria?size=${size}&page=${pageParam}`,
+        `/v1/registry/motivations/${mtvId}/actors/${actId}/criteria?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -324,7 +324,7 @@ export function useUpdateMotivationActorCriteria(
   return useMutation({
     mutationFn: (putData: CriImp[]) => {
       return APIClient(token).put(
-        `/registry/motivations/${mtvId}/actors/${actId}/criteria`,
+        `/v1/registry/motivations/${mtvId}/actors/${actId}/criteria`,
         putData,
       );
     },
@@ -343,7 +343,7 @@ export function useUpdateMotivationPrinciplesCriteria(
   return useMutation({
     mutationFn: (putData: PrincipleCriterion[]) => {
       return APIClient(token).put(
-        `/registry/motivations/${mtvId}/principles-criteria`,
+        `/v1/registry/motivations/${mtvId}/principles-criteria`,
         putData,
       );
     },

@@ -14,7 +14,7 @@ export const useGetActors = ({ size, page, sortBy }: ApiPaginationOptions) =>
     queryKey: ["actors", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient("").get<ActorListResponse>(
-        `/codelist/actors?size=${size}&page=${page}&sortby=${sortBy}`,
+        `/v1/codelist/actors?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
     },
@@ -32,7 +32,7 @@ export const useGetAllRegistryActors = ({
     queryKey: ["all-registry-actors"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<RegistryActorListResponse>(
-        `/codelist/registry-actors?size=${size}&page=${pageParam}`,
+        `/v1/codelist/registry-actors?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },

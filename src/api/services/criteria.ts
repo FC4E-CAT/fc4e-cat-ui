@@ -26,7 +26,7 @@ export const useGetCriteria = ({
     queryKey: ["criteria", { size, page }],
     queryFn: async () => {
       const response = await APIClient(token).get<CriterionResponse>(
-        `/registry/criteria?size=${size}&page=${page}`,
+        `/v1/registry/criteria?size=${size}&page=${page}`,
       );
       return response.data;
     },
@@ -51,7 +51,7 @@ export const useGetCriterion = ({
       let response = null;
 
       response = await APIClient(token).get<Criterion>(
-        `/registry/criteria/${id}`,
+        `/v1/registry/criteria/${id}`,
       );
       return response.data;
     },
@@ -66,7 +66,7 @@ export const useGetAllCriteria = ({ token, isRegistered, size }: ApiOptions) =>
     queryKey: ["all-criteria"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<CriterionResponse>(
-        `/registry/criteria?size=${size}&page=${pageParam}`,
+        `/v1/registry/criteria?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -93,7 +93,7 @@ export const useGetAllImperatives = ({
     queryKey: ["all-imperatives"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<ImperativeResponse>(
-        `/registry/imperatives?size=${size}&page=${pageParam}`,
+        `/v1/registry/imperatives?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -119,7 +119,7 @@ export const useCreateCriterion = (
   return useMutation(
     async () => {
       const response = await APIClient(token).post<CriterionResponse>(
-        `/registry/criteria`,
+        `/v1/registry/criteria`,
         {
           cri,
           label,
@@ -151,7 +151,7 @@ export const useGetAllCriterionTypes = ({
     queryKey: ["motivation-types"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<CriterionTypeResponse>(
-        `/registry/criterion-types?size=${size}&page=${pageParam}`,
+        `/v1/registry/criterion-types?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -178,7 +178,7 @@ export const useUpdateCriterion = (
   return useMutation(
     async () => {
       const response = await APIClient(token).patch<CriterionResponse>(
-        `/registry/criteria/${id}`,
+        `/v1/registry/criteria/${id}`,
         {
           cri,
           label,
@@ -203,7 +203,7 @@ export function useDeleteCriterion(token: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (criterionId: string) => {
-      return APIClient(token).delete(`/registry/criteria/${criterionId}`);
+      return APIClient(token).delete(`/v1/registry/criteria/${criterionId}`);
     },
     // on success refresh criteria query (so that the deleted criterion dissapears from list)
     onSuccess: () => {
