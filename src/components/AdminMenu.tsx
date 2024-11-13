@@ -24,7 +24,10 @@ export default function AdminMenu() {
         <li
           className={`nav-item rounded ${isSel(adminPath, "users") ? "cat-menu-selected" : ""}`}
         >
-          <Link to="/admin/users" className="rounded cat-nav-link-light px-3">
+          <Link
+            to="/admin/users"
+            className="rounded cat-nav-link-light px-3 text-nowrap"
+          >
             <FaUsers className="text-muted me-2" /> Users
           </Link>
         </li>
@@ -33,7 +36,7 @@ export default function AdminMenu() {
         >
           <Link
             to="/admin/validations"
-            className="rounded cat-nav-link-light px-3"
+            className="rounded cat-nav-link-light px-3 text-nowrap"
           >
             <FaCheckCircle className="text-muted me-2" /> Validations
           </Link>
@@ -43,7 +46,7 @@ export default function AdminMenu() {
         >
           <Link
             to="/admin/assessments"
-            className="rounded cat-nav-link-light px-3"
+            className="rounded cat-nav-link-light px-3 text-nowrap"
           >
             <FaFileCircleCheck className="text-muted me-2" /> Assessments
           </Link>
@@ -58,7 +61,7 @@ export default function AdminMenu() {
         >
           <Link
             to="/admin/motivations"
-            className="rounded cat-nav-link-light px-3"
+            className="rounded cat-nav-link-light px-3 text-nowrap"
           >
             <FaFile className="text-muted me-2" /> Motivations
           </Link>
@@ -68,7 +71,7 @@ export default function AdminMenu() {
         >
           <Link
             to="/admin/principles"
-            className="rounded cat-nav-link-light px-3"
+            className="rounded cat-nav-link-light px-3 text-nowrap"
           >
             <FaTags className="text-muted me-2" /> Principles
           </Link>
@@ -78,7 +81,7 @@ export default function AdminMenu() {
         >
           <Link
             to="/admin/criteria"
-            className="rounded cat-nav-link-light px-3"
+            className="rounded cat-nav-link-light px-3 text-nowrap"
           >
             <FaAward className="text-muted me-2" /> Criteria
           </Link>

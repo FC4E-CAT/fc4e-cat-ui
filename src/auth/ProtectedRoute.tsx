@@ -104,17 +104,12 @@ export function ProtectedRoute() {
 
   if (authenticated && isSuccess && profileData) {
     return adminRoute ? (
-      <div className="d-flex flex-row flex-min-boby">
-        <div className="p-4 my-4 mb-5 flex-min-menu">&nbsp;</div>
-        <div className="bg-light p-4 my-4 mb-5 flex-min-menu">
-          <div className="rounded flex-min-menu">
-            <AdminMenu />
-          </div>
+      <div className="cat-admin-container d-flex flex-row">
+        <div className="bg-light p-4 my-4 mb-5 rounded">
+          <AdminMenu />
         </div>
-        <div className="d-flex flex-column  flex-min-boby">
-          <div className="container rounded bg-white mt-1 mb-4 flex-min-boby">
-            <Outlet />
-          </div>
+        <div className="rounded bg-white container-fluid mb-4 flex-grow-1">
+          <Outlet />
         </div>
       </div>
     ) : (
