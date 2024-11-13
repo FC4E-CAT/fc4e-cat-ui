@@ -124,6 +124,17 @@
   background-color: #fff;
 }
 
+.cat-admin-container {
+  width: 100%;
+}
+
+@media (width >= 1400px) {
+  .cat-admin-container {
+    width: 80%;
+    margin: 0 auto;
+  }
+}
+
 .cat-view-reverse {
   direction: rtl;
 }
