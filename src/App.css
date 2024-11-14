@@ -124,6 +124,10 @@
   background-color: #fff;
 }
 
+.cat-row-grey {
+  background-color: grey;
+}
+
 .cat-admin-container {
   width: 100%;
 }
@@ -349,6 +353,10 @@ footer a {
 
 .cat-text-faded {
   color: lightgrey;
+}
+
+.cat-greyscale {
+  filter: grayscale(100%);
 }
 
 .list-group-item:nth-child(even) {

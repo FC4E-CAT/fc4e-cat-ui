@@ -55,7 +55,7 @@ export const useGetMotivation = ({
   isRegistered: boolean;
 }) =>
   useQuery({
-    queryKey: ["motivation", id],
+    queryKey: ["motivations", id],
     queryFn: async () => {
       let response = null;
 
@@ -102,7 +102,7 @@ export const useGetAllActors = ({ token, isRegistered, size }: ApiOptions) =>
     queryKey: ["all-actors"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<MotivationActorResponse>(
-        `/v1/registry/actors?size=${size}&page=${pageParam}`,
+        `/v1/codelist/registry-actors?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -174,6 +174,64 @@ export const useCreateMotivation = (
   );
 };
 
+export function usePublishMotivation(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (mtvId: string) => {
+      return APIClient(token).put(`/v1/registry/motivations/${mtvId}/publish`);
+    },
+    // on success refresh motivation query
+    onSuccess: () => {
+      queryClient.invalidateQueries(["motivations"]);
+    },
+  });
+}
+
+export function useUnpublishMotivation(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (mtvId: string) => {
+      return APIClient(token).put(
+        `/v1/registry/motivations/${mtvId}/unpublish`,
+      );
+    },
+    // on success refresh motivation query
+    onSuccess: () => {
+      queryClient.invalidateQueries(["motivations"]);
+    },
+  });
+}
+
+export function usePublishMotivationActor(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ mtvId, actId }: { mtvId: string; actId: string }) => {
+      return APIClient(token).put(
+        `/v1/registry/motivations/${mtvId}/actors/${actId}/publish`,
+      );
+    },
+    // on success refresh motivations/mtvId query
+    onSuccess: (_, params) => {
+      queryClient.invalidateQueries(["motivations", params.mtvId]);
+    },
+  });
+}
+
+export function useUnpublishMotivationActor(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ mtvId, actId }: { mtvId: string; actId: string }) => {
+      return APIClient(token).put(
+        `/v1/registry/motivations/${mtvId}/actors/${actId}/unpublish`,
+      );
+    },
+    // on success refresh motivations/mtvId query
+    onSuccess: (_, params) => {
+      queryClient.invalidateQueries(["motivations", params.mtvId]);
+    },
+  });
+}
+
 export const useUpdateMotivation = (
   token: string,
   id: string,
@@ -199,7 +257,7 @@ export const useUpdateMotivation = (
         return handleBackendError(error);
       },
       onSuccess: () => {
-        queryClient.invalidateQueries(["motivation", id]);
+        queryClient.invalidateQueries(["motivations", id]);
       },
     },
   );
@@ -230,7 +288,7 @@ export const useMotivationAddActor = (
         return handleBackendError(error);
       },
       onSuccess: () => {
-        queryClient.invalidateQueries(["motivation", motivationId]);
+        queryClient.invalidateQueries(["motivations", motivationId]);
       },
     },
   );

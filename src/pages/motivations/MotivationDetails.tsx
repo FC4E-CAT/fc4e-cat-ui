@@ -1,6 +1,6 @@
 import { AuthContext } from "@/auth";
-import { Motivation, MotivationActor } from "@/types";
-import { useState, useContext, useEffect } from "react";
+import { AlertInfo, Motivation, MotivationActor } from "@/types";
+import { useState, useContext, useEffect, useRef } from "react";
 import {
   Alert,
   Button,
@@ -21,6 +21,8 @@ import {
   FaAward,
   FaTags,
   FaInfo,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
@@ -29,14 +31,36 @@ import manageImg from "@/assets/thumb_manage.png";
 import ownersImg from "@/assets/thumb_user.png";
 import notavailImg from "@/assets/thumb_notavail.png";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useGetAllActors, useGetMotivation } from "@/api/services/motivations";
+import {
+  useGetAllActors,
+  useGetMotivation,
+  usePublishMotivationActor,
+  useUnpublishMotivationActor,
+} from "@/api/services/motivations";
 import { MotivationActorModal } from "./components/MotivationActorModal";
 import { MotivationModal } from "./components/MotivationModal";
 
 import { MotivationPrinciples } from "./components/MotivationPrinciples";
 import { MotivationCriteria } from "./components/MotivationCriteria";
+import toast from "react-hot-toast";
+
+const actorImages: { [key: string]: string } = {
+  "PID Service Provider (Role)": serviceImg,
+  "PID Manager (Role)": manageImg,
+  "PID Scheme (Component)": schemesImg,
+  "PID Authority (Role)": authImg,
+  "PID Owner (Role)": ownersImg,
+};
+
+function getActorImage(actor: string): string {
+  return actorImages[actor] || notavailImg;
+}
 
 export default function MotivationDetails() {
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+
   const navigate = useNavigate();
   const params = useParams();
 
@@ -47,6 +71,51 @@ export default function MotivationDetails() {
   const [showAddActor, setShowAddActor] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const [tabKey, setTabKey] = useState("assessment-types");
+
+  const mutationPublish = usePublishMotivationActor(keycloak?.token || "");
+  const mutationUnpublish = useUnpublishMotivationActor(keycloak?.token || "");
+
+  const handlePublish = (mtvId: string, actId: string) => {
+    const promise = mutationPublish
+      .mutateAsync({ mtvId, actId })
+      .catch((err) => {
+        alert.current = {
+          message: "Error during Assessment Type publish",
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: "Assessment Type succesfully published!",
+        };
+      });
+    toast.promise(promise, {
+      loading: "Publishing...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
+
+  const handleUnublish = (mtvId: string, actId: string) => {
+    const promise = mutationUnpublish
+      .mutateAsync({ mtvId, actId })
+      .catch((err) => {
+        alert.current = {
+          message: "Error during Assessment Type unpublish",
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: "Assessment Type succesfully unpublished!",
+        };
+      });
+    toast.promise(promise, {
+      loading: "Unpublishing...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
 
   const { data: motivationData } = useGetMotivation({
     id: params.id!,
@@ -59,17 +128,7 @@ export default function MotivationDetails() {
   const tooltipManageCriteria = (
     <Tooltip id="tip-restore">Manage Criteria</Tooltip>
   );
-  // const tooltipManagePrinciples = (
-  //   <Tooltip id="tip-restore">Manage Principles</Tooltip>
-  // );
-  // const tooltipManageMetrics = (
-  //   <Tooltip id="tip-restore">Manage Metrics</Tooltip>
-  // );
-  // const tooltipDeleteActor = (
-  //   <Tooltip id="tip-restore">
-  //     Delete the connection with the motivation
-  //   </Tooltip>
-  // );
+
   const {
     data: actorData,
     fetchNextPage: actorFetchNextPage,
@@ -291,50 +350,21 @@ export default function MotivationDetails() {
                   <ListGroup className="mt-2">
                     {motivation?.actors.map((item) => {
                       return (
-                        <ListGroup.Item key={item.id}>
+                        <ListGroup.Item
+                          key={item.id}
+                          className={"align-middle"}
+                        >
                           <Row>
-                            <Col>
+                            <Col
+                              className={`${item.published ? "" : "opacity-50"}`}
+                            >
                               <div className="flex items-center ng-star-inserted">
                                 <div className="margin-right-8 flex justify-center items-center ng-star-inserted radio-card-icon">
-                                  {item.label ===
-                                  "PID Service Provider (Role)" ? (
-                                    <img
-                                      src={serviceImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : item.label === "PID Manager (Role)" ? (
-                                    <img
-                                      src={manageImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : item.label ===
-                                    "PID Scheme (Component)" ? (
-                                    <img
-                                      src={schemesImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : item.label === "PID Authority (Role)" ? (
-                                    <img
-                                      src={authImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : item.label === "PID Owner (Role)" ? (
-                                    <img
-                                      src={ownersImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : (
-                                    <img
-                                      src={notavailImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  )}
+                                  <img
+                                    src={getActorImage(item.label)}
+                                    className={`text-center m-1 rounded-full ${item.published ? "" : "cat-greyscale"}`}
+                                    width="60%"
+                                  />
                                 </div>
                                 <div>
                                   <div className="flex text-sm text-gray-900 font-weight-500 items-center cursor-pointer">
@@ -359,19 +389,6 @@ export default function MotivationDetails() {
                                     <FaBars />
                                   </Link>
                                 </OverlayTrigger>
-                                {/*
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={tooltipManagePrinciples}
-                                >
-                                  <Link
-                                    className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/actors/${item.id}`}
-                                  >
-                                    <FaTags />
-                                  </Link>
-                                </OverlayTrigger>
-                                */}
                                 <OverlayTrigger
                                   placement="top"
                                   overlay={tooltipManageCriteria}
@@ -383,30 +400,46 @@ export default function MotivationDetails() {
                                     <FaAward />
                                   </Link>
                                 </OverlayTrigger>
-                                {/*
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={tooltipManageMetrics}
-                                >
-                                  <Link
-                                    className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/actors/${item.id}`}
+                                {item.published ? (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tip-unpublish">
+                                        Unpublish Assessment Type
+                                      </Tooltip>
+                                    }
                                   >
-                                    <FaBorderNone />
-                                  </Link>
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={tooltipDeleteActor}
-                                >
-                                  <Link
-                                    className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/actors/${item.id}`}
+                                    <Button
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        handleUnublish(
+                                          params.id || "",
+                                          item.id,
+                                        );
+                                      }}
+                                    >
+                                      <FaEye />
+                                    </Button>
+                                  </OverlayTrigger>
+                                ) : (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tip-publish">
+                                        Publish Assessment Type
+                                      </Tooltip>
+                                    }
                                   >
-                                    <FaTrashCan className="text-danger" />
-                                  </Link>
-                                </OverlayTrigger>
-                                */}
+                                    <Button
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        handlePublish(params.id || "", item.id);
+                                      }}
+                                    >
+                                      <FaEyeSlash />
+                                    </Button>
+                                  </OverlayTrigger>
+                                )}
                               </div>
                             </Col>
                           </Row>
