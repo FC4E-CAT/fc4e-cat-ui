@@ -75,7 +75,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
   const stats = gatherStats(assessment);
 
   return (
-    <div>
+    <div className={isPublic ? "container bg-light p-2 mb-5 rounded" : ""}>
       {assessment && (
         <div className="">
           <Row>

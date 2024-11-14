@@ -86,7 +86,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const urlParams = new URLSearchParams(location.search);
   const actorName = urlParams.get("actor-name");
   const actorIdParam = urlParams.get("actor-id");
-  const assessmentTypeIdParam = urlParams.get("assessment-type-id");
+  const motivationIdParam = urlParams.get("motivation-id");
 
   const [opts, setOpts] = useState<Pagination>({
     page: 1,
@@ -137,7 +137,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     subject_type: filters.subject_type,
     isPublic: listPublic,
     actorId: actorIdParam || "",
-    assessmentTypeId: assessmentTypeIdParam || "",
+    motivationId: motivationIdParam || "",
   });
 
   // refetch users when parameters change
@@ -149,7 +149,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     size: 100,
     page: 1,
     token: keycloak?.token || "",
-    assessmentTypeId: assessmentTypeIdParam || "",
+    assessmentTypeId: motivationIdParam || "",
     actorId: actorIdParam || "",
   });
 
@@ -246,7 +246,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const assessments: AssessmentListItem[] = data ? data?.content : [];
 
   return (
-    <div>
+    <div className={listPublic ? "container bg-light p-2 mb-5 rounded" : ""}>
       <ShareModal
         show={shareModalConfig.show}
         name={shareModalConfig.name}

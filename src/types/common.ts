@@ -124,7 +124,7 @@ export type ApiAssessments = ApiOptions & {
   subject_type: string;
   subject_name: string;
   actorId: string;
-  assessmentTypeId: string;
+  motivationId: string;
 };
 
 export type ApiValidations = ApiOptions & {
