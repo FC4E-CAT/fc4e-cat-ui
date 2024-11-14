@@ -55,7 +55,7 @@ export function useUpdateAssessment(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (putData: { assessment_doc: Assessment }) => {
-      return APIClient(token).put(`/v1/assessments/${assessmentID}`, putData);
+      return APIClient(token).put(`/v2/assessments/${assessmentID}`, putData);
     },
     // optimistically update the cached data
     onMutate: (newData) => {
