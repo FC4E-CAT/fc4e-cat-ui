@@ -33,28 +33,28 @@ function Assessments() {
   const cardProps: CardProps[] = [];
 
   const cardImgs: Record<string, string> = {
-    "PID Scheme": schemesImg,
-    "PID Manager": manageImg,
-    "PID Service Provider": serviceImg,
-    "PID Owner": ownersImg,
-    "PID Authority": authImg,
+    "PID Scheme (Component)": schemesImg,
+    "PID Manager (Role)": manageImg,
+    "PID Service Provider (Role)": serviceImg,
+    "PID Owner (Role)": ownersImg,
+    "PID Authority (Role)": authImg,
   };
 
   // generate the cards when actor data is loaded
   if (!actorsData.isLoading && actorsData.data) {
     actorsData.data.content.forEach((actorItem) => {
       // get the image
-      const cardImg = cardImgs[actorItem.name] || null;
+      const cardImg = cardImgs[actorItem.label] || null;
       if (cardImg) {
         cardProps.push({
           id: parseInt(actorItem.id),
-          title: actorItem.name,
+          title: actorItem.label,
           description: actorItem.description,
           image: cardImg,
           linkText: `View public assessments`,
           link: `/public-assessments?actor-id=${
             actorItem.id
-          }&assessment-type-id=${1}&actor-name=${actorItem.name}`,
+          }&motivation-id=${"pid_graph:3E109BBA"}&actor-name=${actorItem.label}`,
         });
       }
     });

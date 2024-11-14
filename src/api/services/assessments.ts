@@ -80,13 +80,13 @@ export const useGetAssessments = ({
   subject_type,
   isPublic,
   actorId,
-  assessmentTypeId,
+  motivationId,
 }: ApiAssessments) =>
   useQuery({
     queryKey: ["assessments"],
     queryFn: async () => {
       let url = isPublic
-        ? `/v1/assessments/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
+        ? `/v2/assessments/by-motivation/${motivationId}/by-actor/${actorId}?size=${size}&page=${page}`
         : `/v2/assessments?size=${size}&page=${page}`;
 
       subject_name ? (url = `${url}&subject_name=${subject_name}`) : null;
@@ -243,8 +243,8 @@ export function useGetObjects({
   actorId,
 }: ApiObjects) {
   const url = actorId
-    ? `/v1/assessments/public-objects/by-type/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
-    : `/v1/assessments/objects?size=${size}&page=${page}`;
+    ? `/v2/assessments/public-objects/by-motivation/${assessmentTypeId}/by-actor/${actorId}?size=${size}&page=${page}`
+    : `/v2/assessments/objects?size=${size}&page=${page}`;
 
   return useQuery({
     queryKey: ["objects"],

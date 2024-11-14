@@ -1,6 +1,5 @@
 import { AxiosError } from "axios";
 import {
-  ActorListResponse,
   ApiOptions,
   ApiPaginationOptions,
   RegistryActorListResponse,
@@ -13,8 +12,8 @@ export const useGetActors = ({ size, page, sortBy }: ApiPaginationOptions) =>
   useQuery({
     queryKey: ["actors", { size, page, sortBy }],
     queryFn: async () => {
-      const response = await APIClient("").get<ActorListResponse>(
-        `/v1/codelist/actors?size=${size}&page=${page}&sortby=${sortBy}`,
+      const response = await APIClient("").get<RegistryActorListResponse>(
+        `/v1/codelist/registry-actors?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
     },
