@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -18,12 +18,19 @@ import {
   FaArrowUp,
   FaArrowDown,
   FaArrowsAltV,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 
-import { useGetMotivations } from "@/api/services/motivations";
-import { Motivation } from "@/types";
+import {
+  useGetMotivations,
+  usePublishMotivation,
+  useUnpublishMotivation,
+} from "@/api/services/motivations";
+import { AlertInfo, Motivation } from "@/types";
 import { Link } from "react-router-dom";
 import { MotivationModal } from "./components/MotivationModal";
+import toast from "react-hot-toast";
 
 type MotivationState = {
   sortOrder: string;
@@ -53,6 +60,10 @@ type Clone = {
 
 // the main component that lists the motivations in a table
 export default function Motivations() {
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const [opts, setOpts] = useState<MotivationState>({
@@ -66,6 +77,51 @@ export default function Motivations() {
 
   const [showCreate, setShowCreate] = useState(false);
   const [clone, setClone] = useState<Clone>({ id: null, name: "" });
+
+  const mutationPublish = usePublishMotivation(keycloak?.token || "");
+  const mutationUnpublish = useUnpublishMotivation(keycloak?.token || "");
+
+  const handlePublish = (mtvId: string) => {
+    const promise = mutationPublish
+      .mutateAsync(mtvId)
+      .catch((err) => {
+        alert.current = {
+          message: "Error during motivation publish",
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: "Motivation succesfully published!",
+        };
+      });
+    toast.promise(promise, {
+      loading: "Publishing...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
+
+  const handleUnublish = (mtvId: string) => {
+    const promise = mutationUnpublish
+      .mutateAsync(mtvId)
+      .catch((err) => {
+        alert.current = {
+          message: "Error during motivation unpublish",
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: "Motivation succesfully unpublished!",
+        };
+      });
+    toast.promise(promise, {
+      loading: "Unpublishing...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
 
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
@@ -197,14 +253,30 @@ export default function Motivations() {
               {motivations.map((item) => {
                 return (
                   <tr key={item.id}>
-                    <td className="align-middle">{item.mtv}</td>
-                    <td className="align-middle">{item.label}</td>
+                    <td
+                      className={`align-middle ${item.published ? "" : "text-muted bg-light"}`}
+                    >
+                      {item.mtv}
+                    </td>
+                    <td
+                      className={`align-middle ${item.published ? "" : "text-muted bg-light"}`}
+                    >
+                      {item.label}
+                    </td>
 
-                    <td className="align-middle">{item.description}</td>
-                    <td className="align-middle">
+                    <td
+                      className={`align-middle ${item.published ? "" : "text-muted bg-light"}`}
+                    >
+                      {item.description}
+                    </td>
+                    <td
+                      className={`align-middle ${item.published ? "" : "text-muted bg-light"}`}
+                    >
                       <small>{item.last_touch.split("T")[0]}</small>
                     </td>
-                    <td>
+                    <td
+                      className={`align-middle ${item.published ? "" : "bg-light"}`}
+                    >
                       <div className="d-flex flex-nowrap">
                         <OverlayTrigger
                           placement="top"
@@ -221,6 +293,43 @@ export default function Motivations() {
                             <FaBars />
                           </Link>
                         </OverlayTrigger>
+                        {item.published ? (
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-unpublish">
+                                Unpublish Motivation
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() => {
+                                handleUnublish(item.id);
+                              }}
+                            >
+                              <FaEye />
+                            </Button>
+                          </OverlayTrigger>
+                        ) : (
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-publish">
+                                Publish Motivation
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() => {
+                                handlePublish(item.id);
+                              }}
+                            >
+                              <FaEyeSlash />
+                            </Button>
+                          </OverlayTrigger>
+                        )}
                         <OverlayTrigger
                           placement="top"
                           overlay={

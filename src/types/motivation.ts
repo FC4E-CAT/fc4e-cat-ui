@@ -13,6 +13,7 @@ export interface Motivation {
   last_touch: string;
   actors: MotivationActor[];
   principles: Principle[];
+  published: boolean;
 }
 
 export interface MotivationInput {
@@ -30,6 +31,7 @@ export interface MotivationActor {
   description: string;
   uri: string;
   last_touch: string;
+  published: boolean;
 }
 
 export interface MotivationType {
