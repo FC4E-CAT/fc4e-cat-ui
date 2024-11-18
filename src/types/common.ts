@@ -132,3 +132,9 @@ export type ApiValidations = ApiOptions & {
   search: string;
   status: string;
 };
+
+export interface HttpTestResponse {
+  code: number;
+  is_valid_https?: boolean;
+  message?: string;
+}
