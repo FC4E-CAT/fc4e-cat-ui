@@ -195,12 +195,27 @@ export interface TestValueParam {
   evidence_url?: EvidenceURL[];
 }
 
-/** Supported tests: Binary | Value | BinaryParam | ValueParam **/
+export interface TestAutoHttpsCheck {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type: "Auto-Check-Url-Binary";
+  text: string;
+  result: number | null;
+  value: string | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
+}
+
+/** Supported tests: Binary | Value | BinaryParam | ValueParam | TestAutoHttpsCheck **/
 export type AssessmentTest =
   | TestValue
   | TestBinary
   | TestBinaryParam
-  | TestValueParam;
+  | TestValueParam
+  | TestAutoHttpsCheck;
 
 export interface EvidenceURL {
   url: string;
