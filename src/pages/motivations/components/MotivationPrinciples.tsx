@@ -2,12 +2,16 @@ import { useGetMotivationPrinciples } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
 import { Principle } from "@/types";
 import { useContext, useEffect, useState } from "react";
-import { Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
+import { Button, Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
+import { FaPlus } from "react-icons/fa";
+import { PrincipleModal } from "@/pages/principles/components/PrincipleModal";
 
 export const MotivationPrinciples = ({ mtvId }: { mtvId: string }) => {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvPrinciples, setMtvPrinciples] = useState<Principle[]>([]);
+
+  const [showCreatePri, setShowCreatePri] = useState(false);
 
   const {
     data: priData,
@@ -37,6 +41,14 @@ export const MotivationPrinciples = ({ mtvId }: { mtvId: string }) => {
 
   return (
     <div className="px-5 mt-4">
+      <PrincipleModal
+        principle={null}
+        show={showCreatePri}
+        mtvId={mtvId}
+        onHide={() => {
+          setShowCreatePri(false);
+        }}
+      />
       <div className="d-flex justify-content-between mb-2">
         <h5 className="text-muted cat-view-heading ">
           List of principles
@@ -46,6 +58,23 @@ export const MotivationPrinciples = ({ mtvId }: { mtvId: string }) => {
             </span>
           </p>
         </h5>
+        {mtvPrinciples.length > 0 ? (
+          <div>
+            <Button
+              variant="warning"
+              onClick={() => {
+                setShowCreatePri(true);
+              }}
+              disabled={mtvPrinciples.length == 0}
+            >
+              <FaPlus /> Create Principle
+            </Button>
+          </div>
+        ) : (
+          <span className="text-secondary text-sm">
+            No available principles
+          </span>
+        )}
       </div>
       <div>
         <ListGroup>

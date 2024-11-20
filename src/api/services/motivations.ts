@@ -17,10 +17,12 @@ import {
   MotivationResponse,
   MotivationTypeResponse,
   PrincipleCriterion,
+  PrincipleInput,
   PrincipleResponse,
   RelationResponse,
 } from "@/types";
 import { CriterionResponse } from "@/types/criterion";
+import { relMtvPrincipleId } from "@/config";
 
 export const useGetMotivations = ({
   size,
@@ -299,7 +301,7 @@ export const useGetMotivationPrinciples = (
   { token, isRegistered, size }: ApiOptions,
 ) =>
   useInfiniteQuery({
-    queryKey: ["motivation-principles"],
+    queryKey: ["motivation-principles", mtvId],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<PrincipleResponse>(
         `/v1/registry/motivations/${mtvId}/principles?size=${size}&page=${pageParam}`,
@@ -426,3 +428,35 @@ export function useDeleteMotivationActor(token: string) {
     },
   });
 }
+export const useCreateMotivationPrinciple = (
+  token: string,
+  mtvId: string,
+  { pri, label, description }: PrincipleInput,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await APIClient(token).post<PrincipleResponse>(
+        `/v1/registry/motivations/${mtvId}/principle`,
+        {
+          principle_request: {
+            pri,
+            label,
+            description,
+          },
+          relation: relMtvPrincipleId,
+        },
+      );
+      return response.data;
+    },
+
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["motivation-principles", mtvId]);
+      },
+    },
+  );
+};
