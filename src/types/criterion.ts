@@ -1,4 +1,5 @@
 import { ResponsePage } from "./common";
+import { MotivationReference } from "./motivation";
 import { Principle } from "./principle";
 
 export interface Criterion {
@@ -13,6 +14,7 @@ export interface Criterion {
   populated_by: string;
   last_touch: string;
   principles: Principle[];
+  used_by_motivations?: MotivationReference[];
 }
 
 export interface CriterionImperative {

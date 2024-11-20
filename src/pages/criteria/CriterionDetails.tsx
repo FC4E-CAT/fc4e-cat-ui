@@ -10,6 +10,7 @@ import { AlertInfo, Criterion } from "@/types";
 import { DeleteModal } from "@/components/DeleteModal";
 import toast from "react-hot-toast";
 import { useDeleteCriterion, useGetCriterion } from "@/api/services/criteria";
+import { MotivationRefList } from "@/components/MotivationRefList";
 
 interface DeleteModalConfig {
   show: boolean;
@@ -162,6 +163,16 @@ export default function CriterionDetails() {
             </div>
             <div>
               <small>{criterion?.description}</small>
+            </div>
+          </div>
+          <div>
+            <div>
+              <strong>Used in motivations:</strong>
+            </div>
+            <div className="ms-2">
+              <MotivationRefList
+                motivations={criterion?.used_by_motivations || []}
+              />
             </div>
           </div>
         </Col>

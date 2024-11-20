@@ -16,6 +16,7 @@ import { CriterionModal } from "./components/CriterionModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { useDeleteCriterion, useGetCriteria } from "@/api/services/criteria";
+import { MotivationRefList } from "@/components/MotivationRefList";
 
 type Pagination = {
   page: number;
@@ -165,6 +166,9 @@ export default function Criteria() {
               <th>
                 <span>Modified</span>
               </th>
+              <th>
+                <span>Motivations</span>
+              </th>
               <th></th>
             </tr>
           </thead>
@@ -179,6 +183,11 @@ export default function Criteria() {
                     <td className="align-middle">{item.description}</td>
                     <td className="align-middle">
                       <small>{item.last_touch.split(".")[0]}</small>
+                    </td>
+                    <td>
+                      <MotivationRefList
+                        motivations={item.used_by_motivations || []}
+                      />
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">
