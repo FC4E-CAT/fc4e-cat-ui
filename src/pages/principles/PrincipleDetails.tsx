@@ -10,6 +10,7 @@ import { AlertInfo, Principle } from "@/types";
 import { useDeletePrinciple, useGetPrinciple } from "@/api/services/principles";
 import { DeleteModal } from "@/components/DeleteModal";
 import toast from "react-hot-toast";
+import { MotivationRefList } from "@/components/MotivationRefList";
 
 interface DeleteModalConfig {
   show: boolean;
@@ -162,6 +163,16 @@ export default function PrincipleDetails() {
             </div>
             <div>
               <small>{principle?.description}</small>
+            </div>
+          </div>
+          <div>
+            <div>
+              <strong>Used in motivations:</strong>
+            </div>
+            <div className="ms-2">
+              <MotivationRefList
+                motivations={principle?.used_by_motivations || []}
+              />
             </div>
           </div>
         </Col>

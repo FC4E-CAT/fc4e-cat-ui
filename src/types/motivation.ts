@@ -88,3 +88,9 @@ export interface MotivationMessage {
   code: string;
   messages: string[];
 }
+
+export interface MotivationReference {
+  id: string;
+  mtv: string;
+  label: string;
+}
