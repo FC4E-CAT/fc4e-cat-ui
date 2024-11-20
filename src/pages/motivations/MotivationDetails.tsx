@@ -23,6 +23,7 @@ import {
   FaInfo,
   FaEye,
   FaEyeSlash,
+  FaTrash,
 } from "react-icons/fa";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
@@ -32,6 +33,7 @@ import ownersImg from "@/assets/thumb_user.png";
 import notavailImg from "@/assets/thumb_notavail.png";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
+  useDeleteMotivationActor,
   useGetAllActors,
   useGetMotivation,
   usePublishMotivationActor,
@@ -43,6 +45,7 @@ import { MotivationModal } from "./components/MotivationModal";
 import { MotivationPrinciples } from "./components/MotivationPrinciples";
 import { MotivationCriteria } from "./components/MotivationCriteria";
 import toast from "react-hot-toast";
+import { DeleteModal } from "@/components/DeleteModal";
 
 const actorImages: { [key: string]: string } = {
   "PID Service Provider (Role)": serviceImg,
@@ -74,6 +77,61 @@ export default function MotivationDetails() {
 
   const mutationPublish = usePublishMotivationActor(keycloak?.token || "");
   const mutationUnpublish = useUnpublishMotivationActor(keycloak?.token || "");
+
+  interface DeleteActorModalConfig {
+    show: boolean;
+    title: string;
+    message: string;
+    itemId: string;
+    itemName: string;
+    mtvId: string;
+  }
+
+  // Delete Modal
+  const [deleteActorModalConfig, setDeleteActorModalConfig] =
+    useState<DeleteActorModalConfig>({
+      show: false,
+      title: "Delete Assessment Type",
+      message: "Are you sure you want to delete the following Assessment type?",
+      itemId: "",
+      itemName: "",
+      mtvId: params.id || "",
+    });
+
+  const mutationDelete = useDeleteMotivationActor(keycloak?.token || "");
+
+  const handleDeleteConfirmed = () => {
+    if (deleteActorModalConfig.itemId && deleteActorModalConfig.mtvId) {
+      const promise = mutationDelete
+        .mutateAsync({
+          mtvId: deleteActorModalConfig.mtvId,
+          actId: deleteActorModalConfig.itemId,
+        })
+        .catch((err) => {
+          alert.current = {
+            message: "Error during Assessment type deletion!",
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: "Assessment type succesfully deleted.",
+          };
+          setDeleteActorModalConfig({
+            ...deleteActorModalConfig,
+            show: false,
+            itemId: "",
+            itemName: "",
+            mtvId: params.id || "",
+          });
+        });
+      toast.promise(promise, {
+        loading: "Deleting...",
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
+      });
+    }
+  };
 
   const handlePublish = (mtvId: string, actId: string) => {
     const promise = mutationPublish
@@ -188,6 +246,20 @@ export default function MotivationDetails() {
   return (
     <div className="pb-4">
       <div className="cat-view-heading-block border-bottom row ">
+        <DeleteModal
+          show={deleteActorModalConfig.show}
+          title={deleteActorModalConfig.title}
+          message={deleteActorModalConfig.message}
+          itemId={deleteActorModalConfig.itemId}
+          itemName={deleteActorModalConfig.itemName}
+          onHide={() => {
+            setDeleteActorModalConfig({
+              ...deleteActorModalConfig,
+              show: false,
+            });
+          }}
+          handleDelete={handleDeleteConfirmed}
+        />
         <MotivationActorModal
           motivationActors={availableActors}
           id={motivation?.id || ""}
@@ -440,6 +512,28 @@ export default function MotivationDetails() {
                                     </Button>
                                   </OverlayTrigger>
                                 )}
+                                <OverlayTrigger
+                                  placement="top"
+                                  overlay={
+                                    <Tooltip id="tip-delete">
+                                      Delete Assessment Type
+                                    </Tooltip>
+                                  }
+                                >
+                                  <Button
+                                    className="btn btn-light btn-sm m-1"
+                                    onClick={() => {
+                                      setDeleteActorModalConfig({
+                                        ...deleteActorModalConfig,
+                                        show: true,
+                                        itemId: item.id,
+                                        itemName: `${item.label} - ${item.act}`,
+                                      });
+                                    }}
+                                  >
+                                    <FaTrash />
+                                  </Button>
+                                </OverlayTrigger>
                               </div>
                             </Col>
                           </Row>
