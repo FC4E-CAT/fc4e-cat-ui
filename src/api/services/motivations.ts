@@ -411,3 +411,18 @@ export function useUpdateMotivationPrinciplesCriteria(
     },
   });
 }
+
+export function useDeleteMotivationActor(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ mtvId, actId }: { mtvId: string; actId: string }) => {
+      return APIClient(token).delete(
+        `/v1/registry/motivations/${mtvId}/actors/${actId}`,
+      );
+    },
+    // on success refresh motivation query (so that the deleted actor dissapears from list)
+    onSuccess: (_, params) => {
+      queryClient.invalidateQueries(["motivations", params.mtvId]);
+    },
+  });
+}
