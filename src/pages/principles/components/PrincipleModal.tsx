@@ -1,3 +1,4 @@
+import { useCreateMotivationPrinciple } from "@/api";
 import {
   useCreatePrinciple,
   useUpdatePrinciple,
@@ -20,6 +21,7 @@ import { FaFile, FaInfoCircle } from "react-icons/fa";
 
 interface PrincipleModalProps {
   principle: Principle | null;
+  mtvId?: string;
   show: boolean;
   onHide: () => void;
 }
@@ -52,6 +54,12 @@ export function PrincipleModal(props: PrincipleModalProps) {
 
   const mutateCreate = useCreatePrinciple(
     keycloak?.token || "",
+    principleInput,
+  );
+
+  const mutateCreateMtv = useCreateMotivationPrinciple(
+    keycloak?.token || "",
+    props.mtvId || "",
     principleInput,
   );
 
@@ -104,6 +112,28 @@ export function PrincipleModal(props: PrincipleModalProps) {
     });
   }
 
+  function handleCreateMtv() {
+    const promise = mutateCreateMtv
+      .mutateAsync()
+      .catch((err) => {
+        alert.current = {
+          message: "Error: " + err.response.data.message,
+        };
+        throw err;
+      })
+      .then(() => {
+        props.onHide();
+        alert.current = {
+          message: "Principle Created under motivation!",
+        };
+      });
+    toast.promise(promise, {
+      loading: "Creating Principle under motivation...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  }
+
   // handle backend call to update an existing principle
   function handleUpdate() {
     const promise = mutateUpdate
@@ -137,7 +167,8 @@ export function PrincipleModal(props: PrincipleModalProps) {
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
           <FaFile className="me-2" />{" "}
-          {props.principle === null ? "Create new" : "Edit"} Principle
+          {props.principle === null ? "Create new" : "Edit"} Principle{" "}
+          {props.mtvId && " (under motivation)"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -249,7 +280,11 @@ export function PrincipleModal(props: PrincipleModalProps) {
           onClick={() => {
             if (handleValidate() === true) {
               if (props.principle === null) {
-                handleCreate();
+                if (props.mtvId && props.mtvId !== "") {
+                  handleCreateMtv();
+                } else {
+                  handleCreate();
+                }
               } else {
                 handleUpdate();
               }

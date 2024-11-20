@@ -1,5 +1,5 @@
 import { ResponsePage } from "./common";
-import { Principle } from "./principle";
+import { Principle, PrincipleInput } from "./principle";
 
 export interface Motivation {
   id: string;
@@ -93,4 +93,11 @@ export interface MotivationReference {
   id: string;
   mtv: string;
   label: string;
+}
+
+export interface MotivationPrincipleInput {
+  principle_request: PrincipleInput;
+  relation: string;
+  annotation?: string;
+  annotation_url?: string;
 }
