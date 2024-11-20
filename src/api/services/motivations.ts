@@ -21,7 +21,7 @@ import {
   PrincipleResponse,
   RelationResponse,
 } from "@/types";
-import { CriterionResponse } from "@/types/criterion";
+import { CriterionMetricResponse, CriterionResponse } from "@/types/criterion";
 import { relMtvPrincipleId } from "@/config";
 
 export const useGetMotivations = ({
@@ -373,6 +373,31 @@ export const useGetMotivationActorCriteria = (
     },
     retry: false,
     enabled: isRegistered,
+  });
+
+export const useGetMotivationCriMetric = ({
+  mtvId,
+  criId,
+  token,
+}: {
+  mtvId: string;
+  criId: string;
+  token: string;
+}) =>
+  useQuery({
+    queryKey: ["motivation-criterion-metric", mtvId, criId],
+    queryFn: async () => {
+      let response = null;
+
+      response = await APIClient(token).get<CriterionMetricResponse>(
+        `/v1/registry/motivations/${mtvId}/criteria/${criId}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token,
   });
 
 export function useUpdateMotivationActorCriteria(
