@@ -8,6 +8,7 @@ import {
   FaExclamationTriangle,
   FaInfo,
   FaMinusCircle,
+  FaPlus,
   FaPlusCircle,
   FaTags,
 } from "react-icons/fa";
@@ -22,6 +23,7 @@ import {
   useGetMotivationCriteria,
   useUpdateMotivationPrinciplesCriteria,
 } from "@/api";
+import { CriterionModal } from "../criteria/components/CriterionModal";
 
 export default function MotivationCriteriaPrinciples() {
   const navigate = useNavigate();
@@ -38,6 +40,8 @@ export default function MotivationCriteriaPrinciples() {
     null,
   );
   const [showManagePrinciples, setShowManagePrinciples] = useState(false);
+
+  const [showCreate, setShowCreate] = useState(false);
 
   const alert = useRef<AlertInfo>({
     message: "",
@@ -183,6 +187,13 @@ export default function MotivationCriteriaPrinciples() {
 
   return (
     <div className="pb-4">
+      <CriterionModal
+        criterion={null}
+        show={showCreate}
+        onHide={() => {
+          setShowCreate(false);
+        }}
+      />
       <MotivationPrinciplesModal
         principles={availablePrinciples}
         criterion={targetCriterion}
@@ -244,11 +255,24 @@ export default function MotivationCriteriaPrinciples() {
       </Row>
       <Row className="mt-4  pb-4">
         <Col className="px-4">
-          <div>
-            <strong className="p-1">Available Criteria</strong>
-            <span className="ms-1 badge bg-primary rounded-pill fs-6">
-              {availableCriteria.length}
-            </span>
+          <div className="d-flex justify-content-between">
+            <div>
+              <strong className="p-1">Available Criteria</strong>
+              <span className="ms-1 badge bg-primary rounded-pill fs-6">
+                {availableCriteria.length}
+              </span>
+            </div>
+            <div>
+              <Button
+                size="sm"
+                variant="warning"
+                onClick={() => {
+                  setShowCreate(true);
+                }}
+              >
+                <FaPlus /> Create New Criterion
+              </Button>
+            </div>
           </div>
           <div className="alert alert-primary p-2 mt-1">
             <small>

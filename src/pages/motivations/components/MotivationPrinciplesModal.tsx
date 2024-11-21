@@ -10,7 +10,7 @@ import {
 } from "react-bootstrap";
 
 import { FaAward, FaMinusCircle, FaPlusCircle, FaTags } from "react-icons/fa";
-import { FaTrashCan } from "react-icons/fa6";
+import { FaTrashCan, FaTriangleExclamation } from "react-icons/fa6";
 
 interface MotivationPrinciplesModalProps {
   criterion: Criterion | null;
@@ -75,21 +75,32 @@ export default function MotivationPrinciplesModal(
               </span>
             </div>
             <div className="alert alert-primary p-2 mt-1">
-              <small>
-                <FaPlusCircle className="me-2" /> Click an item below to add
-                it...
-              </small>
+              {selectedPrinciples.length === 0 ? (
+                <small>
+                  <FaPlusCircle className="me-2" />
+                  Click an item below to add it...
+                </small>
+              ) : (
+                <small>
+                  <FaTriangleExclamation className="me-2" />
+                  You can only assign one item to the right
+                </small>
+              )}
             </div>
-            <div className="cat-vh-40 overflow-auto">
+            <div
+              className={`cat-vh-40 overflow-auto ${selectedPrinciples.length > 0 ? "text-muted" : ""}`}
+            >
               {availablePrinciples?.map((item) => (
                 <div
                   key={item.pri}
                   className="mb-4 p-2 cat-select-item"
                   onClick={() => {
-                    setSelectedPrinciples([...selectedPrinciples, item]);
-                    setAvailablePrinciples(
-                      availablePrinciples.filter((pri) => pri.id != item.id),
-                    );
+                    if (selectedPrinciples.length == 0) {
+                      setSelectedPrinciples([...selectedPrinciples, item]);
+                      setAvailablePrinciples(
+                        availablePrinciples.filter((pri) => pri.id != item.id),
+                      );
+                    }
                   }}
                 >
                   <div className="d-inline-flex align-items-center">

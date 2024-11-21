@@ -325,15 +325,6 @@ export default function MotivationDetails() {
             >
               Update Details
             </Link>
-            {motivation !== undefined && (
-              <Link
-                id="manage-motivation-criteria-principles"
-                to={`/admin/motivations/${motivation.id}/manage-criteria-principles`}
-                className="btn btn-dark mt-4"
-              >
-                Manage Criteria & Principles
-              </Link>
-            )}
           </div>
         </Col>
         <Col className="col-md-auto col-lg-9 border-right">
