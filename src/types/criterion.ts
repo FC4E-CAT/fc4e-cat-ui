@@ -1,3 +1,4 @@
+import { AssessmentTest } from "./assessment";
 import { ResponsePage } from "./common";
 import { MotivationReference } from "./motivation";
 import { Principle } from "./principle";
@@ -39,6 +40,20 @@ export interface CriterionInput {
   imperative: string;
   type_criterion_id: string;
 }
+
+export interface CriterionMetric {
+  id: string;
+  name: string;
+  type: string;
+  benchmark_value: number;
+  label_algorithm_type: string;
+  label_type_metric: string;
+  tests: AssessmentTest[];
+}
+
+export type CriterionMetricResponse = {
+  metric: CriterionMetric;
+};
 
 export type CriterionResponse = ResponsePage<Criterion[]>;
 export type CriterionTypeResponse = ResponsePage<CriterionType[]>;

@@ -2,12 +2,32 @@ import { useGetMotivationCriteria } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
 import { Criterion } from "@/types";
 import { useContext, useEffect, useState } from "react";
-import { Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  ListGroup,
+  ListGroupItem,
+  OverlayTrigger,
+  Row,
+  Tooltip,
+} from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
+import { MotivationCriMetricModal } from "./MotivationCriMetricModal";
+import { FaBars } from "react-icons/fa";
+
+interface MetricModalConfig {
+  show: boolean;
+  criId: string;
+}
 
 export const MotivationCriteria = ({ mtvId }: { mtvId: string }) => {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvCriteria, setMtvCriteria] = useState<Criterion[]>([]);
+
+  const [metricModal, setMetricModal] = useState<MetricModalConfig>({
+    show: false,
+    criId: "",
+  });
 
   const {
     data: criData,
@@ -37,6 +57,14 @@ export const MotivationCriteria = ({ mtvId }: { mtvId: string }) => {
 
   return (
     <div className="px-5 mt-4">
+      <MotivationCriMetricModal
+        show={metricModal.show}
+        onHide={() => {
+          setMetricModal({ criId: "", show: false });
+        }}
+        mtvId={mtvId}
+        criId={metricModal.criId}
+      />
       <div className="d-flex justify-content-between mb-2">
         <h5 className="text-muted cat-view-heading ">
           List of criteria
@@ -82,6 +110,21 @@ export const MotivationCriteria = ({ mtvId }: { mtvId: string }) => {
                       </span>
                     ))}
                   </div>
+                </Col>
+                <Col xs="auto">
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip>View Criterion Metric/Tests</Tooltip>}
+                  >
+                    <Button
+                      className="btn btn-light btn-sm m-1"
+                      onClick={() => {
+                        setMetricModal({ show: true, criId: item.id });
+                      }}
+                    >
+                      <FaBars />
+                    </Button>
+                  </OverlayTrigger>
                 </Col>
               </Row>
             </ListGroupItem>
