@@ -58,23 +58,17 @@ export const MotivationPrinciples = ({ mtvId }: { mtvId: string }) => {
             </span>
           </p>
         </h5>
-        {mtvPrinciples.length > 0 ? (
-          <div>
-            <Button
-              variant="warning"
-              onClick={() => {
-                setShowCreatePri(true);
-              }}
-              disabled={mtvPrinciples.length == 0}
-            >
-              <FaPlus /> Create Principle
-            </Button>
-          </div>
-        ) : (
-          <span className="text-secondary text-sm">
-            No available principles
-          </span>
-        )}
+
+        <div>
+          <Button
+            variant="warning"
+            onClick={() => {
+              setShowCreatePri(true);
+            }}
+          >
+            <FaPlus /> Create Principle
+          </Button>
+        </div>
       </div>
       <div>
         <ListGroup>
