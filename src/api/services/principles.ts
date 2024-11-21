@@ -149,7 +149,7 @@ export function useDeletePrinciple(token: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (principleId: string) => {
-      return APIClient(token).delete(`/registry/principles/${principleId}`);
+      return APIClient(token).delete(`/v1/registry/principles/${principleId}`);
     },
     // on success refresh principles query (so that the deleted principle dissapears from list)
     onSuccess: () => {
