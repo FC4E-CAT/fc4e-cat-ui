@@ -137,6 +137,7 @@ export const useCreateCriterion = (
       },
       onSuccess: () => {
         queryClient.invalidateQueries(["criteria"]);
+        queryClient.invalidateQueries(["all-criteria"]);
       },
     },
   );

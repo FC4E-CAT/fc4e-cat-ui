@@ -326,73 +326,11 @@ export function CriterionModal(props: CriterionModalProps) {
                   key="top"
                   placement="top"
                   overlay={
-                    <Tooltip id={`tooltip-top`}>
-                      Select the type of criterion
-                    </Tooltip>
-                  }
-                >
-                  <InputGroup.Text id="label-motivation-type">
-                    <FaInfoCircle className="me-2" /> Type (*):
-                  </InputGroup.Text>
-                </OverlayTrigger>
-                <Form.Select
-                  id="input-motivation-type"
-                  aria-describedby="label-motivation-type"
-                  placeholder="Select a Motivation type"
-                  value={
-                    criterionInput.type_criterion_id
-                      ? criterionInput.type_criterion_id
-                      : ""
-                  }
-                  onChange={(e) => {
-                    setCriterionInput({
-                      ...criterionInput,
-                      type_criterion_id: e.target.value,
-                    });
-                  }}
-                >
-                  <>
-                    <option value="" disabled>
-                      Select criterion type
-                    </option>
-                    {criterionTypes.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </>
-                </Form.Select>
-              </InputGroup>
-              {showErrors && criterionInput.type_criterion_id === "" && (
-                <span className="text-danger">Required</span>
-              )}
-              {criterionInput.type_criterion_id != "" && (
-                <div className="bg-light text-secondary border rounded mt-2 p-3">
-                  <small>
-                    <em>
-                      {
-                        criterionTypes.find(
-                          (item) => item.id == criterionInput.type_criterion_id,
-                        )?.description
-                      }
-                    </em>
-                  </small>
-                </div>
-              )}
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <InputGroup className="mt-2">
-                <OverlayTrigger
-                  key="top"
-                  placement="top"
-                  overlay={
                     <Tooltip id={`tooltip-top`}>Select the Imperative</Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-motivation-type">
-                    <FaInfoCircle className="me-2" /> Type (*):
+                    <FaInfoCircle className="me-2" /> Imperative (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Select

@@ -13,7 +13,8 @@ import {
 } from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
 import { MotivationCriMetricModal } from "./MotivationCriMetricModal";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaEdit } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 interface MetricModalConfig {
   show: boolean;
@@ -74,6 +75,16 @@ export const MotivationCriteria = ({ mtvId }: { mtvId: string }) => {
             </span>
           </p>
         </h5>
+        <div>
+          <Link
+            id="manage-motivation-criteria-principles"
+            to={`/admin/motivations/${mtvId}/manage-criteria-principles`}
+            className="btn btn-warning mt-4"
+          >
+            <FaEdit className="me-2" />
+            Manage Criteria
+          </Link>
+        </div>
       </div>
       <div>
         <ListGroup>
