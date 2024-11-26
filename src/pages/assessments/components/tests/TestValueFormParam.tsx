@@ -91,7 +91,6 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
     } else {
       result = newTest.value;
     }
-    console.log(result);
     newTest.result = result;
     props.onTestChange(props.principleId, props.criterionId, newTest);
   };

@@ -102,13 +102,13 @@ export enum AssessmentCriterionImperative {
 
 /** Each criterion includes a SINGLE metric */
 export interface Metric {
-  type: MetricType;
-  algorithm: MetricAlgorithm;
-  benchmark: Benchmark;
+  type: string;
+  label_algorithm_type: string;
+  label_type_metric: string;
+  benchmark_value: number;
   value: number | null;
   result: number | null;
   tests: AssessmentTest[];
-  benchmark_value?: number;
 }
 
 /** Each metric has a type. For now, we only deal with type: number  */
