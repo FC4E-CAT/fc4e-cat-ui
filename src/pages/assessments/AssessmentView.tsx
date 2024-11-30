@@ -33,7 +33,7 @@ function gatherStats(assessment: Assessment | undefined): AssessmentStats {
     assessment.principles.forEach((pri) => {
       total_criteria += pri.criteria.length;
       pri.criteria.forEach((cri) => {
-        if (cri.imperative == AssessmentCriterionImperative.must) {
+        if (cri.imperative == AssessmentCriterionImperative.Must) {
           total_mandatory += 1;
           if (cri.metric.result !== null) completed_mandatory += 1;
         } else {
