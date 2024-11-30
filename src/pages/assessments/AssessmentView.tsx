@@ -124,23 +124,6 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               )}
             </Col>
             <Col className="col-md-auto col col-lg-1 text-center">
-              <span className="font-weight-500 text-gray-500 bold">
-                Ranking
-              </span>
-              {assessment.result.ranking ? (
-                <p className="text-center">
-                  <span className="fs-1 text-primary bold">
-                    {assessment.result.ranking}
-                  </span>
-                  <span className="fs-6 text-secondary">/10</span>
-                </p>
-              ) : (
-                <p className="text-center">
-                  <span className="fs-1 text-warning bold">n/a</span>
-                </p>
-              )}
-            </Col>
-            <Col className="col-md-auto col col-lg-1 text-center">
               {assessment.published == true ? (
                 <div className="ribbon-report ribbon-report-top-right">
                   <span className="bg-success">PUBLISHED</span>
