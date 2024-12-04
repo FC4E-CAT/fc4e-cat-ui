@@ -21,7 +21,13 @@ interface MetricModalConfig {
   criId: string;
 }
 
-export const MotivationCriteria = ({ mtvId }: { mtvId: string }) => {
+export const MotivationCriteria = ({
+  mtvId,
+  published,
+}: {
+  mtvId: string;
+  published: boolean;
+}) => {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvCriteria, setMtvCriteria] = useState<Criterion[]>([]);
 
@@ -76,14 +82,20 @@ export const MotivationCriteria = ({ mtvId }: { mtvId: string }) => {
           </p>
         </h5>
         <div>
-          <Link
-            id="manage-motivation-criteria-principles"
-            to={`/admin/motivations/${mtvId}/manage-criteria-principles`}
-            className="btn btn-warning mt-4"
-          >
-            <FaEdit className="me-2" />
-            Manage Criteria
-          </Link>
+          {published ? (
+            <span className="btn btn-warning disabled">
+              <FaEdit className="me-2" /> Manage Criteria
+            </span>
+          ) : (
+            <Link
+              id="manage-motivation-criteria-principles"
+              to={`/admin/motivations/${mtvId}/manage-criteria-principles`}
+              className="btn btn-warning"
+            >
+              <FaEdit className="me-2" />
+              Manage Criteria
+            </Link>
+          )}
         </div>
       </div>
       <div>

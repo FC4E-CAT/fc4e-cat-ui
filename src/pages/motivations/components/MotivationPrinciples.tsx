@@ -7,7 +7,13 @@ import notavailImg from "@/assets/thumb_notavail.png";
 import { FaPlus } from "react-icons/fa";
 import { PrincipleModal } from "@/pages/principles/components/PrincipleModal";
 
-export const MotivationPrinciples = ({ mtvId }: { mtvId: string }) => {
+export const MotivationPrinciples = ({
+  mtvId,
+  published,
+}: {
+  mtvId: string;
+  published: boolean;
+}) => {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvPrinciples, setMtvPrinciples] = useState<Principle[]>([]);
 
@@ -65,6 +71,7 @@ export const MotivationPrinciples = ({ mtvId }: { mtvId: string }) => {
             onClick={() => {
               setShowCreatePri(true);
             }}
+            disabled={published}
           >
             <FaPlus /> Create Principle
           </Button>

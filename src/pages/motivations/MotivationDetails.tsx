@@ -24,6 +24,8 @@ import {
   FaEye,
   FaEyeSlash,
   FaTrash,
+  FaLock,
+  FaUnlock,
 } from "react-icons/fa";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
@@ -36,7 +38,9 @@ import {
   useDeleteMotivationActor,
   useGetAllActors,
   useGetMotivation,
+  usePublishMotivation,
   usePublishMotivationActor,
+  useUnpublishMotivation,
   useUnpublishMotivationActor,
 } from "@/api/services/motivations";
 import { MotivationActorModal } from "./components/MotivationActorModal";
@@ -86,6 +90,51 @@ export default function MotivationDetails() {
     itemName: string;
     mtvId: string;
   }
+
+  const mutationMtvPublish = usePublishMotivation(keycloak?.token || "");
+  const mutationMtvUnpublish = useUnpublishMotivation(keycloak?.token || "");
+
+  const handleMtvPublish = (mtvId: string) => {
+    const promise = mutationMtvPublish
+      .mutateAsync(mtvId)
+      .catch((err) => {
+        alert.current = {
+          message: "Error during motivation publish",
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: "Motivation succesfully published!",
+        };
+      });
+    toast.promise(promise, {
+      loading: "Publishing...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
+
+  const handleMtvUnpublish = (mtvId: string) => {
+    const promise = mutationMtvUnpublish
+      .mutateAsync(mtvId)
+      .catch((err) => {
+        alert.current = {
+          message: "Error during motivation unpublish",
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: "Motivation succesfully unpublished!",
+        };
+      });
+    toast.promise(promise, {
+      loading: "Unpublishing...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
 
   // Delete Modal
   const [deleteActorModalConfig, setDeleteActorModalConfig] =
@@ -154,7 +203,7 @@ export default function MotivationDetails() {
     });
   };
 
-  const handleUnublish = (mtvId: string, actId: string) => {
+  const handleUnpublish = (mtvId: string, actId: string) => {
     const promise = mutationUnpublish
       .mutateAsync({ mtvId, actId })
       .catch((err) => {
@@ -294,7 +343,62 @@ export default function MotivationDetails() {
           </h2>
         </Col>
       </div>
-
+      <div className="mt-2">
+        {motivation?.published ? (
+          <Alert className="p-0" variant="warning">
+            <Row>
+              <Col className="d-flex align-items-center">
+                <small className="p-2">
+                  <FaLock className="me-2" />
+                  This motivation is currently published so no further changes
+                  can be made until it is unpublished...
+                </small>
+              </Col>
+              <Col md="auto">
+                <Button
+                  size="sm"
+                  className="m-2"
+                  variant="warning"
+                  onClick={() => {
+                    if (motivation) {
+                      handleMtvUnpublish(motivation.id);
+                    }
+                  }}
+                >
+                  <FaEyeSlash className="me-2" />
+                  Unpublish
+                </Button>
+              </Col>
+            </Row>
+          </Alert>
+        ) : (
+          <Alert className="p-0" variant="light">
+            <Row>
+              <Col className="d-flex align-items-center">
+                <small className="p-2">
+                  <FaUnlock className="me-2" />
+                  This motivation is currently unpublished and editable
+                </small>
+              </Col>
+              <Col md="auto">
+                <Button
+                  size="sm"
+                  className="m-2"
+                  variant="success"
+                  onClick={() => {
+                    if (motivation) {
+                      handleMtvPublish(motivation.id);
+                    }
+                  }}
+                >
+                  <FaEye className="me-2" />
+                  Publish
+                </Button>
+              </Col>
+            </Row>
+          </Alert>
+        )}
+      </div>
       <Row>
         <Col className="col col-lg-3 border-right  border-dashed">
           <div className="d-flex flex-column align-items-center text-center p-1 py-1">
@@ -314,17 +418,22 @@ export default function MotivationDetails() {
             >
               {motivation?.motivation_type.label}
             </span>
-
-            <Link
-              id="profile-update-button"
-              to="#"
-              onClick={() => {
-                setShowUpdate(true);
-              }}
-              className="btn btn-lt border-black mt-4"
-            >
-              Update Details
-            </Link>
+            {motivation?.published ? (
+              <span className="opacity-75 btn btn-lt border-black bg-secondary mt-4">
+                Update Details
+              </span>
+            ) : (
+              <Link
+                id="profile-update-button"
+                to="#"
+                onClick={() => {
+                  setShowUpdate(true);
+                }}
+                className="btn btn-lt border-black mt-4"
+              >
+                Update Details
+              </Link>
+            )}
           </div>
         </Col>
         <Col className="col-md-auto col-lg-9 border-right">
@@ -376,7 +485,9 @@ export default function MotivationDetails() {
                         onClick={() => {
                           setShowAddActor(true);
                         }}
-                        disabled={availableActors.length == 0}
+                        disabled={
+                          availableActors.length == 0 || motivation?.published
+                        }
                       >
                         <FaPlus /> Add Actor
                       </Button>
@@ -398,6 +509,7 @@ export default function MotivationDetails() {
                         Please use the button above or{" "}
                       </span>
                       <Button
+                        disabled={motivation?.published}
                         variant="link"
                         className="p-0 m-0 align-baseline"
                         onClick={() => {
@@ -456,12 +568,20 @@ export default function MotivationDetails() {
                                   placement="top"
                                   overlay={tooltipManageCriteria}
                                 >
-                                  <Link
-                                    className="btn btn-light btn-sm m-1"
-                                    to={`/admin/motivations/${params.id}/actors/${item.id}`}
-                                  >
-                                    <FaAward />
-                                  </Link>
+                                  {item.published ? (
+                                    <span className="btn btn-light btn-sm m-1 disabled">
+                                      <FaAward />
+                                    </span>
+                                  ) : (
+                                    <>
+                                      <Link
+                                        className="btn btn-light btn-sm m-1"
+                                        to={`/admin/motivations/${params.id}/actors/${item.id}`}
+                                      >
+                                        <FaAward />
+                                      </Link>
+                                    </>
+                                  )}
                                 </OverlayTrigger>
                                 {item.published ? (
                                   <OverlayTrigger
@@ -475,7 +595,7 @@ export default function MotivationDetails() {
                                     <Button
                                       className="btn btn-light btn-sm m-1"
                                       onClick={() => {
-                                        handleUnublish(
+                                        handleUnpublish(
                                           params.id || "",
                                           item.id,
                                         );
@@ -511,19 +631,25 @@ export default function MotivationDetails() {
                                     </Tooltip>
                                   }
                                 >
-                                  <Button
-                                    className="btn btn-light btn-sm m-1"
-                                    onClick={() => {
-                                      setDeleteActorModalConfig({
-                                        ...deleteActorModalConfig,
-                                        show: true,
-                                        itemId: item.id,
-                                        itemName: `${item.label} - ${item.act}`,
-                                      });
-                                    }}
-                                  >
-                                    <FaTrash />
-                                  </Button>
+                                  {item.published ? (
+                                    <span className="btn btn-light btn-sm m-1 disabled">
+                                      <FaTrash />
+                                    </span>
+                                  ) : (
+                                    <Button
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        setDeleteActorModalConfig({
+                                          ...deleteActorModalConfig,
+                                          show: true,
+                                          itemId: item.id,
+                                          itemName: `${item.label} - ${item.act}`,
+                                        });
+                                      }}
+                                    >
+                                      <FaTrash />
+                                    </Button>
+                                  )}
                                 </OverlayTrigger>
                               </div>
                             </Col>
@@ -547,7 +673,10 @@ export default function MotivationDetails() {
               </span>
             }
           >
-            <MotivationPrinciples mtvId={params.id || ""} />
+            <MotivationPrinciples
+              mtvId={params.id || ""}
+              published={motivation?.published || false}
+            />
           </Tab>
           <Tab
             eventKey="criteria"
@@ -560,7 +689,10 @@ export default function MotivationDetails() {
               </span>
             }
           >
-            <MotivationCriteria mtvId={params.id || ""} />
+            <MotivationCriteria
+              mtvId={params.id || ""}
+              published={motivation?.published || false}
+            />
           </Tab>
           {/*
           <Tab
