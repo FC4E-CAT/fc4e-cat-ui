@@ -1,6 +1,6 @@
-import { useAdminGetValidations } from "@/api";
+import { useAdminGetValidations, useGetAllRegistryActors } from "@/api";
 import { AuthContext } from "@/auth";
-import { ValidationResponse } from "@/types";
+import { RegistryActor, ValidationResponse } from "@/types";
 import { idToColor, trimField } from "@/utils/admin";
 import { useContext, useEffect, useState } from "react";
 import {
@@ -79,8 +79,8 @@ const tooltipAccept = <Tooltip id="tip-delete">Accept Validation</Tooltip>;
 const tooltipReject = <Tooltip id="tip-restore">Reject Validation</Tooltip>;
 const tooltipView = <Tooltip id="tip-restore">View User Details</Tooltip>;
 
-// the main component that lists the admin users in a table
-export default function AdminUsers() {
+// the main component that lists all the validations for admins
+export default function AdminValidations() {
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const [opts, setOpts] = useState<ValidationState>({
@@ -111,7 +111,36 @@ export default function AdminUsers() {
     }
   };
 
-  // data get admin users
+  const [actors, setActors] = useState<RegistryActor[]>();
+
+  const {
+    data: actData,
+    fetchNextPage: actFetchNextPage,
+    hasNextPage: actHasNextPage,
+  } = useGetAllRegistryActors({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    // gather all registry actors types
+    let tmpAct: RegistryActor[] = [];
+
+    // iterate over backend pages and gather all items in the registry actors array
+    if (actData?.pages) {
+      actData.pages.map((page) => {
+        tmpAct = [...tmpAct, ...page.content];
+      });
+      if (actHasNextPage) {
+        actFetchNextPage();
+      }
+    }
+
+    setActors(tmpAct);
+  }, [actData, actHasNextPage, actFetchNextPage]);
+
+  // data get admin validations
   const { isLoading, data, refetch } = useAdminGetValidations({
     size: opts.size,
     page: opts.page,
@@ -156,11 +185,11 @@ export default function AdminUsers() {
               value={opts.type}
             >
               <option value="">Select type...</option>
-              <option>PID Authority</option>
-              <option>PID Manager</option>
-              <option>PID Owner</option>
-              <option>PID Scheme</option>
-              <option>PID Service Provider</option>
+              <>
+                {actors?.map((item) => (
+                  <option key={item.id}>{item.label}</option>
+                ))}
+              </>
             </Form.Select>
           </div>
           <div className="col-md-auto">
@@ -265,7 +294,7 @@ export default function AdminUsers() {
                       </div>
                     </div>
                   </td>
-                  <td className="align-middle">{item.actor_name}</td>
+                  <td className="align-middle">{item.registry_actor_name}</td>
                   <td className="align-middle">
                     {ValidationStatusBadge(item.status)}
                   </td>
