@@ -81,10 +81,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                 </Text>
               )}
             </View>
-            <View>
-              <Text style={{ fontSize: "12" }}>Ranking:</Text>
-              <Text>n/a</Text>
-            </View>
+            <View></View>
           </View>
         </View>
         <View

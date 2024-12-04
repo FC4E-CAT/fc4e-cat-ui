@@ -3,7 +3,7 @@
  */
 import { AssessmentResult, ResultStats } from "@/types";
 import { Row, Col, ProgressBar } from "react-bootstrap";
-import { FaCheckCircle, FaChartLine } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
 
 export const AssessmentEvalStats = ({
   evalResult,
@@ -39,14 +39,7 @@ export const AssessmentEvalStats = ({
               </span>
             </div>
           </Col>
-          <Col>
-            <div className="d-flex align-items-center">
-              <span className="mt-2">
-                <FaChartLine className="me-2" />
-                Ranking: {assessmentResult.ranking}
-              </span>
-            </div>
-          </Col>
+          <Col></Col>
           <Col></Col>
           <Col xs={2}>
             <div className="mb-2">

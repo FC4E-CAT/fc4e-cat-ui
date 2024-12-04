@@ -385,9 +385,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   <span>Compliance</span>
                 </th>
                 <th>
-                  <span>Ranking</span>
-                </th>
-                <th>
                   <span>Access</span>
                 </th>
                 <th>
@@ -466,19 +463,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                           <span className="badge rounded-pill text-bg-light text-danger border border-danger">
                             FAIL
                           </span>
-                        )}
-                      </td>
-                      <td className="align-middle text-center">
-                        {item.ranking === null ? (
-                          <h6>
-                            <span className="badge bg-secondary">N/A</span>
-                          </h6>
-                        ) : (
-                          <h5>
-                            <span className="badge bg-info">
-                              {item.ranking}
-                            </span>
-                          </h5>
                         )}
                       </td>
                       <td className="align-middle text-center">
