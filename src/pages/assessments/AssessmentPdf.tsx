@@ -98,7 +98,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
             borderBottom: "1px solid black",
           }}
         >
-          <View>
+          <View style={{ width: "30%" }}>
             <Image
               src={
                 assessment.result.compliance === null
@@ -107,10 +107,10 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                     ? imgAssessmentBadgePassed
                     : imgAssessmentBadgeFailed
               }
-              style={{ width: "15vh" }}
+              style={{ width: "100%" }}
             />
           </View>
-          <View style={{ marginLeft: "10" }}>
+          <View style={{ marginLeft: "10", width: "30%" }}>
             <Text style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}>
               Statistics
             </Text>
@@ -161,70 +161,99 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
               </Text>
             </View>
           </View>
-          <View
-            style={{
-              padding: "10",
-              border: "1px solid grey",
-              marginLeft: "20",
-              borderRadius: "5",
-            }}
-          >
-            <Text style={{ fontSize: "14", fontFamily: "Helvetica-Bold" }}>
-              Details
-            </Text>
+          <View style={{ width: "500px" }}>
             <View
               style={{
-                marginTop: 5,
-                flexDirection: "row",
-                paddingBottom: 5,
-                borderBottom: "1px solid grey",
+                padding: "10",
+                border: "1px solid grey",
+                marginLeft: "20",
+                borderRadius: "5",
               }}
             >
-              <Text style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}>
-                Actor:{" "}
+              <Text style={{ fontSize: "14", fontFamily: "Helvetica-Bold" }}>
+                Details
               </Text>
-              <Text style={{ fontSize: "12" }}>
-                {props.assessmentDoc.actor.name}
-              </Text>
-            </View>
-            <View
-              style={{
-                marginTop: 5,
-                flexDirection: "row",
-                paddingBottom: 5,
-                borderBottom: "1px solid grey",
-              }}
-            >
-              <Text style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}>
-                Organization:{" "}
-              </Text>
-              <Text style={{ fontSize: "12" }}>
-                {props.assessmentDoc.organisation.name}
-              </Text>
-            </View>
-            <View
-              style={{
-                marginTop: 5,
-                flexDirection: "row",
-                paddingBottom: 5,
-                borderBottom: "1px solid grey",
-              }}
-            >
-              <Text style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}>
-                Subject:{" "}
-              </Text>
-              <Text style={{ fontSize: "12" }}>
-                {props.assessmentDoc.subject.name} /{" "}
-                {props.assessmentDoc.subject.type}{" "}
-              </Text>
-            </View>
-            <View style={{ marginTop: 5, flexDirection: "row" }}>
-              <Text style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}>
-                Latest Update:{" "}
-              </Text>
-              <Text style={{ fontSize: "12" }}>
-                {props.assessmentDoc.timestamp.split(" ")[0]}
-              </Text>
+              <View
+                style={{
+                  marginTop: 5,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingBottom: 5,
+                  borderBottom: "1px solid grey",
+                }}
+              >
+                <View>
+                  <Text
+                    style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}
+                  >
+                    Actor:
+                  </Text>
+                </View>
+                <View style={{ width: "200px" }}>
+                  <Text style={{ fontSize: "12" }}>
+                    {props.assessmentDoc.actor.name}
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  marginTop: 5,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingBottom: 5,
+                  borderBottom: "1px solid grey",
+                }}
+              >
+                <View>
+                  <Text
+                    style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}
+                  >
+                    Organization:
+                  </Text>
+                </View>
+                <View style={{ width: "200px" }}>
+                  <Text style={{ fontSize: "12" }}>
+                    {props.assessmentDoc.organisation.name}
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  marginTop: 5,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingBottom: 5,
+                  borderBottom: "1px solid grey",
+                }}
+              >
+                <View>
+                  <Text
+                    style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}
+                  >
+                    Subject:
+                  </Text>
+                </View>
+                <View style={{ width: "200px" }}>
+                  <Text style={{ fontSize: "12" }}>
+                    {props.assessmentDoc.subject.name} /{" "}
+                    {props.assessmentDoc.subject.type}{" "}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ marginTop: 5, flexDirection: "row" }}>
+                <View>
+                  <Text
+                    style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}
+                  >
+                    Latest Update:
+                  </Text>
+                </View>
+                <View>
+                  <Text style={{ fontSize: "12" }}>
+                    {props.assessmentDoc.timestamp.split(" ")[0]}
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
         </View>
@@ -329,6 +358,12 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                         }}
                       >
                         {cri.metric.tests.map((test) => {
+                          const textTokens = test.text.split("|");
+                          const reqEvidence = test.type.endsWith("-Evidence");
+                          const params = test.params
+                            .split("|")
+                            .filter((item) => item !== "evidence");
+
                           return (
                             <View key={test.id} style={{ marginBottom: "15" }}>
                               <Text
@@ -349,8 +384,8 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                                 >
                                   Q:{" "}
                                 </Text>
-                                <Text style={{ fontSize: "12" }}>
-                                  {test.text}
+                                <Text style={{ fontSize: "12", width: "90%" }}>
+                                  {textTokens[0]}
                                 </Text>
                               </View>
                               <View style={{ flexDirection: "row" }}>
@@ -366,7 +401,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                                   "binary",
                                   "Binary-Binary",
                                   "Binary-Manual",
-                                  "Binary-Manual-Evicence",
+                                  "Binary-Manual-Evidence",
                                 ].includes(test.type) ? (
                                   <Text style={{ fontSize: "12" }}>
                                     {test.result === null
@@ -376,9 +411,68 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                                         : "No"}
                                   </Text>
                                 ) : (
-                                  <Text style={{ fontSize: "12" }}>Values</Text>
+                                  <View style={{ fontSize: "12" }}>
+                                    {params.map((item, indx) => {
+                                      return indx === params.length - 1 ? (
+                                        <Text>
+                                          {item}
+                                          {": "}
+                                          {test.value || "n/a"}
+                                        </Text>
+                                      ) : (
+                                        <Text>
+                                          {item}
+                                          {": n/a"}
+                                        </Text>
+                                      );
+                                    })}
+                                  </View>
                                 )}
                               </View>
+                              {reqEvidence && textTokens.length > 1 && (
+                                <View
+                                  style={{ fontSize: "11", color: "#696969" }}
+                                >
+                                  <View
+                                    style={{
+                                      marginTop: "5",
+                                      marginBottom: "5",
+                                    }}
+                                  >
+                                    <Text>{textTokens[1]}</Text>
+                                  </View>
+                                  {test.evidence_url &&
+                                  test.evidence_url.length > 0 ? (
+                                    <View>
+                                      {test.evidence_url.map((item, indx) => {
+                                        return (
+                                          <View
+                                            key={indx}
+                                            style={{
+                                              marginBottom: "2",
+                                              flexDirection: "row",
+                                            }}
+                                          >
+                                            <View>
+                                              <Text>[{indx}] </Text>
+                                            </View>
+                                            <View style={{ width: "90%" }}>
+                                              <Text>{item.url}</Text>
+                                              {item.description && (
+                                                <Text>{item.description}</Text>
+                                              )}
+                                            </View>
+                                          </View>
+                                        );
+                                      })}
+                                    </View>
+                                  ) : (
+                                    <View>
+                                      <Text> - No evidence provided</Text>
+                                    </View>
+                                  )}
+                                </View>
+                              )}
                             </View>
                           );
                         })}
