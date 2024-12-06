@@ -310,64 +310,86 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                               </small>
                             </div>
                             <div className="m-1">
-                              {cri.metric.tests.map((test) => (
-                                <div key={test.id} className="mb-4">
-                                  <span className="badge rounded-pill text-bg-light text-info">
-                                    {test.id} - {test.name}
-                                  </span>
-                                  <br />
-                                  <strong>Q.</strong>
-                                  <span className="text-secondary p-2">
-                                    {test.text}
-                                  </span>
-                                  <br />
-                                  <strong>A.</strong>
-                                  {test.type === "value" ? (
-                                    <span className="text-primary p-2">
-                                      <strong>F=</strong>
-                                      {test.value} <strong>P=</strong>
-                                      {test.threshold}
+                              {cri.metric.tests.map((test) => {
+                                const params = test.params
+                                  .split("|")
+                                  .filter((item) => item !== "evidence");
+                                return (
+                                  <div key={test.id} className="mb-4">
+                                    <span className="badge rounded-pill text-bg-light text-info">
+                                      {test.id} - {test.name}
                                     </span>
-                                  ) : test.result === 1 ? (
-                                    <span className="text-primary p-2">
-                                      <strong>YES</strong>
+                                    <br />
+                                    <strong>Q.</strong>
+                                    <span className="text-secondary p-2">
+                                      {test.text}
                                     </span>
-                                  ) : test.result === 0 ? (
-                                    <span className="text-primary p-2">
-                                      <strong>NO</strong>
-                                    </span>
-                                  ) : (
-                                    <span className="text-warning p-2">
-                                      <strong>N/A</strong>
-                                    </span>
-                                  )}
-                                  <br />
-
-                                  {test.evidence_url &&
-                                    test.evidence_url?.length > 0 && (
-                                      <div>
-                                        {test.evidence_url.map((ev) => (
-                                          <div key={ev.url}>
-                                            {" "}
-                                            <a href={ev.url}>
-                                              <span className="p-2">
-                                                <FaArrowUpRightFromSquare />
-                                              </span>
-                                            </a>
-                                            {ev.description && (
-                                              <a
-                                                href={ev.url}
-                                                className="plain"
-                                              >
-                                                <span>{ev.description}</span>
-                                              </a>
-                                            )}
-                                          </div>
-                                        ))}
-                                      </div>
+                                    <br />
+                                    <strong>A.</strong>
+                                    {[
+                                      "binary",
+                                      "Binary-Binary",
+                                      "Binary-Manual",
+                                      "Binary-Manual-Evidence",
+                                    ].includes(test.type) ? (
+                                      test.result === 1 ? (
+                                        <span className="text-primary p-2">
+                                          <strong>YES</strong>
+                                        </span>
+                                      ) : test.result === 0 ? (
+                                        <span className="text-primary p-2">
+                                          <strong>NO</strong>
+                                        </span>
+                                      ) : (
+                                        <span className="text-warning p-2">
+                                          <strong>N/A</strong>
+                                        </span>
+                                      )
+                                    ) : (
+                                      <span className="text-primary p-2">
+                                        {params.map((item, indx) => {
+                                          return indx === params.length - 1 ? (
+                                            <span className="me-4">
+                                              <strong>{item}:</strong>
+                                              {test.value || "n/a"}
+                                            </span>
+                                          ) : (
+                                            <span className="me-4">
+                                              <strong>{item}:</strong> n/a
+                                            </span>
+                                          );
+                                        })}
+                                      </span>
                                     )}
-                                </div>
-                              ))}
+
+                                    <br />
+
+                                    {test.evidence_url &&
+                                      test.evidence_url?.length > 0 && (
+                                        <div>
+                                          {test.evidence_url.map((ev) => (
+                                            <div key={ev.url}>
+                                              {" "}
+                                              <a href={ev.url}>
+                                                <span className="p-2">
+                                                  <FaArrowUpRightFromSquare />
+                                                </span>
+                                              </a>
+                                              {ev.description && (
+                                                <a
+                                                  href={ev.url}
+                                                  className="plain"
+                                                >
+                                                  <span>{ev.description}</span>
+                                                </a>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                  </div>
+                                );
+                              })}
                             </div>
                           </Accordion.Body>
                         </Accordion.Item>

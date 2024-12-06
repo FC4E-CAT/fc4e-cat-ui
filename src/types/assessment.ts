@@ -134,6 +134,7 @@ export interface TestBinary {
   guidance?: Guidance;
   type: "binary";
   text: string;
+  params: string;
   result: number | null;
   value: boolean | null;
   evidence_url?: EvidenceURL[];
@@ -167,6 +168,7 @@ export interface TestValue {
   threshold_name?: string;
   threshold_locked?: boolean;
   benchmark: Benchmark;
+  params: string;
   evidence_url?: EvidenceURL[];
 }
 
