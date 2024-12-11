@@ -34,7 +34,7 @@ function Profile() {
 
   const renderTooltip = (props: TooltipProps) => (
     <Tooltip id="button-tooltip" {...props}>
-      {copySuccess ? t("page_profile.copied") : t("page_profile.copy")}
+      {copySuccess ? t("copied") : t("copy")}
     </Tooltip>
   );
   // check if the user has details

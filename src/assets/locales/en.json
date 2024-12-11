@@ -14,6 +14,11 @@
   "orcid": "ORCID",
   "rows_per_page": "rows per page",
   "no_data": "No data found",
+  "tip_copied": "Copied!",
+  "tip_copy": "Copy to clipboard",
+  "admin_mode": "Admin Mode",
+  "ror": "ROR",
+  "custom": "Custom",
   "buttons": {
     "login": "Login",
     "logout": "Logout",
@@ -26,7 +31,9 @@
     "confirm_delete": "Confirm Delete",
     "about": "About",
     "cancel": "Cancel",
-    "submit": "Submit"
+    "submit": "Submit",
+    "reject": "Reject",
+    "approve": "Approve"
   },
   "fields": {
     "actions": "Actions",
@@ -36,7 +43,10 @@
     "name": "Name",
     "surname": "Surname",
     "email": "Email",
-    "modified": "Modified"
+    "modified": "Modified",
+    "organisation": "Organisation",
+    "roles": "Roles",
+    "created_on": "Created on"
   },
   "footer": {
     "contact_category": "Contact and Service",
@@ -66,8 +76,7 @@
     "assessments_subtitle": "View your current assessments or create a new one.",
     "assessments_alert": "You should be a validated user before creating assessments",
     "subjects_subtitle": "View and manage your current Assessment Subjects.",
-    "tip_copied": "Copied!",
-    "tip_copy": "Copy to clipboard",
+
     "login_alert": "Press login to authenticate"
   },
   "page_profile_update": {
@@ -97,6 +106,67 @@
     "toast_delete_fail": "Error during subject deletion!",
     "toast_delete_success": "Subject succesfully deleted.",
     "toast_delete_progress": "Deleting subject..."
+  },
+  "page_validations": {
+    "subtitle": "All validation Requests in one place.",
+    "org_name": "Organization Name",
+    "org_role": "Organization Role",
+    "actor_name": "Actor Name",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "review": "Pending Review",
+    "tip_view": "View Validation Request"
+  },
+  "page_validation_details": {
+    "title": "Validation Request",
+    "subtitle": "Manage the validation with id",
+    "org_name": "Organization Name",
+    "org_role": "Organization Role",
+    "actor_name": "Actor Name",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "review": "Pending Review",
+    "tip_view": "View Validation Request",
+    "modal_reject": "Validation Request Rejection",
+    "modal_reject_text": "Are you sure you want to reject validation with ID",
+    "toast_reject_fail": "Error during Validation Request rejection!",
+    "toast_reject_success": "Validation Request Rejected.",
+    "toast_reject_progress": "Rejecting Validation request...",
+    "rejection_reason": "Rejection Reason",
+    "reject_reason_placeholder": "Add a reason for rejecting this request (required)",
+    "rejected_by": "Rejected by",
+    "rejected_on": "Rejected on",
+    "modal_approve": "Validation Request Approval",
+    "modal_approve_text": "Are you sure you want to approve validation with ID",
+    "toast_approve_fail": "Error during Validation Request approval!",
+    "toast_approve_success": "Validation Request Approved.",
+    "toast_approve_progress": "Approving Validation request...",
+    "approval_reason": "Approval Reason",
+    "approved_by": "Approved by",
+    "approved_on": "Approved on",
+    "org_user_role": "User role in organisation",
+    "actor_user_requests": "User requests as Actor with"
+  },
+  "page_validation_create": {
+    "title": "Create new validation request",
+    "subtitle": "Fill in the required inputs for a new validation request.",
+    "org_name": "Organisation Name",
+    "tip_org_name": "Name of the organisation",
+    "org_source": "Organisation Source",
+    "tip_org_source": "Source of a persistent identifier representing the organisation (ROR)",
+    "org_website": "Organisation Website",
+    "tip_org_website": "The organisation's website",
+    "org_role": "Organisation Role",
+    "tip_org_role": "The user's role in the organisation",
+    "actor": "Actor",
+    "tip_actor": "The role in the organisation (actor)",
+    "select_actor": "Select Actor",
+    "user_details": "User Details",
+    "err_select": "Please select an option",
+    "err_org_name": "Organisation name is required",
+    "err_org_source": "Organisation source is required",
+    "err_org_role": "Organisation role is required",
+    "err_min_length": "Minimum length is 3"
   },
   "page_about": {
     "title": "about",
