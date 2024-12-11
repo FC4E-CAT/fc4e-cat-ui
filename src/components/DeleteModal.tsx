@@ -1,4 +1,5 @@
 import { Modal, Button, ListGroup, ListGroupItem } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { FaTrash } from "react-icons/fa";
 
 interface DeleteModalProps {
@@ -18,6 +19,7 @@ interface DeleteModalProps {
  * and onDelete (what to do when user clicks Confirm Delete button)
  */
 export function DeleteModal(props: DeleteModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal
       show={props.show}
@@ -35,21 +37,21 @@ export function DeleteModal(props: DeleteModalProps) {
         <p>{props.message}</p>
         <ListGroup>
           <ListGroupItem>
-            <strong>Name: </strong>
+            <strong>{t("fields.name")}: </strong>
             {props.itemName}
           </ListGroupItem>
           <ListGroupItem>
-            <strong>ID: </strong>
+            <strong>{t("fields.id")}: </strong>
             {props.itemId}
           </ListGroupItem>
         </ListGroup>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-danger me-4" onClick={props.handleDelete}>
-          Confirm Delete
+          {t("buttons.confirm_delete")}
         </Button>
         <Button className="btn-secondary" onClick={props.onHide}>
-          Cancel
+          {t("buttons.cancel")}
         </Button>
       </Modal.Footer>
     </Modal>

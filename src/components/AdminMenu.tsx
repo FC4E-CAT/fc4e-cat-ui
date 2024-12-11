@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   FaAward,
   FaCheckCircle,
@@ -14,12 +15,13 @@ function isSel(path: string, name: string): boolean {
 
 export default function AdminMenu() {
   const adminPath = useLocation().pathname.split("/")[2] ?? "";
+  const { t } = useTranslation();
 
   return (
     <div className="px-3 py-2">
       <ul className="nav flex-column mt-2">
         <h5>
-          <strong>Manage</strong>
+          <strong>{t("manage")}</strong>
         </h5>
         <li
           className={`nav-item rounded ${isSel(adminPath, "users") ? "cat-menu-selected" : ""}`}
@@ -28,7 +30,7 @@ export default function AdminMenu() {
             to="/admin/users"
             className="rounded cat-nav-link-light px-3 text-nowrap"
           >
-            <FaUsers className="text-muted me-2" /> Users
+            <FaUsers className="text-muted me-2" /> {t("users")}
           </Link>
         </li>
         <li
@@ -38,7 +40,7 @@ export default function AdminMenu() {
             to="/admin/validations"
             className="rounded cat-nav-link-light px-3 text-nowrap"
           >
-            <FaCheckCircle className="text-muted me-2" /> Validations
+            <FaCheckCircle className="text-muted me-2" /> {t("validations")}
           </Link>
         </li>
         <li
@@ -48,13 +50,13 @@ export default function AdminMenu() {
             to="/admin/assessments"
             className="rounded cat-nav-link-light px-3 text-nowrap"
           >
-            <FaFileCircleCheck className="text-muted me-2" /> Assessments
+            <FaFileCircleCheck className="text-muted me-2" /> {t("assessments")}
           </Link>
         </li>
         <hr />
 
         <h5>
-          <strong>Library</strong>
+          <strong> {t("library")}</strong>
         </h5>
         <li
           className={`nav-item rounded ${isSel(adminPath, "motivations") ? "cat-menu-selected" : ""}`}
@@ -63,7 +65,7 @@ export default function AdminMenu() {
             to="/admin/motivations"
             className="rounded cat-nav-link-light px-3 text-nowrap"
           >
-            <FaFile className="text-muted me-2" /> Motivations
+            <FaFile className="text-muted me-2" /> {t("motivations")}
           </Link>
         </li>
         <li
@@ -73,7 +75,7 @@ export default function AdminMenu() {
             to="/admin/principles"
             className="rounded cat-nav-link-light px-3 text-nowrap"
           >
-            <FaTags className="text-muted me-2" /> Principles
+            <FaTags className="text-muted me-2" /> {t("principles")}
           </Link>
         </li>
         <li
@@ -83,7 +85,7 @@ export default function AdminMenu() {
             to="/admin/criteria"
             className="rounded cat-nav-link-light px-3 text-nowrap"
           >
-            <FaAward className="text-muted me-2" /> Criteria
+            <FaAward className="text-muted me-2" /> {t("criteria")}
           </Link>
         </li>
       </ul>

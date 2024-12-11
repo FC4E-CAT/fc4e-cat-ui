@@ -1,128 +1,70 @@
 import imgFcat from "@/assets/fcat.jpg";
 import { Row, Col, Accordion } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { FaInfoCircle } from "react-icons/fa";
 
 function About() {
+  const { t } = useTranslation();
   return (
     <div className="container rounded bg-white mt-1 mb-5">
       <div className="p-4">
         <h3 className="cat-view-heading mb-4">
-          <FaInfoCircle /> about
+          <FaInfoCircle /> {t("page_about.title")}
         </h3>
-        <h2>Compliance Assesment Toolkit (CAT)</h2>
+        <h2>{t("page_about.subtitle")}</h2>
         <Row className="mt-2 mb-4">
           <Col>
-            <h4>Overview</h4>
-            <p>
-              The main objective of WP2 is the creation of a Compliance
-              Assessment Toolkit for EOSC: a set of concepts, implemented as a
-              graph database and accessible via APIs, and supported by user
-              interfaces via the APIs. The Compliance Assessment Toolkit will
-              support the EOSC PID policy with services to encode, record, and
-              query compliance with the policy. To do so, a wide range of
-              compliance requirements ( TRUST, FAIR, PID Policy,
-              Reproducibility, GDPR, Licences) will be evaluated as use cases
-              for definition of a conceptual model. At the same time,
-              vocabularies, concepts, and designs are intended to be re-usable
-              for other compliance needs: TRUST, FAIR, POSI, CARE, Data Commons,
-              etc. This will be followed by a supporting service specification
-              (the framework), accompanied by development and testing of
-              operational services for PID Policy Compliance monitoring. Though
-              primarily aimed at machine-actionable operations, the API-based
-              services will be complemented by user interfaces to broaden its
-              use.
-            </p>
+            <h4>{t("page_about.overview")}</h4>
+            <p>{t("page_about.overview_text")}</p>
             <hr />
-            The component will create the following resources:
+            {t("page_about.resources")}:
             <ol type="1">
               <li>
-                <strong>Vocabulary services</strong>, based on a conceptual
-                model, that can be used to characterise, describe, and encode
-                compliance regimes - with an operational version of the EOSC PID
-                Compliance regime deployed. We will also include beta versions
-                of other compliance assessment regimes - specifically FAIR and
-                TRUST. These can be used as a starting point for
-                operationalisation of additional regimes.
+                <strong>{t("page_about.vocabularies")}</strong>,{" "}
+                {t("page_about.vocabularies_text")}
               </li>
               <li>
-                <strong>API services</strong> (REST APIs) that allows for the
-                encoding, recording, and querying of compliance assessments.
-                Operational examples will support EOSC PID Policy compliance,
-                while FAIR and TRUST will be available as beta versions.
+                <strong>{t("page_about.apis")}</strong>{" "}
+                {t("page_about.apis_text")}
               </li>
               <li>
-                <strong>User Interfaces </strong> based on the APIs that support
-                the use of the APIs within websites and applications.
+                <strong>{t("page_about.uis")}</strong>{" "}
+                {t("page_about.uis_text")}
               </li>
             </ol>
             <hr />
             <Accordion defaultActiveKey="0">
               <Accordion.Item eventKey="0">
-                <Accordion.Header>Functionalities</Accordion.Header>
+                <Accordion.Header>
+                  {t("page_about.functionalities")}
+                </Accordion.Header>
                 <Accordion.Body>
                   <ul className="cat-list-bullet-image">
-                    <li>
-                      CAT should support a procedure on how to enable the
-                      assessment and select the type of role in the PID
-                      Ecosystem.
-                    </li>
-                    <li>
-                      CAT Vocabulary Management: Record and maintain vocabulary
-                      entries.
-                    </li>
-                    <li>CAT Management of compliance assessment event</li>
-                    <li>
-                      Query the database to obtain a variety of views -
-                      vocabulary listings, object compliance reports and
-                      history, compliance. Assessment method comparisons.
-                    </li>
-                    <li>
-                      API endpoints for other systems to use the compliance
-                      assessment toolkit.
-                    </li>
-                    <li>
-                      UI Dashboard views - summary of scope of assessment in the
-                      graph database
-                    </li>
-                    <li>
-                      UI Object views - summary of the compliance history of an
-                      object
-                    </li>
-                    <li>
-                      Easy to use UI with functional consistency (behavior),
-                      objects working in the same way throughout the interface.
-                    </li>
-                    <li>
-                      User-friendly interfaces: interfaces that encourage
-                      exploration without fear of negative consequences.
-                    </li>
-                    <li>
-                      Wizard-like UI, fully documented so as to help the users
-                      understand the what, how and why.
-                    </li>
+                    <li>{t("page_about.f1")}</li>
+                    <li>{t("page_about.f2")}</li>
+                    <li>{t("page_about.f3")}</li>
+                    <li>{t("page_about.f4")}</li>
+                    <li>{t("page_about.f5")}</li>
+                    <li>{t("page_about.f6")}</li>
+                    <li>{t("page_about.f7")}</li>
+                    <li>{t("page_about.f8")}</li>
+                    <li>{t("page_about.f9")}</li>
+                    <li>{t("page_about.f10")}</li>
+                    <li>{t("page_about.f11")}</li>
                   </ul>
                 </Accordion.Body>
               </Accordion.Item>
               <Accordion.Item eventKey="1">
-                <Accordion.Header>Impact</Accordion.Header>
+                <Accordion.Header>{t("page_about.impact")}</Accordion.Header>
                 <Accordion.Body>
                   <ul className="cat-list-bullet-image">
+                    <li>{t("page_about.i1")}</li>
+
                     <li>
-                      Validate - Update with examples the EOSC PID Policy report
-                    </li>
-                    <li>
-                      Operational service for PID Policy compliance assessment
-                      in EOSC Standardisation of the compliance assessment
-                      landscape
+                      {t("page_about.i2")}
                       <ul className="cat-list-bullet-image">
-                        <li>
-                          Horizontally - across different compliance assessment
-                          regimes
-                        </li>
-                        <li>
-                          Vertically - across different assessment tools and
-                          metrics within an assessment regime
-                        </li>
+                        <li>{t("page_about.i2_1")}</li>
+                        <li>{t("page_about.i2_2")}</li>
                       </ul>
                     </li>
                   </ul>
