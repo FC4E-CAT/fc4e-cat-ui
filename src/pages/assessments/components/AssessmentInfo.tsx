@@ -21,6 +21,7 @@ import {
   FaExclamationCircle,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface AssessmentInfoProps {
   id?: string;
@@ -40,7 +41,7 @@ interface AssessmentInfoProps {
 
 export const AssessmentInfo = (props: AssessmentInfoProps) => {
   const [accKeys, setAccKeys] = useState<string[]>([]);
-
+  const { t } = useTranslation();
   const toggleAccKey = (name: string) => {
     if (accKeys.includes(name)) {
       setAccKeys(accKeys.filter((item) => item !== name));
@@ -69,7 +70,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
         <Accordion.Header onClick={() => toggleAccKey("acc-1")}>
           <span>
             <FaInfo color="blue" className="me-2" />
-            General Info
+            {t("page_assessment_edit.general_info")}
             {props.reqFields.includes("name") && (
               <FaExclamationCircle className="ms-2 text-danger rounded-circle bg-white" />
             )}
@@ -84,18 +85,17 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      A unique name for the assessment. Give a distinguishing
-                      name for this assessment and any possible future versions
+                      {t("page_assessment_edit.tip_name")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-info-name">
-                    <FaInfoCircle className="me-2" /> Name (*)
+                    <FaInfoCircle className="me-2" /> {t("fields.name")} (*)
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
                   id="input-info-name"
-                  placeholder="A unique name for the assessment"
+                  placeholder={t("page_assessment_edit.name")}
                   value={props.name}
                   onChange={(e) => {
                     props.onNameChange(e.target.value);
@@ -108,7 +108,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
               </InputGroup>
               {props.reqFields.includes("name") && (
                 <p className="text-danger text-end">
-                  A unique name for the assessment is required
+                  {t("page_assessment_edit.err_name")}
                 </p>
               )}
             </Col>
@@ -122,12 +122,13 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      The type of assessment (e.g. PID Policy)
+                      {t("page_assessment_edit.tip_type")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-info-type">
-                    <FaInfoCircle className="me-2" /> Type
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("page_assessment_edit.type")}
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -146,7 +147,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
         <Accordion.Header onClick={() => toggleAccKey("acc-2")}>
           <span>
             <FaUserAlt color="green" className="me-2" />
-            Submitter
+            {t("page_assessment_edit.submitter")}
           </span>
         </Accordion.Header>
         <Accordion.Body>
@@ -157,11 +158,13 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                   key="top"
                   placement="top"
                   overlay={
-                    <Tooltip id={`tooltip-top`}>The user’s name</Tooltip>
+                    <Tooltip id={`tooltip-top`}>
+                      {t("page_assessment_edit.tip_user_name")}
+                    </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-info-name">
-                    <FaInfoCircle className="me-2" /> Name
+                    <FaInfoCircle className="me-2" /> {t("fields.name")}
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -179,11 +182,13 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                   key="top"
                   placement="top"
                   overlay={
-                    <Tooltip id={`tooltip-top`}>The user’s surname</Tooltip>
+                    <Tooltip id={`tooltip-top`}>
+                      {t("page_assessment_edit.tip_user_surnname")}
+                    </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-info-name">
-                    <FaInfoCircle className="me-2" /> Surname
+                    <FaInfoCircle className="me-2" /> {t("fields.surname")}
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -203,11 +208,14 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                   key="top"
                   placement="top"
                   overlay={
-                    <Tooltip id={`tooltip-top`}>The user’s affiliation</Tooltip>
+                    <Tooltip id={`tooltip-top`}>
+                      {t("page_assessment_edit.tip_user_affiliation")}
+                    </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-info-name">
-                    <FaInfoCircle className="me-2" /> Affiliation
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("page_assessment_edit.affiliation")}
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -225,11 +233,13 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                   key="top"
                   placement="top"
                   overlay={
-                    <Tooltip id={`tooltip-top`}>The user’s ORCID ID</Tooltip>
+                    <Tooltip id={`tooltip-top`}>
+                      {t("page_assessment_edit.tip_user_orcid")}
+                    </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-info-name">
-                    <FaInfoCircle className="me-2" /> ORCID ID
+                    <FaInfoCircle className="me-2" /> {t("fields.orcid")}
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -248,7 +258,8 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
         <Accordion.Header onClick={() => toggleAccKey("acc-3")}>
           <span>
             <FaCog color="orange" className="me-2" />
-            Subject of assessment <em>(Object, Entity or Service)</em>
+            {t("page_assessment_edit.subject")}{" "}
+            <em>{t("page_assessment_edit.subject_example")}</em>
             {["subject_name", "subject_id", "subject_type"].some((item) =>
               props.reqFields.includes(item),
             ) && (
@@ -270,22 +281,19 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
         <Accordion.Header onClick={() => toggleAccKey("acc-4")}>
           <span>
             <FaLock color="crimson" className="me-2" />
-            Rights, Licencing or Re-use
+            {t("page_assessment_edit.rights")}
           </span>
         </Accordion.Header>
         <Accordion.Body>
           <Row className="m-2">
-            If you are not yet ready to share an assessment result or it is
-            being done for internal purposes only, keep it set to ‘private’.
-            Only the results of ‘public’ assessments are visible to others. - it
-            is private by deafult
+            {t("page_assessment_edit.rights_text")}
             <Form>
               <Form.Check
                 className={`mt-2 ${
                   props.published ? "fw-bold text-success" : "text-muted"
                 }`}
                 type="radio"
-                label="The Assessment is Public and Licensed with CC 4.0 BY"
+                label={t("page_assessment_edit.rights_public")}
                 name="rights-public"
                 id="input-check-public"
                 value="public"
@@ -300,7 +308,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
                   !props.published ? "fw-bold" : ""
                 }`}
                 type="radio"
-                label="The Assessment is Private"
+                label={t("page_assessment_edit.rights_private")}
                 name="rights-private"
                 id="input-check-private"
                 value="private"

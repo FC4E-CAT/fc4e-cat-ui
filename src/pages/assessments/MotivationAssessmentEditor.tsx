@@ -14,8 +14,10 @@ import {
 import { evalAssessment, evalMetric } from "@/utils";
 import { AssessmentEvalStats } from "./components/AssessmentEvalStats";
 import { FaExclamationTriangle } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 export const MotivationAssessmentEditor = () => {
+  const { t } = useTranslation();
   // get actId and mtvId as routing parameters
   const params = useParams();
   const [resetCriterionTab, setResetCriterionTab] = useState(false);
@@ -126,14 +128,15 @@ export const MotivationAssessmentEditor = () => {
       <div className="cat-view-heading-block row border-bottom">
         <Col>
           <h2 className="text-muted cat-view-heading ">
-            Preview Assessment
+            {t("page_preview.title")}
             {params.mtvId && params.actId && (
               <p className="lead cat-view-lead">
-                For Motivation: <strong>{data?.assessment_type.name}</strong>
+                {t("page_preview.motivation")}:{" "}
+                <strong>{data?.assessment_type.name}</strong>
                 <strong className="badge bg-light text-secondary mx-2 text-ms">
                   {params.mtvId}
                 </strong>
-                and Actor: <strong>{data?.actor.name}</strong>
+                {t("page_preview.actor")}: <strong>{data?.actor.name}</strong>
                 <strong className="badge bg-light text-secondary mx-2 text-ms">
                   {params.actId}
                 </strong>
@@ -144,7 +147,7 @@ export const MotivationAssessmentEditor = () => {
       </div>
       {isLoading ? (
         <div>
-          <Alert variant="light">Loading ...</Alert>
+          <Alert variant="light">{t("loading")}: ...</Alert>
         </div>
       ) : assessment ? (
         <div className="p-4">
@@ -169,7 +172,7 @@ export const MotivationAssessmentEditor = () => {
         <div>
           <Alert variant="warning">
             <FaExclamationTriangle />
-            No Data found ...
+            {t("page_preview.no_data")}: ...
           </Alert>
         </div>
       )}
@@ -179,7 +182,7 @@ export const MotivationAssessmentEditor = () => {
           navigate(-1);
         }}
       >
-        Back
+        {t("buttons.back")}
       </Button>
     </div>
   );

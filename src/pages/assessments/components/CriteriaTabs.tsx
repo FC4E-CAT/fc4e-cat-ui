@@ -45,6 +45,7 @@ import { CriterionProgress } from "./CriterionProgress";
 import { TestBinaryParamForm } from "./tests/TestBinaryParam";
 import { TestValueFormParam } from "./tests/TestValueFormParam";
 import { TestAutoHttpsCheckForm } from "./tests/TestAutoHttpsCheckForm";
+import { useTranslation } from "react-i18next";
 
 type CriteriaTabsProps = {
   principles: AssessmentPrinciple[];
@@ -64,6 +65,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
   const navs: JSX.Element[] = [];
   const tabs: JSX.Element[] = [];
   const [activeKey, setActiveKey] = useState("");
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     // if resetActiveTab signal is set to true try to find the first criterion
@@ -171,7 +174,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                       style={{ fontSize: "0.6rem" }}
                       className="ms-2 badge mb-2 rounded-pill text-bg-light text-secondary border align-middle"
                     >
-                      required
+                      {t("required")}
                     </small>
                   </div>
                 )}
@@ -291,11 +294,11 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                 {criterion.imperative === AssessmentCriterionImperative.Must ||
                 criterion.imperative === AssessmentCriterionImperative.MUST ? (
                   <span className="badge bg-success bg-small ms-4 align-middle">
-                    Required
+                    {t("required")}
                   </span>
                 ) : (
                   <span className="badge bg-warning bg-small ms-4 align-middle">
-                    Optional
+                    {t("optional")}
                   </span>
                 )}
                 <p className="text-muted lh-sm mt-2 mb-2">
@@ -303,7 +306,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                 </p>
                 <div className="cat-view-heading">
                   <span className="align-middle">
-                    part of principle {principle.id}: {principle.name}{" "}
+                    {t("page_assement_edit.part_of_principle")} {principle.id}:{" "}
+                    {principle.name}{" "}
                   </span>
                   <OverlayTrigger
                     placement="top"

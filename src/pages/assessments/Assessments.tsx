@@ -10,6 +10,7 @@ import { Col, Row } from "react-bootstrap";
 import { ActorCard } from "./components/ActorCard";
 import { AuthContext } from "@/auth";
 import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 interface CardProps {
   id: number;
@@ -32,6 +33,8 @@ function Assessments() {
 
   const cardProps: CardProps[] = [];
 
+  const { t } = useTranslation();
+
   const cardImgs: Record<string, string> = {
     "PID Scheme (Component)": schemesImg,
     "PID Manager (Role)": manageImg,
@@ -51,7 +54,7 @@ function Assessments() {
           title: actorItem.label,
           description: actorItem.description,
           image: cardImg,
-          linkText: `View public assessments`,
+          linkText: t("page_assessments.view"),
           link: `/public-assessments?actor-id=${
             actorItem.id
           }&motivation-id=${"pid_graph:3E109BBA"}&actor-name=${actorItem.label}`,
@@ -65,9 +68,9 @@ function Assessments() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
-            Assessments
+            {t("assessments")}
             <p className="lead cat-view-lead">
-              Read about different actors in the ecosystem before starting.
+              {t("page_assessments.subtitle")}
             </p>
           </h2>
         </div>
@@ -79,21 +82,26 @@ function Assessments() {
               className="btn btn-light border-black me-3"
             >
               <FaList />{" "}
-              <span className="align-middle">View your Assessments</span>
+              <span className="align-middle">
+                {" "}
+                {t("page_assessments.view")}
+              </span>
             </Link>
             <Link
               id="assessment_form_button"
               to={`/assessments/create`}
               className="btn btn-warning me-3"
             >
-              <FaPlus /> <span className="align-middle">Create New</span>
+              <FaPlus />{" "}
+              <span className="align-middle">{t("buttons.create_new")}</span>
             </Link>
             <Link
               id="assessment_form_button"
               to={`/assessments/import`}
               className="btn btn-info"
             >
-              <FaFileImport /> <span className="align-middle">Import</span>
+              <FaFileImport />{" "}
+              <span className="align-middle">{t("buttons.import")}</span>
             </Link>
           </div>
         )}

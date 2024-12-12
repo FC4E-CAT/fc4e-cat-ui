@@ -3,6 +3,7 @@
  */
 import { AssessmentResult, ResultStats } from "@/types";
 import { Row, Col, ProgressBar } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { FaCheckCircle } from "react-icons/fa";
 
 export const AssessmentEvalStats = ({
@@ -12,6 +13,7 @@ export const AssessmentEvalStats = ({
   evalResult: ResultStats;
   assessmentResult: AssessmentResult;
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="p-0 row">
       <div
@@ -28,13 +30,19 @@ export const AssessmentEvalStats = ({
             <div className="d-flex align-items-center">
               <span className="mt-2">
                 <FaCheckCircle className="me-2" />
-                Compliance:
+                {t("compliance")}:
                 {assessmentResult.compliance === null ? (
-                  <span className="badge bg-secondary ms-2">UNKNOWN</span>
+                  <span className="badge bg-secondary ms-2">
+                    {t("unknown").toUpperCase()}
+                  </span>
                 ) : assessmentResult.compliance ? (
-                  <span className="badge bg-success ms-2">PASS</span>
+                  <span className="badge bg-success ms-2">
+                    {t("pass").toUpperCase()}
+                  </span>
                 ) : (
-                  <span className="badge bg-danger ms-2">FAIL</span>
+                  <span className="badge bg-danger ms-2">
+                    {t("fail").toUpperCase()}
+                  </span>
                 )}
               </span>
             </div>
@@ -44,7 +52,7 @@ export const AssessmentEvalStats = ({
           <Col xs={2}>
             <div className="mb-2">
               <span>
-                Mandatory: {evalResult.mandatoryFilled} /{" "}
+                {t("mandatory")}: {evalResult.mandatoryFilled} /{" "}
                 {evalResult.totalMandatory}
               </span>
               <ProgressBar
@@ -78,7 +86,7 @@ export const AssessmentEvalStats = ({
             <Col xs={2}>
               <div className="mb-2">
                 <span>
-                  Optional: {evalResult.optionalFilled} /{" "}
+                  {t("optional")}: {evalResult.optionalFilled} /{" "}
                   {evalResult.totalOptional}
                 </span>
                 <ProgressBar

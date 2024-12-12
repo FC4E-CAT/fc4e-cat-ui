@@ -17,6 +17,7 @@ import { APIClient } from "@/api";
 import { useContext, useState } from "react";
 import { AuthContext } from "@/auth";
 import { AxiosError } from "axios";
+import { useTranslation } from "react-i18next";
 
 interface AssessmentTestProps {
   test: TestAutoHttpsCheck;
@@ -31,6 +32,7 @@ interface AssessmentTestProps {
 
 export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
   const { keycloak } = useContext(AuthContext)!;
+  const { t } = useTranslation();
 
   function onURLChange(newURLS: EvidenceURL[]) {
     const newTest = { ...props.test, evidence_url: newURLS };
@@ -125,20 +127,19 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
                 handleHttpsCheck(keycloak?.token || "");
               }}
             >
-              <FaPlay className="me-2" /> Run Check
+              <FaPlay className="me-2" />
+              {` ${t("page_assessment_edit.run_check")}`}
             </Button>
           </InputGroup>
           {runningTest && (
             <div className="text-muted align-middle py-1">
               <FaClock className="me-2" />
-              Test Running...
+              {t("page_assessment_edit.check_running")}
             </div>
           )}
           {!runningTest && !validUrl && (
             <div>
-              <small className="text-danger">
-                please provide a valid url (e.g. http://example.com/path/to)
-              </small>
+              <small className="text-danger">{t("err_evidence")}</small>
             </div>
           )}
           {!runningTest &&
@@ -148,12 +149,12 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
                 {props.test.result > 0 ? (
                   <small className="text-success">
                     <FaCheckCircle className="me-2" />
-                    Valid https endpoint
+                    {t("page_assessment_edit.valid_https")}
                   </small>
                 ) : (
                   <small className="text-danger">
                     <FaTimes className="me-2" />
-                    Invalid https endpoint
+                    {t("page_assessment_edit.invalid_https")}
                   </small>
                 )}
               </div>

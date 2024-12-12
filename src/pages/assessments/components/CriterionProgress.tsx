@@ -1,9 +1,11 @@
 import { Metric } from "@/types";
+import { useTranslation } from "react-i18next";
 
 export function CriterionProgress({ metric }: { metric: Metric }) {
   const tests = metric.tests;
   let filled = 0;
   const testMarkers = [];
+  const { t } = useTranslation();
 
   for (const item of tests) {
     if (item.result !== null) {
@@ -46,13 +48,15 @@ export function CriterionProgress({ metric }: { metric: Metric }) {
       <small className="ms-2">
         <strong>
           {metric.result === null ? (
-            <span className="text-secondary">Progress</span>
+            <span className="text-secondary">
+              {t("page_assessment_edit.progress")}
+            </span>
           ) : (
             <>
               {metric.result === 1 ? (
-                <span className="text-success">Pass</span>
+                <span className="text-success">{t("pass")}</span>
               ) : (
-                <span className="text-danger">Fail</span>
+                <span className="text-danger">{t("fail")}</span>
               )}
             </>
           )}
