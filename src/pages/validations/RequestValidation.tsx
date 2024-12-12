@@ -16,13 +16,14 @@ import { useContext, useState, useRef, useEffect } from "react";
 import { OverlayTrigger, Tooltip, Row, Col, InputGroup } from "react-bootstrap";
 import { useForm, SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaInfoCircle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import Select, { SingleValue } from "react-select";
 
 function RequestValidation() {
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const { data: profileData } = useGetProfile({
@@ -181,14 +182,15 @@ function RequestValidation() {
         htmlFor="actors"
         className="d-flex align-items-center form-label fw-bold"
       >
-        <FaInfoCircle className="me-2" /> Actor (*)
+        <FaInfoCircle className="me-2" /> {t("page_validation_create.actor")}{" "}
+        (*)
       </label>
       <OverlayTrigger
         key="top"
         placement="top"
         overlay={
           <Tooltip id="tooltip-top-org-role">
-            The organisation’s role (actor) as defined in the EOSC PID Policy
+            {t("page_validation_create.tip_actor")}
           </Tooltip>
         }
       >
@@ -197,11 +199,12 @@ function RequestValidation() {
           id="registry_actor_id"
           {...register("registry_actor_id", {
             required: true,
-            validate: (value) => value != "" || "Please select an option",
+            validate: (value) =>
+              value != "" || t("page_validation_create.err_select"),
           })}
         >
           <option disabled value={""}>
-            Select Actor
+            {t("page_validation_create.select_actor")}...
           </option>
           {actors &&
             actors.map((t, i) => {
@@ -226,9 +229,9 @@ function RequestValidation() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
-            Create new validation request
+            {t("page_validation_create.title")}
             <p className="lead cat-view-lead">
-              Fill in the required inputs for a new validation request.
+              {t("page_validation_create.subtitle")}
             </p>
           </h2>
         </div>
@@ -241,13 +244,16 @@ function RequestValidation() {
               htmlFor="organisation_name"
               className="d-flex align-items-center form-label fw-bold"
             >
-              <FaInfoCircle className="me-2" /> Organisation Name (*)
+              <FaInfoCircle className="me-2" />{" "}
+              {t("page_validation_create.org_name")} (*)
             </label>
             <OverlayTrigger
               key="top"
               placement="top"
               overlay={
-                <Tooltip id="tooltip-top-org-name">Organisation Name</Tooltip>
+                <Tooltip id="tooltip-top-org-name">
+                  {t("page_validation_create.tip_org_name")}
+                </Tooltip>
               }
             >
               {watchOrgSource === "ROR" ? (
@@ -258,7 +264,7 @@ function RequestValidation() {
                     {...register("organisation_name", {
                       required: {
                         value: true,
-                        message: "Organisation name is required",
+                        message: t("page_validation_create.err_org_name"),
                       },
                     })}
                   />
@@ -284,7 +290,7 @@ function RequestValidation() {
                   {...register("organisation_name", {
                     required: {
                       value: true,
-                      message: "Organisation name is required",
+                      message: t("page_validation_create.err_org_name"),
                     },
                   })}
                   onChange={(e) => {
@@ -305,15 +311,15 @@ function RequestValidation() {
               htmlFor="organisation_source"
               className="d-flex align-items-center form-label fw-bold"
             >
-              <FaInfoCircle className="me-2" /> Organisation Source (*)
+              <FaInfoCircle className="me-2" />{" "}
+              {t("page_validation_create.org_source")} (*)
             </label>
             <OverlayTrigger
               key="top"
               placement="top"
               overlay={
                 <Tooltip id="tooltip-top-org-source">
-                  Source of a persistent identifier representing the
-                  organisation (ROR)
+                  {t("page_validation_create.tip_org_source")}
                 </Tooltip>
               }
             >
@@ -326,9 +332,12 @@ function RequestValidation() {
                 {...register("organisation_source", {
                   required: {
                     value: true,
-                    message: "Organisation Source is required",
+                    message: t("page_validation_create.err_org_source"),
                   },
-                  minLength: { value: 3, message: "Minimum length is 3" },
+                  minLength: {
+                    value: 3,
+                    message: t("page_validation_create.err_min_length"),
+                  },
                 })}
                 defaultValue="ROR"
                 onChange={(e) => {
@@ -337,8 +346,8 @@ function RequestValidation() {
                   setValue("organisation_website", "");
                 }}
               >
-                <option value="ROR">ROR</option>
-                <option value="CUSTOM">Custom</option>
+                <option value="ROR">{t("ror")}</option>
+                <option value="CUSTOM">{t("custom")}</option>
               </select>
             </OverlayTrigger>
             <ErrorMessage
@@ -353,14 +362,14 @@ function RequestValidation() {
               className="d-flex align-items-center form-label fw-bold"
             >
               <FaInfoCircle className="me-2" />
-              Organisation Website
+              {t("page_validation_create.org_website")}
             </label>
             <OverlayTrigger
               key="top"
               placement="top"
               overlay={
                 <Tooltip id="tooltip-top-org-website">
-                  The organisation’s website
+                  {t("page_validation_create.tip_org_website")}
                 </Tooltip>
               }
             >
@@ -388,14 +397,15 @@ function RequestValidation() {
               htmlFor="organisation_role"
               className="d-flex align-items-center form-label fw-bold"
             >
-              <FaInfoCircle className="me-2" /> Organisation Role (*)
+              <FaInfoCircle className="me-2" />{" "}
+              {t("page_validation_create.org_role")} (*)
             </label>
             <OverlayTrigger
               key="top"
               placement="top"
               overlay={
                 <Tooltip id="tooltip-top-org-role">
-                  The user’s role in the organisation
+                  {t("page_validation_create.tip_org_role")}
                 </Tooltip>
               }
             >
@@ -409,7 +419,7 @@ function RequestValidation() {
                 {...register("organisation_role", {
                   required: {
                     value: true,
-                    message: "Organisation Role is required",
+                    message: t("page_validation_create.err_org_role"),
                   },
                 })}
               />
@@ -426,10 +436,13 @@ function RequestValidation() {
         </Row>
 
         <Row className="mt-3">
-          <span className="form-label fw-bold">User Details (*)</span>
+          <span className="form-label fw-bold">
+            {" "}
+            {t("page_validation_create.user_details")} (*)
+          </span>
           <Col sm={12} md={4}>
             <InputGroup className="mb-2">
-              <InputGroup.Text>Name: </InputGroup.Text>
+              <InputGroup.Text>{t("fields.name")}: </InputGroup.Text>
               <input
                 type="text"
                 className={`form-control`}
@@ -442,7 +455,7 @@ function RequestValidation() {
           </Col>
           <Col sm={12} md={4}>
             <InputGroup className="mb-2">
-              <InputGroup.Text>Surname: </InputGroup.Text>
+              <InputGroup.Text>{t("fields.surname")}: </InputGroup.Text>
               <input
                 type="text"
                 className={`form-control`}
@@ -455,7 +468,7 @@ function RequestValidation() {
           </Col>
           <Col sm={12} md={4}>
             <InputGroup className="mb-2">
-              <InputGroup.Text>Email: </InputGroup.Text>
+              <InputGroup.Text>{t("fields.email")}: </InputGroup.Text>
               <input
                 type="text"
                 className={`form-control`}
@@ -473,10 +486,10 @@ function RequestValidation() {
             className="btn btn-light border-black"
             type="submit"
           >
-            Submit
+            {t("buttons.submit")}
           </button>
           <Link to="/validations" className="my-2 btn btn-secondary mx-3">
-            <span>Cancel</span>
+            <span>{t("buttons.cancel")}</span>
           </Link>
         </div>
       </form>
