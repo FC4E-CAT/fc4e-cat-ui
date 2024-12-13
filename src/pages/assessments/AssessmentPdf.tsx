@@ -12,6 +12,7 @@ import imgAssessmentBadgePassed from "@/assets/badge-passed.png";
 import imgAssessmentBadgeWip from "@/assets/badge-wip.png";
 import imgAssessmentBadgeFailed from "@/assets/badge-failed.png";
 import { FaDownload } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 interface AssessmentPdfProps {
   assessmentDoc: Assessment;
@@ -21,6 +22,8 @@ interface AssessmentPdfProps {
 /** AssessmentPdf creates a pdf document with the results */
 const AssessmentPdf = (props: AssessmentPdfProps) => {
   const assessment = props.assessmentDoc;
+
+  const { t } = useTranslation();
 
   // Create Document Component
   const PdfDoc = () => (
@@ -36,7 +39,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
           }}
         >
           <Image src={imgLogo} style={{ width: "20vh" }} />
-          <Text>Assessment Results</Text>
+          <Text>{t("page_pdf.results")}</Text>
           {!assessment.published && (
             <Text
               style={{
@@ -47,7 +50,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                 alignContent: "center",
               }}
             >
-              Draft
+              {t("draft")}
             </Text>
           )}
         </View>
@@ -61,7 +64,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
           <View>
             <Text>{assessment.name}</Text>
             <Text style={{ fontSize: "12" }}>
-              Compliance policy: {assessment.assessment_type.name}
+              {t("compliance_policy")}: {assessment.assessment_type.name}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
@@ -69,15 +72,15 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
               <Text style={{ fontSize: "12" }}>Compliance:</Text>
               {assessment.result.compliance === null ? (
                 <Text style={{ fontFamily: "Helvetica-Bold", color: "orange" }}>
-                  n/a
+                  {t("na").toLowerCase()}
                 </Text>
               ) : assessment.result.compliance ? (
                 <Text style={{ fontFamily: "Helvetica-Bold", color: "green" }}>
-                  pass
+                  {t("pass").toLowerCase()}
                 </Text>
               ) : (
                 <Text style={{ fontFamily: "Helvetica-Bold", color: "red" }}>
-                  fail
+                  {t("fail").toLowerCase()}
                 </Text>
               )}
             </View>
@@ -109,7 +112,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
           </View>
           <View style={{ marginLeft: "10", width: "30%" }}>
             <Text style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}>
-              Statistics
+              {t("fields.statistics")}
             </Text>
             <View style={{ marginTop: 5, flexDirection: "row" }}>
               <Text style={{ fontSize: "12" }}>Principles: </Text>
@@ -125,7 +128,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
             </View>
             <View style={{ marginTop: 5, flexDirection: "row" }}>
               <Text style={{ fontSize: "12", marginLeft: "10" }}>
-                • Mandatory:{" "}
+                • {t("mandatory")}:{" "}
               </Text>
               <Text style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}>
                 {props.assessmentStats.completed_mandatory}
@@ -142,7 +145,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
             </View>
             <View style={{ marginTop: 5, flexDirection: "row" }}>
               <Text style={{ fontSize: "12", marginLeft: "10" }}>
-                • Optional:{" "}
+                • {t("optional")}:{" "}
               </Text>
               <Text style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}>
                 {props.assessmentStats.completed_optional}
@@ -168,7 +171,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
               }}
             >
               <Text style={{ fontSize: "14", fontFamily: "Helvetica-Bold" }}>
-                Details
+                {t("fields.details")}
               </Text>
               <View
                 style={{
@@ -183,7 +186,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                   <Text
                     style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}
                   >
-                    Actor:
+                    {t("fields.actor")}:
                   </Text>
                 </View>
                 <View style={{ width: "200px" }}>
@@ -205,7 +208,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                   <Text
                     style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}
                   >
-                    Organization:
+                    {t("fields.organisation")}:
                   </Text>
                 </View>
                 <View style={{ width: "200px" }}>
@@ -227,7 +230,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                   <Text
                     style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}
                   >
-                    Subject:
+                    {t("fields.subject")}:
                   </Text>
                 </View>
                 <View style={{ width: "200px" }}>
@@ -242,7 +245,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                   <Text
                     style={{ fontSize: "12", fontFamily: "Helvetica-Bold" }}
                   >
-                    Latest Update:
+                    {t("fields.latest_update")}:
                   </Text>
                 </View>
                 <View>
@@ -315,7 +318,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                               color: "orange",
                             }}
                           >
-                            n/a
+                            {t("na").toLowerCase()}
                           </Text>
                         ) : cri.metric.result ? (
                           <Text
@@ -402,10 +405,10 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                                 ].includes(test.type) ? (
                                   <Text style={{ fontSize: "12" }}>
                                     {test.result === null
-                                      ? "n/a"
+                                      ? t("na").toLowerCase()
                                       : test.result
-                                        ? "Yes"
-                                        : "No"}
+                                        ? t("yes")
+                                        : t("no")}
                                   </Text>
                                 ) : (
                                   <View style={{ fontSize: "12" }}>
@@ -414,12 +417,13 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                                         <Text>
                                           {item}
                                           {": "}
-                                          {test.value || "n/a"}
+                                          {test.value || t("na").toUpperCase()}
                                         </Text>
                                       ) : (
                                         <Text>
                                           {item}
-                                          {": n/a"}
+                                          {": "}
+                                          {t("na").toUpperCase()}
                                         </Text>
                                       );
                                     })}
@@ -465,7 +469,10 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                                     </View>
                                   ) : (
                                     <View>
-                                      <Text> - No evidence provided</Text>
+                                      <Text>
+                                        {" "}
+                                        - {t("page_pdf.no_evidence")}
+                                      </Text>
                                     </View>
                                   )}
                                 </View>
@@ -492,7 +499,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
         document={<PdfDoc />}
         fileName={`${props.assessmentDoc.id}.pdf`}
       >
-        <FaDownload /> Download PDF
+        <FaDownload /> {t("page_pdf.download")}
       </PDFDownloadLink>
     </div>
   );

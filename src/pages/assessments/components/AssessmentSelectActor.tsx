@@ -5,6 +5,7 @@
 
 import { Form } from "react-bootstrap";
 import { ActorOrgAsmtType } from "@/types";
+import { useTranslation } from "react-i18next";
 
 interface AssessmentSelectActorProps {
   actorMap: ActorOrgAsmtType[];
@@ -28,6 +29,7 @@ interface AssessmentSelectActorProps {
 }
 
 export const AssessmentSelectActor = (props: AssessmentSelectActorProps) => {
+  const { t } = useTranslation();
   let checked = false;
   let filteredActors = props.actorMap;
   if (props.importAsmtTypeId && props.importActorId) {
@@ -40,8 +42,7 @@ export const AssessmentSelectActor = (props: AssessmentSelectActorProps) => {
   return (
     <>
       <span className="mb-3">
-        As a first step you need to select one of your validated actor roles in
-        the following organisations:
+        {t("page_assessment_edit.select_actor_text")}
       </span>
       <div className="p-2">
         <Form.Group

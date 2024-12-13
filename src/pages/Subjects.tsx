@@ -155,7 +155,7 @@ export function SubjectModal(props: SubjectModalProps) {
               </OverlayTrigger>
               <Form.Control
                 id="input-info-subject-id"
-                placeholder="A unique identifier for the current subject"
+                placeholder={t("page_subjects.subject_id_placeholder")}
                 value={data.subject_id || ""}
                 onChange={(e) => {
                   handleChangeData("subject_id", e.target.value);
@@ -183,7 +183,7 @@ export function SubjectModal(props: SubjectModalProps) {
               </OverlayTrigger>
               <Form.Control
                 id="input-info-subject-name"
-                placeholder="The name of the subject of the assessment as identified above"
+                placeholder={t("page_subjects.subject_name_placeholder")}
                 value={data.name}
                 onChange={(e) => {
                   handleChangeData("name", e.target.value);
@@ -211,7 +211,7 @@ export function SubjectModal(props: SubjectModalProps) {
               </OverlayTrigger>
               <Form.Control
                 id="input-info-subject-type"
-                placeholder="The type of object for which the assessment will  be completed"
+                placeholder={t("page_subjects.subject_type_placeholder")}
                 value={data.type}
                 onChange={(e) => {
                   handleChangeData("type", e.target.value);

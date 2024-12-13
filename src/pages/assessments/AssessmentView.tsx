@@ -18,6 +18,7 @@ import {
 } from "@/types";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import AssessmentPdf from "./AssessmentPdf";
+import { useTranslation } from "react-i18next";
 
 // dig through the assessment and collect the completion statistics
 function gatherStats(assessment: Assessment | undefined): AssessmentStats {
@@ -57,6 +58,7 @@ function gatherStats(assessment: Assessment | undefined): AssessmentStats {
 /** AssessmentView page that displays the results of an assessment */
 const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { keycloak, registered } = useContext(AuthContext)!;
   const { asmtId } = useParams();
@@ -88,13 +90,13 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               </h2>
               <p className="lead cat-view-lead fs-6 ">
                 <span className="text-gray-dark">
-                  Compliance Policy: {assessment.assessment_type.name}{" "}
+                  {t("compliance_policy")}: {assessment.assessment_type.name}{" "}
                 </span>
               </p>
             </Col>
             <Col className="col col-lg-1 ">
               <span className="font-weight-500 text-gray-500 bold">
-                Compliance
+                {t("compliance")}
               </span>
 
               {}
@@ -107,18 +109,18 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                   />
                   {assessment.result.compliance == true ? (
                     <span className="fs-8 text-success bold">
-                      <small>passed</small>
+                      <small>{t("passed")}</small>
                     </span>
                   ) : (
                     <span className="fs-8 text-danger bold">
-                      <small>failed</small>
+                      <small>{t("failed")}</small>
                     </span>
                   )}
                 </p>
               ) : (
                 <p className="text-center">
                   <span className="fs-1 text-warning bold text-center">
-                    n/a
+                    {t("na")}
                   </span>
                 </p>
               )}
@@ -126,11 +128,13 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
             <Col className="col-md-auto col col-lg-1 text-center">
               {assessment.published == true ? (
                 <div className="ribbon-report ribbon-report-top-right">
-                  <span className="bg-success">PUBLISHED</span>
+                  <span className="bg-success">
+                    {t("published").toUpperCase()}
+                  </span>
                 </div>
               ) : (
                 <div className="ribbon-report ribbon-report-top-right">
-                  <span className="bg-warning">DRAFT</span>
+                  <span className="bg-warning">{t("draft").toUpperCase()}</span>
                 </div>
               )}
             </Col>
@@ -155,17 +159,19 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               <Row>
                 <Col className="col-sm-6">
                   <Row>
-                    <div className="card-title h5 py-3">Statistics</div>
+                    <div className="card-title h5 py-3">
+                      {t("fields.statistics")}
+                    </div>
                     <Col className="text-center col-lg-2">
                       <span className="font-weight-500 fs-5 text-gray-500">
-                        Principles:
+                        {t("principles")}:
                         <span className="fs-5  bold ms-2">
                           <strong>{stats.total_principles}</strong>
                         </span>
                       </span>
                       <br />
                       <span className="font-weight-500  fs-5 text-gray-500">
-                        Criteria:
+                        {t("criteria")}:
                         <span className="fs-5  bold ms-2">
                           <strong>{stats.total_criteria}</strong>
                         </span>
@@ -174,7 +180,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     <Col className="text-center col-lg-2"></Col>
                     <Col className="align-items-center col-lg-4">
                       <span className="font-weight-500  text-gray-500">
-                        <strong> Mandatory</strong>
+                        <strong> {t("mandatory")}</strong>
                       </span>
                       <p className="circle-70-grey">
                         <span className="fs-1 text-success bold">
@@ -187,7 +193,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                     </Col>
                     <Col className="col-md-auto col col-lg-4  align-items-center">
                       <span className="font-weight-500  text-gray-500">
-                        <strong> Optional</strong>
+                        <strong> {t("optional")}</strong>
                       </span>
                       <p className="circle-70-grey">
                         <span className="fs-1 text-warning bold">
@@ -203,7 +209,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 <Col className="col-sm-6 py-3">
                   <Card>
                     <Card.Body>
-                      <h5>Details</h5>
+                      <h5>{t("fields.details")}</h5>
 
                       <p className="media-body pb-2 mb-0 small lh-125 border-bottom border-gray">
                         <strong className="text-gray-dark">Actor:</strong>
@@ -211,7 +217,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                       </p>
                       <p className="media-body pb-2 mb-0 small lh-125 border-bottom border-gray">
                         <strong className="text-gray-dark">
-                          Organization:
+                          {t("organisation")}:
                         </strong>
                         <span className="px-2">
                           {assessment.organisation.name}
@@ -226,7 +232,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                       </p>
                       <p className="media-body pb-2 mb-0 small lh-125">
                         <strong className="text-gray-dark">
-                          Latest Update:
+                          {t("fields.latest_update")}:
                         </strong>
                         <span className="px-2">
                           <small>{assessment.timestamp.split(" ")[0]}</small>
@@ -273,7 +279,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                     <small className="ms-2">
                                       <strong>
                                         <span className="text-success">
-                                          Passed
+                                          {t("passed")}
                                         </span>
                                       </strong>
                                     </small>
@@ -284,7 +290,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                     <small className="ms-2">
                                       <strong>
                                         <span className="text-danger">
-                                          Failed
+                                          {t("failed")}
                                         </span>
                                       </strong>
                                     </small>
@@ -294,7 +300,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                     <small className="ms-2">
                                       <strong>
                                         <span className="text-warning">
-                                          n/a
+                                          {t("na")}
                                         </span>
                                       </strong>
                                     </small>
@@ -334,15 +340,21 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                     ].includes(test.type) ? (
                                       test.result === 1 ? (
                                         <span className="text-primary p-2">
-                                          <strong>YES</strong>
+                                          <strong>
+                                            {t("yes").toUpperCase()}
+                                          </strong>
                                         </span>
                                       ) : test.result === 0 ? (
                                         <span className="text-primary p-2">
-                                          <strong>NO</strong>
+                                          <strong>
+                                            {t("no").toUpperCase()}
+                                          </strong>
                                         </span>
                                       ) : (
                                         <span className="text-warning p-2">
-                                          <strong>N/A</strong>
+                                          <strong>
+                                            {t("na").toUpperCase()}
+                                          </strong>
                                         </span>
                                       )
                                     ) : (
@@ -408,7 +420,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               navigate(-1);
             }}
           >
-            Back
+            {t("buttons.back")}
           </Button>
         </div>
       )}

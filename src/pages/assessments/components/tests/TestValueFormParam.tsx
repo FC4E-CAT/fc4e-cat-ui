@@ -9,6 +9,7 @@ import { AssessmentTest, EvidenceURL, TestValueParam } from "@/types";
 import { useState } from "react";
 import { TestToolTip } from "./TestToolTip";
 import { FaCogs } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 interface AssessmentTestProps {
   test: TestValueParam;
@@ -27,6 +28,7 @@ enum TestValueEventType {
 }
 
 export const TestValueFormParam = (props: AssessmentTestProps) => {
+  const { t } = useTranslation();
   const [localValue, setLocalValue] = useState<string>(
     props.test.value?.toString() || "",
   );
@@ -129,13 +131,17 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
             {automated && (
               <Alert variant="warning">
                 <div>
-                  <FaCogs /> This test is meant to be automated{" "}
-                  <em>(Work in progress...)</em>
+                  <FaCogs />
+                  {` ${t("page_assessment_edit.wip_automated_text")} `}
+                  <em>(${t("page_assessment_edit.wip_automated")})</em>
                 </div>
                 <div>
                   <small>
-                    For the time being you can fill in manually the{" "}
-                    <code className="text-muted">responseVariable</code> value
+                    {`${t("page_assessment_edit.wip_automated_fill")} `}
+                    <code className="text-muted">
+                      {tipParams[tipParams.length - 1]}
+                    </code>
+                    ` ${t("value")}`
                   </small>
                 </div>
               </Alert>

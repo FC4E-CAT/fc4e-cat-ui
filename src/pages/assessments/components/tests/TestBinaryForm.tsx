@@ -7,6 +7,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { AssessmentTest, EvidenceURL, TestBinary } from "@/types";
 import { FaRegQuestionCircle } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 interface AssessmentTestProps {
   test: TestBinary;
@@ -21,6 +22,7 @@ interface AssessmentTestProps {
 }
 
 export const TestBinaryForm = (props: AssessmentTestProps) => {
+  const { t } = useTranslation();
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let result: 0 | 1 = 0;
     let value: boolean = false;
@@ -55,8 +57,10 @@ export const TestBinaryForm = (props: AssessmentTestProps) => {
                 //setShowHelp(!showHelp);
                 props.handleGuide(
                   props.test.id + props.test.guidance?.id || " ",
-                  "Guidance " + props.test.guidance?.id || "",
-                  props.test.guidance?.description || "No guidance Available",
+                  `${t("page_assessment_edit.guidance")} ${props.test.guidance?.id}` ||
+                    "",
+                  props.test.guidance?.description ||
+                    t("page_assessment_edit.no_guidance"),
                 );
               }}
             >
