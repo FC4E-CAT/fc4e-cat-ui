@@ -11,9 +11,12 @@ import {
   ApiMotivations,
   ApiOptions,
   CriImp,
+  MetricInput,
+  MetricResponse,
   Motivation,
   MotivationActorResponse,
   MotivationInput,
+  MotivationMetricResponse,
   MotivationResponse,
   MotivationTypeResponse,
   PrincipleCriterion,
@@ -322,6 +325,32 @@ export const useGetMotivationPrinciples = (
     enabled: isRegistered,
   });
 
+export const useGetAllMotivationMetrics = (
+  mtvId: string,
+  { token, isRegistered, size }: ApiOptions,
+) =>
+  useInfiniteQuery({
+    queryKey: ["motivation-metrics", mtvId],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<MotivationMetricResponse>(
+        `/v1/registry/motivations/${mtvId}/metric-definition?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
 export const useGetMotivationCriteria = (
   mtvId: string,
   { token, isRegistered, size }: ApiOptions,
@@ -481,6 +510,51 @@ export const useCreateMotivationPrinciple = (
       },
       onSuccess: () => {
         queryClient.invalidateQueries(["motivation-principles", mtvId]);
+      },
+    },
+  );
+};
+
+export const useCreateMotivationMetric = (
+  token: string,
+  mtvId: string,
+  {
+    mtr,
+    label,
+    description,
+    type_algorithm_id,
+    type_metric_id,
+    type_benchmark_id,
+    url,
+    value_benchmark,
+  }: MetricInput,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await APIClient(token).post<MetricResponse>(
+        `/v1/registry/motivations/${mtvId}/metric-definition`,
+        {
+          mtr,
+          label,
+          description,
+          type_algorithm_id,
+          type_metric_id,
+          type_benchmark_id,
+          url,
+          value_benchmark,
+        },
+      );
+      return response.data;
+    },
+
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["motivation-metrics"]);
+        queryClient.invalidateQueries(["all-metrics"]);
       },
     },
   );

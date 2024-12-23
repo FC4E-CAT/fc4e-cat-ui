@@ -26,6 +26,7 @@ import {
   FaTrash,
   FaLock,
   FaUnlock,
+  FaBorderNone,
 } from "react-icons/fa";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
@@ -50,6 +51,7 @@ import { MotivationPrinciples } from "./components/MotivationPrinciples";
 import { MotivationCriteria } from "./components/MotivationCriteria";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
+import { MotivationMetrics } from "./components/MotivationMetrics";
 
 const actorImages: { [key: string]: string } = {
   "PID Service Provider (Role)": serviceImg,
@@ -254,6 +256,8 @@ export default function MotivationDetails() {
       setTabKey("principles");
     } else if (hash === "#criteria") {
       setTabKey("criteria");
+    } else if (hash === "#metrics") {
+      setTabKey("metrics");
     }
   }, []);
 
@@ -265,6 +269,8 @@ export default function MotivationDetails() {
       window.location.hash = "#principles";
     } else if (tabKey === "criteria") {
       window.location.hash = "#criteria";
+    } else if (tabKey === "metrics") {
+      window.location.hash = "#metrics";
     }
   }, [tabKey]);
 
@@ -694,9 +700,9 @@ export default function MotivationDetails() {
               published={motivation?.published || false}
             />
           </Tab>
-          {/*
+
           <Tab
-            eventKey="Metrics"
+            eventKey="metrics"
             title={
               <span>
                 <span className="fs-6 text-primary">
@@ -706,9 +712,11 @@ export default function MotivationDetails() {
               </span>
             }
           >
-            Tab content for Metrics
+            <MotivationMetrics
+              mtvId={params.id || ""}
+              published={motivation?.published || false}
+            />
           </Tab>
-          */}
         </Tabs>
       </div>
 

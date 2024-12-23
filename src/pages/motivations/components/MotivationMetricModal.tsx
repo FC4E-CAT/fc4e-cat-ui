@@ -1,0 +1,566 @@
+import { useCreateMotivationMetric } from "@/api";
+import {
+  useGetAllAlgorithms,
+  useGetAllBenchmarkTypes,
+  useGetAllMetricTypes,
+} from "@/api/services/registry";
+import { AuthContext } from "@/auth";
+import {
+  defaultMotivationMetricAlgorithm,
+  defaultMotivationMetricBenchmarkType,
+  defaultMotivationMetricType,
+} from "@/config";
+import { AlertInfo, MetricInput, RegistryResource } from "@/types";
+import { useContext, useEffect, useRef, useState } from "react";
+import {
+  Modal,
+  Button,
+  Form,
+  InputGroup,
+  Row,
+  Col,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
+import toast from "react-hot-toast";
+import { FaFile, FaInfoCircle } from "react-icons/fa";
+
+interface MetricModalProps {
+  mtvId: string;
+  show: boolean;
+  onHide: () => void;
+}
+/**
+ * Modal component for creating/editing a metric
+ */
+export function MotivationMetricModal(props: MetricModalProps) {
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+
+  const { keycloak, registered } = useContext(AuthContext)!;
+
+  const [algorithms, setAlgorithms] = useState<RegistryResource[]>([]);
+  const [benchmarkTypes, setBenchmarkTypes] = useState<RegistryResource[]>([]);
+  const [metricTypes, setMetricTypes] = useState<RegistryResource[]>([]);
+  const [showErrors, setShowErrors] = useState(false);
+  const [bValue, setBvalue] = useState("0");
+
+  const [metricInput, setMetricInput] = useState<MetricInput>({
+    mtr: "",
+    label: "",
+    description: "",
+    url: "",
+    type_metric_id: "",
+    type_algorithm_id: "",
+    type_benchmark_id: "",
+    value_benchmark: 0,
+  });
+
+  const {
+    data: algoData,
+    fetchNextPage: algoFetchNextPage,
+    hasNextPage: algoHasNextPage,
+  } = useGetAllAlgorithms({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  const {
+    data: mtData,
+    fetchNextPage: mtFetchNextPage,
+    hasNextPage: mtHasNextPage,
+  } = useGetAllMetricTypes({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  const {
+    data: btData,
+    fetchNextPage: btFetchNextPage,
+    hasNextPage: btHasNextPage,
+  } = useGetAllBenchmarkTypes({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    // gather all metric types
+    let tmpMt: RegistryResource[] = [];
+
+    // iterate over backend pages and gather all items in the metric types array
+    if (mtData?.pages) {
+      mtData.pages.map((page) => {
+        tmpMt = [...tmpMt, ...page.content];
+      });
+      if (mtHasNextPage) {
+        mtFetchNextPage();
+      }
+    }
+
+    setMetricTypes(tmpMt);
+  }, [mtData, mtHasNextPage, mtFetchNextPage]);
+
+  useEffect(() => {
+    // gather all benchmark types
+    let tmpBt: RegistryResource[] = [];
+
+    // iterate over backend pages and gather all items in the benchmark types array
+    if (btData?.pages) {
+      btData.pages.map((page) => {
+        tmpBt = [...tmpBt, ...page.content];
+      });
+      if (btHasNextPage) {
+        btFetchNextPage();
+      }
+    }
+
+    setBenchmarkTypes(tmpBt);
+  }, [btData, btHasNextPage, btFetchNextPage]);
+
+  useEffect(() => {
+    // gather all algorithms
+    let tmpAlgo: RegistryResource[] = [];
+
+    // iterate over backend pages and gather all items in the algorithms array
+    if (algoData?.pages) {
+      algoData.pages.map((page) => {
+        tmpAlgo = [...tmpAlgo, ...page.content];
+      });
+      if (algoHasNextPage) {
+        algoFetchNextPage();
+      }
+    }
+
+    setAlgorithms(tmpAlgo);
+  }, [algoData, algoHasNextPage, algoFetchNextPage]);
+
+  function handleValidate() {
+    setShowErrors(true);
+    return (
+      metricInput.mtr !== "" &&
+      metricInput.label !== "" &&
+      metricInput.description !== "" &&
+      metricInput.type_algorithm_id !== "" &&
+      metricInput.type_benchmark_id !== "" &&
+      metricInput.type_metric_id !== "" &&
+      bValue !== ""
+    );
+  }
+
+  const mutateCreate = useCreateMotivationMetric(
+    keycloak?.token || "",
+    props.mtvId,
+    metricInput,
+  );
+
+  useEffect(() => {
+    if (props.show) {
+      // get default algorithm
+      const algo =
+        algorithms.filter(
+          (item) => item.label === defaultMotivationMetricAlgorithm,
+        )[0]?.id || "";
+      // get default metric type
+      const mt =
+        metricTypes.filter(
+          (item) => item.label === defaultMotivationMetricType,
+        )[0]?.id || "";
+      // get default benchmark type
+
+      const bt =
+        benchmarkTypes.filter(
+          (item) => item.label === defaultMotivationMetricBenchmarkType,
+        )[0]?.id || "";
+
+      setBvalue("0");
+
+      setMetricInput({
+        mtr: "",
+        label: "",
+        description: "",
+        type_algorithm_id: algo,
+        type_metric_id: mt,
+        type_benchmark_id: bt,
+        value_benchmark: 0,
+        url: "",
+      });
+    }
+
+    setShowErrors(false);
+  }, [props.show, metricTypes, algorithms, benchmarkTypes]);
+
+  // handle backend call to add a new metric
+  function handleCreate() {
+    const promise = mutateCreate
+      .mutateAsync()
+      .catch((err) => {
+        alert.current = {
+          message: "Error: " + err.response.data.message,
+        };
+        throw err;
+      })
+      .then(() => {
+        props.onHide();
+        alert.current = {
+          message: "Metric Created!",
+        };
+      });
+    toast.promise(promise, {
+      loading: "Creating Metric...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  }
+
+  return (
+    <Modal
+      show={props.show}
+      onHide={props.onHide}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header className="bg-success text-white" closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          <FaFile className="me-2" /> Create new Metric
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div>
+          <Row>
+            <Col xs={3}>
+              <InputGroup className="mt-2">
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>
+                      Acronym to quickly distinguish the Metric item
+                    </Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-metric-mtr">
+                    <FaInfoCircle className="me-2" /> Mtr (*):
+                  </InputGroup.Text>
+                </OverlayTrigger>
+                <Form.Control
+                  id="input-metric-mtr"
+                  value={metricInput.mtr}
+                  onChange={(e) => {
+                    setMetricInput({
+                      ...metricInput,
+                      mtr: e.target.value,
+                    });
+                  }}
+                  aria-describedby="label-metric-mtr"
+                />
+              </InputGroup>
+              {showErrors && metricInput.mtr === "" && (
+                <span className="text-danger">Required</span>
+              )}
+            </Col>
+            <Col>
+              <InputGroup className="mt-2">
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>
+                      Label (Name) of the metric item
+                    </Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-metric-label">
+                    <FaInfoCircle className="me-2" /> Label (*):
+                  </InputGroup.Text>
+                </OverlayTrigger>
+                <Form.Control
+                  id="input-metric-label"
+                  aria-describedby="label-metric-label"
+                  value={metricInput.label}
+                  onChange={(e) => {
+                    setMetricInput({
+                      ...metricInput,
+                      label: e.target.value,
+                    });
+                  }}
+                />
+              </InputGroup>
+              {showErrors && metricInput.label === "" && (
+                <span className="text-danger">Required</span>
+              )}
+            </Col>
+          </Row>
+          <Row className="mt-2">
+            <Col className="mt-1">
+              <OverlayTrigger
+                key="top"
+                placement="top"
+                overlay={
+                  <Tooltip id={`tooltip-top`}>
+                    Short description of this metric item
+                  </Tooltip>
+                }
+              >
+                <span id="label-metric-description">
+                  <FaInfoCircle className="ms-1 me-2" /> Description (*):
+                </span>
+              </OverlayTrigger>
+              <Form.Control
+                className="mt-1"
+                as="textarea"
+                rows={2}
+                value={metricInput.description}
+                onChange={(e) => {
+                  setMetricInput({
+                    ...metricInput,
+                    description: e.target.value,
+                  });
+                }}
+              />
+              {showErrors && metricInput.description === "" && (
+                <span className="text-danger">Required</span>
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <InputGroup className="mt-2">
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>Select the Metric Type</Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-metric-type">
+                    <FaInfoCircle className="me-2" /> Metric Type (*):
+                  </InputGroup.Text>
+                </OverlayTrigger>
+                <Form.Select
+                  id="input-metric-type"
+                  aria-describedby="label-metric-type"
+                  placeholder="Select a Motivation type"
+                  value={
+                    metricInput.type_metric_id ? metricInput.type_metric_id : ""
+                  }
+                  onChange={(e) => {
+                    setMetricInput({
+                      ...metricInput,
+                      type_metric_id: e.target.value,
+                    });
+                  }}
+                >
+                  <>
+                    <option value="" disabled>
+                      Select type of metric
+                    </option>
+                    {metricTypes.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </>
+                </Form.Select>
+              </InputGroup>
+              {showErrors && metricInput.type_metric_id === "" && (
+                <span className="text-danger">Required</span>
+              )}
+              {metricInput.type_metric_id != "" && (
+                <div className="bg-light text-secondary border rounded mt-2 p-3">
+                  <small>
+                    <em>
+                      {
+                        metricTypes.find(
+                          (item) => item.id == metricInput.type_metric_id,
+                        )?.description
+                      }
+                    </em>
+                  </small>
+                </div>
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <InputGroup className="mt-2">
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>
+                      Select the Metric Algorithm
+                    </Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-metric-algorithm">
+                    <FaInfoCircle className="me-2" /> Metric Algorithm (*):
+                  </InputGroup.Text>
+                </OverlayTrigger>
+                <Form.Select
+                  id="input-metric-algorithm"
+                  aria-describedby="label-metric-algorithm"
+                  placeholder="Select a Metric Algoritm"
+                  value={
+                    metricInput.type_algorithm_id
+                      ? metricInput.type_algorithm_id
+                      : ""
+                  }
+                  onChange={(e) => {
+                    setMetricInput({
+                      ...metricInput,
+                      type_algorithm_id: e.target.value,
+                    });
+                  }}
+                >
+                  <>
+                    <option value="" disabled>
+                      Select type of metric algorithm
+                    </option>
+                    {algorithms.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </>
+                </Form.Select>
+              </InputGroup>
+              {showErrors && metricInput.type_algorithm_id === "" && (
+                <span className="text-danger">Required</span>
+              )}
+              {metricInput.type_algorithm_id != "" && (
+                <div className="bg-light text-secondary border rounded mt-2 p-3">
+                  <small>
+                    <em>
+                      {
+                        algorithms.find(
+                          (item) => item.id == metricInput.type_algorithm_id,
+                        )?.description
+                      }
+                    </em>
+                  </small>
+                </div>
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <InputGroup className="mt-2">
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>
+                      Select the Type of Benchmark
+                    </Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-benchmark-type">
+                    <FaInfoCircle className="me-2" /> Benchmark Type (*):
+                  </InputGroup.Text>
+                </OverlayTrigger>
+                <Form.Select
+                  id="input-benchmark-type"
+                  aria-describedby="label-benchmark-type"
+                  placeholder="Select a Benchmark type"
+                  value={
+                    metricInput.type_benchmark_id
+                      ? metricInput.type_benchmark_id
+                      : ""
+                  }
+                  onChange={(e) => {
+                    setMetricInput({
+                      ...metricInput,
+                      type_benchmark_id: e.target.value,
+                    });
+                  }}
+                >
+                  <>
+                    <option value="" disabled>
+                      Select type of benchmark
+                    </option>
+                    {benchmarkTypes.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </>
+                </Form.Select>
+              </InputGroup>
+              {showErrors && metricInput.type_benchmark_id === "" && (
+                <span className="text-danger">Required</span>
+              )}
+              {metricInput.type_benchmark_id != "" && (
+                <div className="bg-light text-secondary border rounded mt-2 p-3">
+                  <small>
+                    <em>
+                      {
+                        benchmarkTypes.find(
+                          (item) => item.id == metricInput.type_benchmark_id,
+                        )?.description
+                      }
+                    </em>
+                  </small>
+                </div>
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <InputGroup className="mt-2">
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={
+                    <Tooltip id={`tooltip-top`}>
+                      Threshold value for the selected benchmark
+                    </Tooltip>
+                  }
+                >
+                  <InputGroup.Text id="label-benchmark-value">
+                    <FaInfoCircle className="me-2" /> Benchmark Value (*):
+                  </InputGroup.Text>
+                </OverlayTrigger>
+                <Form.Control
+                  id="input-benchmark-value"
+                  aria-describedby="label-benchmark-value"
+                  value={bValue}
+                  onChange={(e) => {
+                    const cleanVal = e.target.value.replace(/[^0-9.]/g, "");
+                    setBvalue(cleanVal);
+                    setMetricInput({
+                      ...metricInput,
+                      value_benchmark: parseFloat(cleanVal),
+                    });
+                  }}
+                />
+              </InputGroup>
+              {showErrors && bValue === "" && (
+                <span className="text-danger">Please enter a number value</span>
+              )}
+            </Col>
+          </Row>
+        </div>
+      </Modal.Body>
+      <Modal.Footer className="d-flex justify-content-between">
+        <Button className="btn-secondary" onClick={props.onHide}>
+          Close
+        </Button>
+        <Button
+          className="btn-success"
+          onClick={() => {
+            if (handleValidate() === true) {
+              handleCreate();
+            }
+          }}
+        >
+          Create
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}

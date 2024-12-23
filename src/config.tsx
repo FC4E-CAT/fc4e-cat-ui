@@ -10,6 +10,14 @@ const relMtvPrincpleCriterion =
 const defaultCriterionType = config.default_values?.criterion_type || "";
 const defaultCriterionImperative =
   config.default_values?.criterion_imperative || "";
+
+const defaultMotivationMetricType =
+  config.default_values?.motivation_metric_type || "";
+const defaultMotivationMetricBenchmarkType =
+  config.default_values?.motivation_metric_benchmark_type || "";
+const defaultMotivationMetricAlgorithm =
+  config.default_values?.motivation_metric_algorithm || "";
+
 export {
   API,
   relMtvActorId,
@@ -17,4 +25,7 @@ export {
   relMtvPrincpleCriterion,
   defaultCriterionType,
   defaultCriterionImperative,
+  defaultMotivationMetricAlgorithm,
+  defaultMotivationMetricType,
+  defaultMotivationMetricBenchmarkType,
 };
