@@ -13,6 +13,9 @@
   },
   "default_values": {
     "criterion_type": "Criterion",
-    "criterion_imperative": "MUST"
+    "criterion_imperative": "MUST",
+    "motivation_metric_type": "Binary",
+    "motivation_metric_algorithm": "Simple Sum",
+    "motivation_metric_benchmark_type": "Binary-Binary "
   }
 }

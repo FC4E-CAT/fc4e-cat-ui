@@ -1,5 +1,7 @@
 // Common or minor stuff here
 
+import { MotivationMetric } from "./motivation";
+
 export type ApiT = {
   base_url: string;
   version: string;
@@ -31,6 +33,19 @@ export interface Actor {
   name: string;
   description: string;
 }
+
+export interface RegistryResource {
+  id: string;
+  label: string;
+  description: string;
+}
+
+export interface MetricResponse {
+  code: string;
+}
+
+export type RegistryResourceResponse = ResponsePage<RegistryResource[]>;
+export type MotivationMetricResponse = ResponsePage<MotivationMetric[]>;
 
 export type RegistryActorListResponse = ResponsePage<RegistryActor[]>;
 export type ActorListResponse = ResponsePage<Actor[]>;
