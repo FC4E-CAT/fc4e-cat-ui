@@ -86,25 +86,25 @@ export default function MotivationCriMetric({
           <Col>
             <div>
               <strong className="me-2">Id:</strong>
-              <span>{metricData?.metric.id}</span>
+              <span>{metricData?.metric?.id}</span>
             </div>
             <div>
               <strong className="me-2">Name:</strong>
-              <span>{metricData?.metric.name}</span>
+              <span>{metricData?.metric?.name}</span>
             </div>
           </Col>
           <Col>
             <div>
               <strong className="me-2">Type:</strong>
-              <span>{metricData?.metric.label_type_metric}</span>
+              <span>{metricData?.metric?.label_type_metric}</span>
             </div>
             <div>
               <strong className="me-2">Algorithm:</strong>
-              <span>{metricData?.metric.label_algorithm_type}</span>
+              <span>{metricData?.metric?.label_algorithm_type}</span>
             </div>
             <div>
               <strong className="me-2">Benchmark:</strong>
-              <span>{metricData?.metric.benchmark_value}</span>
+              <span>{metricData?.metric?.benchmark_value}</span>
             </div>
           </Col>
         </Row>

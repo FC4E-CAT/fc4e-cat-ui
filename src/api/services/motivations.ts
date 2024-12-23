@@ -11,6 +11,7 @@ import {
   ApiMotivations,
   ApiOptions,
   CriImp,
+  MetricAssignment,
   MetricInput,
   MetricResponse,
   Motivation,
@@ -559,3 +560,27 @@ export const useCreateMotivationMetric = (
     },
   );
 };
+
+export function useUpdateMotivationAssignMetric(
+  token: string,
+  mtvId: string,
+  criId: string,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (putData: MetricAssignment) => {
+      return APIClient(token).put(
+        `/v1/registry/motivations/${mtvId}/criteria/${criId}/metrics`,
+        putData,
+      );
+    },
+    // on change refresh motivation criterion
+    onSuccess: () => {
+      queryClient.invalidateQueries([
+        "motivation-criterion-metric",
+        mtvId,
+        criId,
+      ]);
+    },
+  });
+}

@@ -13,8 +13,9 @@ import {
 } from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
 import { MotivationCriMetricModal } from "./MotivationCriMetricModal";
-import { FaBars, FaEdit } from "react-icons/fa";
+import { FaBars, FaBorderNone, FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { MotivationMetricAssignModal } from "./MotivationMetricAssignModal";
 
 interface MetricModalConfig {
   show: boolean;
@@ -35,6 +36,13 @@ export const MotivationCriteria = ({
     show: false,
     criId: "",
   });
+
+  const [metricAssignModal, setMetricAssignModal] = useState<MetricModalConfig>(
+    {
+      show: false,
+      criId: "",
+    },
+  );
 
   const {
     data: criData,
@@ -71,6 +79,14 @@ export const MotivationCriteria = ({
         }}
         mtvId={mtvId}
         criId={metricModal.criId}
+      />
+      <MotivationMetricAssignModal
+        show={metricAssignModal.show}
+        onHide={() => {
+          setMetricAssignModal({ criId: "", show: false });
+        }}
+        mtvId={mtvId}
+        criId={metricAssignModal.criId}
       />
       <div className="d-flex justify-content-between mb-2">
         <h5 className="text-muted cat-view-heading ">
@@ -135,19 +151,34 @@ export const MotivationCriteria = ({
                   </div>
                 </Col>
                 <Col xs="auto">
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip>View Criterion Metric/Tests</Tooltip>}
-                  >
-                    <Button
-                      className="btn btn-light btn-sm m-1"
-                      onClick={() => {
-                        setMetricModal({ show: true, criId: item.id });
-                      }}
+                  <div className="d-flex flex-nowrap">
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={<Tooltip>Assign Metric</Tooltip>}
                     >
-                      <FaBars />
-                    </Button>
-                  </OverlayTrigger>
+                      <Button
+                        className="btn btn-light btn-sm m-1"
+                        onClick={() => {
+                          setMetricAssignModal({ show: true, criId: item.id });
+                        }}
+                      >
+                        <FaBorderNone />
+                      </Button>
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={<Tooltip>View Criterion Metric/Tests</Tooltip>}
+                    >
+                      <Button
+                        className="btn btn-light btn-sm m-1"
+                        onClick={() => {
+                          setMetricModal({ show: true, criId: item.id });
+                        }}
+                      >
+                        <FaBars />
+                      </Button>
+                    </OverlayTrigger>
+                  </div>
                 </Col>
               </Row>
             </ListGroupItem>
