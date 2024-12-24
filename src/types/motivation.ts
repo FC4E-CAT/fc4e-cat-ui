@@ -33,6 +33,11 @@ export interface MotivationMetric {
   metric_description: string;
 }
 
+export interface MetricAssignment {
+  metric_id: string;
+  relation: string;
+}
+
 export interface MotivationInput {
   mtv: string;
   label: string;
