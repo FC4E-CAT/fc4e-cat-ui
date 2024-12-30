@@ -7,6 +7,7 @@ const relMtvActorId = config.relation_ids.motivation_actor;
 const relMtvPrincipleId = config.relation_ids.motivation_principle;
 const relMtvPrincpleCriterion =
   config.relation_ids.motivation_principle_criterion;
+const relMtvMetricTest = config.relation_ids?.motivation_metric_test || "";
 const defaultCriterionType = config.default_values?.criterion_type || "";
 const defaultCriterionImperative =
   config.default_values?.criterion_imperative || "";
@@ -23,6 +24,7 @@ export {
   relMtvActorId,
   relMtvPrincipleId,
   relMtvPrincpleCriterion,
+  relMtvMetricTest,
   defaultCriterionType,
   defaultCriterionImperative,
   defaultMotivationMetricAlgorithm,

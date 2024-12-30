@@ -9,7 +9,8 @@
   "relation_ids": {
     "motivation_principle": "isSupportedBy",
     "motivation_actor": "dcterms:isRequiredBy",
-    "motivation_principle_criterion": "maintainedBy"
+    "motivation_principle_criterion": "maintainedBy",
+    "motivation_metric_test": "maintainedBy"
   },
   "default_values": {
     "criterion_type": "Criterion",

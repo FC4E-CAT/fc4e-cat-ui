@@ -1,11 +1,20 @@
 import { AuthContext } from "@/auth";
 import { MotivationMetric } from "@/types";
 import { useContext, useEffect, useState } from "react";
-import { Button, Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  ListGroup,
+  ListGroupItem,
+  OverlayTrigger,
+  Row,
+  Tooltip,
+} from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
-import { FaPlus } from "react-icons/fa";
+import { FaCog, FaPlus } from "react-icons/fa";
 import { MotivationMetricModal } from "./MotivationMetricModal";
 import { useGetAllMotivationMetrics } from "@/api";
+import { Link } from "react-router-dom";
 
 export const MotivationMetrics = ({
   mtvId,
@@ -106,7 +115,19 @@ export const MotivationMetrics = ({
                     </div>
                   </div>
                 </Col>
-                <Col xs="auto">{/* Actions will be plaed here */}</Col>
+                <Col xs="auto">
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip>Assign tests to this metric</Tooltip>}
+                  >
+                    <Link
+                      className="btn btn-light"
+                      to={`/admin/motivations/${mtvId}/metrics-tests/${item.metric_id}`}
+                    >
+                      <FaCog />
+                    </Link>
+                  </OverlayTrigger>
+                </Col>
               </Row>
             </ListGroupItem>
           ))}
