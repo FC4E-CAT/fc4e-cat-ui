@@ -123,3 +123,25 @@ export interface MotivationPrincipleInput {
   annotation?: string;
   annotation_url?: string;
 }
+
+export interface MetricTestResponse {
+  metric: MetricHeader;
+}
+
+export interface MetricHeader {
+  id: string;
+  name: string;
+  tests: MetricTest[];
+}
+
+export interface MetricTest {
+  db_id: string;
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface MetricTestInput {
+  test_id: string;
+  relation: string;
+}

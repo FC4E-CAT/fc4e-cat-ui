@@ -14,6 +14,8 @@ import {
   MetricAssignment,
   MetricInput,
   MetricResponse,
+  MetricTestInput,
+  MetricTestResponse,
   Motivation,
   MotivationActorResponse,
   MotivationInput,
@@ -378,6 +380,29 @@ export const useGetMotivationCriteria = (
     enabled: isRegistered,
   });
 
+export const useGetMotivationMetricTests = (
+  mtvId: string,
+  mtrId: string,
+  { token, isRegistered, size }: ApiOptions,
+) =>
+  useInfiniteQuery({
+    queryKey: ["motivation-metric-tests", mtvId, mtrId],
+    queryFn: async ({ pageParam = 100 }) => {
+      const response = await APIClient(token).get<MetricTestResponse>(
+        `/v1/registry/motivations/${mtvId}/metrics/${mtrId}/test?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: () => {
+      return undefined;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
 export const useGetMotivationActorCriteria = (
   mtvId: string,
   actId: string,
@@ -581,6 +606,26 @@ export function useUpdateMotivationAssignMetric(
         mtvId,
         criId,
       ]);
+    },
+  });
+}
+
+export function useUpdateMotivationMetricTests(
+  token: string,
+  mtvId: string,
+  mtrId: string,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (putData: MetricTestInput[]) => {
+      return APIClient(token).put(
+        `/v1/registry/motivations/${mtvId}/metrics/${mtrId}/tests`,
+        putData,
+      );
+    },
+    // on change refresh motivation-metric-test
+    onSuccess: () => {
+      queryClient.invalidateQueries(["motivation-metric-tests", mtvId, mtrId]);
     },
   });
 }

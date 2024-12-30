@@ -37,6 +37,7 @@ import { MotivationAssessmentEditor } from "./pages/assessments/MotivationAssess
 import MotivationCriteriaPrinciples from "./pages/motivations/MotivationCriteriaPrinciples";
 import Criteria from "./pages/criteria/Criteria";
 import CriterionDetails from "./pages/criteria/CriterionDetails";
+import MotivationMetricTests from "./pages/motivations/MotivationMetricTests";
 
 const queryClient = new QueryClient();
 
@@ -210,6 +211,12 @@ function App() {
                   element={<ProtectedRoute />}
                 >
                   <Route index element={<MotivationActorCriteria />} />
+                </Route>
+                <Route
+                  path="/admin/motivations/:mtvId/metrics-tests/:mtrId"
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<MotivationMetricTests />} />
                 </Route>
                 <Route
                   path="/admin/motivations/:mtvId/templates/actors/:actId"
