@@ -245,7 +245,7 @@ export default function MotivationMetricTests() {
                       </strong>
                       <OverlayTrigger
                         placement="top"
-                        overlay={<Tooltip>Delete Test</Tooltip>}
+                        overlay={<Tooltip>Remove Test</Tooltip>}
                       >
                         <Button
                           size="sm"
