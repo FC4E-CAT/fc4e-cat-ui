@@ -168,7 +168,7 @@ export const useCreateTest = (
         return handleBackendError(error);
       },
       onSuccess: () => {
-        queryClient.invalidateQueries(["tests"]);
+        queryClient.invalidateQueries(["all-tests"]);
       },
     },
   );
