@@ -14,13 +14,14 @@ import {
 } from "@/api";
 import { RegistryTest, RegistryTestHeader } from "@/types/tests";
 import { useGetAllTests } from "@/api/services/registry";
+import { MotivationTestModal } from "./components/MotivationTestModal";
 
 export default function MotivationMetricTests() {
   const navigate = useNavigate();
   const params = useParams();
 
   const { keycloak, registered } = useContext(AuthContext)!;
-
+  const [showCreateTest, setShowCreateTest] = useState(false);
   const [availableTests, setAvailableTests] = useState<RegistryTestHeader[]>(
     [],
   );
@@ -142,6 +143,12 @@ export default function MotivationMetricTests() {
 
   return (
     <div className="pb-4">
+      <MotivationTestModal
+        show={showCreateTest}
+        onHide={() => {
+          setShowCreateTest(false);
+        }}
+      />
       <Row className="cat-view-heading-block row border-bottom">
         <Col>
           <h2 className="text-muted cat-view-heading ">
@@ -179,7 +186,7 @@ export default function MotivationMetricTests() {
                 size="sm"
                 variant="warning"
                 onClick={() => {
-                  // setShowCreate(true);
+                  setShowCreateTest(true);
                 }}
               >
                 <FaPlus /> Create New Test
