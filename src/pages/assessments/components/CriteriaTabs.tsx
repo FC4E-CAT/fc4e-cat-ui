@@ -306,8 +306,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                 </p>
                 <div className="cat-view-heading">
                   <span className="align-middle">
-                    {t("page_assement_edit.part_of_principle")} {principle.id}:{" "}
-                    {principle.name}{" "}
+                    {t("page_assessment_edit.part_of_principle")} {principle.id}
+                    : {principle.name}{" "}
                   </span>
                   <OverlayTrigger
                     placement="top"
