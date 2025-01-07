@@ -133,15 +133,15 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
                 <div>
                   <FaCogs />
                   {` ${t("page_assessment_edit.wip_automated_text")} `}
-                  <em>(${t("page_assessment_edit.wip_automated")})</em>
+                  <em>({t("page_assessment_edit.wip_automated")})</em>
                 </div>
                 <div>
                   <small>
                     {`${t("page_assessment_edit.wip_automated_fill")} `}
                     <code className="text-muted">
-                      {tipParams[tipParams.length - 1]}
+                      {testParams[testParams.length - 1]}
                     </code>
-                    ` ${t("value")}`
+                    {` ${t("value")}`}
                   </small>
                 </div>
               </Alert>
