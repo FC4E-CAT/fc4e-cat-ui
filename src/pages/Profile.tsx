@@ -219,7 +219,7 @@ function Profile() {
       </>
     );
   } else {
-    return <div>{t("page_profile.login_alert")}</div>;
+    return <div>{t("login_alert")}</div>;
   }
 }
 

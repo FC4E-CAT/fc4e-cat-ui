@@ -11,6 +11,7 @@ import { useDeletePrinciple, useGetPrinciple } from "@/api/services/principles";
 import { DeleteModal } from "@/components/DeleteModal";
 import toast from "react-hot-toast";
 import { MotivationRefList } from "@/components/MotivationRefList";
+import { useTranslation } from "react-i18next";
 
 interface DeleteModalConfig {
   show: boolean;
@@ -23,15 +24,15 @@ interface DeleteModalConfig {
 export default function PrincipleDetails() {
   const navigate = useNavigate();
   const params = useParams();
-
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
 
   // Delete Modal
   const [deleteModalConfig, setDeleteModalConfig] = useState<DeleteModalConfig>(
     {
       show: false,
-      title: "Delete Principle",
-      message: "Are you sure you want to delete the following principle?",
+      title: t("page_principles.modal_delete_title"),
+      message: t("page_principles.modal_delete_message"),
       itemId: "",
       itemName: "",
     },
@@ -57,13 +58,13 @@ export default function PrincipleDetails() {
         .mutateAsync(deleteModalConfig.itemId)
         .catch((err) => {
           alert.current = {
-            message: "Error during principle deletion!",
+            message: t("page_principles.toast_delete_fail"),
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Principle succesfully deleted.",
+            message: t("page_principles.toast_delete_success"),
           };
           setDeleteModalConfig({
             ...deleteModalConfig,
@@ -74,7 +75,7 @@ export default function PrincipleDetails() {
           navigate(-1);
         });
       toast.promise(promise, {
-        loading: "Deleting...",
+        loading: t("page_principles.toast_delete_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -108,10 +109,10 @@ export default function PrincipleDetails() {
       <div className="cat-view-heading-block row border-bottom">
         <Col>
           <h2 className="text-muted cat-view-heading ">
-            Principle Details
+            {t("page_principles.details_title")}
             {principle && (
               <p className="lead cat-view-lead">
-                Principle id:{" "}
+                {t("page_principles.principle_id")}:{" "}
                 <strong className="badge bg-secondary">{principle.id}</strong>
               </p>
             )}
@@ -131,7 +132,7 @@ export default function PrincipleDetails() {
               }}
             >
               <FaTrash className="me-2" />
-              Delete Principle
+              {t("buttons.delete")}
             </Button>
           )}
         </Col>
@@ -147,19 +148,19 @@ export default function PrincipleDetails() {
             }}
             className="btn-light border-black"
           >
-            Update Details
+            {t("buttons.update_details")}
           </Button>
         </Col>
         <Col>
           <div>
-            <strong>Pri:</strong> {principle?.pri}
+            <strong>{t("fields.pri")}:</strong> {principle?.pri}
           </div>
           <div>
-            <strong>Label:</strong> {principle?.label}
+            <strong>{t("fields.label")}:</strong> {principle?.label}
           </div>
           <div>
             <div>
-              <strong>Description:</strong>
+              <strong>{t("fields.description")}:</strong>
             </div>
             <div>
               <small>{principle?.description}</small>
@@ -167,7 +168,7 @@ export default function PrincipleDetails() {
           </div>
           <div>
             <div>
-              <strong>Used in motivations:</strong>
+              <strong>{t("fields.used_in_motivations")}:</strong>
             </div>
             <div className="ms-2">
               <MotivationRefList
@@ -184,7 +185,7 @@ export default function PrincipleDetails() {
             navigate("/admin/principles");
           }}
         >
-          Back
+          {"buttons.back"}
         </Button>
       </div>
     </div>
