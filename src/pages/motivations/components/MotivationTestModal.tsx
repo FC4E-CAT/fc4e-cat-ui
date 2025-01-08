@@ -14,6 +14,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaFile, FaInfoCircle, FaTrash } from "react-icons/fa";
 
 interface TestModalProps {
@@ -27,7 +28,7 @@ export function MotivationTestModal(props: TestModalProps) {
   const alert = useRef<AlertInfo>({
     message: "",
   });
-
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const [testMethods, setTestMethods] = useState<RegistryResource[]>([]);
@@ -155,11 +156,11 @@ export function MotivationTestModal(props: TestModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Test Created!",
+          message: t("page_validations.toast_create_test_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Creating Test...",
+      loading: t("page_validations.toast_create_test_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -175,7 +176,7 @@ export function MotivationTestModal(props: TestModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaFile className="me-2" /> Create new test
+          <FaFile className="me-2" /> {t("page_validations.create_new_test")}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -188,12 +189,12 @@ export function MotivationTestModal(props: TestModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Acronym to quickly distinguish the test item
+                      {t("page_validations.tip_tes")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-test-tes">
-                    <FaInfoCircle className="me-2" /> Tes (*):
+                    <FaInfoCircle className="me-2" /> {"fields.tes"} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -209,7 +210,7 @@ export function MotivationTestModal(props: TestModalProps) {
                 />
               </InputGroup>
               {showErrors && testHeader.tes === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
             <Col>
@@ -219,12 +220,12 @@ export function MotivationTestModal(props: TestModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Label (Name) of the test item
+                      {t("page_validations.tip_test_label")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-test-label">
-                    <FaInfoCircle className="me-2" /> Label (*):
+                    <FaInfoCircle className="me-2" /> {"fields.label"} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -240,7 +241,7 @@ export function MotivationTestModal(props: TestModalProps) {
                 />
               </InputGroup>
               {showErrors && testHeader.label === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
           </Row>
@@ -251,12 +252,13 @@ export function MotivationTestModal(props: TestModalProps) {
                 placement="top"
                 overlay={
                   <Tooltip id={`tooltip-top`}>
-                    Short description of this test item
+                    {t("page_validations.tip_test_description")}
                   </Tooltip>
                 }
               >
                 <span id="label-test-description">
-                  <FaInfoCircle className="ms-1 me-2" /> Description (*):
+                  <FaInfoCircle className="ms-1 me-2" />{" "}
+                  {t("fields.description")} (*):
                 </span>
               </OverlayTrigger>
               <Form.Control
@@ -272,7 +274,7 @@ export function MotivationTestModal(props: TestModalProps) {
                 }}
               />
               {showErrors && testHeader.description === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
           </Row>
@@ -283,17 +285,20 @@ export function MotivationTestModal(props: TestModalProps) {
                   key="top"
                   placement="top"
                   overlay={
-                    <Tooltip id={`tooltip-top`}>Select the Test Method</Tooltip>
+                    <Tooltip id={`tooltip-top`}>
+                      {t("page_validations.tip_test_method")}
+                    </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-test-method">
-                    <FaInfoCircle className="me-2" /> Test Method (*):
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("page_validations.test_method")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Select
                   id="input-test-method"
                   aria-describedby="label-test-method"
-                  placeholder="Select a test type"
+                  placeholder={t("page_validations.select_test_method")}
                   value={
                     testDefinition.test_method_id
                       ? testDefinition.test_method_id
@@ -308,7 +313,7 @@ export function MotivationTestModal(props: TestModalProps) {
                 >
                   <>
                     <option value="" disabled>
-                      Select test method
+                      {t("page_validations.select_test_method")}
                     </option>
                     {testMethods.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -319,7 +324,7 @@ export function MotivationTestModal(props: TestModalProps) {
                 </Form.Select>
               </InputGroup>
               {showErrors && testDefinition.test_method_id === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
               {testDefinition.test_method_id != "" && (
                 <div className="bg-light text-secondary border rounded mt-2 p-3">
@@ -338,7 +343,7 @@ export function MotivationTestModal(props: TestModalProps) {
           </Row>
           <Row className="mt-2">
             <div className="border-top p-2">
-              <strong>Parameters:</strong>
+              <strong>{t("page_validations.parameters")}:</strong>
               <Button
                 size="sm"
                 variant="success"
@@ -347,7 +352,7 @@ export function MotivationTestModal(props: TestModalProps) {
                   addNewParam(false);
                 }}
               >
-                Add new
+                {t("page_validations.parameters_add")}
               </Button>
               <Button
                 size="sm"
@@ -360,15 +365,15 @@ export function MotivationTestModal(props: TestModalProps) {
                   params.find((item) => item.name === "evidence") !== undefined
                 }
               >
-                Add Evidence
+                {t("page_validations.parameters_add_evidence")}
               </Button>
               <table>
                 <thead>
                   {params.length > 0 && (
                     <tr>
-                      <th>Name</th>
-                      <th>Text</th>
-                      <th>Tooltip</th>
+                      <th>{t("fields.name")}</th>
+                      <th>{t("fields.text")}</th>
+                      <th>{t("fields.tooltip")}</th>
                       <th></th>
                     </tr>
                   )}
@@ -427,7 +432,7 @@ export function MotivationTestModal(props: TestModalProps) {
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={props.onHide}>
-          Close
+          {t("buttons.close")}
         </Button>
         <Button
           className="btn-success"
@@ -437,7 +442,7 @@ export function MotivationTestModal(props: TestModalProps) {
             }
           }}
         >
-          Create
+          {t("buttons.create")}
         </Button>
       </Modal.Footer>
     </Modal>

@@ -342,7 +342,7 @@ export function CriterionModal(props: CriterionModalProps) {
                 <Form.Select
                   id="input-motivation-type"
                   aria-describedby="label-motivation-type"
-                  placeholder="Select a Motivation type"
+                  placeholder={t("page_criteria.select_imperative")}
                   value={
                     criterionInput.imperative ? criterionInput.imperative : ""
                   }

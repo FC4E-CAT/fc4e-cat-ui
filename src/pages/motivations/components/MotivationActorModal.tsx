@@ -14,6 +14,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaInfoCircle, FaUser } from "react-icons/fa";
 
 interface MotivationActorModalProps {
@@ -29,7 +30,7 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
   const alert = useRef<AlertInfo>({
     message: "",
   });
-
+  const { t } = useTranslation();
   const { keycloak } = useContext(AuthContext)!;
 
   const [actorId, setActorId] = useState("");
@@ -62,18 +63,18 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
       .mutateAsync()
       .catch((err) => {
         alert.current = {
-          message: "Error: " + err.response.data.message,
+          message: `${t("error")}: ` + err.response.data.message,
         };
         throw err;
       })
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Actor Added!",
+          message: t("page_motivations.toast_add_actor_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Adding Actor to motivation...",
+      loading: t("page_motivations.toast_add_actor_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -89,7 +90,8 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaUser className="me-2" /> Add Actor to Motivation
+          <FaUser className="me-2" />{" "}
+          {t("page_motivations.modal_add_actor_title")}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -100,11 +102,13 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
                 key="top"
                 placement="top"
                 overlay={
-                  <Tooltip id={`tooltip-top`}>Select the type of actor</Tooltip>
+                  <Tooltip id={`tooltip-top`}>
+                    {t("page_motivations.tip_select_actor_type")}
+                  </Tooltip>
                 }
               >
                 <InputGroup.Text id="label-actor-type">
-                  <FaInfoCircle className="me-2" /> Actor (*):
+                  <FaInfoCircle className="me-2" /> {t("fields.actor")} (*):
                 </InputGroup.Text>
               </OverlayTrigger>
               <Form.Select
@@ -117,7 +121,7 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
               >
                 <>
                   <option value="" disabled>
-                    Select Actor type
+                    {t("page_motivations.select_actor_type")}
                   </option>
                   {props.motivationActors.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -128,14 +132,14 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
               </Form.Select>
             </InputGroup>
             {showErrors && actorId === "" && (
-              <span className="text-danger">Required</span>
+              <span className="text-danger">{t("required")}</span>
             )}
           </Col>
         </Row>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={props.onHide}>
-          Close
+          {t("buttons.close")}
         </Button>
         <Button
           className="btn-success"
@@ -145,7 +149,7 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
             }
           }}
         >
-          Create
+          {t("buttons.create")}
         </Button>
       </Modal.Footer>
     </Modal>

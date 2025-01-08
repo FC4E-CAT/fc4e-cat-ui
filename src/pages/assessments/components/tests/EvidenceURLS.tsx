@@ -103,7 +103,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
                 setError("");
               }}
               aria-describedby="label-add-url"
-              placeholder="Please enter and add a valid url to support your claim"
+              placeholder={t("page_assessment_edit.evidence_url")}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   handleAddURL();
@@ -123,7 +123,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
                 setError("");
               }}
               aria-describedby="label-add-url"
-              placeholder="Please enter a description of the evidence"
+              placeholder={t("page_assessment_edit.evidence_description")}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   handleAddURL();

@@ -22,7 +22,7 @@ export default function AdminMenu() {
     <div className="px-3 py-2">
       <ul className="nav flex-column mt-2">
         <h5>
-          <strong>{t("personalMenu")}</strong>
+          <strong>{t("personal_menu")}</strong>
         </h5>
         <li
           className={`nav-item rounded  ${isSel(userPath, "profile") ? "cat-menu-selected" : ""}`}

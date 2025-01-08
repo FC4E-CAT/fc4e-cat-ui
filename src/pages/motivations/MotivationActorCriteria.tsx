@@ -10,12 +10,13 @@ import { AlertInfo, Criterion, Imperative } from "@/types";
 import { useState, useContext, useEffect, useRef } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaAward, FaInfo, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 import { FaTrashCan } from "react-icons/fa6";
-import {} from "react-icons/fa6";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function MotivationActorCriteria() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
 
@@ -39,7 +40,7 @@ export default function MotivationActorCriteria() {
 
   const tooltipDeletePrinciple = (
     <Tooltip id="tip-restore">
-      Delete this principle from the list of Principles for this actor.
+      {t("page_motivations.remove_principle_actor")}
     </Tooltip>
   );
 
@@ -154,18 +155,18 @@ export default function MotivationActorCriteria() {
         .mutateAsync(criImp)
         .catch((err) => {
           alert.current = {
-            message: "Error during saving Assessment Type Criteria!",
+            message: t("page_motivations.toast_assign_cri_act_fail"),
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Assessment Type Criteria Saved!",
+            message: t("page_motivations.toast_assign_cri_act_success"),
           };
           navigate(-1);
         });
       toast.promise(promise, {
-        loading: "Saving Assessment Type Criteria...",
+        loading: t("page_motivations.toast_assign_cri_act_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -177,25 +178,19 @@ export default function MotivationActorCriteria() {
       <Row className="cat-view-heading-block row border-bottom">
         <Col>
           <h2 className="text-muted cat-view-heading ">
-            Manage Criteria
+            {t("page_motivations.manage_criteria")}
             {params.mtvId && params.actId && (
               <p className="lead cat-view-lead">
-                For Motivation:
+                {t("page_motivations.for_motivation")}
                 <strong className="badge bg-light text-secondary mx-2">
                   {params.mtvId}
                 </strong>
-                and Actor:
+                {t("page_motivations.and_actor")}
                 <strong className="badge bg-light text-secondary ms-2">
                   {params.actId}
                 </strong>
                 <br />
-                <span className="text-sm">
-                  The desirable properties or outcome of a specific motivation
-                  is usually expressed as a set of Criteria.These criteria serve
-                  to verify that principles are adhered to or objectives are
-                  met. Meeting criteria is considered to signal compliance with
-                  a principle or alignment with/ support of the objective.
-                </span>
+                <span className="text-sm">{t("page_motivations.cri1")}</span>
               </p>
             )}
           </h2>
@@ -205,20 +200,18 @@ export default function MotivationActorCriteria() {
         <Col className="mt-2 px-2">
           <FaInfo className="text-warning float-start" size={40} />
           <span className="text-sm">
-            One of the basic characteristics of the assessment is to have
-            criteria. The Criteria shall match the compliance of the specific
-            actor <span className="">{params.actId}</span>
+            {t("page_motivations.cri2")}{" "}
+            <span className="">{params.actId}</span>
             <br />
-            Please follow the steps in order to start filling up the assessment
-            type.
+            {t("page_motivations.cri3")}
           </span>
         </Col>
         <Col className="mt-2 px-2">
           <span className="text-sm">
             <ol>
-              <li>Read and Select the Criteria for your actor</li>
-              <li>Move the Criteria from left to the right list</li>
-              <li>Update the imperative of the Criteria and click Save</li>
+              <li>{t("page_motivations.cri7")}</li>
+              <li>{t("page_motivations.cri5")}</li>
+              <li>{t("page_motivations.cri8")}</li>
             </ol>
           </span>
         </Col>
@@ -227,7 +220,7 @@ export default function MotivationActorCriteria() {
         <Col className="px-4">
           <div>
             <strong className="p-1">
-              Available Criteria in this motivation{" "}
+              {t("page_motivations.available_criteria_motivation")}{" "}
             </strong>
             <span className="badge bg-primary rounded-pill fs-6">
               {availableCriteria.length}
@@ -235,8 +228,8 @@ export default function MotivationActorCriteria() {
           </div>
           <div className="alert alert-primary p-2 mt-1">
             <small>
-              <FaPlusCircle className="me-2" /> Click an item below to add it to
-              this assessment type...
+              <FaPlusCircle className="me-2" />
+              {t("page_motivations.info_add_to_asmt_type")}
             </small>
           </div>
           <div className="cat-vh-60 overflow-auto">
@@ -276,7 +269,7 @@ export default function MotivationActorCriteria() {
         <Col>
           <div>
             <strong className="p-1">
-              Criteria included in the Assessment Type
+              {t("page_motivations.criteria_in_asmt_type")}
             </strong>
             <span className="badge bg-primary rounded-pill fs-6">
               {selectedCriteria.length}
@@ -284,8 +277,8 @@ export default function MotivationActorCriteria() {
           </div>
           <div className="alert alert-primary p-2 mt-1">
             <small>
-              <FaMinusCircle className="me-2" /> Click an item below to remove
-              it from this assessment type...
+              <FaMinusCircle className="me-2" />
+              {t("page_motivations.cinfo_remove_from_asmt_type")}
             </small>
           </div>
           <div>
@@ -360,7 +353,7 @@ export default function MotivationActorCriteria() {
             navigate(-1);
           }}
         >
-          Back
+          {t("buttons.back")}
         </Button>
         <Button
           variant="success"
@@ -368,7 +361,7 @@ export default function MotivationActorCriteria() {
             handleUpdate();
           }}
         >
-          Save
+          {t("buttons.save")}
         </Button>
       </div>
     </div>
