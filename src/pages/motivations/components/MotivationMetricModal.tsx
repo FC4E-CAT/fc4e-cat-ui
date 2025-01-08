@@ -23,6 +23,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaFile, FaInfoCircle } from "react-icons/fa";
 
 interface MetricModalProps {
@@ -37,7 +38,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
   const alert = useRef<AlertInfo>({
     message: "",
   });
-
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const [algorithms, setAlgorithms] = useState<RegistryResource[]>([]);
@@ -206,11 +207,11 @@ export function MotivationMetricModal(props: MetricModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Metric Created!",
+          message: t("page_motivations.toast_create_metric_progress"),
         };
       });
     toast.promise(promise, {
-      loading: "Creating Metric...",
+      loading: t("page_motivations.toast_create_metric_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -226,7 +227,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaFile className="me-2" /> Create new Metric
+          <FaFile className="me-2" /> {t("page_motivations.create_new_metric")}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -239,12 +240,12 @@ export function MotivationMetricModal(props: MetricModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Acronym to quickly distinguish the Metric item
+                      {t("page_motivations.tip_mtr")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-metric-mtr">
-                    <FaInfoCircle className="me-2" /> Mtr (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.mtr")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -260,7 +261,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 />
               </InputGroup>
               {showErrors && metricInput.mtr === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
             <Col>
@@ -270,12 +271,12 @@ export function MotivationMetricModal(props: MetricModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Label (Name) of the metric item
+                      {t("page_motivations.tip_label_metric")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-metric-label">
-                    <FaInfoCircle className="me-2" /> Label (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.label")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -291,7 +292,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 />
               </InputGroup>
               {showErrors && metricInput.label === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
           </Row>
@@ -302,12 +303,13 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 placement="top"
                 overlay={
                   <Tooltip id={`tooltip-top`}>
-                    Short description of this metric item
+                    {t("page_motivations.tip_description_metric")}
                   </Tooltip>
                 }
               >
                 <span id="label-metric-description">
-                  <FaInfoCircle className="ms-1 me-2" /> Description (*):
+                  <FaInfoCircle className="ms-1 me-2" />{" "}
+                  {t("fields.description")} (*):
                 </span>
               </OverlayTrigger>
               <Form.Control
@@ -323,7 +325,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 }}
               />
               {showErrors && metricInput.description === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
           </Row>
@@ -334,17 +336,20 @@ export function MotivationMetricModal(props: MetricModalProps) {
                   key="top"
                   placement="top"
                   overlay={
-                    <Tooltip id={`tooltip-top`}>Select the Metric Type</Tooltip>
+                    <Tooltip id={`tooltip-top`}>
+                      {t("page_motivations.tip_select_metric_type")}
+                    </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-metric-type">
-                    <FaInfoCircle className="me-2" /> Metric Type (*):
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("page_motivations.metric_type")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Select
                   id="input-metric-type"
                   aria-describedby="label-metric-type"
-                  placeholder="Select a Motivation type"
+                  placeholder={t("page_motivations.select_mtv_type")}
                   value={
                     metricInput.type_metric_id ? metricInput.type_metric_id : ""
                   }
@@ -357,7 +362,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 >
                   <>
                     <option value="" disabled>
-                      Select type of metric
+                      {t("fields.select_metric_type")}
                     </option>
                     {metricTypes.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -368,7 +373,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 </Form.Select>
               </InputGroup>
               {showErrors && metricInput.type_metric_id === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
               {metricInput.type_metric_id != "" && (
                 <div className="bg-light text-secondary border rounded mt-2 p-3">
@@ -393,18 +398,19 @@ export function MotivationMetricModal(props: MetricModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Select the Metric Algorithm
+                      {t("page_motivations")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-metric-algorithm">
-                    <FaInfoCircle className="me-2" /> Metric Algorithm (*):
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("page_motivations.metric_algorithm")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Select
                   id="input-metric-algorithm"
                   aria-describedby="label-metric-algorithm"
-                  placeholder="Select a Metric Algoritm"
+                  placeholder={t("page_motivations.select_metric_algo")}
                   value={
                     metricInput.type_algorithm_id
                       ? metricInput.type_algorithm_id
@@ -419,7 +425,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 >
                   <>
                     <option value="" disabled>
-                      Select type of metric algorithm
+                      {t("page_motivations.tip_select_metric_algo")}
                     </option>
                     {algorithms.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -430,7 +436,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 </Form.Select>
               </InputGroup>
               {showErrors && metricInput.type_algorithm_id === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
               {metricInput.type_algorithm_id != "" && (
                 <div className="bg-light text-secondary border rounded mt-2 p-3">
@@ -455,18 +461,19 @@ export function MotivationMetricModal(props: MetricModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Select the Type of Benchmark
+                      {t("page_motivations.tip_select_benchmark_type")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-benchmark-type">
-                    <FaInfoCircle className="me-2" /> Benchmark Type (*):
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("page_motivations.benchmark_type")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Select
                   id="input-benchmark-type"
                   aria-describedby="label-benchmark-type"
-                  placeholder="Select a Benchmark type"
+                  placeholder={t("page_motivations.select_benchmark_type")}
                   value={
                     metricInput.type_benchmark_id
                       ? metricInput.type_benchmark_id
@@ -481,7 +488,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 >
                   <>
                     <option value="" disabled>
-                      Select type of benchmark
+                      {t("page_motivations.tip_select_benchmark_type")}
                     </option>
                     {benchmarkTypes.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -492,7 +499,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 </Form.Select>
               </InputGroup>
               {showErrors && metricInput.type_benchmark_id === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
               {metricInput.type_benchmark_id != "" && (
                 <div className="bg-light text-secondary border rounded mt-2 p-3">
@@ -517,12 +524,13 @@ export function MotivationMetricModal(props: MetricModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Threshold value for the selected benchmark
+                      {t("page_motivations.tip_benchmark_value")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-benchmark-value">
-                    <FaInfoCircle className="me-2" /> Benchmark Value (*):
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("page_motivations.benchmark_value")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -540,7 +548,9 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 />
               </InputGroup>
               {showErrors && bValue === "" && (
-                <span className="text-danger">Please enter a number value</span>
+                <span className="text-danger">
+                  {t("page_motivations.err_benchmark_vaule")}
+                </span>
               )}
             </Col>
           </Row>
@@ -548,7 +558,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={props.onHide}>
-          Close
+          {t("buttons.close")}
         </Button>
         <Button
           className="btn-success"
@@ -558,7 +568,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
             }
           }}
         >
-          Create
+          {t("buttons.create")}
         </Button>
       </Modal.Footer>
     </Modal>

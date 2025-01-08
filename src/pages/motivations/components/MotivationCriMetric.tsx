@@ -6,6 +6,7 @@ import { TestValueFormParam } from "@/pages/assessments/components/tests/TestVal
 import { TestAutoHttpsCheck, TestBinaryParam, TestValueParam } from "@/types";
 import { useContext } from "react";
 import { Col, Row } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 export default function MotivationCriMetric({
   mtvId,
@@ -15,7 +16,7 @@ export default function MotivationCriMetric({
   criId: string;
 }) {
   const { keycloak } = useContext(AuthContext)!;
-
+  const { t } = useTranslation();
   const { data: metricData } = useGetMotivationCriMetric({
     mtvId: mtvId,
     criId: criId,
@@ -85,25 +86,25 @@ export default function MotivationCriMetric({
         <Row>
           <Col>
             <div>
-              <strong className="me-2">Id:</strong>
+              <strong className="me-2">{t("fields.id")}:</strong>
               <span>{metricData?.metric?.id}</span>
             </div>
             <div>
-              <strong className="me-2">Name:</strong>
+              <strong className="me-2">{t("fields.name")}:</strong>
               <span>{metricData?.metric?.name}</span>
             </div>
           </Col>
           <Col>
             <div>
-              <strong className="me-2">Type:</strong>
+              <strong className="me-2">{t("fields.type")}:</strong>
               <span>{metricData?.metric?.label_type_metric}</span>
             </div>
             <div>
-              <strong className="me-2">Algorithm:</strong>
+              <strong className="me-2">{t("fields.algorithm")}:</strong>
               <span>{metricData?.metric?.label_algorithm_type}</span>
             </div>
             <div>
-              <strong className="me-2">Benchmark:</strong>
+              <strong className="me-2">{t("fields.benchmark")}:</strong>
               <span>{metricData?.metric?.benchmark_value}</span>
             </div>
           </Col>
@@ -111,7 +112,7 @@ export default function MotivationCriMetric({
         <div className="border-top mt-1">
           <h5 className="mt-3">
             <strong>
-              Tests:
+              {t("fields.tests")}:
               <span className="badge bg-primary ms-2">
                 {metricData?.metric?.tests?.length || "0"}
               </span>

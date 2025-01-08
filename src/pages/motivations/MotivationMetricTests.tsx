@@ -15,11 +15,12 @@ import {
 import { RegistryTest, RegistryTestHeader } from "@/types/tests";
 import { useGetAllTests } from "@/api/services/registry";
 import { MotivationTestModal } from "./components/MotivationTestModal";
+import { useTranslation } from "react-i18next";
 
 export default function MotivationMetricTests() {
   const navigate = useNavigate();
   const params = useParams();
-
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
   const [showCreateTest, setShowCreateTest] = useState(false);
   const [availableTests, setAvailableTests] = useState<RegistryTestHeader[]>(
@@ -123,18 +124,18 @@ export default function MotivationMetricTests() {
         .mutateAsync(metricTests)
         .catch((err) => {
           alert.current = {
-            message: "Error during assigning Tests to Metric",
+            message: t("page_motivations.toast_assign_metric_fail"),
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Test Assignment to Metric succeeded!",
+            message: t("page_motivations.toast_assign_metric_success"),
           };
           navigate(`/admin/motivations/${params.mtvId}#metrics`);
         });
       toast.promise(promise, {
-        loading: "Assinging tests to metric...",
+        loading: t("page_motivations.toast_assign_metric_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -152,20 +153,20 @@ export default function MotivationMetricTests() {
       <Row className="cat-view-heading-block row border-bottom">
         <Col>
           <h2 className="text-muted cat-view-heading ">
-            Assign tests to metric
+            {t("page_motivations.assign_tests")}
             {params.mtvId && params.actId && (
               <p className="lead cat-view-lead">
-                For Motivation:
+                {t("page_motivations.for_motivation")}
                 <strong className="badge bg-light text-secondary mx-2">
                   {params.mtvId}
                 </strong>
-                and Metric:
+                {t("page_motivations.and_metric")}
                 <strong className="badge bg-light text-secondary ms-2">
                   {params.mtrId}
                 </strong>
                 <br />
                 <span className="text-sm">
-                  Each metric includes one or more tests
+                  {t("page_motivations.metric_includes")}
                 </span>
               </p>
             )}
@@ -176,7 +177,9 @@ export default function MotivationMetricTests() {
         <Col className="px-4">
           <div className="d-flex justify-content-between">
             <div>
-              <strong className="p-1">Available Tests</strong>
+              <strong className="p-1">
+                {t("page_motivations.available_tests")}
+              </strong>
               <span className="ms-1 badge bg-primary rounded-pill fs-6">
                 {availableTests.length}
               </span>
@@ -189,14 +192,14 @@ export default function MotivationMetricTests() {
                   setShowCreateTest(true);
                 }}
               >
-                <FaPlus /> Create New Test
+                <FaPlus /> {t("page_motivations.create_new_test")}
               </Button>
             </div>
           </div>
           <div className="alert alert-primary p-2 mt-1">
             <small>
-              <FaPlusCircle className="me-2" /> Click an item below to assign it
-              to this Metric...
+              <FaPlusCircle className="me-2" />{" "}
+              {t("page_motivations.info_assign_to_metric")}
             </small>
           </div>
           <div className="cat-vh-60 overflow-auto">
@@ -222,15 +225,17 @@ export default function MotivationMetricTests() {
         </Col>
         <Col>
           <div>
-            <strong className="p-1">Tests assigned to this metric</strong>
+            <strong className="p-1">
+              {t("page_motivations.tests_assigned")}
+            </strong>
             <span className="badge bg-primary rounded-pill fs-6">
               {selectedTests.length}
             </span>
           </div>
           <div className="alert alert-primary p-2 mt-1">
             <small>
-              <FaMinusCircle className="me-2" /> Click an item below to remove
-              it from this metric...
+              <FaMinusCircle className="me-2" />{" "}
+              {t("page_motivations.info_remove_from_metric")}
             </small>
           </div>
           <div>
@@ -245,7 +250,7 @@ export default function MotivationMetricTests() {
                       </strong>
                       <OverlayTrigger
                         placement="top"
-                        overlay={<Tooltip>Remove Test</Tooltip>}
+                        overlay={<Tooltip>{t("tip_remove_test")}</Tooltip>}
                       >
                         <Button
                           size="sm"
@@ -277,7 +282,7 @@ export default function MotivationMetricTests() {
           className="btn btn-secondary"
           to={`/admin/motivations/${params.mtvId}#metrics`}
         >
-          Back
+          {t("buttons.back")}
         </Link>
         <Button
           variant="success"
@@ -285,7 +290,7 @@ export default function MotivationMetricTests() {
             handleUpdate();
           }}
         >
-          Save
+          {t("buttons.save")}
         </Button>
       </div>
     </div>

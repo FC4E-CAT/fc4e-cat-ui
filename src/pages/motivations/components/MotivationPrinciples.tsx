@@ -6,6 +6,7 @@ import { Button, Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
 import { FaPlus } from "react-icons/fa";
 import { PrincipleModal } from "@/pages/principles/components/PrincipleModal";
+import { useTranslation } from "react-i18next";
 
 export const MotivationPrinciples = ({
   mtvId,
@@ -14,6 +15,7 @@ export const MotivationPrinciples = ({
   mtvId: string;
   published: boolean;
 }) => {
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvPrinciples, setMtvPrinciples] = useState<Principle[]>([]);
 
@@ -57,10 +59,10 @@ export const MotivationPrinciples = ({
       />
       <div className="d-flex justify-content-between mb-2">
         <h5 className="text-muted cat-view-heading ">
-          List of principles
+          {t("page_motivations.list_principles")}
           <p className="lead cat-view-lead">
             <span className="text-sm">
-              Principles related with criteria under motivation
+              {t("page_motivations.list_principles_subtitle")}
             </span>
           </p>
         </h5>
@@ -73,7 +75,7 @@ export const MotivationPrinciples = ({
             }}
             disabled={published}
           >
-            <FaPlus /> Create Principle
+            <FaPlus /> {t("page_motivations.create_principle")}
           </Button>
         </div>
       </div>

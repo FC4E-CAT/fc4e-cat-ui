@@ -131,7 +131,7 @@ export function ShareModal(props: ShareModalProps) {
             </InputGroup.Text>
             <Form.Control
               id="input-share-user"
-              placeholder="Enter user's email to share the assessment with"
+              placeholder={t("page_assessment_edit.share_email")}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);

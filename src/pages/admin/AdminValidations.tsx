@@ -217,7 +217,7 @@ export default function AdminValidations() {
           <div className="col col-lg-6">
             <div className="d-flex justify-content-center">
               <Form.Control
-                placeholder={t("search")}
+                placeholder={t("fields.search")}
                 onChange={(e) => {
                   setOpts({ ...opts, search: e.target.value });
                 }}

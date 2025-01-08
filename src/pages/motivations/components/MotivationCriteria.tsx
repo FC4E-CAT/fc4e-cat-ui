@@ -16,6 +16,7 @@ import { MotivationCriMetricModal } from "./MotivationCriMetricModal";
 import { FaBars, FaBorderNone, FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { MotivationMetricAssignModal } from "./MotivationMetricAssignModal";
+import { useTranslation } from "react-i18next";
 
 interface MetricModalConfig {
   show: boolean;
@@ -29,6 +30,7 @@ export const MotivationCriteria = ({
   mtvId: string;
   published: boolean;
 }) => {
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvCriteria, setMtvCriteria] = useState<Criterion[]>([]);
 
@@ -90,17 +92,18 @@ export const MotivationCriteria = ({
       />
       <div className="d-flex justify-content-between mb-2">
         <h5 className="text-muted cat-view-heading ">
-          List of criteria
+          {t("page_motivations.criteria_list")}
           <p className="lead cat-view-lead">
             <span className="text-sm">
-              Criteria related with principles under motivation
+              {t("page_motivations.criteria_list_subtitle")}
             </span>
           </p>
         </h5>
         <div>
           {published ? (
             <span className="btn btn-warning disabled">
-              <FaEdit className="me-2" /> Manage Criteria
+              <FaEdit className="me-2" />{" "}
+              {t("page_motivations.manage_criteria")}
             </span>
           ) : (
             <Link
@@ -109,7 +112,7 @@ export const MotivationCriteria = ({
               className="btn btn-warning"
             >
               <FaEdit className="me-2" />
-              Manage Criteria
+              {t("page_motivations.manage_criteria")}
             </Link>
           )}
         </div>
@@ -154,7 +157,11 @@ export const MotivationCriteria = ({
                   <div className="d-flex flex-nowrap">
                     <OverlayTrigger
                       placement="top"
-                      overlay={<Tooltip>Assign Metric</Tooltip>}
+                      overlay={
+                        <Tooltip>
+                          {t("page_motivations.tip_assign_metric")}
+                        </Tooltip>
+                      }
                     >
                       <Button
                         className="btn btn-light btn-sm m-1"
@@ -167,7 +174,11 @@ export const MotivationCriteria = ({
                     </OverlayTrigger>
                     <OverlayTrigger
                       placement="top"
-                      overlay={<Tooltip>View Criterion Metric/Tests</Tooltip>}
+                      overlay={
+                        <Tooltip>
+                          {t("page_motivations.view_cri_metric_tests")}
+                        </Tooltip>
+                      }
                     >
                       <Button
                         className="btn btn-light btn-sm m-1"

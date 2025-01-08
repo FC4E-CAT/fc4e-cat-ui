@@ -52,6 +52,7 @@ import { MotivationCriteria } from "./components/MotivationCriteria";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { MotivationMetrics } from "./components/MotivationMetrics";
+import { useTranslation } from "react-i18next";
 
 const actorImages: { [key: string]: string } = {
   "PID Service Provider (Role)": serviceImg,
@@ -66,6 +67,7 @@ function getActorImage(actor: string): string {
 }
 
 export default function MotivationDetails() {
+  const { t } = useTranslation();
   const alert = useRef<AlertInfo>({
     message: "",
   });
@@ -101,17 +103,17 @@ export default function MotivationDetails() {
       .mutateAsync(mtvId)
       .catch((err) => {
         alert.current = {
-          message: "Error during motivation publish",
+          message: t("page_motivations.toast_publish_fail"),
         };
         throw err;
       })
       .then(() => {
         alert.current = {
-          message: "Motivation succesfully published!",
+          message: t("page_motivations.toast_publish_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Publishing...",
+      loading: t("page_motivations.toast_publish_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -122,17 +124,17 @@ export default function MotivationDetails() {
       .mutateAsync(mtvId)
       .catch((err) => {
         alert.current = {
-          message: "Error during motivation unpublish",
+          message: t("page_motivations.toast_unpublish_fail"),
         };
         throw err;
       })
       .then(() => {
         alert.current = {
-          message: "Motivation succesfully unpublished!",
+          message: t("page_motivations.toast_unpublish_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Unpublishing...",
+      loading: t("page_motivations.toast_unpublish_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -142,8 +144,8 @@ export default function MotivationDetails() {
   const [deleteActorModalConfig, setDeleteActorModalConfig] =
     useState<DeleteActorModalConfig>({
       show: false,
-      title: "Delete Assessment Type",
-      message: "Are you sure you want to delete the following Assessment type?",
+      title: t("page_motivations.modal_asmt_delete_title"),
+      message: t("page_motivations.modal_asmt_delete_message"),
       itemId: "",
       itemName: "",
       mtvId: params.id || "",
@@ -160,13 +162,13 @@ export default function MotivationDetails() {
         })
         .catch((err) => {
           alert.current = {
-            message: "Error during Assessment type deletion!",
+            message: t("page_motivations.toast_asmt_delete_fail"),
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Assessment type succesfully deleted.",
+            message: t("page_motivations.toast_asmt_delete_sucess"),
           };
           setDeleteActorModalConfig({
             ...deleteActorModalConfig,
@@ -177,7 +179,7 @@ export default function MotivationDetails() {
           });
         });
       toast.promise(promise, {
-        loading: "Deleting...",
+        loading: t("page_motivations.toast_asmt_delete_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -189,17 +191,17 @@ export default function MotivationDetails() {
       .mutateAsync({ mtvId, actId })
       .catch((err) => {
         alert.current = {
-          message: "Error during Assessment Type publish",
+          message: t("page_motivations.toast_asmt_publish_fail"),
         };
         throw err;
       })
       .then(() => {
         alert.current = {
-          message: "Assessment Type succesfully published!",
+          message: t("page_motivations.toast_asmt_publish_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Publishing...",
+      loading: t("page_motivations.toast_asmt_publish_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -210,17 +212,17 @@ export default function MotivationDetails() {
       .mutateAsync({ mtvId, actId })
       .catch((err) => {
         alert.current = {
-          message: "Error during Assessment Type unpublish",
+          message: t("page_motivations.toast_asmt_unpublish_fail"),
         };
         throw err;
       })
       .then(() => {
         alert.current = {
-          message: "Assessment Type succesfully unpublished!",
+          message: t("page_motivations.toast_asmt_unpublish_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Unpublishing...",
+      loading: t("page_motivations.toast_asmt_unpublish_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -232,10 +234,12 @@ export default function MotivationDetails() {
     isRegistered: registered,
   });
   const tooltipView = (
-    <Tooltip id="tip-restore">View Assesment Details</Tooltip>
+    <Tooltip id="tip-restore">{t("page_motivations.tip_asmt_view")}</Tooltip>
   );
   const tooltipManageCriteria = (
-    <Tooltip id="tip-restore">Manage Criteria</Tooltip>
+    <Tooltip id="tip-restore">
+      {t("page_motivations.tip_manage_criteria")}
+    </Tooltip>
   );
 
   const {
@@ -334,16 +338,12 @@ export default function MotivationDetails() {
         />
         <Col>
           <h2 className="cat-view-heading text-muted">
-            Motivation Details
+            {t("page_motivations.details_title")}
             {motivation && (
               <p className="lead cat-view-lead">
                 {motivation?.mtv} - {motivation?.label}
                 <br />
-                <span className="text-sm">
-                  Motivations are the main Capability of the service for
-                  different assessment foci. Motivations provide much of the Why
-                  - the reason an assessment is being performed.
-                </span>
+                <span className="text-sm">{t("page_motivations.mtv1")}</span>
               </p>
             )}
           </h2>
@@ -356,8 +356,7 @@ export default function MotivationDetails() {
               <Col className="d-flex align-items-center">
                 <small className="p-2">
                   <FaLock className="me-2" />
-                  This motivation is currently published so no further changes
-                  can be made until it is unpublished...
+                  {t("page_motivations.info_published")}
                 </small>
               </Col>
               <Col md="auto">
@@ -372,7 +371,7 @@ export default function MotivationDetails() {
                   }}
                 >
                   <FaEyeSlash className="me-2" />
-                  Unpublish
+                  {t("buttons.unpublish")}
                 </Button>
               </Col>
             </Row>
@@ -383,7 +382,7 @@ export default function MotivationDetails() {
               <Col className="d-flex align-items-center">
                 <small className="p-2">
                   <FaUnlock className="me-2" />
-                  This motivation is currently unpublished and editable
+                  {t("page_motivations.info_unpublished")}
                 </small>
               </Col>
               <Col md="auto">
@@ -398,7 +397,7 @@ export default function MotivationDetails() {
                   }}
                 >
                   <FaEye className="me-2" />
-                  Publish
+                  {t("buttons.publish")}
                 </Button>
               </Col>
             </Row>
@@ -426,7 +425,7 @@ export default function MotivationDetails() {
             </span>
             {motivation?.published ? (
               <span className="opacity-75 btn btn-lt border-black bg-secondary mt-4">
-                Update Details
+                {t("buttons.update_details")}
               </span>
             ) : (
               <Link
@@ -437,7 +436,7 @@ export default function MotivationDetails() {
                 }}
                 className="btn btn-lt border-black mt-4"
               >
-                Update Details
+                {t("buttons.update_details")}
               </Link>
             )}
           </div>
@@ -467,7 +466,7 @@ export default function MotivationDetails() {
                 <span className="fs-6 text-primary">
                   <FaInfo />
                 </span>{" "}
-                Assessment types
+                {t("page_motivations.asmt_types")}
               </span>
             }
           >
@@ -475,12 +474,11 @@ export default function MotivationDetails() {
               <div className="px-5 mt-4">
                 <div className="d-flex justify-content-between mb-2">
                   <h5 className="text-muted cat-view-heading ">
-                    List of Assessment types of specific actors under:{" "}
+                    {t("page_motivations.asmt_types_subtitle")}:{" "}
                     {motivation?.mtv} - {motivation?.label}
                     <p className="lead cat-view-lead">
                       <span className="text-sm">
-                        In order to start the creation of an assessment please
-                        start relating actors to this Motivation.{" "}
+                        {t("page_motivations.asmt_types_info")}{" "}
                       </span>
                     </p>
                   </h5>
@@ -495,12 +493,12 @@ export default function MotivationDetails() {
                           availableActors.length == 0 || motivation?.published
                         }
                       >
-                        <FaPlus /> Add Actor
+                        <FaPlus /> {t("page_motivations.add_actor")}
                       </Button>
                     </div>
                   ) : (
                     <span className="text-secondary text-sm">
-                      No available actors
+                      {t("page_motivations.no_actors_available")}
                     </span>
                   )}
                 </div>
@@ -509,10 +507,10 @@ export default function MotivationDetails() {
                     <h3>
                       <FaExclamationTriangle />
                     </h3>
-                    <h5>No actors included in this motivation... </h5>
+                    <h5>{t("page_motivations.no_actors_included")} </h5>
                     <div>
                       <span className="align-baseline">
-                        Please use the button above or{" "}
+                        {t("page_motivations.please_use_the_button")}{" "}
                       </span>
                       <Button
                         disabled={motivation?.published}
@@ -522,9 +520,12 @@ export default function MotivationDetails() {
                           setShowAddActor(true);
                         }}
                       >
-                        click here
+                        {"page_motivations.click_here"}
                       </Button>
-                      <span className="align-baseline"> to add new ones</span>
+                      <span className="align-baseline">
+                        {" "}
+                        {t("page_validations.add_new_ones")}
+                      </span>
                     </div>
                   </Alert>
                 ) : (
@@ -594,7 +595,9 @@ export default function MotivationDetails() {
                                     placement="top"
                                     overlay={
                                       <Tooltip id="tip-unpublish">
-                                        Unpublish Assessment Type
+                                        {t(
+                                          "page_motivations.tip_unpublish_asmt",
+                                        )}
                                       </Tooltip>
                                     }
                                   >
@@ -615,7 +618,7 @@ export default function MotivationDetails() {
                                     placement="top"
                                     overlay={
                                       <Tooltip id="tip-publish">
-                                        Publish Assessment Type
+                                        {t("page_motivations.tip_publish_asmt")}
                                       </Tooltip>
                                     }
                                   >
@@ -633,7 +636,7 @@ export default function MotivationDetails() {
                                   placement="top"
                                   overlay={
                                     <Tooltip id="tip-delete">
-                                      Delete Assessment Type
+                                      {t("page_motivations.tip_delete_asmt")}
                                     </Tooltip>
                                   }
                                 >
@@ -675,7 +678,7 @@ export default function MotivationDetails() {
                 <span className="fs-6 text-primary">
                   <FaTags />
                 </span>{" "}
-                Principles
+                {t("principles")}
               </span>
             }
           >
@@ -691,7 +694,7 @@ export default function MotivationDetails() {
                 <span className="fs-6 text-primary">
                   <FaAward />
                 </span>{" "}
-                Criteria
+                {t("criteria")}
               </span>
             }
           >
@@ -708,7 +711,7 @@ export default function MotivationDetails() {
                 <span className="fs-6 text-primary">
                   <FaBorderNone />
                 </span>{" "}
-                Metrics
+                {t("metrics")}
               </span>
             }
           >
@@ -727,7 +730,7 @@ export default function MotivationDetails() {
             navigate(`/admin/motivations`);
           }}
         >
-          Back
+          {t("buttons.back")}
         </Button>
       </div>
     </div>

@@ -8,6 +8,7 @@ import {
   Tooltip,
   Modal,
 } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 import { FaAward, FaMinusCircle, FaPlusCircle, FaTags } from "react-icons/fa";
 import { FaTrashCan, FaTriangleExclamation } from "react-icons/fa6";
@@ -27,6 +28,7 @@ export default function MotivationPrinciplesModal(
     [],
   );
   const [selectedPrinciples, setSelectedPrinciples] = useState<Principle[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const selIds = props.criterion?.principles
@@ -50,7 +52,8 @@ export default function MotivationPrinciplesModal(
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaTags className="me-2" /> Manage Principles
+          <FaTags className="me-2" />{" "}
+          {"page_motivations.modal_principles_title"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -69,7 +72,9 @@ export default function MotivationPrinciplesModal(
         <Row className="mt-4  pb-4">
           <Col className="px-4">
             <div>
-              <strong className="p-1">Available Principles</strong>
+              <strong className="p-1">
+                {t("page_motivations.available_principles")}
+              </strong>
               <span className="ms-1 badge bg-primary rounded-pill fs-6">
                 {availablePrinciples.length}
               </span>
@@ -78,12 +83,12 @@ export default function MotivationPrinciplesModal(
               {selectedPrinciples.length === 0 ? (
                 <small>
                   <FaPlusCircle className="me-2" />
-                  Click an item below to add it...
+                  {t("page_motivations.info_assign_principle")}
                 </small>
               ) : (
                 <small>
                   <FaTriangleExclamation className="me-2" />
-                  You can only assign one item to the right
+                  {t("page_motivations.info_assign_one_principle")}
                 </small>
               )}
             </div>
@@ -118,7 +123,7 @@ export default function MotivationPrinciplesModal(
           <Col>
             <div>
               <strong className="p-1">
-                Principles linked to this criterion
+                {t("page_motivations.principles_in_criterion")}
               </strong>
               <span className="badge bg-primary rounded-pill fs-6">
                 {selectedPrinciples.length}
@@ -126,8 +131,8 @@ export default function MotivationPrinciplesModal(
             </div>
             <div className="alert alert-primary p-2 mt-1">
               <small>
-                <FaMinusCircle className="me-2" /> Click an item below to remove
-                it...
+                <FaMinusCircle className="me-2" />{" "}
+                {t("page_motivations.info_assign_principle")}
               </small>
             </div>
             <div>
@@ -142,7 +147,11 @@ export default function MotivationPrinciplesModal(
                         </strong>
                         <OverlayTrigger
                           placement="top"
-                          overlay={<Tooltip>Delete Principle</Tooltip>}
+                          overlay={
+                            <Tooltip>
+                              {t("page_motivations.tip_remove_principle")}
+                            </Tooltip>
+                          }
                         >
                           <Button
                             size="sm"
@@ -180,7 +189,7 @@ export default function MotivationPrinciplesModal(
               setSelectedPrinciples([]);
             }}
           >
-            Cancel
+            {t("buttons.cancel")}
           </Button>
           <Button
             variant="success"
@@ -193,7 +202,7 @@ export default function MotivationPrinciplesModal(
               setSelectedPrinciples([]);
             }}
           >
-            Update
+            {t("buttons.update")}
           </Button>
         </Modal.Footer>
       </Modal.Body>

@@ -15,6 +15,7 @@ import { FaCog, FaPlus } from "react-icons/fa";
 import { MotivationMetricModal } from "./MotivationMetricModal";
 import { useGetAllMotivationMetrics } from "@/api";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export const MotivationMetrics = ({
   mtvId,
@@ -23,6 +24,7 @@ export const MotivationMetrics = ({
   mtvId: string;
   published: boolean;
 }) => {
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvMetrics, setMtvMetrics] = useState<MotivationMetric[]>([]);
   const [showCreateMetric, setShowCreateMetric] = useState(false);
@@ -64,10 +66,10 @@ export const MotivationMetrics = ({
       />
       <div className="d-flex justify-content-between mb-2">
         <h5 className="text-muted cat-view-heading ">
-          List of Metrics
+          {t("page_motivations.list_of_metrics")}
           <p className="lead cat-view-lead">
             <span className="text-sm">
-              Metrics group tests and aggregate their results
+              {t("page_motivations.list_of_metrics_subtitle")}
             </span>
           </p>
         </h5>
@@ -75,7 +77,7 @@ export const MotivationMetrics = ({
           {published ? (
             <span className="btn btn-warning disabled">
               <FaPlus className="me-2" />
-              Create Metric
+              {t("page_motivations.create_metric")}
             </span>
           ) : (
             <Button
@@ -86,7 +88,7 @@ export const MotivationMetrics = ({
               disabled={published}
             >
               <FaPlus className="me-2" />
-              Create Metric
+              {t("page_motivations.create_metric")}
             </Button>
           )}
         </div>
@@ -118,7 +120,9 @@ export const MotivationMetrics = ({
                 <Col xs="auto">
                   <OverlayTrigger
                     placement="top"
-                    overlay={<Tooltip>Assign tests to this metric</Tooltip>}
+                    overlay={
+                      <Tooltip>{t("page_motivations.assign_tests")}</Tooltip>
+                    }
                   >
                     <Link
                       className="btn btn-light"
