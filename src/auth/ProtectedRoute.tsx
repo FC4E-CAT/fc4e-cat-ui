@@ -4,6 +4,8 @@ import { AuthContext } from "@/auth";
 import Keycloak from "keycloak-js";
 import KeycloakConfig from "@/keycloak.json";
 import { useUserRegister, useGetProfile } from "@/api";
+
+import UserMenu from "@/components/UserMenu";
 import AdminMenu from "@/components/AdminMenu";
 
 export function ProtectedRoute() {
@@ -103,7 +105,7 @@ export function ProtectedRoute() {
   }, [authenticated, adminRoute, profileData, navigate]);
 
   if (authenticated && isSuccess && profileData) {
-    return adminRoute ? (
+    return profileData.user_type.toLowerCase() === "admin" ? (
       <div className="cat-admin-container d-flex flex-row">
         <div className="bg-light p-4 my-4 mb-5 rounded">
           <AdminMenu />
@@ -113,8 +115,13 @@ export function ProtectedRoute() {
         </div>
       </div>
     ) : (
-      <div className="container rounded bg-white mt-1 mb-5">
-        <Outlet />
+      <div className="cat-admin-container d-flex flex-row">
+        <div className="bg-light p-4 my-4 mb-5 rounded">
+          <UserMenu />
+        </div>
+        <div className="rounded bg-white container-fluid mb-4 flex-grow-1">
+          <Outlet />
+        </div>
       </div>
     );
   } else {
