@@ -36,21 +36,21 @@ function ValidationList() {
       return (
         <span className="badge bg-success">
           <FaCheck className="me-2" />
-          {t("page_validations.approved")}
+          {t("approved")}
         </span>
       );
     } else if (status === "REJECTED") {
       return (
         <span className="badge bg-danger">
           <FaTimes className="me-2" />
-          {t("page_validations.rejected")}
+          {t("rejected")}
         </span>
       );
     } else if (status === "REVIEW") {
       return (
         <span className="badge bg-primary">
           <FaGlasses className="me-2" />
-          {t("page_validations.review")}
+          {t("review")}
         </span>
       );
     } else {

@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { useDeleteCriterion, useGetCriteria } from "@/api/services/criteria";
 import { MotivationRefList } from "@/components/MotivationRefList";
+import { useTranslation } from "react-i18next";
 
 type Pagination = {
   page: number;
@@ -31,11 +32,15 @@ interface DeleteModalConfig {
   itemName: string;
 }
 
-const tooltipView = <Tooltip id="tip-restore">View Criterion Details</Tooltip>;
-const tooltipDelete = <Tooltip id="tip-restore">Delete Criterion</Tooltip>;
-
 // the main component that lists the criteria in a table
 export default function Criteria() {
+  const { t } = useTranslation();
+  const tooltipView = (
+    <Tooltip id="tip-restore">{t("page_criteria.tip_view")}</Tooltip>
+  );
+  const tooltipDelete = (
+    <Tooltip id="tip-restore">{t("page_criteria.tip_delete")}</Tooltip>
+  );
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const alert = useRef<AlertInfo>({
@@ -46,8 +51,8 @@ export default function Criteria() {
   const [deleteModalConfig, setDeleteModalConfig] = useState<DeleteModalConfig>(
     {
       show: false,
-      title: "Delete Criterion",
-      message: "Are you sure you want to delete the following criterion?",
+      title: t("page_criteria.modal_delete_title"),
+      message: t("page_criteria.modal_delete_message"),
       itemId: "",
       itemName: "",
     },
@@ -61,13 +66,13 @@ export default function Criteria() {
         .mutateAsync(deleteModalConfig.itemId)
         .catch((err) => {
           alert.current = {
-            message: "Error during principle deletion!",
+            message: t("page_criteria.toast_delete_fail"),
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Principle succesfully deleted.",
+            message: t("page_criteria.toast_delete_success"),
           };
           setDeleteModalConfig({
             ...deleteModalConfig,
@@ -77,7 +82,7 @@ export default function Criteria() {
           });
         });
       toast.promise(promise, {
-        loading: "Deleting...",
+        loading: t("page_criteria.toast_delete_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -135,8 +140,8 @@ export default function Criteria() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="text-muted cat-view-heading ">
-            Criteria
-            <p className="lead cat-view-lead">Manage criteria.</p>
+            {t("page_criteria.title")}
+            <p className="lead cat-view-lead">{t("page_criteria.subtitle")}</p>
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
@@ -146,7 +151,7 @@ export default function Criteria() {
               setShowCreate(true);
             }}
           >
-            <FaPlus /> Create New
+            <FaPlus /> {t("buttons.create_new")}
           </Button>
         </div>
       </div>
@@ -155,19 +160,19 @@ export default function Criteria() {
           <thead>
             <tr className="table-light">
               <th>
-                <span>CRI</span>
+                <span>{t("fields.cri").toUpperCase()}</span>
               </th>
               <th>
-                <span>Label</span>
+                <span>{t("fields.label")}</span>
               </th>
               <th>
-                <span>Description</span>
+                <span>{t("fields.description")}</span>
               </th>
               <th>
-                <span>Modified</span>
+                <span>{t("fields.modified")}</span>
               </th>
               <th>
-                <span>Motivations</span>
+                <span>{t("motivations")}</span>
               </th>
               <th></th>
             </tr>
@@ -227,12 +232,12 @@ export default function Criteria() {
             <h3>
               <FaExclamationTriangle />
             </h3>
-            <h5>No data found...</h5>
+            <h5>{t("no_data")}</h5>
           </Alert>
         )}
         <div className="d-flex justify-content-end">
           <div>
-            <span className="mx-1">rows per page: </span>
+            <span className="mx-1">{t("rows_per_page")} </span>
             <select
               name="per-page"
               value={opts.size.toString() || "20"}

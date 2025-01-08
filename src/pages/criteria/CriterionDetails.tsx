@@ -11,6 +11,7 @@ import { DeleteModal } from "@/components/DeleteModal";
 import toast from "react-hot-toast";
 import { useDeleteCriterion, useGetCriterion } from "@/api/services/criteria";
 import { MotivationRefList } from "@/components/MotivationRefList";
+import { useTranslation } from "react-i18next";
 
 interface DeleteModalConfig {
   show: boolean;
@@ -23,15 +24,15 @@ interface DeleteModalConfig {
 export default function CriterionDetails() {
   const navigate = useNavigate();
   const params = useParams();
-
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
 
   // Delete Modal
   const [deleteModalConfig, setDeleteModalConfig] = useState<DeleteModalConfig>(
     {
       show: false,
-      title: "Delete Criterion",
-      message: "Are you sure you want to delete the following criterion?",
+      title: t("page_criteria.modal_delete_title"),
+      message: t("page_criteria.modal_delete_message"),
       itemId: "",
       itemName: "",
     },
@@ -57,13 +58,13 @@ export default function CriterionDetails() {
         .mutateAsync(deleteModalConfig.itemId)
         .catch((err) => {
           alert.current = {
-            message: "Error during criterion deletion!",
+            message: t("page_criteria.toast_delete_fail"),
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Criterion succesfully deleted.",
+            message: t("page_criteria.toast_delete_success"),
           };
           setDeleteModalConfig({
             ...deleteModalConfig,
@@ -74,7 +75,7 @@ export default function CriterionDetails() {
           navigate(-1);
         });
       toast.promise(promise, {
-        loading: "Deleting...",
+        loading: t("page_criteria.toast_delete_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -108,10 +109,10 @@ export default function CriterionDetails() {
       <div className="cat-view-heading-block row border-bottom">
         <Col>
           <h2 className="text-muted cat-view-heading ">
-            Criterion Details
+            {t("page_criteria.details_title")}
             {criterion && (
               <p className="lead cat-view-lead">
-                Criterion id:{" "}
+                {t("page_criteria.criterion_id")}{" "}
                 <strong className="badge bg-secondary">{criterion.id}</strong>
               </p>
             )}
@@ -131,7 +132,7 @@ export default function CriterionDetails() {
               }}
             >
               <FaTrash className="me-2" />
-              Delete Criterion
+              {t("buttons.delete")}
             </Button>
           )}
         </Col>
@@ -147,19 +148,19 @@ export default function CriterionDetails() {
             }}
             className="btn-light border-black"
           >
-            Update Details
+            {t("buttons.update_details")}
           </Button>
         </Col>
         <Col>
           <div>
-            <strong>Cri:</strong> {criterion?.cri}
+            <strong>{t("fields.cri")}:</strong> {criterion?.cri}
           </div>
           <div>
-            <strong>Label:</strong> {criterion?.label}
+            <strong>{t("fields.label")}:</strong> {criterion?.label}
           </div>
           <div>
             <div>
-              <strong>Description:</strong>
+              <strong>{t("fields.description")}:</strong>
             </div>
             <div>
               <small>{criterion?.description}</small>
@@ -167,7 +168,7 @@ export default function CriterionDetails() {
           </div>
           <div>
             <div>
-              <strong>Used in motivations:</strong>
+              <strong>{t("fields.used_in_motivations")}:</strong>
             </div>
             <div className="ms-2">
               <MotivationRefList
@@ -184,7 +185,7 @@ export default function CriterionDetails() {
             navigate("/admin/criteria");
           }}
         >
-          Back
+          {t("buttons.back")}
         </Button>
       </div>
     </div>

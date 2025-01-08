@@ -9,8 +9,7 @@ import { AuthContext } from "@/auth";
 import { AssessmentAdminListItem } from "@/types";
 import { Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaFileExport } from "react-icons/fa";
-
-const tooltipExport = <Tooltip id="tooltip">Export Assessment</Tooltip>;
+import { useTranslation } from "react-i18next";
 
 // Custom styles for the table
 const customStyles = {
@@ -29,6 +28,10 @@ const customStyles = {
 };
 
 const AssessmentsTable: React.FC = () => {
+  const { t } = useTranslation();
+  const tooltipExport = (
+    <Tooltip id="tooltip">{t("page_assessment_list.tip_export")}</Tooltip>
+  );
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const { data } = useGetAdminAssessment({
@@ -90,15 +93,15 @@ const AssessmentsTable: React.FC = () => {
 
   const subTypeHeader = (
     <>
-      Subject
+      {t("fields.subject")}
       <br />
-      Type / Name
+      {t("fields.type")} / {t("fields.name")}
     </>
   );
 
   const nameCreatedOnHeader = (
     <div className="row">
-      NName
+      {t("fields.name")}
       <div className="row">
         <span
           style={{
@@ -108,14 +111,19 @@ const AssessmentsTable: React.FC = () => {
             fontSize: "14px",
           }}
         >
-          Created On
+          {t("fields.created_on")}
         </span>
       </div>
     </div>
   );
 
   const columns: TableColumn<AssessmentAdminListItem>[] = [
-    { name: "ID", selector: (row) => row.id, sortable: true, width: "100px" },
+    {
+      name: t("fields.id").toUpperCase(),
+      selector: (row) => row.id,
+      sortable: true,
+      width: "100px",
+    },
     {
       name: nameCreatedOnHeader,
       cell: (row) => (
@@ -130,13 +138,13 @@ const AssessmentsTable: React.FC = () => {
       width: "200px",
     },
     {
-      name: "User ID",
+      name: t("fields.user_id"),
       selector: (row) => row.user_id.substring(0, 10),
       sortable: true,
       wrap: true,
       width: "120px",
     },
-    { name: "Type", selector: (row) => row.type, sortable: true },
+    { name: t("fields.type"), selector: (row) => row.type, sortable: true },
     {
       name: subTypeHeader,
       selector: (row) => `${row.subject_type} / ${row.subject_name}`,
@@ -144,20 +152,20 @@ const AssessmentsTable: React.FC = () => {
       width: "150px",
     },
     {
-      name: "Organisation",
+      name: t("fields.organisation"),
       selector: (row) => row.organisation,
       sortable: true,
       wrap: true,
       width: "300px",
     },
     {
-      name: "Compliance",
+      name: t("fields.compliance"),
       selector: (row) => (row.compliance ? "Yes" : "No"),
       sortable: true,
       width: "140px",
     },
     {
-      name: "Actions",
+      name: t("fields.actions"),
       cell: (row) => (
         <OverlayTrigger placement="top" overlay={tooltipExport}>
           <Button
@@ -178,9 +186,9 @@ const AssessmentsTable: React.FC = () => {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
-            Assessments
+            {t("page_admin_assessments.title")}
             <p className="lead cat-view-lead">
-              Manage all Assessments as administrator.
+              {t("page_admin_assessments.subtitle")}
             </p>
           </h2>
         </div>
@@ -196,7 +204,7 @@ const AssessmentsTable: React.FC = () => {
               onChange={(e) => setFilterType(e.target.value)}
               value={filterType}
             >
-              <option value="">All Types</option>
+              <option value="">{t("fields.all_types")}</option>
               {typeOptions?.map((option) => (
                 <option key={option.id} value={option.name}>
                   {option.name}
@@ -210,12 +218,12 @@ const AssessmentsTable: React.FC = () => {
                 id="searchField"
                 name="filterText"
                 aria-label="Search Input"
-                placeholder="Search ..."
+                placeholder={t("fields.search")}
                 value={filterText}
                 onChange={(e) => setFilterText(e.target.value)}
               />
               <Button variant="primary" onClick={handleClear} className="ms-4">
-                Clear
+                {t("buttons.clear")}
               </Button>
             </div>
           </div>

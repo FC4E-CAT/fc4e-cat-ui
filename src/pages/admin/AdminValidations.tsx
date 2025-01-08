@@ -11,6 +11,7 @@ import {
   Table,
   Tooltip,
 } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import {
   FaArrowDown,
   FaArrowLeft,
@@ -49,39 +50,47 @@ export function SortMarker(
   return <FaArrowsAltV className="text-secondary opacity-50" />;
 }
 
-// create a validation status badge for approved, rejected, pending
-const ValidationStatusBadge = (status: string) => {
-  if (status === "APPROVED") {
-    return (
-      <span className="badge bg-success">
-        <FaCheck /> Approved
-      </span>
-    );
-  } else if (status === "REJECTED") {
-    return (
-      <span className="badge bg-danger">
-        <FaTimes /> Rejected
-      </span>
-    );
-  } else if (status === "REVIEW") {
-    return (
-      <span className="badge bg-primary">
-        <FaGlasses /> Pending Review
-      </span>
-    );
-  } else {
-    return null;
-  }
-};
-
-// create the tooltips
-const tooltipAccept = <Tooltip id="tip-delete">Accept Validation</Tooltip>;
-const tooltipReject = <Tooltip id="tip-restore">Reject Validation</Tooltip>;
-const tooltipView = <Tooltip id="tip-restore">View User Details</Tooltip>;
-
 // the main component that lists all the validations for admins
 export default function AdminValidations() {
   const { keycloak, registered } = useContext(AuthContext)!;
+
+  const { t } = useTranslation();
+
+  // create the tooltips
+  const tooltipAccept = (
+    <Tooltip id="tip-accept">{t("page_admin_validations.accept_tip")}</Tooltip>
+  );
+  const tooltipReject = (
+    <Tooltip id="tip-restore">{t("page_admin_validations.reject_tip")}</Tooltip>
+  );
+  const tooltipView = (
+    <Tooltip id="tip-view">{t("page_admin_validations.view_tip")}</Tooltip>
+  );
+
+  // create a validation status badge for approved, rejected, pending
+  const ValidationStatusBadge = (status: string) => {
+    if (status === "APPROVED") {
+      return (
+        <span className="badge bg-success">
+          <FaCheck /> {t("approved")}
+        </span>
+      );
+    } else if (status === "REJECTED") {
+      return (
+        <span className="badge bg-danger">
+          <FaTimes /> {t("rejected")}
+        </span>
+      );
+    } else if (status === "REVIEW") {
+      return (
+        <span className="badge bg-primary">
+          <FaGlasses /> {t("review")}
+        </span>
+      );
+    } else {
+      return null;
+    }
+  };
 
   const [opts, setOpts] = useState<ValidationState>({
     sortBy: "",
@@ -166,9 +175,9 @@ export default function AdminValidations() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
-            Validations
+            {t("page_admin_validations.title")}
             <p className="lead cat-view-lead">
-              Manage all Validations as administrator.
+              {t("page_admin_validations.subtitle")}
             </p>
           </h2>
         </div>
@@ -184,7 +193,7 @@ export default function AdminValidations() {
               }}
               value={opts.type}
             >
-              <option value="">Select type...</option>
+              <option value="">{t("fields.select_type")}</option>
               <>
                 {actors?.map((item) => (
                   <option key={item.id}>{item.label}</option>
@@ -199,16 +208,16 @@ export default function AdminValidations() {
               }}
               value={opts.status}
             >
-              <option value="">Select status...</option>
-              <option value="APPROVED">Approved</option>
-              <option value="REJECTED">Rejected</option>
-              <option value="REVIEW">Review</option>
+              <option value="">{t("fields.select_status")}</option>
+              <option value="APPROVED">{t("approved")}</option>
+              <option value="REJECTED">{t("rejected")}</option>
+              <option value="REVIEW">{t("review")}</option>
             </Form.Select>
           </div>
           <div className="col col-lg-6">
             <div className="d-flex justify-content-center">
               <Form.Control
-                placeholder="Search ..."
+                placeholder={t("search")}
                 onChange={(e) => {
                   setOpts({ ...opts, search: e.target.value });
                 }}
@@ -220,7 +229,7 @@ export default function AdminValidations() {
                 }}
                 className="ms-4"
               >
-                Clear
+                {t("buttons.clear")}
               </Button>
             </div>
           </div>
@@ -231,25 +240,25 @@ export default function AdminValidations() {
         <thead>
           <tr className="table-light">
             <th>
-              <span>Id</span>
+              <span>{t("fields.id")}</span>
             </th>
             <th>
-              <span>Name</span>
+              <span>{t("fields.name")}</span>
             </th>
             <th>
               <span
                 onClick={() => handleSortClick("organisationName")}
                 className="cat-cursor-pointer"
               >
-                Organization{" "}
+                {t("fields.organisation")}{" "}
                 {SortMarker("organisationName", opts.sortBy, opts.sortOrder)}
               </span>
             </th>
             <th>
-              <span>Actor Name</span>
+              <span>{t("fields.actor_name")}</span>
             </th>
             <th>
-              <span>Status</span>
+              <span>{t("fields.status")}</span>
             </th>
             <th></th>
           </tr>
@@ -275,7 +284,8 @@ export default function AdminValidations() {
                             style={{ fontSize: "0.64rem" }}
                             className="text-muted"
                           >
-                            id: {trimField(item.user_id, 20)}
+                            {t("fields.id").toLowerCase()}:{" "}
+                            {trimField(item.user_id, 20)}
                           </span>
                         </div>
                       </div>
@@ -289,7 +299,7 @@ export default function AdminValidations() {
                           style={{ fontSize: "0.64rem" }}
                           className="text-muted"
                         >
-                          Role: {item.organisation_role}
+                          {t("fields.role")}: {item.organisation_role}
                         </span>
                       </div>
                     </div>
@@ -341,12 +351,12 @@ export default function AdminValidations() {
           <h3>
             <FaExclamationTriangle />
           </h3>
-          <h5>No data found...</h5>
+          <h5>{t("no_data")}</h5>
         </Alert>
       )}
       <div className="d-flex justify-content-end">
         <div>
-          <span className="mx-1">rows per page: </span>
+          <span className="mx-1">{t("rows_per_page")} </span>
           <select
             name="per-page"
             value={opts.size.toString() || "20"}

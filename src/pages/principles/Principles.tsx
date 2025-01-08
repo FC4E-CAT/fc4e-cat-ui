@@ -20,6 +20,7 @@ import { PrincipleModal } from "./components/PrincipleModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { MotivationRefList } from "@/components/MotivationRefList";
+import { useTranslation } from "react-i18next";
 
 type Pagination = {
   page: number;
@@ -40,7 +41,7 @@ const tooltipDelete = <Tooltip id="tip-restore">Delete Principle</Tooltip>;
 // the main component that lists the motivations in a table
 export default function Principles() {
   const { keycloak, registered } = useContext(AuthContext)!;
-
+  const { t } = useTranslation();
   const alert = useRef<AlertInfo>({
     message: "",
   });
@@ -49,8 +50,8 @@ export default function Principles() {
   const [deleteModalConfig, setDeleteModalConfig] = useState<DeleteModalConfig>(
     {
       show: false,
-      title: "Delete Principle",
-      message: "Are you sure you want to delete the following principle?",
+      title: t("page_principles.modal_delete_title"),
+      message: t("page_principles.modal_delete_message"),
       itemId: "",
       itemName: "",
     },
@@ -64,13 +65,13 @@ export default function Principles() {
         .mutateAsync(deleteModalConfig.itemId)
         .catch((err) => {
           alert.current = {
-            message: "Error during principle deletion!",
+            message: t("page_principles.toast_delete_fail"),
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Principle succesfully deleted.",
+            message: t("page_principles.toast_delete_success"),
           };
           setDeleteModalConfig({
             ...deleteModalConfig,
@@ -80,7 +81,7 @@ export default function Principles() {
           });
         });
       toast.promise(promise, {
-        loading: "Deleting...",
+        loading: t("page_principles.toast_delete_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -138,8 +139,10 @@ export default function Principles() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="text-muted cat-view-heading ">
-            Principles
-            <p className="lead cat-view-lead">Manage principles.</p>
+            {t("page_principles.title")}
+            <p className="lead cat-view-lead">
+              {t("page_principles.subtitle")}
+            </p>
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
@@ -149,7 +152,7 @@ export default function Principles() {
               setShowCreate(true);
             }}
           >
-            <FaPlus /> Create New
+            <FaPlus /> {t("buttons.create_new")}
           </Button>
         </div>
       </div>
@@ -158,19 +161,19 @@ export default function Principles() {
           <thead>
             <tr className="table-light">
               <th>
-                <span>MTV</span>
+                <span>{t("pri").toUpperCase()}</span>
               </th>
               <th>
-                <span>Label</span>
+                <span>{t("fields.label")}</span>
               </th>
               <th>
-                <span>Description</span>
+                <span>{t("fields.label")}</span>
               </th>
               <th>
-                <span>Modified</span>
+                <span>{t("fields.modified")}</span>
               </th>
               <th>
-                <span>Motivations</span>
+                <span>{t("motivations")}</span>
               </th>
               <th></th>
             </tr>
@@ -230,12 +233,12 @@ export default function Principles() {
             <h3>
               <FaExclamationTriangle />
             </h3>
-            <h5>No data found...</h5>
+            <h5>{t("no_data")}</h5>
           </Alert>
         )}
         <div className="d-flex justify-content-end">
           <div>
-            <span className="mx-1">rows per page: </span>
+            <span className="mx-1">{t("rows_per_page")} </span>
             <select
               name="per-page"
               value={opts.size.toString() || "20"}

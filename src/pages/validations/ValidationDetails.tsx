@@ -286,7 +286,7 @@ function ValidationDetails(props: ValidationProps) {
                     {t("field.status")}
                     <small className="px-3">
                       <span className="badge bg-primary">
-                        <FaGlasses /> {t("page_validation_details.review")}
+                        <FaGlasses /> {t("review")}
                       </span>
                     </small>
                   </h4>
@@ -297,7 +297,7 @@ function ValidationDetails(props: ValidationProps) {
                       {t("field.status")}
                       <small className="px-3">
                         <span className="badge bg-danger">
-                          <FaTimes /> {t("page_validation_details.rejected")}
+                          <FaTimes /> {t("rejected")}
                         </span>
                       </small>
                     </h4>
@@ -327,7 +327,7 @@ function ValidationDetails(props: ValidationProps) {
                       {t("field.status")}
                       <small className="px-3">
                         <span className="badge bg-success">
-                          <FaCheck /> {t("page_validation_details.approved")}
+                          <FaCheck /> {t("approved")}
                         </span>
                       </small>
                     </h4>

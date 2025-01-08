@@ -25,6 +25,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaFile, FaInfoCircle } from "react-icons/fa";
 
 interface CriterionModalProps {
@@ -39,7 +40,7 @@ export function CriterionModal(props: CriterionModalProps) {
   const alert = useRef<AlertInfo>({
     message: "",
   });
-
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const [imperatives, setImperatives] = useState<Imperative[]>([]);
@@ -175,11 +176,11 @@ export function CriterionModal(props: CriterionModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Criterion Created!",
+          message: t("page_criteria.toast_create_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Creating Criterion...",
+      loading: t("page_criteria.toast_create_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -198,11 +199,11 @@ export function CriterionModal(props: CriterionModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Principle Updated!",
+          message: t("page_criteria.toast_update_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Updating Principle...",
+      loading: t("page_criteria.toast_update_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -218,7 +219,8 @@ export function CriterionModal(props: CriterionModalProps) {
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
           <FaFile className="me-2" />{" "}
-          {props.criterion === null ? "Create new" : "Edit"} Criterion
+          {props.criterion === null ? t("create_new") : t("edit")}{" "}
+          {` ${t("criterion")} `}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -231,12 +233,12 @@ export function CriterionModal(props: CriterionModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Acronym to quickly distinguish the Criterion item
+                      {t("page_criteria.tip_cri")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-criterion-cri">
-                    <FaInfoCircle className="me-2" /> Cri (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.cri")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -252,7 +254,7 @@ export function CriterionModal(props: CriterionModalProps) {
                 />
               </InputGroup>
               {showErrors && criterionInput.cri === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
             <Col>
@@ -262,12 +264,12 @@ export function CriterionModal(props: CriterionModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Label (Name) of the criterion item
+                      {t("page_criteria.tip_label")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-criterion-label">
-                    <FaInfoCircle className="me-2" /> Label (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.label")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -283,7 +285,7 @@ export function CriterionModal(props: CriterionModalProps) {
                 />
               </InputGroup>
               {showErrors && criterionInput.label === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("fields.label")}</span>
               )}
             </Col>
           </Row>
@@ -294,12 +296,13 @@ export function CriterionModal(props: CriterionModalProps) {
                 placement="top"
                 overlay={
                   <Tooltip id={`tooltip-top`}>
-                    Short description of this criterion item
+                    {t("page_criteria.tip_description")}
                   </Tooltip>
                 }
               >
                 <span id="label-criterion-description">
-                  <FaInfoCircle className="ms-1 me-2" /> Description (*):
+                  <FaInfoCircle className="ms-1 me-2" />{" "}
+                  {t("fields.description")} (*):
                 </span>
               </OverlayTrigger>
               <Form.Control
@@ -315,7 +318,7 @@ export function CriterionModal(props: CriterionModalProps) {
                 }}
               />
               {showErrors && criterionInput.description === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
           </Row>
@@ -326,11 +329,14 @@ export function CriterionModal(props: CriterionModalProps) {
                   key="top"
                   placement="top"
                   overlay={
-                    <Tooltip id={`tooltip-top`}>Select the Imperative</Tooltip>
+                    <Tooltip id={`tooltip-top`}>
+                      {t("page_criteria.tip_imperative")}
+                    </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-motivation-type">
-                    <FaInfoCircle className="me-2" /> Imperative (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.imperative")}{" "}
+                    (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Select
@@ -349,7 +355,7 @@ export function CriterionModal(props: CriterionModalProps) {
                 >
                   <>
                     <option value="" disabled>
-                      Select imperative
+                      {t("fields.select_imperative")}
                     </option>
                     {imperatives.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -360,7 +366,7 @@ export function CriterionModal(props: CriterionModalProps) {
                 </Form.Select>
               </InputGroup>
               {showErrors && criterionInput.imperative === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
               {criterionInput.imperative != "" && (
                 <div className="bg-light text-secondary border rounded mt-2 p-3">
@@ -395,7 +401,7 @@ export function CriterionModal(props: CriterionModalProps) {
             }
           }}
         >
-          {props.criterion === null ? "Create" : "Update"}
+          {props.criterion === null ? t("buttons.create") : t("buttons.update")}
         </Button>
       </Modal.Footer>
     </Modal>
