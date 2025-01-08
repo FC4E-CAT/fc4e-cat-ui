@@ -46,6 +46,16 @@ export default function UserMenu() {
             <FaUsers className="text-muted me-2" /> {t("assessments")}
           </Link>
         </li>
+        <li
+          className={`nav-item rounded ${isSel(userPath, "subjects") ? "cat-menu-selected" : ""}`}
+        >
+          <Link
+            to="/subjects"
+            className="rounded cat-nav-link-light px-3 text-nowrap"
+          >
+            <FaUsers className="text-muted me-2" /> {t("subjects")}
+          </Link>
+        </li>
       </ul>
     </div>
   );
