@@ -93,7 +93,7 @@ export default function AdminMenu() {
           className={`nav-item rounded ${isSel(adminPath, "assessments") ? "cat-menu-selected" : ""}`}
         >
           <Link
-            to="/assessments"
+            to="/admin/assessments"
             className="rounded cat-nav-link-light px-3 text-nowrap"
           >
             <FaFileCircleCheck className="text-muted me-2" /> {t("assessments")}
