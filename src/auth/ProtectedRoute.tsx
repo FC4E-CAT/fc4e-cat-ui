@@ -5,6 +5,7 @@ import Keycloak from "keycloak-js";
 import KeycloakConfig from "@/keycloak.json";
 import { useUserRegister, useGetProfile } from "@/api";
 import AdminMenu from "@/components/AdminMenu";
+import UserMenu from "@/components/UserMenu";
 
 export function ProtectedRoute() {
   // check if the current path leads to an admin-view
@@ -113,8 +114,13 @@ export function ProtectedRoute() {
         </div>
       </div>
     ) : (
-      <div className="container rounded bg-white mt-1 mb-5">
-        <Outlet />
+      <div className="cat-admin-container d-flex flex-row">
+        <div className="bg-light p-4 my-4 mb-5 rounded">
+          <UserMenu />
+        </div>
+        <div className="rounded bg-white container-fluid mb-4 flex-grow-1">
+          <Outlet />
+        </div>
       </div>
     );
   } else {

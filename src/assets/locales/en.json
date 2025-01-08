@@ -74,7 +74,8 @@
     "share": "Share",
     "prev": "Prev",
     "next": "Next",
-    "restore": "Restore"
+    "restore": "Restore",
+    "personalMenu": "My items"
   },
   "fields": {
     "actions": "Actions",
