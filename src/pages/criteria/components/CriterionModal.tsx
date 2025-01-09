@@ -238,7 +238,8 @@ export function CriterionModal(props: CriterionModalProps) {
                   }
                 >
                   <InputGroup.Text id="label-criterion-cri">
-                    <FaInfoCircle className="me-2" /> {t("fields.cri")} (*):
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("fields.cri").toUpperCase()} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control

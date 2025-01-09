@@ -245,7 +245,8 @@ export function MotivationMetricModal(props: MetricModalProps) {
                   }
                 >
                   <InputGroup.Text id="label-metric-mtr">
-                    <FaInfoCircle className="me-2" /> {t("fields.mtr")} (*):
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("fields.mtr").toUpperCase()} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control

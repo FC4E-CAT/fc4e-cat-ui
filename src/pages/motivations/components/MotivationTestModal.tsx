@@ -156,11 +156,11 @@ export function MotivationTestModal(props: TestModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: t("page_validations.toast_create_test_success"),
+          message: t("page_motivations.toast_create_test_success"),
         };
       });
     toast.promise(promise, {
-      loading: t("page_validations.toast_create_test_progress"),
+      loading: t("page_motivations.toast_create_test_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -176,7 +176,7 @@ export function MotivationTestModal(props: TestModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaFile className="me-2" /> {t("page_validations.create_new_test")}
+          <FaFile className="me-2" /> {t("page_motivations.create_new_test")}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -189,12 +189,13 @@ export function MotivationTestModal(props: TestModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      {t("page_validations.tip_tes")}
+                      {t("page_motivations.tip_tes")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-test-tes">
-                    <FaInfoCircle className="me-2" /> {"fields.tes"} (*):
+                    <FaInfoCircle className="me-2" />{" "}
+                    {t("fields.tes").toUpperCase()} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -220,12 +221,12 @@ export function MotivationTestModal(props: TestModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      {t("page_validations.tip_test_label")}
+                      {t("page_motivations.tip_test_label")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-test-label">
-                    <FaInfoCircle className="me-2" /> {"fields.label"} (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.label")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -252,7 +253,7 @@ export function MotivationTestModal(props: TestModalProps) {
                 placement="top"
                 overlay={
                   <Tooltip id={`tooltip-top`}>
-                    {t("page_validations.tip_test_description")}
+                    {t("page_motivations.tip_test_description")}
                   </Tooltip>
                 }
               >
@@ -286,19 +287,19 @@ export function MotivationTestModal(props: TestModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      {t("page_validations.tip_test_method")}
+                      {t("page_motivations.tip_test_method")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-test-method">
                     <FaInfoCircle className="me-2" />{" "}
-                    {t("page_validations.test_method")} (*):
+                    {t("page_motivations.test_method")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Select
                   id="input-test-method"
                   aria-describedby="label-test-method"
-                  placeholder={t("page_validations.select_test_method")}
+                  placeholder={t("page_motivations.select_test_method")}
                   value={
                     testDefinition.test_method_id
                       ? testDefinition.test_method_id
@@ -313,7 +314,7 @@ export function MotivationTestModal(props: TestModalProps) {
                 >
                   <>
                     <option value="" disabled>
-                      {t("page_validations.select_test_method")}
+                      {t("page_motivations.select_test_method")}
                     </option>
                     {testMethods.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -343,7 +344,7 @@ export function MotivationTestModal(props: TestModalProps) {
           </Row>
           <Row className="mt-2">
             <div className="border-top p-2">
-              <strong>{t("page_validations.parameters")}:</strong>
+              <strong>{t("page_motivations.parameters")}:</strong>
               <Button
                 size="sm"
                 variant="success"
@@ -352,7 +353,7 @@ export function MotivationTestModal(props: TestModalProps) {
                   addNewParam(false);
                 }}
               >
-                {t("page_validations.parameters_add")}
+                {t("page_motivations.parameters_add")}
               </Button>
               <Button
                 size="sm"
@@ -365,7 +366,7 @@ export function MotivationTestModal(props: TestModalProps) {
                   params.find((item) => item.name === "evidence") !== undefined
                 }
               >
-                {t("page_validations.parameters_add_evidence")}
+                {t("page_motivations.parameters_add_evidence")}
               </Button>
               <table>
                 <thead>
