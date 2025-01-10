@@ -217,6 +217,7 @@ export default function Motivations() {
             </div>
           </div>
         </Form>
+
         <Table hover>
           <thead>
             <tr className="table-light">
@@ -238,7 +239,7 @@ export default function Motivations() {
                   {SortMarker("label", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
-              <th>
+              <th className="w-50 p-3">
                 <span>{t("fields.description")}</span>
               </th>
               <th>
@@ -259,29 +260,27 @@ export default function Motivations() {
                 return (
                   <tr key={item.id}>
                     <td
-                      className={`align-middle ${item.published ? "" : "text-muted bg-light"}`}
+                      className={`align-middle ${item.published ? "" : "text-muted"}`}
                     >
                       {item.mtv}
                     </td>
                     <td
-                      className={`align-middle ${item.published ? "" : "text-muted bg-light"}`}
+                      className={`align-middle ${item.published ? "" : "text-muted "}`}
                     >
                       {item.label}
                     </td>
 
                     <td
-                      className={`align-middle ${item.published ? "" : "text-muted bg-light"}`}
+                      className={`align-middle ${item.published ? "" : "text-muted"}`}
                     >
                       {item.description}
                     </td>
                     <td
-                      className={`align-middle ${item.published ? "" : "text-muted bg-light"}`}
+                      className={`align-middle ${item.published ? "" : "text-muted "}`}
                     >
                       <small>{item.last_touch.split("T")[0]}</small>
                     </td>
-                    <td
-                      className={`align-middle ${item.published ? "" : "bg-light"}`}
-                    >
+                    <td className="align-middle">
                       <div className="d-flex flex-nowrap">
                         <OverlayTrigger
                           placement="top"
