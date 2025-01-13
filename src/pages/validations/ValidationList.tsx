@@ -16,6 +16,7 @@ import {
 
 import { Alert, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import BadgeStatus from "@/components/BadgeStatus";
 
 type ValidationState = {
   sortOrder: string;
@@ -29,34 +30,6 @@ type ValidationState = {
 
 function ValidationList() {
   const { t } = useTranslation();
-
-  // create a validation status badge for approved, rejected, pending
-  const ValidationStatusBadge = (status: string) => {
-    if (status === "APPROVED") {
-      return (
-        <span className="badge bg-success">
-          <FaCheck className="me-2" />
-          {t("approved")}
-        </span>
-      );
-    } else if (status === "REJECTED") {
-      return (
-        <span className="badge bg-danger">
-          <FaTimes className="me-2" />
-          {t("rejected")}
-        </span>
-      );
-    } else if (status === "REVIEW") {
-      return (
-        <span className="badge bg-primary">
-          <FaGlasses className="me-2" />
-          {t("review")}
-        </span>
-      );
-    } else {
-      return null;
-    }
-  };
 
   const { keycloak, registered } = useContext(AuthContext)!;
 
@@ -144,7 +117,7 @@ function ValidationList() {
                     <td className="align-middle">{item.organisation_role}</td>
                     <td className="align-middle">{item.actor_name}</td>
                     <td className="align-middle">
-                      {ValidationStatusBadge(item.status)}
+                      <BadgeStatus status={item.status} />
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">

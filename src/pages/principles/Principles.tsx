@@ -8,7 +8,9 @@ import {
   FaExclamationTriangle,
   FaPlus,
   FaTrash,
+  FaTags,
 } from "react-icons/fa";
+import { idToColor } from "@/utils/admin";
 
 import {
   useDeletePrinciple,
@@ -166,8 +168,8 @@ export default function Principles() {
               <th>
                 <span>{t("fields.label")}</span>
               </th>
-              <th>
-                <span>{t("fields.label")}</span>
+              <th className="w-50 p-3">
+                <span>{t("fields.description")}</span>
               </th>
               <th>
                 <span>{t("fields.modified")}</span>
@@ -183,12 +185,32 @@ export default function Principles() {
               {principles.map((item) => {
                 return (
                   <tr key={item.id}>
-                    <td className="align-middle">{item.pri}</td>
+                    <td className="align-middle">
+                      <div className="d-flex  justify-content-start">
+                        <div>
+                          <FaTags
+                            size={"2.5rem"}
+                            style={{ color: idToColor(item.id) }}
+                          />
+                        </div>
+                        <div className="ms-2 d-flex flex-column justify-content-between">
+                          <div>{item.pri}</div>
+                          <div>
+                            <span
+                              style={{ fontSize: "0.64rem" }}
+                              className="text-muted"
+                            >
+                              {item.id}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
                     <td className="align-middle">{item.label}</td>
 
                     <td className="align-middle">{item.description}</td>
                     <td className="align-middle">
-                      <small>{item.last_touch.split(".")[0]}</small>
+                      <small>{item.last_touch.split("T")[0]}</small>
                     </td>
                     <td>
                       <MotivationRefList

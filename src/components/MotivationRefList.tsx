@@ -12,9 +12,9 @@ export const MotivationRefList = ({
   return (
     <div>
       {motivations.map((item) => (
-        <span className="badge bg-light border" key={item.id}>
+        <span className="badge bg-primary-cat border" key={item.id}>
           <Link
-            className="text-black"
+            className="text-muted"
             to={`/admin/motivations/${item.id}`}
           >{`${item.label}`}</Link>
         </span>
