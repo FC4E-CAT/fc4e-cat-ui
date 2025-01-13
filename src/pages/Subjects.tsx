@@ -8,7 +8,7 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaExclamationTriangle,
-  FaStaylinked
+  FaStaylinked,
 } from "react-icons/fa";
 import { AlertInfo, Subject } from "@/types";
 import {
@@ -454,7 +454,6 @@ function Subjects() {
         <Table hover>
           <thead>
             <tr className="table-light">
-              
               <th>
                 <span>{t("page_subjects.subject_name")}</span>
               </th>
@@ -481,9 +480,7 @@ function Subjects() {
                           />
                         </div>
                         <div className="ms-2 d-flex flex-column justify-content-between">
-                            <div>
-                              {item.name}
-                            </div>
+                          <div>{item.name}</div>
                           <span
                             style={{ fontSize: "0.64rem" }}
                             className="text-muted"
