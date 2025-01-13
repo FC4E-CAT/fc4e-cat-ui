@@ -33,7 +33,7 @@ import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { idToColor, trimField } from "@/utils/admin";
+import { idToColor } from "@/utils/admin";
 
 // Modes under which SubjectModal operates
 enum SubjectModalMode {
