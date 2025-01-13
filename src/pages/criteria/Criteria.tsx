@@ -8,6 +8,7 @@ import {
   FaExclamationTriangle,
   FaPlus,
   FaTrash,
+  FaAward,
 } from "react-icons/fa";
 
 import { AlertInfo, Criterion } from "@/types";
@@ -18,6 +19,7 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { useDeleteCriterion, useGetCriteria } from "@/api/services/criteria";
 import { MotivationRefList } from "@/components/MotivationRefList";
 import { useTranslation } from "react-i18next";
+import { idToColor } from "@/utils/admin";
 
 type Pagination = {
   page: number;
@@ -165,7 +167,7 @@ export default function Criteria() {
               <th>
                 <span>{t("fields.label")}</span>
               </th>
-              <th>
+              <th className="w-50 p-3">
                 <span>{t("fields.description")}</span>
               </th>
               <th>
@@ -182,12 +184,32 @@ export default function Criteria() {
               {criteria.map((item) => {
                 return (
                   <tr key={item.id}>
-                    <td className="align-middle">{item.cri}</td>
+                    <td className="align-middle">
+                      <div className="d-flex  justify-content-start">
+                        <div>
+                          <FaAward
+                            size={"2.5rem"}
+                            style={{ color: idToColor(item.id) }}
+                          />
+                        </div>
+                        <div className="ms-2 d-flex flex-column justify-content-between">
+                          <div>{item.cri}</div>
+                          <div>
+                            <span
+                              style={{ fontSize: "0.64rem" }}
+                              className="text-muted"
+                            >
+                              {item.id}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
                     <td className="align-middle">{item.label}</td>
 
                     <td className="align-middle">{item.description}</td>
                     <td className="align-middle">
-                      <small>{item.last_touch.split(".")[0]}</small>
+                      <small>{item.last_touch.split("T")[0]}</small>
                     </td>
                     <td>
                       <MotivationRefList
