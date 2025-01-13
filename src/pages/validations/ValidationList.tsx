@@ -8,7 +8,7 @@ import {
   FaExclamationTriangle,
   FaPlus,
   FaArrowLeft,
-  FaArrowRight
+  FaArrowRight,
 } from "react-icons/fa";
 
 import { Alert, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
