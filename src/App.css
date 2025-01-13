@@ -556,15 +556,16 @@ a.plain:hover {
 }
 
 .bg-success-cat {
-  background: #e6f4ea;
   color: #188038 !important;
+  background: #e6f4ea;
 }
+
 .bg-primary-cat {
-  background: #d2e3fc;
   color: #1967d2 !important;
+  background: #d2e3fc;
 }
 
 .bg-secondary-cat {
-  background: #fef7e0;
   color: #b06000 !important;
+  background: #fef7e0;
 }
