@@ -399,6 +399,10 @@
     "i2_1": "Horizontally - across different compliance assessment regimes",
     "i2_2": "Vertically - across different assessment tools and metrics within an assessment regime"
   },
+  "page_admin_assessments": {
+    "title": "Assessments",
+    "subtitle": "Manage service assessments. View, download and check."
+  },
   "page_admin_users": {
     "title": "Users",
     "subtitle": "Manage all users.",
