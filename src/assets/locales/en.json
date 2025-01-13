@@ -125,7 +125,8 @@
     "selected": "Selected",
     "text": "Text",
     "tooltip": "Tooltip",
-    "type": "Type"
+    "type": "Type",
+    "role": "Role"
   },
   "footer": {
     "contact_category": "Contact and Service",
