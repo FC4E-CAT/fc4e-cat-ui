@@ -4,14 +4,11 @@ import { AuthContext } from "@/auth";
 import { ValidationResponse } from "@/types";
 import { Link } from "react-router-dom";
 import {
-  FaCheck,
   FaList,
-  FaTimes,
   FaExclamationTriangle,
   FaPlus,
   FaArrowLeft,
-  FaArrowRight,
-  FaGlasses,
+  FaArrowRight
 } from "react-icons/fa";
 
 import { Alert, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
