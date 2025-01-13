@@ -8,6 +8,7 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaExclamationTriangle,
+  FaStaylinked,
 } from "react-icons/fa";
 import { AlertInfo, Subject } from "@/types";
 import {
@@ -32,6 +33,7 @@ import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { idToColor } from "@/utils/admin";
 
 // Modes under which SubjectModal operates
 enum SubjectModalMode {
@@ -453,9 +455,6 @@ function Subjects() {
           <thead>
             <tr className="table-light">
               <th>
-                <span>{t("page_subjects.subject_id")}</span>
-              </th>
-              <th>
                 <span>{t("page_subjects.subject_name")}</span>
               </th>
 
@@ -472,10 +471,26 @@ function Subjects() {
               {subjects.map((item) => {
                 return (
                   <tr key={item.id}>
-                    <td className="align-middle">{item.id}</td>
-                    <td className="align-middle">{item.name}</td>
+                    <td className="align-middle">
+                      <div className="d-flex  justify-content-start">
+                        <div>
+                          <FaStaylinked
+                            size={"3rem"}
+                            style={{ color: idToColor(item.subject_id) }}
+                          />
+                        </div>
+                        <div className="ms-2 d-flex flex-column justify-content-between">
+                          <div>{item.name}</div>
+                          <span
+                            style={{ fontSize: "0.64rem" }}
+                            className="text-muted"
+                          >
+                            {t("fields.id")}: {item.id}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
                     <td className="align-middle">{item.type}</td>
-
                     <td>
                       <div className="d-flex flex-nowrap">
                         <OverlayTrigger placement="top" overlay={tooltipEdit}>

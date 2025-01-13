@@ -18,9 +18,7 @@ import {
   FaArrowUp,
   FaArrowsAltV,
   FaBars,
-  FaCheckCircle,
   FaExclamationTriangle,
-  FaShieldAlt,
   FaTrashAlt,
   FaTrashRestoreAlt,
   FaUserCircle,
@@ -30,6 +28,8 @@ import { idToColor, trimField } from "@/utils/admin";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
+import BadgeUserType from "@/components/BadgeUserType";
+import BadgeUserStatus from "@/components/BadgeUserStatus";
 
 type UserState = {
   sortOrder: string;
@@ -182,47 +182,6 @@ const SortMarker = (field: string, sortField: string, sortOrder: string) => {
     else if (sortOrder === "ASC") return <FaArrowDown />;
   }
   return <FaArrowsAltV className="text-secondary opacity-50" />;
-};
-
-// create a user status badge for deleted and active
-const UserStatusBadge = (banned: boolean) => {
-  if (banned)
-    return (
-      <small className="badge bg-light text-danger border-danger">
-        {t("page_admin_users.deleted")}
-      </small>
-    );
-  return (
-    <span className="badge bg-light text-success border">
-      {t("page_admin_users.active")}
-    </span>
-  );
-};
-
-// create a user type badge for identified, admin and verified
-const UserTypeBadge = (userType: string) => {
-  const userTypeLower = userType.toLowerCase();
-  if (userTypeLower === "identified") {
-    return (
-      <span className="badge bg-secondary">
-        {t("page_admin_users.identified")}
-      </span>
-    );
-  } else if (userTypeLower === "admin") {
-    return (
-      <span className="badge bg-primary">
-        <FaShieldAlt /> {t("page_admin_users.admin")}
-      </span>
-    );
-  } else if (userTypeLower === "validated") {
-    return (
-      <span className="badge bg-success">
-        <FaCheckCircle /> {t("page_admin_users.validated")}
-      </span>
-    );
-  } else {
-    return null;
-  }
 };
 
 // create the tooltips
@@ -486,10 +445,10 @@ export default function AdminUsers() {
                       {item.registered_on.split("T")[0]}
                     </td>
                     <td className="align-middle">
-                      {UserTypeBadge(item.user_type)}
+                      <BadgeUserType userType={item.user_type} />
                     </td>
                     <td className="align-middle">
-                      {UserStatusBadge(item.banned)}
+                      <BadgeUserStatus banned={item.banned} />
                     </td>
                     <td>
                       <OverlayTrigger placement="top" overlay={tooltipView}>

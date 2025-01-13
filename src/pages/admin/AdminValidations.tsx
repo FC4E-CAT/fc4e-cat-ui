@@ -21,11 +21,12 @@ import {
   FaBars,
   FaCheck,
   FaExclamationTriangle,
-  FaGlasses,
   FaTimes,
   FaUserCircle,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+
+import BadgeStatus from "@/components/BadgeStatus";
 
 type ValidationState = {
   sortOrder: string;
@@ -66,31 +67,6 @@ export default function AdminValidations() {
   const tooltipView = (
     <Tooltip id="tip-view">{t("page_admin_validations.view_tip")}</Tooltip>
   );
-
-  // create a validation status badge for approved, rejected, pending
-  const ValidationStatusBadge = (status: string) => {
-    if (status === "APPROVED") {
-      return (
-        <span className="badge bg-success">
-          <FaCheck /> {t("approved")}
-        </span>
-      );
-    } else if (status === "REJECTED") {
-      return (
-        <span className="badge bg-danger">
-          <FaTimes /> {t("rejected")}
-        </span>
-      );
-    } else if (status === "REVIEW") {
-      return (
-        <span className="badge bg-primary">
-          <FaGlasses /> {t("review")}
-        </span>
-      );
-    } else {
-      return null;
-    }
-  };
 
   const [opts, setOpts] = useState<ValidationState>({
     sortBy: "",
@@ -184,7 +160,7 @@ export default function AdminValidations() {
         <div className="col-md-auto cat-heading-right"></div>
       </div>
 
-      <Form className="mb-2">
+      <Form className="mb-3">
         <div className="row cat-view-search-block border-bottom">
           <div className="col col-lg-3">
             <Form.Select
@@ -239,12 +215,7 @@ export default function AdminValidations() {
       <Table hover>
         <thead>
           <tr className="table-light">
-            <th>
-              <span>{t("fields.id")}</span>
-            </th>
-            <th>
-              <span>{t("fields.name")}</span>
-            </th>
+            <th>{t("fields.name")} </th>
             <th>
               <span
                 onClick={() => handleSortClick("organisationName")}
@@ -268,7 +239,6 @@ export default function AdminValidations() {
             {validations.map((item) => {
               return (
                 <tr key={item.id}>
-                  <td className="align-middle">{item.id}</td>
                   <td className="align-middle">
                     <div className="d-flex  justify-content-start">
                       <div>
@@ -286,6 +256,16 @@ export default function AdminValidations() {
                           >
                             {t("fields.id").toLowerCase()}:{" "}
                             {trimField(item.user_id, 20)}
+                          </span>
+                        </div>
+
+                        <div>
+                          <span
+                            style={{ fontSize: "0.64rem" }}
+                            className="text-muted"
+                          >
+                            {t("fields.created_on").toLowerCase()}:{" "}
+                            {item.created_on.split("T")[0]}
                           </span>
                         </div>
                       </div>
@@ -306,7 +286,7 @@ export default function AdminValidations() {
                   </td>
                   <td className="align-middle">{item.registry_actor_name}</td>
                   <td className="align-middle">
-                    {ValidationStatusBadge(item.status)}
+                    <BadgeStatus status={item.status} />
                   </td>
                   <td>
                     <div className="d-flex flex-nowrap">

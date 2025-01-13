@@ -554,3 +554,18 @@ a.plain:hover {
   width: 280px;
   margin-left: 40px;
 }
+
+.bg-success-cat {
+  color: #188038 !important;
+  background: #e6f4ea;
+}
+
+.bg-primary-cat {
+  color: #1967d2 !important;
+  background: #d2e3fc;
+}
+
+.bg-secondary-cat {
+  color: #b06000 !important;
+  background: #fef7e0;
+}
