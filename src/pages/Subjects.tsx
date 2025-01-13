@@ -485,7 +485,7 @@ function Subjects() {
                             style={{ fontSize: "0.64rem" }}
                             className="text-muted"
                           >
-                            {t("fields.id")}: {trimField(item.id, 20)}
+                            {t("fields.id")}: {item.id}
                           </span>
                         </div>
                       </div>
