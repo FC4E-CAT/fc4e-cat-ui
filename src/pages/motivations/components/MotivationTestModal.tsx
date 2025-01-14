@@ -115,6 +115,23 @@ export function MotivationTestModal(props: TestModalProps) {
   });
 
   useEffect(() => {
+    setShowErrors(false);
+    setTestHeader({
+      label: "",
+      tes: "",
+      description: "",
+    });
+    setTestDefinition({
+      test_method_id: "",
+      label: "",
+      param_type: "onscreen",
+      test_params: "",
+      test_question: "",
+      tool_tip: "",
+    });
+  }, [props.show]);
+
+  useEffect(() => {
     // gather all test methods
     let tmpTm: RegistryResource[] = [];
 
