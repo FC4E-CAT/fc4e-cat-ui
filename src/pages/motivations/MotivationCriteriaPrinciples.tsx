@@ -57,6 +57,7 @@ export default function MotivationCriteriaPrinciples() {
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
+    search: "",
   });
 
   useEffect(() => {

@@ -1,6 +1,13 @@
 import { AuthContext } from "@/auth";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Alert, Button, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  OverlayTrigger,
+  Table,
+  Tooltip,
+  Form,
+} from "react-bootstrap";
 import {
   FaArrowLeft,
   FaArrowRight,
@@ -9,6 +16,9 @@ import {
   FaPlus,
   FaTrash,
   FaTags,
+  FaArrowUp,
+  FaArrowDown,
+  FaArrowsAltV,
 } from "react-icons/fa";
 import { idToColor } from "@/utils/admin";
 
@@ -24,9 +34,12 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { MotivationRefList } from "@/components/MotivationRefList";
 import { useTranslation } from "react-i18next";
 
-type Pagination = {
+type PrincipleState = {
+  sortOrder: string;
+  sortBy: string;
   page: number;
   size: number;
+  search: string;
 };
 
 interface DeleteModalConfig {
@@ -90,9 +103,12 @@ export default function Principles() {
     }
   };
 
-  const [opts, setOpts] = useState<Pagination>({
+  const [opts, setOpts] = useState<PrincipleState>({
+    sortBy: "pri",
+    sortOrder: "ASC",
     page: 1,
     size: 10,
+    search: "",
   });
 
   const [showCreate, setShowCreate] = useState(false);
@@ -102,15 +118,31 @@ export default function Principles() {
     setOpts({ ...opts, page: 1, size: parseInt(evt.target.value) });
   };
 
+  // handler for clicking to sort
+  const handleSortClick = (field: string) => {
+    if (field === opts.sortBy) {
+      if (opts.sortOrder === "ASC") {
+        setOpts({ ...opts, sortOrder: "DESC" });
+      } else {
+        setOpts({ ...opts, sortOrder: "ASC" });
+      }
+    } else {
+      setOpts({ ...opts, sortOrder: "ASC", sortBy: field });
+    }
+  };
+
   // data get list of motivations
   const { isLoading, data, refetch } = useGetPrinciples({
     size: opts.size,
     page: opts.page,
+    sortBy: opts.sortBy,
+    sortOrder: opts.sortOrder,
+    search: opts.search,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
 
-  // refetch users when parameters change
+  // refetch principles when parameters change
   useEffect(() => {
     refetch();
   }, [opts, refetch]);
@@ -118,6 +150,14 @@ export default function Principles() {
   // get the principle data to create the table
   const principles: Principle[] = data ? data?.content : [];
 
+  // create an up/down arrow to designate sorting in a column
+  const SortMarker = (field: string, sortField: string, sortOrder: string) => {
+    if (field === sortField) {
+      if (sortOrder === "DESC") return <FaArrowUp />;
+      else if (sortOrder === "ASC") return <FaArrowDown />;
+    }
+    return <FaArrowsAltV className="text-secondary opacity-50" />;
+  };
   return (
     <div>
       <DeleteModal
@@ -159,14 +199,52 @@ export default function Principles() {
         </div>
       </div>
       <div>
+        <Form className="mb-3">
+          <div className="row cat-view-search-block border-bottom">
+            <div className="col col-lg-3"></div>
+            <div className="col md-auto col-lg-9">
+              <div className="d-flex justify-content-center">
+                <Form.Control
+                  placeholder={t("fields.search")}
+                  onChange={(e) => {
+                    setOpts({ ...opts, search: e.target.value, page: 1 });
+                  }}
+                  value={opts.search}
+                />
+                <Button
+                  onClick={() => {
+                    setOpts({ ...opts, search: "", page: 1 });
+                  }}
+                  className="ms-4"
+                >
+                  {t("buttons.clear")}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Form>
+      </div>
+      <div>
         <Table hover>
           <thead>
             <tr className="table-light">
               <th>
-                <span>{t("pri").toUpperCase()}</span>
+                <span
+                  onClick={() => handleSortClick("pri")}
+                  className="cat-cursor-pointer"
+                >
+                  {t("pri").toUpperCase()}{" "}
+                  {SortMarker("pri", opts.sortBy, opts.sortOrder)}
+                </span>
               </th>
               <th>
-                <span>{t("fields.label")}</span>
+                <span
+                  onClick={() => handleSortClick("label")}
+                  className="cat-cursor-pointer"
+                >
+                  {t("fields.label").toUpperCase()}{" "}
+                  {SortMarker("label", opts.sortBy, opts.sortOrder)}
+                </span>
               </th>
               <th className="w-50 p-3">
                 <span>{t("fields.description")}</span>

@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
 import {
-  ApiOptions,
+  ApiPrinciples,
   Principle,
   PrincipleInput,
   PrincipleResponse,
@@ -18,14 +18,19 @@ export const useGetPrinciples = ({
   size,
   page,
   token,
+  sortBy,
+  sortOrder,
+  search,
   isRegistered,
-}: ApiOptions) =>
+}: ApiPrinciples) =>
   useQuery({
-    queryKey: ["principles", { size, page }],
+    queryKey: ["principles", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
-      const response = await APIClient(token).get<PrincipleResponse>(
-        `/v1/registry/principles?size=${size}&page=${page}`,
-      );
+      let url = `/v1/registry/principles?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
+      search ? (url = `${url}&search=${search}`) : null;
+
+      const response = await APIClient(token).get<PrincipleResponse>(url);
+
       return response.data;
     },
     onError: (error: AxiosError) => {
@@ -63,13 +68,18 @@ export const useGetAllPrinciples = ({
   token,
   isRegistered,
   size,
-}: ApiOptions) =>
+  search,
+  sortBy,
+  sortOrder,
+}: ApiPrinciples) =>
   useInfiniteQuery({
-    queryKey: ["all-principles"],
+    queryKey: ["all-principles", { size, sortBy, sortOrder, search }],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await APIClient(token).get<PrincipleResponse>(
-        `/v1/registry/principles?size=${size}&page=${pageParam}`,
-      );
+      let url = `/v1/registry/principles?size=${size}&page=${pageParam}&sort=${sortBy}&order=${sortOrder}`;
+      search ? (url = `${url}&search=${search}`) : null;
+
+      const response = await APIClient(token).get<PrincipleResponse>(url);
+
       return response.data;
     },
     getNextPageParam: (lastPage) => {
