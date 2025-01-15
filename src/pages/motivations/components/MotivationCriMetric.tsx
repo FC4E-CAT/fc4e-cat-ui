@@ -1,9 +1,15 @@
 import { useGetMotivationCriMetric } from "@/api";
 import { AuthContext } from "@/auth";
 import { TestAutoHttpsCheckForm } from "@/pages/assessments/components/tests/TestAutoHttpsCheckForm";
+import { TestAutoMd1Form } from "@/pages/assessments/components/tests/TestAutoMd1Form";
 import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParam";
 import { TestValueFormParam } from "@/pages/assessments/components/tests/TestValueFormParam";
-import { TestAutoHttpsCheck, TestBinaryParam, TestValueParam } from "@/types";
+import {
+  TestAutoHttpsCheck,
+  TestAutoMD1,
+  TestBinaryParam,
+  TestValueParam,
+} from "@/types";
 import { useContext } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -70,6 +76,23 @@ export default function MotivationCriMetric({
             <div className="cat-test-div">
               <TestAutoHttpsCheckForm
                 test={test as TestAutoHttpsCheck}
+                onTestChange={() => {}}
+                criterionId={criId}
+                principleId={""}
+              />
+            </div>
+          </div>,
+        );
+      } else if (
+        test.type === "Auto-Check-Xml-MD1a" ||
+        test.type === "Auto-Check-Xml-MD1b1" ||
+        test.type === "Auto-Check-Xml-MD1b2"
+      ) {
+        testList.push(
+          <div className="border mt-4" key={test.id}>
+            <div className="cat-test-div">
+              <TestAutoMd1Form
+                test={test as TestAutoMD1}
                 onTestChange={() => {}}
                 criterionId={criId}
                 principleId={""}

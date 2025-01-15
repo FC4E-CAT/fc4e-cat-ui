@@ -159,3 +159,9 @@ export interface HttpTestResponse {
   is_valid_https?: boolean;
   message?: string;
 }
+
+export interface Md1TestResponse {
+  code: number;
+  is_valid?: boolean;
+  message?: string;
+}

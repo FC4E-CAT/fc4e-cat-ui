@@ -108,7 +108,7 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
                 }
               >
                 <InputGroup.Text id="label-actor-type">
-                  <FaInfoCircle className="me-2" /> {t("fields.actor")} (*):
+                  <FaInfoCircle className="me-2" /> {t("actor")} (*):
                 </InputGroup.Text>
               </OverlayTrigger>
               <Form.Select

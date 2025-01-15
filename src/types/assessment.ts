@@ -211,13 +211,28 @@ export interface TestAutoHttpsCheck {
   tool_tip: string;
 }
 
+export interface TestAutoMD1 {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type: "Auto-Check-Xml-MD1a" | "Auto-Check-Xml-MD1b1" | "Auto-Check-Xml-MD1b2";
+  text: string;
+  result: number | null;
+  value: string | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
+}
+
 /** Supported tests: Binary | Value | BinaryParam | ValueParam | TestAutoHttpsCheck **/
 export type AssessmentTest =
   | TestValue
   | TestBinary
   | TestBinaryParam
   | TestValueParam
-  | TestAutoHttpsCheck;
+  | TestAutoHttpsCheck
+  | TestAutoMD1;
 
 export interface EvidenceURL {
   url: string;

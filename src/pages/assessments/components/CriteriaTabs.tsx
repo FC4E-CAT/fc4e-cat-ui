@@ -33,6 +33,7 @@ import {
   TestBinaryParam,
   TestValueParam,
   TestAutoHttpsCheck,
+  TestAutoMD1,
   // MetricAlgorithm,
 } from "@/types";
 import {
@@ -46,6 +47,7 @@ import { TestBinaryParamForm } from "./tests/TestBinaryParam";
 import { TestValueFormParam } from "./tests/TestValueFormParam";
 import { TestAutoHttpsCheckForm } from "./tests/TestAutoHttpsCheckForm";
 import { useTranslation } from "react-i18next";
+import { TestAutoMd1Form } from "./tests/TestAutoMd1Form";
 
 type CriteriaTabsProps = {
   principles: AssessmentPrinciple[];
@@ -262,6 +264,23 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                 <div className="cat-test-div">
                   <TestAutoHttpsCheckForm
                     test={test as TestAutoHttpsCheck}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (
+            test.type === "Auto-Check-Xml-MD1a" ||
+            test.type === "Auto-Check-Xml-MD1b1" ||
+            test.type === "Auto-Check-Xml-MD1b2"
+          ) {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestAutoMd1Form
+                    test={test as TestAutoMD1}
                     onTestChange={props.onTestChange}
                     criterionId={criterion.id}
                     principleId={principle.id}
