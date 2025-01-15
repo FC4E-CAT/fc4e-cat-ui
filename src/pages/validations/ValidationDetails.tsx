@@ -394,7 +394,7 @@ function ValidationDetails(props: ValidationProps) {
                     <strong>
                       {t("page_validation_details.actor_user_requests")}:
                     </strong>{" "}
-                    {validation?.actor_name}
+                    {validation?.registry_actor_name}
                   </div>
                 </section>
               </div>

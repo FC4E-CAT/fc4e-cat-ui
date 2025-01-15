@@ -112,7 +112,7 @@ function ValidationList() {
                     <td className="align-middle">{item.id}</td>
                     <td className="align-middle">{item.organisation_name}</td>
                     <td className="align-middle">{item.organisation_role}</td>
-                    <td className="align-middle">{item.actor_name}</td>
+                    <td className="align-middle">{item.registry_actor_name}</td>
                     <td className="align-middle">
                       <BadgeStatus status={item.status} />
                     </td>
