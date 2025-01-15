@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
 import {
-  ApiOptions,
+  ApiPrinciples,
   Principle,
   PrincipleInput,
   PrincipleResponse,
@@ -22,7 +22,7 @@ export const useGetPrinciples = ({
   sortOrder,
   search,
   isRegistered,
-}: ApiOptions) =>
+}: ApiPrinciples) =>
   useQuery({
     queryKey: ["principles", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
@@ -71,7 +71,7 @@ export const useGetAllPrinciples = ({
   search,
   sortBy,
   sortOrder,
-}: ApiOptions) =>
+}: ApiPrinciples) =>
   useInfiniteQuery({
     queryKey: ["all-principles", { size, sortBy, sortOrder, search }],
     queryFn: async ({ pageParam = 1 }) => {
