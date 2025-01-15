@@ -125,6 +125,9 @@ export type ApiMotivations = ApiOptions & {
 export type ApiPrinciples = ApiOptions & {
   search: string;
 };
+export type ApiCriteria = ApiOptions & {
+  search: string;
+};
 
 export type ApiUsers = ApiOptions & {
   type: string;
