@@ -1,6 +1,13 @@
 import { AuthContext } from "@/auth";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Alert, Button, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  OverlayTrigger,
+  Table,
+  Tooltip,
+  Form,
+} from "react-bootstrap";
 import {
   FaArrowLeft,
   FaArrowRight,
@@ -130,11 +137,12 @@ export default function Principles() {
     page: opts.page,
     sortBy: opts.sortBy,
     sortOrder: opts.sortOrder,
+    search: opts.search,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
 
-  // refetch users when parameters change
+  // refetch principles when parameters change
   useEffect(() => {
     refetch();
   }, [opts, refetch]);
@@ -189,6 +197,32 @@ export default function Principles() {
             <FaPlus /> {t("buttons.create_new")}
           </Button>
         </div>
+      </div>
+      <div>
+        <Form className="mb-3">
+          <div className="row cat-view-search-block border-bottom">
+            <div className="col col-lg-3"></div>
+            <div className="col md-auto col-lg-9">
+              <div className="d-flex justify-content-center">
+                <Form.Control
+                  placeholder={t("fields.search")}
+                  onChange={(e) => {
+                    setOpts({ ...opts, search: e.target.value, page: 1 });
+                  }}
+                  value={opts.search}
+                />
+                <Button
+                  onClick={() => {
+                    setOpts({ ...opts, search: "", page: 1 });
+                  }}
+                  className="ms-4"
+                >
+                  {t("buttons.clear")}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Form>
       </div>
       <div>
         <Table hover>

@@ -20,14 +20,17 @@ export const useGetPrinciples = ({
   token,
   sortBy,
   sortOrder,
+  search,
   isRegistered,
 }: ApiOptions) =>
   useQuery({
-    queryKey: ["principles", { size, page, sortBy, sortOrder }],
+    queryKey: ["principles", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
-      const response = await APIClient(token).get<PrincipleResponse>(
-        `/v1/registry/principles?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`,
-      );
+      let url = `/v1/registry/principles?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
+      search ? (url = `${url}&search=${search}`) : null;
+
+      const response = await APIClient(token).get<PrincipleResponse>(url);
+
       return response.data;
     },
     onError: (error: AxiosError) => {
@@ -65,14 +68,18 @@ export const useGetAllPrinciples = ({
   token,
   isRegistered,
   size,
+  search,
   sortBy,
+  sortOrder,
 }: ApiOptions) =>
   useInfiniteQuery({
-    queryKey: ["all-principles", { size, sortBy }],
+    queryKey: ["all-principles", { size, sortBy, sortOrder, search }],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await APIClient(token).get<PrincipleResponse>(
-        `/v1/registry/principles?size=${size}&page=${pageParam}&sort=${sortBy}`,
-      );
+      let url = `/v1/registry/principles?size=${size}&page=${pageParam}&sort=${sortBy}&order=${sortOrder}`;
+      search ? (url = `${url}&search=${search}`) : null;
+
+      const response = await APIClient(token).get<PrincipleResponse>(url);
+
       return response.data;
     },
     getNextPageParam: (lastPage) => {
