@@ -62,6 +62,7 @@ export function CriterionModal(props: CriterionModalProps) {
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
+    search: "",
   });
 
   const {
@@ -72,6 +73,7 @@ export function CriterionModal(props: CriterionModalProps) {
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
+    search: "",
   });
 
   useEffect(() => {
