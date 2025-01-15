@@ -18,13 +18,15 @@ export const useGetPrinciples = ({
   size,
   page,
   token,
+  sortBy,
+  sortOrder,
   isRegistered,
 }: ApiOptions) =>
   useQuery({
-    queryKey: ["principles", { size, page }],
+    queryKey: ["principles", { size, page, sortBy, sortOrder }],
     queryFn: async () => {
       const response = await APIClient(token).get<PrincipleResponse>(
-        `/v1/registry/principles?size=${size}&page=${page}`,
+        `/v1/registry/principles?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`,
       );
       return response.data;
     },
@@ -63,12 +65,13 @@ export const useGetAllPrinciples = ({
   token,
   isRegistered,
   size,
+  sortBy,
 }: ApiOptions) =>
   useInfiniteQuery({
-    queryKey: ["all-principles"],
+    queryKey: ["all-principles", { size, sortBy }],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<PrincipleResponse>(
-        `/v1/registry/principles?size=${size}&page=${pageParam}`,
+        `/v1/registry/principles?size=${size}&page=${pageParam}&sort=${sortBy}`,
       );
       return response.data;
     },

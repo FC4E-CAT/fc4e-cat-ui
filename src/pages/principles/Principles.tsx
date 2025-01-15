@@ -9,6 +9,9 @@ import {
   FaPlus,
   FaTrash,
   FaTags,
+  FaArrowUp,
+  FaArrowDown,
+  FaArrowsAltV,
 } from "react-icons/fa";
 import { idToColor } from "@/utils/admin";
 
@@ -24,9 +27,12 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { MotivationRefList } from "@/components/MotivationRefList";
 import { useTranslation } from "react-i18next";
 
-type Pagination = {
+type PrincipleState = {
+  sortOrder: string;
+  sortBy: string;
   page: number;
   size: number;
+  search: string;
 };
 
 interface DeleteModalConfig {
@@ -90,9 +96,12 @@ export default function Principles() {
     }
   };
 
-  const [opts, setOpts] = useState<Pagination>({
+  const [opts, setOpts] = useState<PrincipleState>({
+    sortBy: "pri",
+    sortOrder: "ASC",
     page: 1,
     size: 10,
+    search: "",
   });
 
   const [showCreate, setShowCreate] = useState(false);
@@ -102,10 +111,25 @@ export default function Principles() {
     setOpts({ ...opts, page: 1, size: parseInt(evt.target.value) });
   };
 
+  // handler for clicking to sort
+  const handleSortClick = (field: string) => {
+    if (field === opts.sortBy) {
+      if (opts.sortOrder === "ASC") {
+        setOpts({ ...opts, sortOrder: "DESC" });
+      } else {
+        setOpts({ ...opts, sortOrder: "ASC" });
+      }
+    } else {
+      setOpts({ ...opts, sortOrder: "ASC", sortBy: field });
+    }
+  };
+
   // data get list of motivations
   const { isLoading, data, refetch } = useGetPrinciples({
     size: opts.size,
     page: opts.page,
+    sortBy: opts.sortBy,
+    sortOrder: opts.sortOrder,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
@@ -118,6 +142,14 @@ export default function Principles() {
   // get the principle data to create the table
   const principles: Principle[] = data ? data?.content : [];
 
+  // create an up/down arrow to designate sorting in a column
+  const SortMarker = (field: string, sortField: string, sortOrder: string) => {
+    if (field === sortField) {
+      if (sortOrder === "DESC") return <FaArrowUp />;
+      else if (sortOrder === "ASC") return <FaArrowDown />;
+    }
+    return <FaArrowsAltV className="text-secondary opacity-50" />;
+  };
   return (
     <div>
       <DeleteModal
@@ -163,10 +195,22 @@ export default function Principles() {
           <thead>
             <tr className="table-light">
               <th>
-                <span>{t("pri").toUpperCase()}</span>
+                <span
+                  onClick={() => handleSortClick("pri")}
+                  className="cat-cursor-pointer"
+                >
+                  {t("pri").toUpperCase()}{" "}
+                  {SortMarker("pri", opts.sortBy, opts.sortOrder)}
+                </span>
               </th>
               <th>
-                <span>{t("fields.label")}</span>
+                <span
+                  onClick={() => handleSortClick("label")}
+                  className="cat-cursor-pointer"
+                >
+                  {t("fields.label").toUpperCase()}{" "}
+                  {SortMarker("label", opts.sortBy, opts.sortOrder)}
+                </span>
               </th>
               <th className="w-50 p-3">
                 <span>{t("fields.description")}</span>
