@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
 import {
-  ApiOptions,
+  ApiCriteria,
   Criterion,
   CriterionInput,
   CriterionResponse,
@@ -21,13 +21,18 @@ export const useGetCriteria = ({
   page,
   token,
   isRegistered,
-}: ApiOptions) =>
+  search,
+  sortBy,
+  sortOrder,
+}: ApiCriteria) =>
   useQuery({
-    queryKey: ["criteria", { size, page }],
+    queryKey: ["criteria", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
-      const response = await APIClient(token).get<CriterionResponse>(
-        `/v1/registry/criteria?size=${size}&page=${page}`,
-      );
+      let url = `/v1/registry/criteria?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
+      search ? (url = `${url}&search=${search}`) : null;
+
+      const response = await APIClient(token).get<CriterionResponse>(url);
+
       return response.data;
     },
     onError: (error: AxiosError) => {
@@ -61,7 +66,7 @@ export const useGetCriterion = ({
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
   });
 
-export const useGetAllCriteria = ({ token, isRegistered, size }: ApiOptions) =>
+export const useGetAllCriteria = ({ token, isRegistered, size }: ApiCriteria) =>
   useInfiniteQuery({
     queryKey: ["all-criteria"],
     queryFn: async ({ pageParam = 1 }) => {
@@ -88,7 +93,7 @@ export const useGetAllImperatives = ({
   token,
   isRegistered,
   size,
-}: ApiOptions) =>
+}: ApiCriteria) =>
   useInfiniteQuery({
     queryKey: ["all-imperatives"],
     queryFn: async ({ pageParam = 1 }) => {
@@ -147,7 +152,7 @@ export const useGetAllCriterionTypes = ({
   token,
   isRegistered,
   size,
-}: ApiOptions) =>
+}: ApiCriteria) =>
   useInfiniteQuery({
     queryKey: ["motivation-types"],
     queryFn: async ({ pageParam = 1 }) => {
