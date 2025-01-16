@@ -9,8 +9,8 @@ import { TestToolTip } from "./TestToolTip";
 import {
   AssessmentTest,
   EvidenceURL,
-  HttpTestResponse,
-  TestAutoHttpsCheck,
+  Md1TestResponse,
+  TestAutoMD1,
 } from "@/types";
 import { FaCheckCircle, FaClock, FaPlay, FaTimes } from "react-icons/fa";
 import { APIClient } from "@/api";
@@ -20,7 +20,7 @@ import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
 
 interface AssessmentTestProps {
-  test: TestAutoHttpsCheck;
+  test: TestAutoMD1;
   principleId: string;
   criterionId: string;
   onTestChange(
@@ -30,7 +30,13 @@ interface AssessmentTestProps {
   ): void;
 }
 
-export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
+const testModeMap = {
+  "Auto-Check-Xml-MD1a": "MD-1a",
+  "Auto-Check-Xml-MD1b1": "MD-1b1",
+  "Auto-Check-Xml-MD1b2": "MD-1b2",
+};
+
+export const TestAutoMd1Form = (props: AssessmentTestProps) => {
   const { keycloak } = useContext(AuthContext)!;
   const { t } = useTranslation();
 
@@ -51,23 +57,24 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
   const testParams = props.test.params.split("|");
 
   // implement here the backend check and we'll organise the backend calls for automated checks in a seperate module
-  function handleHttpsCheck(token: string) {
+  function handleMd1Check(token: string) {
     // run the check
+
     setRunningTest(true);
     APIClient(token)
-      .post<HttpTestResponse>(
-        `/v1/automated/check-url`,
-        `{"url": "${localValue}"}`,
+      .post<Md1TestResponse>(
+        `/v1/automated/validate-metadata/${testModeMap[props.test.type]}`,
+        `{"metadata_url": "${localValue}"}`,
         {
           validateStatus: (status) => status >= 200 && status < 500,
         },
       )
       .then((resp) => {
-        if (resp.data.code === 200 && resp.data.is_valid_https !== undefined) {
+        if (resp.data.code === 200 && resp.data.is_valid !== undefined) {
           const newTest = {
             ...props.test,
             value: localValue,
-            result: resp.data.is_valid_https ? 1 : 0,
+            result: resp.data.is_valid ? 1 : 0,
           };
           props.onTestChange(props.principleId, props.criterionId, newTest);
         } else {
@@ -124,7 +131,7 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
               variant="success"
               disabled={!validUrl}
               onClick={() => {
-                handleHttpsCheck(keycloak?.token || "");
+                handleMd1Check(keycloak?.token || "");
               }}
             >
               <FaPlay className="me-2" />
@@ -151,12 +158,12 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
                 {props.test.result > 0 ? (
                   <small className="text-success">
                     <FaCheckCircle className="me-2" />
-                    {t("page_assessment_edit.valid_https")}
+                    {t("page_assessment_edit.valid_metadata")}
                   </small>
                 ) : (
                   <small className="text-danger">
                     <FaTimes className="me-2" />
-                    {t("page_assessment_edit.invalid_https")}
+                    {t("page_assessment_edit.invalid_metadata")}
                   </small>
                 )}
               </div>

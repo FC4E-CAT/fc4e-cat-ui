@@ -326,6 +326,8 @@
     "check_running": "Check Running...",
     "valid_https": "Valid https endpoint",
     "invalid_https": "Invalid https endpoint",
+    "valid_metadata": "Valid medata endpoint",
+    "invalid_metadata": "Invalid medata endpoint",
     "guidance": "Guidance",
     "no_guidance": "No Guidance Available",
     "threshold_predefined": "This threshold is predefined (non-editable)",

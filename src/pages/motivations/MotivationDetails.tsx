@@ -520,11 +520,11 @@ export default function MotivationDetails() {
                           setShowAddActor(true);
                         }}
                       >
-                        {"page_motivations.click_here"}
+                        {t("page_motivations.click_here")}
                       </Button>
                       <span className="align-baseline">
                         {" "}
-                        {t("page_validations.add_new_ones")}
+                        {t("page_motivations.add_new_ones")}
                       </span>
                     </div>
                   </Alert>
