@@ -1,5 +1,6 @@
+import { SearchBox } from "@/components/SearchBox";
 import { Criterion, Principle } from "@/types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Button,
   Col,
@@ -28,6 +29,15 @@ export default function MotivationPrinciplesModal(
     [],
   );
   const [selectedPrinciples, setSelectedPrinciples] = useState<Principle[]>([]);
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+  const handleSearchClear = () => {
+    setSearchInput("");
+  };
+
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -42,6 +52,17 @@ export default function MotivationPrinciplesModal(
     );
   }, [props]);
 
+  const filteredPrinciples = useMemo(() => {
+    return availablePrinciples.filter((item) => {
+      const query = searchInput.toLowerCase();
+      return (
+        item.pri.toLowerCase().includes(query) ||
+        item.label.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+      );
+    });
+  }, [searchInput, availablePrinciples]);
+
   return (
     <Modal
       show={props.show}
@@ -53,7 +74,7 @@ export default function MotivationPrinciplesModal(
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
           <FaTags className="me-2" />{" "}
-          {"page_motivations.modal_principles_title"}
+          {t("page_motivations.modal_principles_title")}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -92,10 +113,17 @@ export default function MotivationPrinciplesModal(
                 </small>
               )}
             </div>
+            <div>
+              <SearchBox
+                searchInput={searchInput}
+                handleChange={handleSearchChange}
+                handleClear={handleSearchClear}
+              />
+            </div>
             <div
               className={`cat-vh-40 overflow-auto ${selectedPrinciples.length > 0 ? "text-muted" : ""}`}
             >
-              {availablePrinciples?.map((item) => (
+              {filteredPrinciples?.map((item) => (
                 <div
                   key={item.pri}
                   className="mb-4 p-2 cat-select-item"

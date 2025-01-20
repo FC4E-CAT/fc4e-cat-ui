@@ -1,6 +1,6 @@
 import { AuthContext } from "@/auth";
 import { AlertInfo, Criterion, Principle } from "@/types";
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
 import {
@@ -25,6 +25,7 @@ import {
 } from "@/api";
 import { CriterionModal } from "../criteria/components/CriterionModal";
 import { useTranslation } from "react-i18next";
+import { SearchBox } from "@/components/SearchBox";
 
 export default function MotivationCriteriaPrinciples() {
   const { t } = useTranslation();
@@ -45,6 +46,15 @@ export default function MotivationCriteriaPrinciples() {
 
   const [showCreate, setShowCreate] = useState(false);
 
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+  const handleSearchClear = () => {
+    setSearchInput("");
+  };
+
   const alert = useRef<AlertInfo>({
     message: "",
   });
@@ -57,7 +67,6 @@ export default function MotivationCriteriaPrinciples() {
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
-    search: "",
   });
 
   useEffect(() => {
@@ -189,6 +198,17 @@ export default function MotivationCriteriaPrinciples() {
     (item) => item.principles && item.principles.length > 0,
   );
 
+  const filteredCriteria = useMemo(() => {
+    return availableCriteria.filter((item) => {
+      const query = searchInput.toLowerCase();
+      return (
+        item.cri.toLowerCase().includes(query) ||
+        item.label.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+      );
+    });
+  }, [searchInput, availableCriteria]);
+
   return (
     <div className="pb-4">
       <CriterionModal
@@ -254,7 +274,7 @@ export default function MotivationCriteriaPrinciples() {
           <div className="d-flex justify-content-between">
             <div>
               <strong className="p-1">
-                {t("page_motivaitons.available_criteria")}
+                {t("page_motivations.available_criteria")}
               </strong>
               <span className="ms-1 badge bg-primary rounded-pill fs-6">
                 {availableCriteria.length}
@@ -278,8 +298,15 @@ export default function MotivationCriteriaPrinciples() {
               {t("page_motivations.info_add_to_motivation")}
             </small>
           </div>
+          <div>
+            <SearchBox
+              searchInput={searchInput}
+              handleChange={handleSearchChange}
+              handleClear={handleSearchClear}
+            />
+          </div>
           <div className="cat-vh-60 overflow-auto">
-            {availableCriteria?.map((item) => (
+            {filteredCriteria?.map((item) => (
               <div
                 key={item.cri}
                 className="mb-4 p-2 cat-select-item"

@@ -565,6 +565,7 @@
     "available_tests": "Available Tests",
     "available_criteria": "Available Criteria",
     "available_principles": "Available Principles",
+    "available_metrics": "Available Metrics",
     "available_criteria_motivation": "Available Criteria in this Motivation",
     "create_new_test": "Create New Test",
     "create_new_criterion": "Create New Criterion",
