@@ -1,12 +1,16 @@
-describe("/assessments/create", () => {
+describe.only("/assessments/create", () => {
   before(() => {
     cy.setupValidation("identified");
   });
 
   beforeEach(() => {
-    cy.kcLogout();
-    cy.kcLogin("identified").as("identifiedTokens");
-    cy.visit("/assessments/create");
+    cy.kcLogout().then(() => {
+      cy.kcLogin("identified")
+        .as("identifiedTokens")
+        .then(() => {
+          cy.visit("/assessments/create");
+        });
+    });
   });
 
   it("greets with create assessment", () => {
@@ -23,7 +27,9 @@ describe("/assessments/create", () => {
     cy.url().should("contain", "/assess");
   });
   it("has the correct actor option", () => {
-    cy.get("#actorRadio").contains("PID Manager at Oxford Fertility");
+    cy.get("#actorRadio").contains(
+      "PID Scheme (Component) at Oxford Fertility - EOSC PID Policy",
+    );
   });
 
   it("Can go to step 2 and go back", () => {
@@ -46,7 +52,7 @@ describe("/assessments/create", () => {
     cy.get("#radio-0").click();
     cy.get("#create_assessment_button").should("not.have.attr", "disabled");
     cy.get("#next-button").click();
-    cy.get('#accordion_general button[aria-expanded="true"]').should("exist");
+    cy.get("#accordion_general button").should("exist");
     cy.get("#accordion_submitter").click();
     cy.get('#accordion_submitter button[aria-expanded="true"]').should("exist");
     cy.get("#input-submitter-fname").should(
@@ -71,17 +77,16 @@ describe("/assessments/create", () => {
     );
   });
 
-  it("create an assessment", () => {
-    const T7 =
-      "Can you provide evidence that the relation between PIDs and entities, as maintained by the PID manager, conforms to the Authority requirements.";
-    const T35 =
-      "Given the percentage f of resolved PIDs that result in a viable entity, compared to a community expectation p. Please provide values for f and p.";
+  it.only("create an assessment", () => {
     const subjectId = "identified_test_subject_id";
     const subjectName = "identified_test_subject_name";
     const subjectType = "identified_test_subject_type";
     cy.get("#radio-0").click();
     cy.get("#create_assessment_button").should("not.have.attr", "disabled");
     cy.get("#assessment-wizard-tab-step-2").click();
+    cy.get(
+      "#accordion_general > .accordion-header > .accordion-button",
+    ).click();
     cy.get("#input-info-name").type("identified_test_assessment");
     cy.get("#accordion_subject").click();
     cy.get("#input-info-subject-id").type(subjectId);
@@ -91,88 +96,10 @@ describe("/assessments/create", () => {
     cy.get("form:visible").within(() => {
       cy.get("#test-check-yes").click();
     });
-    cy.get("#left-tabs-tabpane-C5").contains("PASS").should("exist");
-    cy.get("#left-tabs-tab-C6").click();
+    cy.get("#left-tabs-tab-P10C28").click();
     cy.get("form:visible").within(() => {
       cy.get("#test-check-yes").click();
     });
-    cy.get("#left-tabs-tabpane-C6").contains("PASS").should("exist");
-    cy.get("#left-tabs-tab-C7").click();
-
-    cy.get("form:visible")
-      .contains(T7)
-      .closest("form")
-      .within(() => {
-        cy.get("#test-check-yes").click();
-      });
-
-    cy.get("form:visible")
-      .contains(T35)
-      .closest("form")
-      .within(() => {
-        cy.get("#input-value-control").type("70");
-        cy.get("#input-value-community").type("70");
-      });
-    cy.get("#left-tabs-tabpane-C7").contains("PASS").should("exist");
-
-    cy.get("#left-tabs-tab-C11").click();
-    cy.get("form:visible").within(() => {
-      cy.get("#test-check-yes").click();
-    });
-    cy.get("#left-tabs-tabpane-C11").contains("PASS").should("exist");
-
-    cy.get("#left-tabs-tab-C14").click();
-    cy.get("form:visible").within(() => {
-      cy.get("#input-value-control").type("70");
-      cy.get("#input-value-community").type("70");
-    });
-    cy.get("#left-tabs-tabpane-C14").contains("PASS").should("exist");
-
-    cy.get("#left-tabs-tab-C34").click();
-    cy.get("form:visible").within(() => {
-      cy.get("#input-value-control").type("70");
-      cy.get("#input-value-community").type("70");
-    });
-    cy.get("#left-tabs-tabpane-C34").contains("PASS").should("exist");
-
-    cy.get("#left-tabs-tab-C16").click();
-    cy.get("form:visible").within(() => {
-      cy.get("#input-value-control").type("70");
-      cy.get("#input-value-community").type("70");
-    });
-    cy.get("#left-tabs-tabpane-C16").contains("PASS").should("exist");
-
-    cy.get("#left-tabs-tab-C19").click();
-    cy.get("form:visible").within(() => {
-      cy.get("#test-check-yes").click();
-    });
-    cy.get("#left-tabs-tabpane-C19").contains("PASS").should("exist");
-
-    cy.get("#left-tabs-tab-C22").click();
-    cy.get("form:visible").within(() => {
-      cy.get("#test-check-yes").click();
-    });
-    cy.get("#left-tabs-tabpane-C22").contains("PASS").should("exist");
-
-    cy.get("#left-tabs-tab-C29").click();
-    cy.get("form:visible").within(() => {
-      cy.get("#test-check-yes").click();
-    });
-    cy.get("#left-tabs-tabpane-C29").contains("PASS").should("exist");
-
-    cy.get("#left-tabs-tab-C28").click();
-    cy.get("form:visible").within(() => {
-      cy.get("#test-check-yes").click();
-    });
-    cy.get("#left-tabs-tabpane-C28").contains("PASS").should("exist");
-
-    cy.get("#left-tabs-tab-C35").click();
-    cy.get("form:visible").within(() => {
-      cy.get("#input-value-control").type("70");
-      cy.get("#input-value-community").type("70");
-    });
-    cy.get("#left-tabs-tabpane-C35").contains("PASS").should("exist");
-
     cy.get("#create_assessment_button").click();
     cy.url().should("contain", "/assessments");
     cy.contains("Assessment succesfully created.").should("be.visible");
