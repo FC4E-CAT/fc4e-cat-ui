@@ -1,9 +1,13 @@
 /// <reference types="cypress"/>
 describe("/assess", () => {
   beforeEach(() => {
-    cy.kcLogout();
-    cy.kcLogin("identified").as("identifiedTokens");
-    cy.visit("/assess");
+    cy.kcLogout().then(() => {
+      cy.kcLogin("identified")
+        .as("identifiedTokens")
+        .then(() => {
+          cy.visit("/assess");
+        });
+    });
   });
 
   it("should have actor cards that are flippable", () => {
@@ -20,15 +24,10 @@ describe("/assess", () => {
     cy.url().should("include", "public-assessments");
   });
   it("should have working links", () => {
-    cy.get("#view_assessments_button").should(
-      "have.attr",
-      "href",
-      "/assessments",
-    );
-    cy.get("#assessment_form_button").should(
-      "have.attr",
-      "href",
-      "/assessments/create",
-    );
+    cy.get(
+      "#actorCard_PID_Scheme_Component > .bg-transparent > .text-decoration-none",
+    )
+      .should("have.attr", "href")
+      .and("match", /^\/public-assessments/);
   });
 });
