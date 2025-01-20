@@ -1,6 +1,6 @@
 import { Modal, Button, Alert } from "react-bootstrap";
 import { AlertInfo, MotivationMetric } from "@/types";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FaBorderNone, FaInfoCircle } from "react-icons/fa";
 import {
   useGetAllMotivationMetrics,
@@ -10,6 +10,7 @@ import { AuthContext } from "@/auth";
 import { relMtvPrincpleCriterion } from "@/config";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { SearchBox } from "@/components/SearchBox";
 
 interface MotivationCriMetricAssignProps {
   mtvId: string;
@@ -27,6 +28,14 @@ export function MotivationMetricAssignModal(
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvMetrics, setMtvMetrics] = useState<MotivationMetric[]>([]);
   const [selMetricId, setSelMetricId] = useState("");
+
+  const [searchInput, setSearchInput] = useState("");
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+  const handleSearchClear = () => {
+    setSearchInput("");
+  };
 
   const alert = useRef<AlertInfo>({
     message: "",
@@ -96,6 +105,16 @@ export function MotivationMetricAssignModal(
     setSelMetricId("");
   }, [props.show]);
 
+  const filteredMetrics = useMemo(() => {
+    return mtvMetrics.filter((item) => {
+      const query = searchInput.toLowerCase();
+      return (
+        item.metric_label.toLowerCase().includes(query) ||
+        item.metric_description.toLowerCase().includes(query)
+      );
+    });
+  }, [searchInput, mtvMetrics]);
+
   return (
     <Modal
       show={props.show}
@@ -106,13 +125,13 @@ export function MotivationMetricAssignModal(
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {t("page_validations.assign_metric")}
+          {t("page_motivations.assign_metric")}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div>
           <strong className="p-1">
-            {t("page_validations.available_metrics")}s
+            {t("page_motivations.available_metrics")}
           </strong>
           <span className="ms-1 badge bg-primary rounded-pill fs-6">
             {mtvMetrics.length}
@@ -122,11 +141,18 @@ export function MotivationMetricAssignModal(
         <div className="alert alert-primary p-2 mt-1">
           <small>
             <FaInfoCircle className="me-2" />{" "}
-            {t("page_validations.info_assign_to_metric")}
+            {t("page_motivations.info_assign_to_criterion")}
           </small>
         </div>
+        <div>
+          <SearchBox
+            searchInput={searchInput}
+            handleChange={handleSearchChange}
+            handleClear={handleSearchClear}
+          />
+        </div>
         <div className="cat-vh-40 overflow-auto">
-          {mtvMetrics?.map((item) => (
+          {filteredMetrics?.map((item) => (
             <div
               key={item.metric_id}
               className={`mb-4 p-2 cat-select-item ${item.metric_id == selMetricId ? "border border-success" : ""}`}

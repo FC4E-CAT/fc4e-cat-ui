@@ -1,6 +1,6 @@
 import { AuthContext } from "@/auth";
 import { AlertInfo, MetricTest } from "@/types";
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { FaAward, FaMinusCircle, FaPlus, FaPlusCircle } from "react-icons/fa";
@@ -16,6 +16,7 @@ import { RegistryTest, RegistryTestHeader } from "@/types/tests";
 import { useGetAllTests } from "@/api/services/registry";
 import { MotivationTestModal } from "./components/MotivationTestModal";
 import { useTranslation } from "react-i18next";
+import { SearchBox } from "@/components/SearchBox";
 
 export default function MotivationMetricTests() {
   const navigate = useNavigate();
@@ -31,6 +32,15 @@ export default function MotivationMetricTests() {
   const alert = useRef<AlertInfo>({
     message: "",
   });
+
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+  const handleSearchClear = () => {
+    setSearchInput("");
+  };
 
   const {
     data: testData,
@@ -142,6 +152,17 @@ export default function MotivationMetricTests() {
     }
   }
 
+  const filteredTests = useMemo(() => {
+    return availableTests.filter((item) => {
+      const query = searchInput.toLowerCase();
+      return (
+        item.tes.toLowerCase().includes(query) ||
+        item.label.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+      );
+    });
+  }, [searchInput, availableTests]);
+
   return (
     <div className="pb-4">
       <MotivationTestModal
@@ -202,8 +223,15 @@ export default function MotivationMetricTests() {
               {t("page_motivations.info_assign_to_metric")}
             </small>
           </div>
+          <div>
+            <SearchBox
+              searchInput={searchInput}
+              handleChange={handleSearchChange}
+              handleClear={handleSearchClear}
+            />
+          </div>
           <div className="cat-vh-60 overflow-auto">
-            {availableTests?.map((item) => (
+            {filteredTests?.map((item) => (
               <div
                 key={item.id}
                 className="mb-4 p-2 cat-select-item"
