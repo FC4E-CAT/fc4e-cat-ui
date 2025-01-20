@@ -1,17 +1,18 @@
 import { Modal, Button } from "react-bootstrap";
-import MotivationCriMetric from "./MotivationCriMetric";
+import MotivationMetric from "./MotivationMetric";
 import { useTranslation } from "react-i18next";
 
-interface MotivationCriMetricProps {
+interface MotivationMetricProps {
   mtvId: string;
-  criId: string;
+  itemId: string;
   show: boolean;
+  getByCriterion: boolean;
   onHide: () => void;
 }
 /**
  * Modal component for displaying criterion metric
  */
-export function MotivationCriMetricModal(props: MotivationCriMetricProps) {
+export function MotivationMetricDetailsModal(props: MotivationMetricProps) {
   const { t } = useTranslation();
   return (
     <Modal
@@ -23,12 +24,18 @@ export function MotivationCriMetricModal(props: MotivationCriMetricProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {t("page_motivations.criterion_metric_tests")}
+          {props.getByCriterion
+            ? t("page_motivations.criterion_metric_tests")
+            : t("page_motivations.metric_details")}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {props.mtvId && props.criId && (
-          <MotivationCriMetric mtvId={props.mtvId} criId={props.criId} />
+        {props.mtvId && props.itemId && (
+          <MotivationMetric
+            mtvId={props.mtvId}
+            itemId={props.itemId}
+            getByCriterion={props.getByCriterion}
+          />
         )}
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">

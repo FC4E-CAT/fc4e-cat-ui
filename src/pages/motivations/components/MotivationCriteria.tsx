@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
-import { MotivationCriMetricModal } from "./MotivationCriMetricModal";
+import { MotivationMetricDetailsModal } from "./MotivationMetricDetailsModal";
 import { FaBars, FaBorderNone, FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { MotivationMetricAssignModal } from "./MotivationMetricAssignModal";
@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 
 interface MetricModalConfig {
   show: boolean;
-  criId: string;
+  itemId: string;
 }
 
 export const MotivationCriteria = ({
@@ -36,13 +36,13 @@ export const MotivationCriteria = ({
 
   const [metricModal, setMetricModal] = useState<MetricModalConfig>({
     show: false,
-    criId: "",
+    itemId: "",
   });
 
   const [metricAssignModal, setMetricAssignModal] = useState<MetricModalConfig>(
     {
       show: false,
-      criId: "",
+      itemId: "",
     },
   );
 
@@ -74,21 +74,22 @@ export const MotivationCriteria = ({
 
   return (
     <div className="px-5 mt-4">
-      <MotivationCriMetricModal
+      <MotivationMetricDetailsModal
         show={metricModal.show}
         onHide={() => {
-          setMetricModal({ criId: "", show: false });
+          setMetricModal({ itemId: "", show: false });
         }}
         mtvId={mtvId}
-        criId={metricModal.criId}
+        itemId={metricModal.itemId}
+        getByCriterion
       />
       <MotivationMetricAssignModal
         show={metricAssignModal.show}
         onHide={() => {
-          setMetricAssignModal({ criId: "", show: false });
+          setMetricAssignModal({ itemId: "", show: false });
         }}
         mtvId={mtvId}
-        criId={metricAssignModal.criId}
+        criId={metricAssignModal.itemId}
       />
       <div className="d-flex justify-content-between mb-2">
         <h5 className="text-muted cat-view-heading ">
@@ -166,7 +167,7 @@ export const MotivationCriteria = ({
                       <Button
                         className="btn btn-light btn-sm m-1"
                         onClick={() => {
-                          setMetricAssignModal({ show: true, criId: item.id });
+                          setMetricAssignModal({ show: true, itemId: item.id });
                         }}
                       >
                         <FaBorderNone />
@@ -183,7 +184,7 @@ export const MotivationCriteria = ({
                       <Button
                         className="btn btn-light btn-sm m-1"
                         onClick={() => {
-                          setMetricModal({ show: true, criId: item.id });
+                          setMetricModal({ show: true, itemId: item.id });
                         }}
                       >
                         <FaBars />

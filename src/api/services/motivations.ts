@@ -430,23 +430,27 @@ export const useGetMotivationActorCriteria = (
     enabled: isRegistered,
   });
 
-export const useGetMotivationCriMetric = ({
+export const useGetMotivationMetric = ({
   mtvId,
-  criId,
+  itemId,
   token,
+  getByCriterion,
 }: {
   mtvId: string;
-  criId: string;
+  itemId: string;
   token: string;
+  getByCriterion: boolean;
 }) =>
   useQuery({
-    queryKey: ["motivation-criterion-metric", mtvId, criId],
+    queryKey: getByCriterion
+      ? ["motivation-criterion-metric", mtvId, itemId]
+      : ["motivation-metric", mtvId, itemId],
     queryFn: async () => {
       let response = null;
-
-      response = await APIClient(token).get<CriterionMetricResponse>(
-        `/v1/registry/motivations/${mtvId}/criteria/${criId}`,
-      );
+      const url = getByCriterion
+        ? `/v1/registry/motivations/${mtvId}/criteria/${itemId}`
+        : `/v1/registry/motivations/${mtvId}/metrics/${itemId}/test`;
+      response = await APIClient(token).get<CriterionMetricResponse>(url);
       return response.data;
     },
     onError: (error: AxiosError) => {
