@@ -314,6 +314,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 </OverlayTrigger>
 
                 <Form.Select
+                  id="subject-type-select"
                   aria-label={t("page_assessment_list.filter_subject_type")}
                   onChange={(e) => {
                     setFilters({ ...filters, subject_type: e.target.value });
@@ -345,6 +346,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 </OverlayTrigger>
 
                 <Form.Select
+                  id="subject-name-select"
                   aria-label={t("page_assessment_list.filter_subject_name")}
                   onChange={(e) => {
                     setFilters({ ...filters, subject_name: e.target.value });

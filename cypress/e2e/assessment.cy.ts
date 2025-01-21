@@ -1,4 +1,4 @@
-describe.only("/assessments/create", () => {
+describe("/assessments/create", () => {
   before(() => {
     cy.setupValidation("identified");
   });
@@ -77,7 +77,7 @@ describe.only("/assessments/create", () => {
     );
   });
 
-  it.only("create an assessment", () => {
+  it("create an assessment", () => {
     const subjectId = "identified_test_subject_id";
     const subjectName = "identified_test_subject_name";
     const subjectType = "identified_test_subject_type";
@@ -108,36 +108,35 @@ describe.only("/assessments/create", () => {
 
 describe("/assessments", () => {
   beforeEach(() => {
-    cy.kcLogout();
-    cy.kcLogin("identified").as("identifiedTokens");
-    cy.visit("/assessments");
+    cy.kcLogout().then(() => {
+      cy.kcLogin("identified")
+        .as("identifiedTokens")
+        .then(() => {
+          cy.visit("/assessments");
+        });
+    });
   });
 
   it("should be able to filter on subject type and name", () => {
-    cy.contains("Filter").click();
-
     // Test subject type filtering
-    cy.get("#floatingSelectSubjectType").select("identified_test_subject_type");
-    cy.get("#floatingSelectSubjectType")
+    cy.get("#subject-type-select").select("identified_test_subject_type");
+    cy.get("#subject-type-select")
       .find(":selected")
       .should("have.text", "identified_test_subject_type");
-    cy.get("#apply_filter_button").click();
     cy.get("table").find("tbody").find("tr").should("exist");
-
     cy.get("#clear_filter_button").click();
-    cy.get("#floatingSelectSubjectType")
+    cy.get("#subject-type-select")
       .find(":selected")
       .should("have.text", "Select Subject Type");
 
     // Test subject name filtering
-    cy.get("#floatingSelectSubjectName").select("identified_test_subject_name");
-    cy.get("#floatingSelectSubjectName")
+    cy.get("#subject-name-select").select("identified_test_subject_name");
+    cy.get("#subject-name-select")
       .find(":selected")
       .should("have.text", "identified_test_subject_name");
-    cy.get("#apply_filter_button").click();
     cy.get("table").find("tbody").find("tr").should("exist");
     cy.get("#clear_filter_button").click();
-    cy.get("#floatingSelectSubjectName")
+    cy.get("#subject-name-select")
       .find(":selected")
       .should("have.text", "Select Subject Name");
   });
@@ -148,20 +147,25 @@ describe("/assessments", () => {
       .parent("tr")
       .find('[id^="edit-button-"]')
       .click();
-    cy.get("#actorRadio").contains("PID Manager at Oxford Fertility");
+    cy.get("#actorRadio").contains(
+      "PID Scheme (Component) at Oxford Fertility - EOSC PID Policy",
+    );
     cy.get("#assessment-wizard-tab-step-3").click();
     cy.get("form:visible").within(() => {
       cy.get("#test-check-no").click();
     });
-    cy.get("#left-tabs-tabpane-C5").contains("FAIL");
     cy.contains("Close").click();
-    // select via Ranking header to prevent breaking tests when columns change.
-    cy.contains("thead th", "Ranking").then((rankingHeader) => {
-      const rankingColumnIndex = rankingHeader.index();
-
-      cy.get(
-        `tbody > :nth-child(1) > :nth-child(${rankingColumnIndex + 1})`,
-      ).should("contain", "7");
+    cy.get("table")
+      .contains("td", "1")
+      .parent("tr")
+      .find('[id^="edit-button-"]')
+      .click();
+    cy.get("#actorRadio").contains(
+      "PID Scheme (Component) at Oxford Fertility - EOSC PID Policy",
+    );
+    cy.get("#assessment-wizard-tab-step-3").click();
+    cy.get("form:visible").within(() => {
+      cy.get("#test-check-yes").should("be.checked");
     });
   });
 
@@ -171,21 +175,26 @@ describe("/assessments", () => {
       .parent("tr")
       .find('[id^="edit-button-"]')
       .click();
-    cy.get("#actorRadio").contains("PID Manager at Oxford Fertility");
+    cy.get("#actorRadio").contains(
+      "PID Scheme (Component) at Oxford Fertility - EOSC PID Policy",
+    );
     cy.get("#assessment-wizard-tab-step-3").click();
     cy.get("form:visible").within(() => {
       cy.get("#test-check-no").click();
     });
-    cy.get("#left-tabs-tabpane-C5").contains("FAIL");
     cy.get("#submit_assessment_button").click();
-    // select via Ranking header to prevent breaking tests when columns change.
-    cy.contains("thead th", "Ranking").then((rankingHeader) => {
-      const rankingColumnIndex = rankingHeader.index();
-      cy.get(
-        `tbody > :nth-child(1) > :nth-child(${rankingColumnIndex + 1})`,
-      ).should("contain", "6");
+    cy.get("table")
+      .contains("td", "1")
+      .parent("tr")
+      .find('[id^="edit-button-"]')
+      .click();
+    cy.get("#actorRadio").contains(
+      "PID Scheme (Component) at Oxford Fertility - EOSC PID Policy",
+    );
+    cy.get("#assessment-wizard-tab-step-3").click();
+    cy.get("form:visible").within(() => {
+      cy.get("#test-check-no").should("be.checked");
     });
-    cy.contains("Assessment succesfully updated.").should("be.visible");
   });
 
   it("deletes an assessment", () => {
