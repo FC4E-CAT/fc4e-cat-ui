@@ -11,11 +11,17 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
-import { FaCog, FaPlus } from "react-icons/fa";
+import { FaBars, FaCog, FaPlus } from "react-icons/fa";
 import { MotivationMetricModal } from "./MotivationMetricModal";
 import { useGetAllMotivationMetrics } from "@/api";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { MotivationMetricDetailsModal } from "./MotivationMetricDetailsModal";
+
+interface MetricModalConfig {
+  show: boolean;
+  itemId: string;
+}
 
 export const MotivationMetrics = ({
   mtvId,
@@ -28,6 +34,11 @@ export const MotivationMetrics = ({
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvMetrics, setMtvMetrics] = useState<MotivationMetric[]>([]);
   const [showCreateMetric, setShowCreateMetric] = useState(false);
+
+  const [metricModal, setMetricModal] = useState<MetricModalConfig>({
+    show: false,
+    itemId: "",
+  });
 
   const {
     data: mtrData,
@@ -57,6 +68,15 @@ export const MotivationMetrics = ({
 
   return (
     <div className="px-5 mt-4">
+      <MotivationMetricDetailsModal
+        show={metricModal.show}
+        onHide={() => {
+          setMetricModal({ itemId: "", show: false });
+        }}
+        mtvId={mtvId}
+        itemId={metricModal.itemId}
+        getByCriterion={false}
+      />
       <MotivationMetricModal
         show={showCreateMetric}
         mtvId={mtvId}
@@ -118,6 +138,23 @@ export const MotivationMetrics = ({
                   </div>
                 </Col>
                 <Col xs="auto">
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip>
+                        {t("page_motivations.tip_view_metric_tests")}
+                      </Tooltip>
+                    }
+                  >
+                    <Button
+                      variant="light"
+                      onClick={() => {
+                        setMetricModal({ itemId: item.metric_id, show: true });
+                      }}
+                    >
+                      <FaBars />
+                    </Button>
+                  </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
                     overlay={

@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { SearchBox } from "@/components/SearchBox";
 
-interface MotivationCriMetricAssignProps {
+interface MotivationMetricAssignProps {
   mtvId: string;
   criId: string;
   show: boolean;
@@ -22,7 +22,7 @@ interface MotivationCriMetricAssignProps {
  * Modal component for displaying criterion metric
  */
 export function MotivationMetricAssignModal(
-  props: MotivationCriMetricAssignProps,
+  props: MotivationMetricAssignProps,
 ) {
   const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;

@@ -639,6 +639,8 @@
     "add_new_ones": "to add new ones",
     "tip_publish_asmt": "Publish Assessment Type",
     "tip_unpublish_asmt": "Unpublish Assessment Type",
-    "tip_delete_asmt": "Unpublish Assessment Type"
+    "tip_delete_asmt": "Unpublish Assessment Type",
+    "tip_view_metric_tests": "View metric details and included tests",
+    "metric_details": "Metric details"
   }
 }

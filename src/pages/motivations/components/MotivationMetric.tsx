@@ -1,4 +1,4 @@
-import { useGetMotivationCriMetric } from "@/api";
+import { useGetMotivationMetric } from "@/api";
 import { AuthContext } from "@/auth";
 import { TestAutoHttpsCheckForm } from "@/pages/assessments/components/tests/TestAutoHttpsCheckForm";
 import { TestAutoMd1Form } from "@/pages/assessments/components/tests/TestAutoMd1Form";
@@ -14,19 +14,22 @@ import { useContext } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
-export default function MotivationCriMetric({
+export default function MotivationMetric({
   mtvId,
-  criId,
+  itemId,
+  getByCriterion,
 }: {
   mtvId: string;
-  criId: string;
+  itemId: string;
+  getByCriterion: boolean;
 }) {
   const { keycloak } = useContext(AuthContext)!;
   const { t } = useTranslation();
-  const { data: metricData } = useGetMotivationCriMetric({
+  const { data: metricData } = useGetMotivationMetric({
     mtvId: mtvId,
-    criId: criId,
+    itemId: itemId,
     token: keycloak?.token || "",
+    getByCriterion: getByCriterion,
   });
 
   const testList: JSX.Element[] = [];
@@ -44,7 +47,7 @@ export default function MotivationCriMetric({
               <TestBinaryParamForm
                 test={test as TestBinaryParam}
                 onTestChange={() => {}}
-                criterionId={criId}
+                criterionId={getByCriterion ? itemId : ""}
                 principleId={""}
               />
             </div>
@@ -64,7 +67,7 @@ export default function MotivationCriMetric({
               <TestValueFormParam
                 test={test as TestValueParam}
                 onTestChange={() => {}}
-                criterionId={criId}
+                criterionId={getByCriterion ? itemId : ""}
                 principleId={""}
               />
             </div>
@@ -77,7 +80,7 @@ export default function MotivationCriMetric({
               <TestAutoHttpsCheckForm
                 test={test as TestAutoHttpsCheck}
                 onTestChange={() => {}}
-                criterionId={criId}
+                criterionId={getByCriterion ? itemId : ""}
                 principleId={""}
               />
             </div>
@@ -94,7 +97,7 @@ export default function MotivationCriMetric({
               <TestAutoMd1Form
                 test={test as TestAutoMD1}
                 onTestChange={() => {}}
-                criterionId={criId}
+                criterionId={getByCriterion ? itemId : ""}
                 principleId={""}
               />
             </div>
