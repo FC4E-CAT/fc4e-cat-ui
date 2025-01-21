@@ -119,7 +119,7 @@ function Profile() {
               </Link>
             </div>
           </div>
-          <div className="col-md-auto border-right">
+          <div className="col-lg-8 border-right">
             <div className="p-3">
               <div className="row py-3 mt-4">
                 <h4>{t("validation_requests")}</h4>
