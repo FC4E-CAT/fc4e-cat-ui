@@ -163,7 +163,11 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
             )}
           {!runningTest && message && (
             <div>
-              <small className="text-danger">{message}</small>
+              <small
+                className={`${props.test.result !== null && props.test.result > 0 ? "text-success" : "text-danger"}`}
+              >
+                {message}
+              </small>
             </div>
           )}
         </div>
