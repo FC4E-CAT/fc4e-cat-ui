@@ -1,6 +1,6 @@
 import { AuthContext } from "@/auth";
-import { MotivationMetric } from "@/types";
-import { useContext, useEffect, useState } from "react";
+import { AlertInfo, MotivationMetric } from "@/types";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -11,16 +11,26 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
-import { FaBars, FaCog, FaPlus } from "react-icons/fa";
+import { FaBars, FaCog, FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { MotivationMetricModal } from "./MotivationMetricModal";
-import { useGetAllMotivationMetrics } from "@/api";
+import { useDeleteMotivationMetric, useGetAllMotivationMetrics } from "@/api";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { MotivationMetricDetailsModal } from "./MotivationMetricDetailsModal";
+import toast from "react-hot-toast";
+import { DeleteModal } from "@/components/DeleteModal";
 
 interface MetricModalConfig {
   show: boolean;
   itemId: string;
+}
+
+interface DeleteMetricModalConfig {
+  show: boolean;
+  title: string;
+  message: string;
+  itemId: string;
+  itemName: string;
 }
 
 export const MotivationMetrics = ({
@@ -33,7 +43,14 @@ export const MotivationMetrics = ({
   const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvMetrics, setMtvMetrics] = useState<MotivationMetric[]>([]);
-  const [showCreateMetric, setShowCreateMetric] = useState(false);
+  const [modalCreateEdit, setModalCreateEdit] = useState<MetricModalConfig>({
+    show: false,
+    itemId: "",
+  });
+
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
 
   const [metricModal, setMetricModal] = useState<MetricModalConfig>({
     show: false,
@@ -49,6 +66,48 @@ export const MotivationMetrics = ({
     token: keycloak?.token || "",
     isRegistered: registered,
   });
+
+  const mutationDelete = useDeleteMotivationMetric(keycloak?.token || "");
+
+  const [deleteMetricModalConfig, setDeleteMetricModalConfig] =
+    useState<DeleteMetricModalConfig>({
+      show: false,
+      title: t("page_motivations.modal_metric_delete_title"),
+      message: t("page_motivations.modal_metric_delete_message"),
+      itemId: "",
+      itemName: "",
+    });
+
+  const handleDelete = () => {
+    if (deleteMetricModalConfig.itemId) {
+      const promise = mutationDelete
+        .mutateAsync({
+          mtrId: deleteMetricModalConfig.itemId,
+        })
+        .catch((err) => {
+          alert.current = {
+            message: `${t("error")}: ` + err.response.data.message,
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: t("page_motivations.toast_metric_delete_success"),
+          };
+          setDeleteMetricModalConfig({
+            ...deleteMetricModalConfig,
+            show: false,
+            itemId: "",
+            itemName: "",
+          });
+        });
+      toast.promise(promise, {
+        loading: t("page_motivations.toast_metric_delete_progress"),
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
+      });
+    }
+  };
 
   useEffect(() => {
     // gather all mtv metrics in one array
@@ -68,6 +127,20 @@ export const MotivationMetrics = ({
 
   return (
     <div className="px-5 mt-4">
+      <DeleteModal
+        show={deleteMetricModalConfig.show}
+        title={deleteMetricModalConfig.title}
+        message={deleteMetricModalConfig.message}
+        itemId={deleteMetricModalConfig.itemId}
+        itemName={deleteMetricModalConfig.itemName}
+        onHide={() => {
+          setDeleteMetricModalConfig({
+            ...deleteMetricModalConfig,
+            show: false,
+          });
+        }}
+        handleDelete={handleDelete}
+      />
       <MotivationMetricDetailsModal
         show={metricModal.show}
         onHide={() => {
@@ -78,10 +151,11 @@ export const MotivationMetrics = ({
         getByCriterion={false}
       />
       <MotivationMetricModal
-        show={showCreateMetric}
+        show={modalCreateEdit.show}
         mtvId={mtvId}
+        mtrId={modalCreateEdit.itemId}
         onHide={() => {
-          setShowCreateMetric(false);
+          setModalCreateEdit({ itemId: "", show: false });
         }}
       />
       <div className="d-flex justify-content-between mb-2">
@@ -103,7 +177,7 @@ export const MotivationMetrics = ({
             <Button
               variant="warning"
               onClick={() => {
-                setShowCreateMetric(true);
+                setModalCreateEdit({ itemId: "", show: true });
               }}
               disabled={published}
             >
@@ -141,6 +215,24 @@ export const MotivationMetrics = ({
                   <OverlayTrigger
                     placement="top"
                     overlay={
+                      <Tooltip>{t("page_motivations.tip_edit_metric")}</Tooltip>
+                    }
+                  >
+                    <Button
+                      variant="light"
+                      onClick={() => {
+                        setModalCreateEdit({
+                          itemId: item.metric_id,
+                          show: true,
+                        });
+                      }}
+                    >
+                      <FaEdit />
+                    </Button>
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
                       <Tooltip>
                         {t("page_motivations.tip_view_metric_tests")}
                       </Tooltip>
@@ -167,6 +259,28 @@ export const MotivationMetrics = ({
                     >
                       <FaCog />
                     </Link>
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip id="tip-delete">
+                        {t("page_motivations.tip_delete_metric")}
+                      </Tooltip>
+                    }
+                  >
+                    <Button
+                      className="btn btn-light btn-sm m-1"
+                      onClick={() => {
+                        setDeleteMetricModalConfig({
+                          ...deleteMetricModalConfig,
+                          show: true,
+                          itemId: item.metric_id,
+                          itemName: item.metric_label,
+                        });
+                      }}
+                    >
+                      <FaTrash />
+                    </Button>
                   </OverlayTrigger>
                 </Col>
               </Row>
