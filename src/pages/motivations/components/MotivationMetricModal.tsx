@@ -1,4 +1,8 @@
-import { useCreateMotivationMetric } from "@/api";
+import {
+  useCreateMotivationMetric,
+  useGetMotivationMetricFull,
+  useUpdateMotivationMetric,
+} from "@/api";
 import {
   useGetAllAlgorithms,
   useGetAllBenchmarkTypes,
@@ -24,10 +28,11 @@ import {
 } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { FaFile, FaInfoCircle } from "react-icons/fa";
+import { FaEdit, FaFile, FaInfoCircle } from "react-icons/fa";
 
 interface MetricModalProps {
   mtvId: string;
+  mtrId: string;
   show: boolean;
   onHide: () => void;
 }
@@ -56,6 +61,12 @@ export function MotivationMetricModal(props: MetricModalProps) {
     type_algorithm_id: "",
     type_benchmark_id: "",
     value_benchmark: 0,
+  });
+
+  const { data: metricData } = useGetMotivationMetricFull({
+    mtvId: props.mtvId,
+    mtrId: props.mtrId,
+    token: keycloak?.token || "",
   });
 
   const {
@@ -158,8 +169,32 @@ export function MotivationMetricModal(props: MetricModalProps) {
     metricInput,
   );
 
+  const mutateUpdate = useUpdateMotivationMetric(
+    keycloak?.token || "",
+    props.mtvId,
+    props.mtrId,
+    metricInput,
+  );
+
   useEffect(() => {
-    if (props.show) {
+    if (metricData) {
+      const cleanVal = metricData.value_benchmark.replace(/[^0-9.]/g, "");
+      setBvalue(cleanVal);
+      setMetricInput({
+        mtr: metricData.metric_mtr,
+        label: metricData.metric_label,
+        description: metricData.metric_description,
+        type_algorithm_id: metricData.type_algorithm_id,
+        type_benchmark_id: metricData.type_benchmark_id,
+        type_metric_id: metricData.type_metric_id,
+        value_benchmark: parseFloat(cleanVal),
+        url: "",
+      });
+    }
+  }, [metricData]);
+
+  useEffect(() => {
+    if (props.show && props.mtrId == "") {
       // get default algorithm
       const algo =
         algorithms.filter(
@@ -192,7 +227,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
     }
 
     setShowErrors(false);
-  }, [props.show, metricTypes, algorithms, benchmarkTypes]);
+  }, [props.show, props.mtrId, metricTypes, algorithms, benchmarkTypes]);
 
   // handle backend call to add a new metric
   function handleCreate() {
@@ -207,11 +242,34 @@ export function MotivationMetricModal(props: MetricModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: t("page_motivations.toast_create_metric_progress"),
+          message: t("page_motivations.toast_create_metric_success"),
         };
       });
     toast.promise(promise, {
       loading: t("page_motivations.toast_create_metric_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  }
+
+  // handle backend call to edit existing metric
+  function handleUpdate() {
+    const promise = mutateUpdate
+      .mutateAsync()
+      .catch((err) => {
+        alert.current = {
+          message: "Error: " + err.response.data.message,
+        };
+        throw err;
+      })
+      .then(() => {
+        props.onHide();
+        alert.current = {
+          message: t("page_motivations.toast_metric_update_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_metric_update_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -227,7 +285,19 @@ export function MotivationMetricModal(props: MetricModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaFile className="me-2" /> {t("page_motivations.create_new_metric")}
+          {props.mtrId ? (
+            <>
+              <FaEdit className="me-2" /> {t("page_motivations.edit_metric")}:{" "}
+              <small className="ms-2 bg-light badge">
+                <code>{props.mtrId}</code>
+              </small>
+            </>
+          ) : (
+            <>
+              <FaFile className="me-2" />{" "}
+              {t("page_motivations.create_new_metric")}
+            </>
+          )}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -399,7 +469,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      {t("page_motivations")}
+                      {t("page_motivations.tip_select_metric_algo")}
                     </Tooltip>
                   }
                 >
@@ -565,11 +635,11 @@ export function MotivationMetricModal(props: MetricModalProps) {
           className="btn-success"
           onClick={() => {
             if (handleValidate() === true) {
-              handleCreate();
+              props.mtrId ? handleUpdate() : handleCreate();
             }
           }}
         >
-          {t("buttons.create")}
+          {props.mtrId ? t("buttons.update") : t("buttons.create")}
         </Button>
       </Modal.Footer>
     </Modal>

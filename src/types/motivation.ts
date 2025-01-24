@@ -16,6 +16,16 @@ export interface Motivation {
   published: boolean;
 }
 
+export interface MetricFull {
+  metric_mtr: string;
+  metric_label: string;
+  metric_description: string;
+  type_algorithm_id: string;
+  type_metric_id: string;
+  type_benchmark_id: string;
+  value_benchmark: string;
+}
+
 export interface MetricInput {
   mtr: string;
   label: string;
