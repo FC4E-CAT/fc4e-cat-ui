@@ -14,7 +14,7 @@ import {
 } from "@/api";
 import { RegistryTest, RegistryTestHeader } from "@/types/tests";
 import { useGetAllTests } from "@/api/services/registry";
-import { MotivationTestModal } from "./components/MotivationTestModal";
+import { TestModal } from "@/pages/tests/components/TestModal";
 import { useTranslation } from "react-i18next";
 import { SearchBox } from "@/components/SearchBox";
 
@@ -165,7 +165,7 @@ export default function MotivationMetricTests() {
 
   return (
     <div className="pb-4">
-      <MotivationTestModal
+      <TestModal
         show={showCreateTest}
         onHide={() => {
           setShowCreateTest(false);
@@ -213,7 +213,7 @@ export default function MotivationMetricTests() {
                   setShowCreateTest(true);
                 }}
               >
-                <FaPlus /> {t("page_motivations.create_new_test")}
+                <FaPlus /> {t("page_tests.create_new_test")}
               </Button>
             </div>
           </div>

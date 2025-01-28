@@ -5,6 +5,7 @@ export interface RegistryTestHeader {
   tes: string;
   label: string;
   description: string;
+  last_touch?: string;
 }
 
 export interface RegistryTestDefinition {

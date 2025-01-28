@@ -1,13 +1,19 @@
-import { ApiOptions, RegistryResourceResponse } from "@/types";
+import {
+  ApiOptions,
+  ApiOptionsSearch,
+  RegistryResourceResponse,
+} from "@/types";
 import {
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import { APIClient } from "../client";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
 import {
+  RegistryTest,
   RegistryTestsResponse,
   TestDefinitionInput,
   TestHeaderInput,
@@ -168,8 +174,101 @@ export const useCreateTest = (
         return handleBackendError(error);
       },
       onSuccess: () => {
-        queryClient.invalidateQueries(["all-tests"]);
+        queryClient.invalidateQueries(["registry-tests"]);
       },
     },
   );
 };
+
+export const useGetTests = ({
+  size,
+  page,
+  token,
+  isRegistered,
+  search,
+  sortBy,
+  sortOrder,
+}: ApiOptionsSearch) =>
+  useQuery({
+    queryKey: ["registry-tests", { size, page, sortBy, sortOrder, search }],
+    queryFn: async () => {
+      let url = `/v1/registry/tests?size=${size}&page=${page}&order=${sortOrder}`;
+      search ? (url = `${url}&search=${search}`) : null;
+
+      const response = await APIClient(token).get<RegistryTestsResponse>(url);
+
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered,
+  });
+
+export const useGetTest = ({
+  id,
+  token,
+  isRegistered,
+}: {
+  id: string;
+  token: string;
+  isRegistered: boolean;
+}) =>
+  useQuery({
+    queryKey: ["registry-test", id],
+    queryFn: async () => {
+      let response = null;
+
+      response = await APIClient(token).get<RegistryTest>(
+        `/v1/registry/tests/${id}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered && id !== "" && id !== undefined,
+  });
+
+// export const useUpdateTest = (
+//   token: string,
+//   id: string,
+//   { cri, label, description }: CriterionInput,
+// ) => {
+//   const queryClient = useQueryClient();
+//   return useMutation(
+//     async () => {
+//       const response = await APIClient(token).patch<CriterionResponse>(
+//         `/v1/registry/criteria/${id}`,
+//         {
+//           cri,
+//           label,
+//           description,
+//         },
+//       );
+//       return response.data;
+//     },
+
+//     {
+//       onError: (error: AxiosError) => {
+//         return handleBackendError(error);
+//       },
+//       onSuccess: () => {
+//         queryClient.invalidateQueries(["criterion", id]);
+//       },
+//     },
+//   );
+// };
+
+export function useDeleteTest(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (testId: string) => {
+      return APIClient(token).delete(`/v1/registry/tests/${testId}`);
+    },
+    // on success refresh test query (so that the deleted test dissapears from list)
+    onSuccess: () => {
+      queryClient.invalidateQueries(["registry-tests"]);
+    },
+  });
+}

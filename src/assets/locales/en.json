@@ -574,7 +574,6 @@
     "available_principles": "Available Principles",
     "available_metrics": "Available Metrics",
     "available_criteria_motivation": "Available Criteria in this Motivation",
-    "create_new_test": "Create New Test",
     "edit_metric": "Edit Metric",
     "create_new_criterion": "Create New Criterion",
     "create_new_metric": "Create New Metric",
@@ -628,13 +627,7 @@
     "list_principles_subtitle": "Principles related with criteria under motivation",
     "create_principle": "Create Principle",
     "modal_principles_title": "Manage Principles",
-    "tip_test_description": "Short description of this test item",
-    "tip_test_method": "Select the Test Method",
-    "test_method": "Test Method",
-    "select_test_method": "Select Test Method...",
-    "parameters": "Parameters",
-    "parameters_add": "Add new",
-    "parameters_add_evidence": "Add Evidence",
+
     "modal_asmt_delete_title": "Delete Assessment Type",
     "modal_asmt_delete_message": "Are you sure you want to delete the following Assessment type ?",
     "asmt_types": "Assessment Types",
@@ -654,5 +647,23 @@
     "metric_details": "Metric details",
     "modal_metric_delete_title": "Delete Metric",
     "modal_metric_delete_message": "Are you sure you want to delete the following Metric ?"
+  },
+  "page_tests": {
+    "title": "Tests",
+    "subtitle": "Manage tests.",
+    "tip_view": "View test details",
+    "tip_delete": "Delete test",
+    "modal_delete_title": "Delete test",
+    "modal_delete_message": "Are you sure you want to delete the following test?",
+    "tip_test_description": "Short description of this test item",
+    "tip_test_method": "Select the Test Method",
+    "test_method": "Test Method",
+    "select_test_method": "Select Test Method...",
+    "parameters": "Parameters",
+    "parameters_add": "Add new",
+    "parameters_add_evidence": "Add Evidence",
+    "create_new_test": "Create New Test",
+    "toast_delete_success": "Test succesfully deleted!",
+    "toast_delete_progress": "Deleting Test..."
   }
 }

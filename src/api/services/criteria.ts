@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
 import {
-  ApiCriteria,
+  ApiOptionsSearch,
   Criterion,
   CriterionInput,
   CriterionResponse,
@@ -24,7 +24,7 @@ export const useGetCriteria = ({
   search,
   sortBy,
   sortOrder,
-}: ApiCriteria) =>
+}: ApiOptionsSearch) =>
   useQuery({
     queryKey: ["criteria", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
@@ -66,7 +66,11 @@ export const useGetCriterion = ({
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
   });
 
-export const useGetAllCriteria = ({ token, isRegistered, size }: ApiCriteria) =>
+export const useGetAllCriteria = ({
+  token,
+  isRegistered,
+  size,
+}: ApiOptionsSearch) =>
   useInfiniteQuery({
     queryKey: ["all-criteria"],
     queryFn: async ({ pageParam = 1 }) => {
@@ -93,7 +97,7 @@ export const useGetAllImperatives = ({
   token,
   isRegistered,
   size,
-}: ApiCriteria) =>
+}: ApiOptionsSearch) =>
   useInfiniteQuery({
     queryKey: ["all-imperatives"],
     queryFn: async ({ pageParam = 1 }) => {
@@ -152,7 +156,7 @@ export const useGetAllCriterionTypes = ({
   token,
   isRegistered,
   size,
-}: ApiCriteria) =>
+}: ApiOptionsSearch) =>
   useInfiniteQuery({
     queryKey: ["motivation-types"],
     queryFn: async ({ pageParam = 1 }) => {
