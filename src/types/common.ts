@@ -119,13 +119,7 @@ export type ApiViewUsers = ApiOptions & {
   id: string;
 };
 
-export type ApiMotivations = ApiOptions & {
-  search: string;
-};
-export type ApiPrinciples = ApiOptions & {
-  search: string;
-};
-export type ApiCriteria = ApiOptions & {
+export type ApiOptionsSearch = ApiOptions & {
   search: string;
 };
 

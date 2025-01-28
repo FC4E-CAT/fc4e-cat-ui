@@ -8,8 +8,8 @@ import {
 } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
 import {
-  ApiMotivations,
   ApiOptions,
+  ApiOptionsSearch,
   CriImp,
   MetricAssignment,
   MetricFull,
@@ -39,7 +39,7 @@ export const useGetMotivations = ({
   token,
   isRegistered,
   search,
-}: ApiMotivations) =>
+}: ApiOptionsSearch) =>
   useQuery({
     queryKey: ["motivations", { size, page, sortBy }],
     queryFn: async () => {

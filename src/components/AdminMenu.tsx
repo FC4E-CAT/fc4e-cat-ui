@@ -6,7 +6,7 @@ import {
   FaTags,
   FaUsers,
 } from "react-icons/fa";
-import { FaFileCircleCheck } from "react-icons/fa6";
+import { FaClipboardQuestion, FaFileCircleCheck } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
 
 function isSel(path: string, name: string): boolean {
@@ -132,6 +132,16 @@ export default function AdminMenu() {
             className="rounded cat-nav-link-light px-3 text-nowrap"
           >
             <FaAward className="text-muted me-2" /> {t("criteria")}
+          </Link>
+        </li>
+        <li
+          className={`nav-item rounded ${isSel(adminPath, "tests") ? "cat-menu-selected" : ""}`}
+        >
+          <Link
+            to="/admin/tests"
+            className="rounded cat-nav-link-light px-3 text-nowrap"
+          >
+            <FaClipboardQuestion className="text-muted me-2" /> {t("tests")}
           </Link>
         </li>
       </ul>
