@@ -69,8 +69,8 @@ export default function AdminValidations() {
   );
 
   const [opts, setOpts] = useState<ValidationState>({
-    sortBy: "",
-    sortOrder: "",
+    sortBy: "status",
+    sortOrder: "ASC",
     type: "",
     page: 1,
     size: 20,
@@ -229,7 +229,13 @@ export default function AdminValidations() {
               <span>{t("fields.actor_name")}</span>
             </th>
             <th>
-              <span>{t("fields.status")}</span>
+              <span
+                onClick={() => handleSortClick("status")}
+                className="cat-cursor-pointer"
+              >
+                {t("fields.status")}{" "}
+                {SortMarker("status", opts.sortBy, opts.sortOrder)}
+              </span>
             </th>
             <th></th>
           </tr>
