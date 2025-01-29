@@ -229,8 +229,14 @@ export default function AdminValidations() {
               <span>{t("fields.actor_name")}</span>
             </th>
             <th>
-              <span>{t("fields.status")}</span>
-            </th>
+              <span
+                onClick={() => handleSortClick("status")}
+                className="cat-cursor-pointer"
+              >
+                {t("fields.status")}{" "}
+                {SortMarker("status", opts.sortBy, opts.sortOrder)}
+              </span>
+             </th>
             <th></th>
           </tr>
         </thead>
