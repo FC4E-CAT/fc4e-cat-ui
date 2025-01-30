@@ -11,17 +11,17 @@ import {
 import {
   FaArrowLeft,
   FaArrowRight,
-  FaBars,
   FaExclamationTriangle,
   FaPlus,
   FaTrash,
   FaArrowUp,
   FaArrowDown,
   FaArrowsAltV,
+  FaEdit,
+  FaBars,
 } from "react-icons/fa";
 
 import { AlertInfo } from "@/types";
-import { Link } from "react-router-dom";
 import { TestModal } from "@/pages/tests/components/TestModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
@@ -39,6 +39,12 @@ type TestsState = {
   search: string;
 };
 
+type TestModalConfig = {
+  id: string;
+  lock: boolean;
+  show: boolean;
+};
+
 interface DeleteModalConfig {
   show: boolean;
   title: string;
@@ -51,10 +57,13 @@ interface DeleteModalConfig {
 export default function Tests() {
   const { t } = useTranslation();
   const tooltipView = (
-    <Tooltip id="tip-restore">{t("page_tests.tip_view")}</Tooltip>
+    <Tooltip id="tip-view">{t("page_tests.tip_view")}</Tooltip>
+  );
+  const tooltipEdit = (
+    <Tooltip id="tip-edit">{t("page_tests.tip_edit")}</Tooltip>
   );
   const tooltipDelete = (
-    <Tooltip id="tip-restore">{t("page_tests.tip_delete")}</Tooltip>
+    <Tooltip id="tip-delete">{t("page_tests.tip_delete")}</Tooltip>
   );
   const { keycloak, registered } = useContext(AuthContext)!;
 
@@ -105,14 +114,18 @@ export default function Tests() {
   };
 
   const [opts, setOpts] = useState<TestsState>({
-    sortBy: "tes",
-    sortOrder: "ASC",
+    sortBy: "lastTouch",
+    sortOrder: "DESC",
     page: 1,
     size: 10,
     search: "",
   });
 
-  const [showCreate, setShowCreate] = useState(false);
+  const [testModalCfg, setTestModalCfg] = useState<TestModalConfig>({
+    id: "",
+    lock: false,
+    show: false,
+  });
 
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
@@ -172,9 +185,11 @@ export default function Tests() {
         handleDelete={handleDeleteConfirmed}
       />
       <TestModal
-        show={showCreate}
+        id={testModalCfg.id}
+        lock={testModalCfg.lock}
+        show={testModalCfg.show}
         onHide={() => {
-          setShowCreate(false);
+          setTestModalCfg({ id: "", lock: false, show: false });
         }}
       />
       <div className="cat-view-heading-block row border-bottom">
@@ -188,7 +203,7 @@ export default function Tests() {
           <Button
             variant="warning"
             onClick={() => {
-              setShowCreate(true);
+              setTestModalCfg({ id: "", lock: false, show: true });
             }}
           >
             <FaPlus /> {t("buttons.create_new")}
@@ -227,27 +242,33 @@ export default function Tests() {
             <tr className="table-light">
               <th>
                 <span
-                  onClick={() => handleSortClick("cri")}
+                  onClick={() => handleSortClick("TES")}
                   className="cat-cursor-pointer"
                 >
                   {t("fields.tes").toUpperCase()}{" "}
-                  {SortMarker("tes", opts.sortBy, opts.sortOrder)}
+                  {SortMarker("TES", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
               <th>
                 <span
-                  onClick={() => handleSortClick("label")}
+                  onClick={() => handleSortClick("labelTest")}
                   className="cat-cursor-pointer"
                 >
                   {t("fields.label")}{" "}
-                  {SortMarker("label", opts.sortBy, opts.sortOrder)}
+                  {SortMarker("labelTest", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
               <th className="w-50">
                 <span>{t("fields.description")}</span>
               </th>
               <th>
-                <span>{t("fields.modified")}</span>
+                <span
+                  onClick={() => handleSortClick("lastTouch")}
+                  className="cat-cursor-pointer text-nowrap"
+                >
+                  {t("fields.modified")}{" "}
+                  {SortMarker("lastTouch", opts.sortBy, opts.sortOrder)}
+                </span>
               </th>
               <th></th>
             </tr>
@@ -287,12 +308,32 @@ export default function Tests() {
                     <td>
                       <div className="d-flex flex-nowrap">
                         <OverlayTrigger placement="top" overlay={tooltipView}>
-                          <Link
+                          <Button
                             className="btn btn-light btn-sm m-1"
-                            to={`/admin/tests`}
+                            onClick={() => {
+                              setTestModalCfg({
+                                id: item.test.id,
+                                lock: true,
+                                show: true,
+                              });
+                            }}
                           >
                             <FaBars />
-                          </Link>
+                          </Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger placement="top" overlay={tooltipEdit}>
+                          <Button
+                            className="btn btn-light btn-sm m-1"
+                            onClick={() => {
+                              setTestModalCfg({
+                                id: item.test.id,
+                                lock: false,
+                                show: true,
+                              });
+                            }}
+                          >
+                            <FaEdit />
+                          </Button>
                         </OverlayTrigger>
                         <OverlayTrigger placement="top" overlay={tooltipDelete}>
                           <Button
