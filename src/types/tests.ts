@@ -10,6 +10,12 @@ export interface RegistryTestHeader {
 
 export interface RegistryTestDefinition {
   id: string;
+  test_method_id: string;
+  label: string;
+  param_type: string;
+  test_params: string;
+  test_question: string;
+  tool_tip: string;
 }
 
 export interface RegistryTest {

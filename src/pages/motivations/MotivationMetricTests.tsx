@@ -166,6 +166,8 @@ export default function MotivationMetricTests() {
   return (
     <div className="pb-4">
       <TestModal
+        id=""
+        lock={false}
         show={showCreateTest}
         onHide={() => {
           setShowCreateTest(false);

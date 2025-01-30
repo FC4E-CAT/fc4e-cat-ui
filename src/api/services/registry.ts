@@ -192,7 +192,7 @@ export const useGetTests = ({
   useQuery({
     queryKey: ["registry-tests", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
-      let url = `/v1/registry/tests?size=${size}&page=${page}&order=${sortOrder}`;
+      let url = `/v1/registry/tests?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
       search ? (url = `${url}&search=${search}`) : null;
 
       const response = await APIClient(token).get<RegistryTestsResponse>(url);
@@ -230,36 +230,35 @@ export const useGetTest = ({
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
   });
 
-// export const useUpdateTest = (
-//   token: string,
-//   id: string,
-//   { cri, label, description }: CriterionInput,
-// ) => {
-//   const queryClient = useQueryClient();
-//   return useMutation(
-//     async () => {
-//       const response = await APIClient(token).patch<CriterionResponse>(
-//         `/v1/registry/criteria/${id}`,
-//         {
-//           cri,
-//           label,
-//           description,
-//         },
-//       );
-//       return response.data;
-//     },
+export const useUpdateTest = (
+  token: string,
+  id: string,
+  testHeader: TestHeaderInput,
+  testDefinition: TestDefinitionInput,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await APIClient(token).patch<TestInput>(
+        `/v1/registry/tests/${id}`,
+        {
+          test: testHeader,
+          test_definition: testDefinition,
+        },
+      );
+      return response.data;
+    },
 
-//     {
-//       onError: (error: AxiosError) => {
-//         return handleBackendError(error);
-//       },
-//       onSuccess: () => {
-//         queryClient.invalidateQueries(["criterion", id]);
-//       },
-//     },
-//   );
-// };
-
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["registry-tests"]);
+      },
+    },
+  );
+};
 export function useDeleteTest(token: string) {
   const queryClient = useQueryClient();
   return useMutation({

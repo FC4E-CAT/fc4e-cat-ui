@@ -519,8 +519,6 @@
     "toast_asmt_delete_fail": "Error during Assessment Type deletion!",
     "toast_create_metric_success": "Motivation Created!",
     "toast_create_metric_progress": "Creating Metric...",
-    "toast_create_test_success": "Test Created!",
-    "toast_create_test_progress": "Creating Test...",
     "toast_metric_delete_progress": "Deleting Metric...",
     "toast_metric_delete_success": "Metric Deleted!",
     "toast_metric_delete_fail": "Metric Deletion failed!",
@@ -544,7 +542,6 @@
     "modal_add_actor_title": "Add Actor to Motivation",
     "tip_mtv": "Acronym to quickly distinguish the motivation item",
     "tip_mtr": "Acronym to quickly distinguish the metric item",
-    "tip_tes": "Acronym to quickly distinguish the test item",
     "tip_select_actor_type": "Select the type of actor",
     "tip_select_mtv_type": "Select the type of the motivation item",
     "select_mtv_type": "Select Motivation type...",
@@ -653,8 +650,11 @@
     "subtitle": "Manage tests.",
     "tip_view": "View test details",
     "tip_delete": "Delete test",
+    "tip_edit": "Edit test",
+    "tip_label": "Label (Name) of the test item",
     "modal_delete_title": "Delete test",
     "modal_delete_message": "Are you sure you want to delete the following test?",
+    "tip_tes": "Acronym to quickly distinguish the test item",
     "tip_test_description": "Short description of this test item",
     "tip_test_method": "Select the Test Method",
     "test_method": "Test Method",
@@ -663,7 +663,13 @@
     "parameters_add": "Add new",
     "parameters_add_evidence": "Add Evidence",
     "create_new_test": "Create New Test",
+    "edit_test": "Edit Test",
+    "view_test": "View Test Details",
     "toast_delete_success": "Test succesfully deleted!",
-    "toast_delete_progress": "Deleting Test..."
+    "toast_delete_progress": "Deleting Test...",
+    "toast_create_success": "Test Created!",
+    "toast_create_progress": "Creating Test...",
+    "toast_update_success": "Test Updated!",
+    "toast_update_progress": "Updating Test..."
   }
 }

@@ -1,4 +1,9 @@
-import { useCreateTest, useGetAllTestMethods } from "@/api/services/registry";
+import {
+  useCreateTest,
+  useGetAllTestMethods,
+  useGetTest,
+  useUpdateTest,
+} from "@/api/services/registry";
 import { AuthContext } from "@/auth";
 import { AlertInfo, RegistryResource } from "@/types";
 import { TestDefinitionInput, TestHeaderInput, TestParam } from "@/types/tests";
@@ -15,10 +20,12 @@ import {
 } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { FaFile, FaInfoCircle, FaTrash } from "react-icons/fa";
+import { FaEdit, FaFile, FaInfoCircle, FaTrash } from "react-icons/fa";
 
 interface TestModalProps {
+  id: string;
   show: boolean;
+  lock: boolean;
   onHide: () => void;
 }
 /**
@@ -57,6 +64,38 @@ export function TestModal(props: TestModalProps) {
     ]);
   };
 
+  const { data } = useGetTest({
+    id: props.id,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    if (props.id && data) {
+      // split params
+      const paramNames = data.test_definition.test_params.split("|");
+      const paramTexts = data.test_definition.test_question.split("|");
+      const paramTips = data.test_definition.tool_tip.split("|");
+      const params: TestParam[] = [];
+      if (
+        paramNames.length == paramTexts.length &&
+        paramNames.length == paramTips.length
+      ) {
+        for (let i = 0; i < paramNames.length; i++) {
+          params.push({
+            id: i,
+            name: paramNames[i],
+            text: paramTexts[i],
+            tooltip: paramTips[i],
+          });
+        }
+      }
+      setTestHeader(data.test);
+      setTestDefinition(data.test_definition);
+      setParams(params);
+    }
+  }, [data, props.id]);
+
   const updateParamTestDef = () => {
     // find first the evidence
     let names = "";
@@ -69,7 +108,7 @@ export function TestModal(props: TestModalProps) {
     subParams.map((item) => {
       names === "" ? (names = item.name) : (names = names + "|" + item.name);
       text === "" ? (text = item.text) : (text = text + "|" + item.text);
-      tips === "" ? (tips = item.tooltip) : (tips = names + "|" + item.tooltip);
+      tips === "" ? (tips = item.tooltip) : (tips = tips + "|" + item.tooltip);
     });
 
     if (evidence !== undefined) {
@@ -81,7 +120,7 @@ export function TestModal(props: TestModalProps) {
         : (text = text + "|" + evidence.text);
       tips === ""
         ? (tips = evidence.tooltip)
-        : (tips = names + "|" + evidence.tooltip);
+        : (tips = tips + "|" + evidence.tooltip);
     }
 
     setTestDefinition({
@@ -116,21 +155,23 @@ export function TestModal(props: TestModalProps) {
 
   useEffect(() => {
     setShowErrors(false);
-    setTestHeader({
-      label: "",
-      tes: "",
-      description: "",
-    });
-    setTestDefinition({
-      test_method_id: "",
-      label: "",
-      param_type: "onscreen",
-      test_params: "",
-      test_question: "",
-      tool_tip: "",
-    });
-    setParams([]);
-  }, [props.show]);
+    if (props.id === "") {
+      setTestHeader({
+        label: "",
+        tes: "",
+        description: "",
+      });
+      setTestDefinition({
+        test_method_id: "",
+        label: "",
+        param_type: "onscreen",
+        test_params: "",
+        test_question: "",
+        tool_tip: "",
+      });
+      setParams([]);
+    }
+  }, [props.show, props.id]);
 
   useEffect(() => {
     // gather all test methods
@@ -160,6 +201,37 @@ export function TestModal(props: TestModalProps) {
     testDefinition,
   );
 
+  const mutateUpdate = useUpdateTest(
+    keycloak?.token || "",
+    props.id,
+    testHeader,
+    testDefinition,
+  );
+
+  // handle backend call to update a test
+  function handleUpdate() {
+    updateParamTestDef();
+    const promise = mutateUpdate
+      .mutateAsync()
+      .catch((err) => {
+        alert.current = {
+          message: "Error: " + err.response.data.message,
+        };
+        throw err;
+      })
+      .then(() => {
+        props.onHide();
+        alert.current = {
+          message: t("page_tests.toast_update_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_tests.toast_update_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  }
+
   // handle backend call to add a new test
   function handleCreate() {
     updateParamTestDef();
@@ -174,11 +246,11 @@ export function TestModal(props: TestModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: t("page_tests.toast_create_test_success"),
+          message: t("page_tests.toast_create_success"),
         };
       });
     toast.promise(promise, {
-      loading: t("page_tests.toast_create_test_progress"),
+      loading: t("page_tests.toast_create_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -194,7 +266,24 @@ export function TestModal(props: TestModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaFile className="me-2" /> {t("page_tests.create_new_test")}
+          {props.id ? (
+            props.lock ? (
+              <>
+                <FaFile className="me-2" />
+                {t("page_tests.view_test")}
+              </>
+            ) : (
+              <>
+                <FaEdit className="me-2" />
+                {t("page_tests.edit_test")}
+              </>
+            )
+          ) : (
+            <>
+              <FaFile className="me-2" />
+              {t("page_tests.create_new_test")}
+            </>
+          )}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -226,6 +315,7 @@ export function TestModal(props: TestModalProps) {
                     });
                   }}
                   aria-describedby="label-metric-mtr"
+                  disabled={props.lock}
                 />
               </InputGroup>
               {showErrors && testHeader.tes === "" && (
@@ -239,7 +329,7 @@ export function TestModal(props: TestModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      {t("page_tests.tip_test_label")}
+                      {t("page_tests.tip_label")}
                     </Tooltip>
                   }
                 >
@@ -257,6 +347,7 @@ export function TestModal(props: TestModalProps) {
                       label: e.target.value,
                     });
                   }}
+                  disabled={props.lock}
                 />
               </InputGroup>
               {showErrors && testHeader.label === "" && (
@@ -291,6 +382,7 @@ export function TestModal(props: TestModalProps) {
                     description: e.target.value,
                   });
                 }}
+                disabled={props.lock}
               />
               {showErrors && testHeader.description === "" && (
                 <span className="text-danger">{t("required")}</span>
@@ -329,6 +421,7 @@ export function TestModal(props: TestModalProps) {
                       test_method_id: e.target.value,
                     });
                   }}
+                  disabled={props.lock}
                 >
                   <>
                     <option value="" disabled>
@@ -370,6 +463,7 @@ export function TestModal(props: TestModalProps) {
                 onClick={() => {
                   addNewParam(false);
                 }}
+                disabled={props.lock}
               >
                 {t("page_tests.parameters_add")}
               </Button>
@@ -381,6 +475,7 @@ export function TestModal(props: TestModalProps) {
                   addNewParam(true);
                 }}
                 disabled={
+                  props.lock ||
                   params.find((item) => item.name === "evidence") !== undefined
                 }
               >
@@ -408,7 +503,7 @@ export function TestModal(props: TestModalProps) {
                             onChange={(e) => {
                               updateParam(param.id, "name", e.target.value);
                             }}
-                            disabled={param.name === "evidence"}
+                            disabled={props.lock || param.name === "evidence"}
                           />
                         </td>
                         <td>
@@ -418,6 +513,7 @@ export function TestModal(props: TestModalProps) {
                             onChange={(e) => {
                               updateParam(param.id, "text", e.target.value);
                             }}
+                            disabled={props.lock}
                           />
                         </td>
                         <td>
@@ -427,6 +523,7 @@ export function TestModal(props: TestModalProps) {
                             onChange={(e) => {
                               updateParam(param.id, "tooltip", e.target.value);
                             }}
+                            disabled={props.lock}
                           />
                         </td>
                         <td>
@@ -436,6 +533,7 @@ export function TestModal(props: TestModalProps) {
                             onClick={() => {
                               removeParam(param.id);
                             }}
+                            disabled={props.lock}
                           >
                             <FaTrash />
                           </Button>
@@ -453,16 +551,31 @@ export function TestModal(props: TestModalProps) {
         <Button className="btn-secondary" onClick={props.onHide}>
           {t("buttons.close")}
         </Button>
-        <Button
-          className="btn-success"
-          onClick={() => {
-            if (handleValidate() === true) {
-              handleCreate();
-            }
-          }}
-        >
-          {t("buttons.create")}
-        </Button>
+        {props.id ? (
+          props.lock ? null : (
+            <Button
+              className="btn-success"
+              onClick={() => {
+                if (handleValidate() === true) {
+                  handleUpdate();
+                }
+              }}
+            >
+              {t("buttons.update")}
+            </Button>
+          )
+        ) : (
+          <Button
+            className="btn-success"
+            onClick={() => {
+              if (handleValidate() === true) {
+                handleCreate();
+              }
+            }}
+          >
+            {t("buttons.create")}
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );
