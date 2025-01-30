@@ -175,6 +175,7 @@ export const useCreateTest = (
       },
       onSuccess: () => {
         queryClient.invalidateQueries(["registry-tests"]);
+        queryClient.invalidateQueries(["all-tests"]);
       },
     },
   );
