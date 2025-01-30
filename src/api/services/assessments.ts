@@ -360,3 +360,46 @@ export function useAssessmentCommentDelete(
     },
   });
 }
+
+// use mutation to publish an assessment either as admin or plain user
+export function useAssessmentPublish(
+  token: string,
+  id: string,
+  admin: boolean,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      console.log("published:", id);
+      return APIClient(token).put(
+        `${admin ? "/v1/admin" : "/v2"}/assessments/${id}/publish`,
+      );
+    },
+    // update query cache
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessments"]);
+      queryClient.invalidateQueries(["assessment", { id }]);
+    },
+  });
+}
+
+// use mutation to unpublish an assessment either as admin or plain user
+export function useAssessmentUnpublish(
+  token: string,
+  id: string,
+  admin: boolean,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      return APIClient(token).put(
+        `${admin ? "/v1/admin" : "/v2"}/assessments/${id}/unpublish`,
+      );
+    },
+    // update query cache
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessments"]);
+      queryClient.invalidateQueries(["assessment", { id }]);
+    },
+  });
+}

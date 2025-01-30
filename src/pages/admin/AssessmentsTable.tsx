@@ -8,8 +8,9 @@ import {
 import { AuthContext } from "@/auth";
 import { AssessmentAdminListItem } from "@/types";
 import { Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { FaFileExport } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaFileExport } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { PublishModal } from "@/components";
 
 // Custom styles for the table
 const customStyles = {
@@ -27,10 +28,26 @@ const customStyles = {
   },
 };
 
+interface PublishModalConfig {
+  show: boolean;
+  id: string;
+  name: string;
+  admin: boolean;
+  publish: boolean;
+}
+
 const AssessmentsTable: React.FC = () => {
   const { t } = useTranslation();
   const tooltipExport = (
-    <Tooltip id="tooltip">{t("page_assessment_list.tip_export")}</Tooltip>
+    <Tooltip id="tooltip-export">
+      {t("page_assessment_list.tip_export")}
+    </Tooltip>
+  );
+  const tooltipPublish = (
+    <Tooltip id="tooltip-publish">{t("tip_publish_assessment")}</Tooltip>
+  );
+  const tooltipUnpublish = (
+    <Tooltip id="tooltip-publish">{t("tip_unpublish_assessment")}</Tooltip>
   );
   const { keycloak, registered } = useContext(AuthContext)!;
 
@@ -51,6 +68,16 @@ const AssessmentsTable: React.FC = () => {
     setFilterText("");
     setFilterType("");
   };
+
+  // Publish Modal
+  const [publishModalConfig, setPublishModalConfig] =
+    useState<PublishModalConfig>({
+      show: false,
+      name: "",
+      id: "",
+      admin: true,
+      publish: true,
+    });
 
   const [asmtNumID, setAsmtNumID] = useState<string>("");
   const qAssessment = useGetAdminAssessmentById({
@@ -167,15 +194,54 @@ const AssessmentsTable: React.FC = () => {
     {
       name: t("fields.actions"),
       cell: (row) => (
-        <OverlayTrigger placement="top" overlay={tooltipExport}>
-          <Button
-            variant="light"
-            size="sm"
-            onClick={() => setAsmtNumID(row.id)}
-          >
-            <FaFileExport />
-          </Button>
-        </OverlayTrigger>
+        <>
+          <OverlayTrigger placement="top" overlay={tooltipExport}>
+            <Button
+              variant="light"
+              size="sm"
+              onClick={() => setAsmtNumID(row.id)}
+            >
+              <FaFileExport />
+            </Button>
+          </OverlayTrigger>
+          {row.published ? (
+            <OverlayTrigger placement="top" overlay={tooltipUnpublish}>
+              <Button
+                variant="light"
+                size="sm"
+                onClick={() => {
+                  setPublishModalConfig({
+                    id: row.id,
+                    name: row.name,
+                    admin: true,
+                    show: true,
+                    publish: false,
+                  });
+                }}
+              >
+                <FaEyeSlash />
+              </Button>
+            </OverlayTrigger>
+          ) : (
+            <OverlayTrigger placement="top" overlay={tooltipPublish}>
+              <Button
+                variant="light"
+                size="sm"
+                onClick={() => {
+                  setPublishModalConfig({
+                    id: row.id,
+                    name: row.name,
+                    admin: true,
+                    show: true,
+                    publish: true,
+                  });
+                }}
+              >
+                <FaEye />
+              </Button>
+            </OverlayTrigger>
+          )}
+        </>
       ),
       width: "110px",
     },
@@ -183,6 +249,22 @@ const AssessmentsTable: React.FC = () => {
 
   return (
     <div>
+      <PublishModal
+        show={publishModalConfig.show}
+        name={publishModalConfig.name}
+        admin={publishModalConfig.admin}
+        id={publishModalConfig.id}
+        publish={publishModalConfig.publish}
+        onHide={() => {
+          setPublishModalConfig({
+            id: "",
+            name: "",
+            admin: false,
+            show: false,
+            publish: true,
+          });
+        }}
+      />
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
