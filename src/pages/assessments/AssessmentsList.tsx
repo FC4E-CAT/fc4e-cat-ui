@@ -40,6 +40,7 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
 import { useTranslation } from "react-i18next";
+import { PublishModal } from "@/components";
 
 type Pagination = {
   page: number;
@@ -68,6 +69,14 @@ interface ShareModalConfig {
   show: boolean;
   name: string;
   id: string;
+}
+
+interface PublishModalConfig {
+  show: boolean;
+  id: string;
+  name: string;
+  admin: boolean;
+  publish: boolean;
 }
 
 function AssessmentsList({ listPublic = false }: AssessmentListProps) {
@@ -118,6 +127,16 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     name: "",
     id: "",
   });
+
+  // Publish Modal
+  const [publishModalConfig, setPublishModalConfig] =
+    useState<PublishModalConfig>({
+      show: false,
+      name: "",
+      id: "",
+      admin: false,
+      publish: true,
+    });
 
   const [filters, setFilters] = useState<AssessmentFiltersType>({
     subject_name: "",
@@ -245,6 +264,22 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
 
   return (
     <div className={listPublic ? "container bg-light p-2 mb-5 rounded" : ""}>
+      <PublishModal
+        show={publishModalConfig.show}
+        name={publishModalConfig.name}
+        admin={publishModalConfig.admin}
+        id={publishModalConfig.id}
+        publish={publishModalConfig.publish}
+        onHide={() => {
+          setPublishModalConfig({
+            id: "",
+            name: "",
+            admin: false,
+            show: false,
+            publish: true,
+          });
+        }}
+      />
       <ShareModal
         show={shareModalConfig.show}
         name={shareModalConfig.name}
@@ -561,6 +596,57 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                             </OverlayTrigger>
                             {!listPublic && (
                               <>
+                                {item.published ? (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tip-unpublish">
+                                        {t("tip_unpublish_assessment")}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <Button
+                                      id={`unpublish-button-${item.id}`}
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        setPublishModalConfig({
+                                          id: item.id,
+                                          name: item.name,
+                                          admin: false,
+                                          show: true,
+                                          publish: false,
+                                        });
+                                      }}
+                                    >
+                                      <FaEyeSlash />
+                                    </Button>
+                                  </OverlayTrigger>
+                                ) : (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tip-publish">
+                                        {t("tip_publish_assessment")}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <Button
+                                      id={`publish-button-${item.id}`}
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        setPublishModalConfig({
+                                          id: item.id,
+                                          name: item.name,
+                                          admin: false,
+                                          show: true,
+                                          publish: true,
+                                        });
+                                      }}
+                                    >
+                                      <FaEye />
+                                    </Button>
+                                  </OverlayTrigger>
+                                )}
                                 <OverlayTrigger
                                   placement="top"
                                   overlay={
