@@ -1,92 +1,84 @@
 {
-    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-    "type": "SoftwareSourceCode",
-    "applicationCategory": "Assessment - UI ",
-    "author": [
-        {
-            "id": "_:author_1",
-            "type": "Person",
-            "affiliation": {
-                "type": "Organization",
-                "name": "National Infrastructures for Research and Technology -  GRNET S.A"
-            },
-            "email": "kaggis@grnet.gr",
-            "familyName": "Kagkelidis",
-            "givenName": "Konstantinos"
-        },
-        {
-            "type": "schema:Role",
-            "schema:author": "_:author_1",
-            "schema:roleName": "Developer"
-        },
-        {
-            "id": "_:author_2",
-            "type": "Person",
-            "affiliation": {
-                "type": "Organization",
-                "name": "National Infrastructures for Research and Technology -  GRNET S.A"
-            },
-            "email": "themis@grnet.gr",
-            "familyName": "Zamani",
-            "givenName": "Themis"
-        },
-        {
-            "type": "schema:Role",
-            "schema:author": "_:author_2",
-            "schema:roleName": "Developer"
-        },
-        {
-            "id": "_:author_3",
-            "type": "Person",
-            "affiliation": {
-                "type": "Organization",
-                "name": "Data Archiving AND Networking Services(DANS)"
-            },
-            "email": "fjodor.van.rijsselberg@dans.knaw.nl",
-            "familyName": "van Rijsselberg",
-            "givenName": "Fjodor"
-        },
-        {
-            "type": "schema:Role",
-            "schema:author": "_:author_3",
-            "schema:roleName": "Tester"
-        },
-        {
-            "type": "schema:Role",
-            "schema:author": "_:author_3",
-            "schema:roleName": "Developer"
-        }
-    ],
-    "codeRepository": "https://github.com/FC4E-CAT/fc4e-cat-ui",
-    "dateCreated": "2023-04-20",
-    "dateModified": "2024-09-11",
-    "datePublished": "2023-07-07",
-    "description": "A UI component for the FC4E CAT system.",
-    "downloadUrl": "https://github.com/FC4E-CAT/fc4e-cat-ui/archive/refs/heads/main.zip",
-    "funder": {
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "type": "SoftwareSourceCode",
+  "applicationCategory": "Assessment - UI ",
+  "author": [
+    {
+      "id": "_:author_1",
+      "type": "Person",
+      "affiliation": {
         "type": "Organization",
-        "name": "European Commission"
+        "name": "National Infrastructures for Research and Technology -  GRNET S.A"
+      },
+      "email": "kaggis@grnet.gr",
+      "familyName": "Kagkelidis",
+      "givenName": "Konstantinos"
     },
-    "identifier": "https://github.com/FC4E-CAT/fc4e-cat-ui",
-    "isPartOf": "https://faircore4eosc.eu",
-    "keywords": [
-        "FC4E",
-        "CAT",
-        "UI",
-        "Typescript"
-    ],
-    "license": "https://spdx.org/licenses/Apache-2.0",
-    "name": "FC4E CAT UI",
-    "operatingSystem": "Rocky Linux 9.0",
-    "programmingLanguage": "Typescript",
-    "schema:releaseNotes": "Change Log: https://github.com/FC4E-CAT/fc4e-cat-ui/blob/main/CHANGELOG.md\n",
-    "runtimePlatform": [
-        "Web Browser",
-        "Node.js"
-    ],
-    "softwareRequirements": "Node.js,npm,Typescript,Vite",
-    "version": "1.3.1",
-    "developmentStatus": "active",
-    "funding": "FAIRCORE4EOSC",
-    "issueTracker": "https://github.com/FC4E-CAT/fc4e-cat-ui/issues"
+    {
+      "type": "schema:Role",
+      "schema:author": "_:author_1",
+      "schema:roleName": "Developer"
+    },
+    {
+      "id": "_:author_2",
+      "type": "Person",
+      "affiliation": {
+        "type": "Organization",
+        "name": "National Infrastructures for Research and Technology -  GRNET S.A"
+      },
+      "email": "themis@grnet.gr",
+      "familyName": "Zamani",
+      "givenName": "Themis"
+    },
+    {
+      "type": "schema:Role",
+      "schema:author": "_:author_2",
+      "schema:roleName": "Developer"
+    },
+    {
+      "id": "_:author_3",
+      "type": "Person",
+      "affiliation": {
+        "type": "Organization",
+        "name": "Data Archiving AND Networking Services(DANS)"
+      },
+      "email": "fjodor.van.rijsselberg@dans.knaw.nl",
+      "familyName": "van Rijsselberg",
+      "givenName": "Fjodor"
+    },
+    {
+      "type": "schema:Role",
+      "schema:author": "_:author_3",
+      "schema:roleName": "Tester"
+    },
+    {
+      "type": "schema:Role",
+      "schema:author": "_:author_3",
+      "schema:roleName": "Developer"
+    }
+  ],
+  "codeRepository": "https://github.com/FC4E-CAT/fc4e-cat-ui",
+  "dateCreated": "2023-04-20",
+  "dateModified": "2024-09-11",
+  "datePublished": "2023-07-07",
+  "description": "A UI component for the FC4E CAT system.",
+  "downloadUrl": "https://github.com/FC4E-CAT/fc4e-cat-ui/archive/refs/heads/main.zip",
+  "funder": {
+    "type": "Organization",
+    "name": "European Commission"
+  },
+  "identifier": "https://github.com/FC4E-CAT/fc4e-cat-ui",
+  "isPartOf": "https://faircore4eosc.eu",
+  "keywords": ["FC4E", "CAT", "UI", "Typescript"],
+  "license": "https://spdx.org/licenses/Apache-2.0",
+  "name": "FC4E CAT UI",
+  "operatingSystem": "Rocky Linux 9.0",
+  "programmingLanguage": "Typescript",
+  "schema:releaseNotes": "Change Log: https://github.com/FC4E-CAT/fc4e-cat-ui/blob/main/CHANGELOG.md\n",
+  "runtimePlatform": ["Web Browser", "Node.js"],
+  "softwareRequirements": "Node.js,npm,Typescript,Vite",
+  "version": "1.3.1",
+  "developmentStatus": "active",
+  "funding": "FAIRCORE4EOSC",
+  "issueTracker": "https://github.com/FC4E-CAT/fc4e-cat-ui/issues"
 }
