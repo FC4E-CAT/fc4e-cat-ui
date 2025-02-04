@@ -28,6 +28,7 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { useTranslation } from "react-i18next";
 import { idToColor } from "@/utils/admin";
 import { useDeleteTest, useGetTests } from "@/api/services/registry";
+import { MotivationRefList } from "@/components/MotivationRefList";
 import { RegistryTest } from "@/types/tests";
 import { FaClipboardQuestion } from "react-icons/fa6";
 
@@ -270,6 +271,9 @@ export default function Tests() {
                   {SortMarker("lastTouch", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
+              <th>
+                <span>{t("motivations")}</span>
+              </th>
               <th></th>
             </tr>
           </thead>
@@ -304,6 +308,11 @@ export default function Tests() {
                     <td className="align-middle">{item.test.description}</td>
                     <td className="align-middle">
                       <small>{item.test.last_touch?.split("T")[0]}</small>
+                    </td>
+                    <td>
+                      <MotivationRefList
+                        motivations={item.used_by_motivations || []}
+                      />
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">

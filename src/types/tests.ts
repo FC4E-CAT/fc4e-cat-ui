@@ -1,4 +1,5 @@
 import { ResponsePage } from "./common";
+import { MotivationReference } from "./motivation";
 
 export interface RegistryTestHeader {
   id: string;
@@ -21,6 +22,7 @@ export interface RegistryTestDefinition {
 export interface RegistryTest {
   test: RegistryTestHeader;
   test_definition: RegistryTestDefinition;
+  used_by_motivations?: MotivationReference[];
 }
 
 export type RegistryTestsResponse = ResponsePage<RegistryTest[]>;
