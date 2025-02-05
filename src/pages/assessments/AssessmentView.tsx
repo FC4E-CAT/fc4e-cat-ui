@@ -125,6 +125,25 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 </p>
               )}
             </Col>
+            <Col className="col col-lg-1 text-center">
+              <span className="font-weight-500 text-gray-500 bold">
+                {t("ranking")}
+              </span>
+
+              {assessment.result.ranking !== null ? (
+                <p className="text-center">
+                  <span className="fs-1 bold text-center">
+                    {assessment.result.ranking}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-center">
+                  <span className="fs-1 text-warning bold text-center">
+                    {t("na")}
+                  </span>
+                </p>
+              )}
+            </Col>
             <Col className="col-md-auto col col-lg-1 text-center">
               {assessment.published == true ? (
                 <div className="ribbon-report ribbon-report-top-right">
@@ -363,11 +382,11 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                           return indx === params.length - 1 ? (
                                             <span className="me-4">
                                               <strong>{item}:</strong>
-                                              {test.value || "n/a"}
+                                              {test.value || t("na")}
                                             </span>
                                           ) : (
                                             <span className="me-4">
-                                              <strong>{item}:</strong> n/a
+                                              <strong>{item}:</strong> {t("na")}
                                             </span>
                                           );
                                         })}

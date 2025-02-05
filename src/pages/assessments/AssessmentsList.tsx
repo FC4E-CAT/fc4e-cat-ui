@@ -426,6 +426,9 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   <span>{t("fields.compliance")}</span>
                 </th>
                 <th>
+                  <span>{t("fields.ranking")}</span>
+                </th>
+                <th>
                   <span>{t("fields.access")}</span>
                 </th>
                 <th>
@@ -503,6 +506,21 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                           <span className="badge rounded-pill text-bg-light text-danger border border-danger">
                             {t("fail").toUpperCase()}
                           </span>
+                        )}
+                      </td>
+                      <td className="align-middle text-center">
+                        {item.ranking === null ? (
+                          <h6>
+                            <span className="badge bg-secondary">
+                              {t("na").toUpperCase()}
+                            </span>
+                          </h6>
+                        ) : (
+                          <h5>
+                            <span className="badge bg-info">
+                              {item.ranking}
+                            </span>
+                          </h5>
                         )}
                       </td>
                       <td className="align-middle text-center">
