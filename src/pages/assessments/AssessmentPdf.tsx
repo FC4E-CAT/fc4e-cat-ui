@@ -84,7 +84,16 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                 </Text>
               )}
             </View>
-            <View></View>
+            <View>
+              <View>
+                <Text style={{ fontSize: "12" }}>{t("fields.ranking")}:</Text>
+                <Text>
+                  {assessment.result.ranking !== null
+                    ? assessment.result.ranking
+                    : t("na")}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
         <View

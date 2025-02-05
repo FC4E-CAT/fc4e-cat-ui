@@ -138,7 +138,8 @@
     "text": "Text",
     "tooltip": "Tooltip",
     "type": "Type",
-    "role": "Role"
+    "role": "Role",
+    "ranking": "Ranking"
   },
   "footer": {
     "contact_category": "Contact and Service",

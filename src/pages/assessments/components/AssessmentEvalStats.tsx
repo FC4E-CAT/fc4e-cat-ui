@@ -4,7 +4,7 @@
 import { AssessmentResult, ResultStats } from "@/types";
 import { Row, Col, ProgressBar } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaChartLine, FaCheckCircle } from "react-icons/fa";
 
 export const AssessmentEvalStats = ({
   evalResult,
@@ -47,7 +47,19 @@ export const AssessmentEvalStats = ({
               </span>
             </div>
           </Col>
-          <Col></Col>
+          <Col>
+            <Col>
+              <div className="d-flex align-items-center">
+                <span className="mt-2">
+                  <FaChartLine className="me-2" />
+                  Ranking:{" "}
+                  {assessmentResult.ranking !== null
+                    ? assessmentResult.ranking
+                    : "n/a"}
+                </span>
+              </div>
+            </Col>
+          </Col>
           <Col></Col>
           <Col xs={2}>
             <div className="mb-2">

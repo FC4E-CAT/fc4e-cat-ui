@@ -558,10 +558,21 @@ const AssessmentEdit = ({
         compliance = mandatory.every((result) => result === 1);
       }
 
-      const ranking: number | null = optional.reduce((sum, result) => {
-        if (sum === null || result === null) return null;
-        return sum + result;
-      }, 0);
+      // get how many optional items have passed
+      const optionalPass: number = optional.reduce(
+        (sum: number, current: number | null) => {
+          if (current && current > 0) {
+            return sum + 1;
+          }
+          return sum;
+        },
+        0,
+      );
+
+      // if there any optional items available, ranking is equal to the percentage of optional passed / total optional
+      // else ranking is 0
+      const ranking =
+        optional.length > 0 ? (optionalPass / optional.length) * 100 : 0;
 
       setAssessment({
         ...newAssessment,
