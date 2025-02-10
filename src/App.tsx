@@ -39,6 +39,7 @@ import Criteria from "./pages/criteria/Criteria";
 import CriterionDetails from "./pages/criteria/CriterionDetails";
 import MotivationMetricTests from "./pages/motivations/MotivationMetricTests";
 import Tests from "./pages/tests/Tests";
+import Metrics from "./pages/metrics/Metrics";
 
 const queryClient = new QueryClient();
 
@@ -245,6 +246,9 @@ function App() {
                 </Route>
                 <Route path="/admin/assessments" element={<ProtectedRoute />}>
                   <Route index element={<AssessmentsTable />} />
+                </Route>
+                <Route path="/admin/metrics" element={<ProtectedRoute />}>
+                  <Route index element={<Metrics />} />
                 </Route>
                 <Route path="/login" element={<ProtectedRoute />}>
                   <Route index element={<Profile />} />
