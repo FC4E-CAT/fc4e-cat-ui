@@ -32,3 +32,8 @@ export function getUniqueValuesForKey<T>(
   }
   return Array.from(uniqueValuesSet.values());
 }
+
+// print ranking fixed to two decimals and print as integer if no decimal part exists
+export function prettyPrintRanking(ranking: number): string {
+  return Number.isInteger(ranking) ? ranking.toString() : ranking.toFixed(2);
+}
