@@ -159,3 +159,39 @@ export interface Md1TestResponse {
   is_valid?: boolean;
   message?: string;
 }
+
+export interface Statistics {
+  user_statistics: StatsUsers;
+  assessment_statistics: StatsAssessments;
+  validation_statistics: StatsValidations;
+  subject_statistics: StatsSubjects;
+}
+
+export interface StatsUsers {
+  total_users: number;
+  validated_users: number;
+  banned_users: number;
+  identified_users: number;
+}
+
+export interface StatsAssessments {
+  total_assessments: number;
+  public_assessments: number;
+  private_assessments: number;
+  assessment_per_role: AssessmentPerRole[];
+}
+
+export interface AssessmentPerRole {
+  actor: string;
+  total_assessments: number;
+}
+
+export interface StatsValidations {
+  total_validations: number;
+  accepted_validations: number;
+  pending_validations: number;
+}
+
+export interface StatsSubjects {
+  total_subjects: number;
+}
