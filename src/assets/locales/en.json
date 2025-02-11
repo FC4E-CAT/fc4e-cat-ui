@@ -7,7 +7,6 @@
   "edit": "Edit",
   "create_new": "Create new",
   "users": "Users",
-
   "validations": "Validations",
   "validation_requests": "Validation Requests",
   "assessment": "Assessment",
@@ -18,6 +17,8 @@
   "libary": "Library",
   "subjects": "Subjects",
   "orcid": "ORCID",
+  "metrics": "Metrics",
+  "tests": "Tests",
   "rows_per_page": "rows per page",
   "loading": "Loading",
   "no_data": "No data found",
@@ -139,7 +140,8 @@
     "tooltip": "Tooltip",
     "type": "Type",
     "role": "Role",
-    "ranking": "Ranking"
+    "ranking": "Ranking",
+    "motivation": "Motivation"
   },
   "footer": {
     "contact_category": "Contact and Service",
@@ -684,5 +686,10 @@
     "toast_create_progress": "Creating Test...",
     "toast_update_success": "Test Updated!",
     "toast_update_progress": "Updating Test..."
+  },
+  "page_metrics": {
+    "title": "Metrics",
+    "subtitle": "Browse metrics and view details about them",
+    "tip_view": "View Metric details"
   }
 }

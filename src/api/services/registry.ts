@@ -1,6 +1,7 @@
 import {
   ApiOptions,
   ApiOptionsSearch,
+  RegistryMetricResponse,
   RegistryResourceResponse,
 } from "@/types";
 import {
@@ -272,3 +273,28 @@ export function useDeleteTest(token: string) {
     },
   });
 }
+
+export const useGetRegistryMetrics = ({
+  size,
+  page,
+  token,
+  sortBy,
+  sortOrder,
+  search,
+  isRegistered,
+}: ApiOptionsSearch) =>
+  useQuery({
+    queryKey: ["registry-metrics", { size, page, sortBy, sortOrder, search }],
+    queryFn: async () => {
+      let url = `/v1/registry/metrics?size=${size}&page=${page}&sort=metric&order=${sortOrder}`;
+      search ? (url = `${url}&search=${search}`) : null;
+
+      const response = await APIClient(token).get<RegistryMetricResponse>(url);
+
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered,
+  });
