@@ -3,6 +3,7 @@ import {
   ApiOptionsSearch,
   RegistryMetricResponse,
   RegistryResourceResponse,
+  Statistics,
 } from "@/types";
 import {
   useInfiniteQuery,
@@ -230,6 +231,20 @@ export const useGetTest = ({
       return handleBackendError(error);
     },
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
+  });
+
+export const useGetStatistics = () =>
+  useQuery({
+    queryKey: ["statistics"],
+    queryFn: async () => {
+      let response = null;
+
+      response = await APIClient().get<Statistics>(`/v1/statistics`);
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
   });
 
 export const useUpdateTest = (
