@@ -2,6 +2,7 @@
  * Component to display evaluation statistics
  */
 import { AssessmentResult, ResultStats } from "@/types";
+import { prettyPrintRanking } from "@/utils";
 import { Row, Col, ProgressBar } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { FaChartLine, FaCheckCircle } from "react-icons/fa";
@@ -54,7 +55,7 @@ export const AssessmentEvalStats = ({
                   <FaChartLine className="me-2" />
                   Ranking:{" "}
                   {assessmentResult.ranking !== null
-                    ? assessmentResult.ranking
+                    ? prettyPrintRanking(assessmentResult.ranking)
                     : "n/a"}
                 </span>
               </div>

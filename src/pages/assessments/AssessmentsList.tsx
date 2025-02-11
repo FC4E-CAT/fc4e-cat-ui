@@ -33,7 +33,7 @@ import {
   useGetAssessment,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import { getUniqueValuesForKey } from "@/utils";
+import { getUniqueValuesForKey, prettyPrintRanking } from "@/utils";
 import { Link } from "react-router-dom";
 import { DeleteModal } from "@/components/DeleteModal";
 
@@ -518,7 +518,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                         ) : (
                           <h5>
                             <span className="badge bg-info">
-                              {item.ranking}
+                              {prettyPrintRanking(item.ranking)}
                             </span>
                           </h5>
                         )}

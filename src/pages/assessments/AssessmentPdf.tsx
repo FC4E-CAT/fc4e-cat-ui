@@ -13,6 +13,7 @@ import imgAssessmentBadgeWip from "@/assets/badge-wip.png";
 import imgAssessmentBadgeFailed from "@/assets/badge-failed.png";
 import { FaDownload } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { prettyPrintRanking } from "@/utils";
 
 interface AssessmentPdfProps {
   assessmentDoc: Assessment;
@@ -89,7 +90,7 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                 <Text style={{ fontSize: "12" }}>{t("fields.ranking")}:</Text>
                 <Text>
                   {assessment.result.ranking !== null
-                    ? assessment.result.ranking
+                    ? prettyPrintRanking(assessment.result.ranking)
                     : t("na")}
                 </Text>
               </View>

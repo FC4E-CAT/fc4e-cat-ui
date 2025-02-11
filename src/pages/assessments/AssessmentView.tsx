@@ -19,6 +19,7 @@ import {
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import AssessmentPdf from "./AssessmentPdf";
 import { useTranslation } from "react-i18next";
+import { prettyPrintRanking } from "@/utils";
 
 // dig through the assessment and collect the completion statistics
 function gatherStats(assessment: Assessment | undefined): AssessmentStats {
@@ -133,7 +134,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               {assessment.result.ranking !== null ? (
                 <p className="text-center">
                   <span className="fs-1 bold text-center">
-                    {assessment.result.ranking}
+                    {prettyPrintRanking(assessment.result.ranking)}
                   </span>
                 </p>
               ) : (
