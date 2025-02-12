@@ -348,7 +348,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                     <br />
                                     <strong>Q.</strong>
                                     <span className="text-secondary p-2">
-                                      {test.text}
+                                      {test.text.split("|")[0]}
                                     </span>
                                     <br />
                                     <strong>A.</strong>
