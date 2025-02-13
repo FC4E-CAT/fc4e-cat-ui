@@ -1,4 +1,5 @@
 import { ResponsePage } from "./common";
+import { MotivationReference } from "./motivation";
 
 export interface RegistryMetric {
   metric_id: string;
@@ -14,6 +15,8 @@ export interface RegistryMetric {
   type_benchmark_description: string;
   motivation_id: string;
   value_benchmark: string;
+  used_by_motivations?: MotivationReference[];
+  
 }
 
 export type RegistryMetricResponse = ResponsePage<RegistryMetric[]>;
