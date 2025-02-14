@@ -155,8 +155,14 @@
   color: hsl(187deg 100% 42%);
 }
 
+.lead,
 .cat-view-lead {
-  font-size: 1.05 rem !important;
+  font-size: 0.9 rem !important;
+  font-weight: 200;
+}
+
+h6.chocolate {
+  color: #d2691e;
 }
 
 .admin-mode-badge-sm {
@@ -568,4 +574,9 @@ a.plain:hover {
 .bg-secondary-cat {
   color: #b06000 !important;
   background: #fef7e0;
+}
+
+.bg-light-cat {
+  color: #495057 !important;
+  background: #dee2e6;
 }

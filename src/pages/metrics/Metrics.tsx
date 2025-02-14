@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { idToColor } from "@/utils/admin";
 import { useGetRegistryMetrics } from "@/api/services/registry";
 import { MetricModal } from "./components/MetricModal";
+import { MotivationRefList } from "@/components/MotivationRefList";
 
 type MetricState = {
   sortOrder: string;
@@ -172,16 +173,19 @@ export default function Metrics() {
                   {SortMarker("label", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
-              <th>
-                <span>{t("fields.motivation")}</span>
-              </th>
+
               <th className="w-50 p-3">
                 <span>{t("fields.description")}</span>
               </th>
               <th className="w-25">
                 <span>{t("fields.algorithm")}</span>
               </th>
-              <th></th>
+              <th>
+                <span>{t("motivations")}</span>
+              </th>
+              <th>
+                <span>{t("fields.actions")}</span>
+              </th>
             </tr>
           </thead>
           {metrics.length > 0 ? (
@@ -212,12 +216,14 @@ export default function Metrics() {
                     </td>
 
                     <td className="align-middle">{item.metric_label}</td>
-                    <td className="align-middle">
-                      <small>{item.motivation_id}</small>
-                    </td>
                     <td className="align-middle">{item.metric_description}</td>
                     <td className="align-middle">
                       <span>{item.type_algorithm_label}</span>
+                    </td>
+                    <td>
+                      <MotivationRefList
+                        motivations={item.used_by_motivations || []}
+                      />
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">
