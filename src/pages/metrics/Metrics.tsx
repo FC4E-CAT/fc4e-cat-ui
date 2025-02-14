@@ -26,7 +26,6 @@ import { useGetRegistryMetrics } from "@/api/services/registry";
 import { MetricModal } from "./components/MetricModal";
 import { MotivationRefList } from "@/components/MotivationRefList";
 
-
 type MetricState = {
   sortOrder: string;
   sortBy: string;
@@ -174,7 +173,7 @@ export default function Metrics() {
                   {SortMarker("label", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
-             
+
               <th className="w-50 p-3">
                 <span>{t("fields.description")}</span>
               </th>
@@ -185,7 +184,7 @@ export default function Metrics() {
                 <span>{t("motivations")}</span>
               </th>
               <th>
-              <span>{t("fields.actions")}</span>
+                <span>{t("fields.actions")}</span>
               </th>
             </tr>
           </thead>

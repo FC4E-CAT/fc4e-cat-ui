@@ -16,7 +16,6 @@ export interface RegistryMetric {
   motivation_id: string;
   value_benchmark: string;
   used_by_motivations?: MotivationReference[];
-  
 }
 
 export type RegistryMetricResponse = ResponsePage<RegistryMetric[]>;
