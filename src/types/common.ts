@@ -134,6 +134,10 @@ export type ApiObjects = ApiOptions & {
   assessmentTypeId: string;
 };
 
+export type ApiAdminAssessments = ApiOptions & {
+  search: string;
+};
+
 export type ApiAssessments = ApiOptions & {
   isPublic: boolean;
   subject_type: string;

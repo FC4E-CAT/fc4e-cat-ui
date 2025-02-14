@@ -12,12 +12,12 @@ import {
   AssessmentDetailsResponse,
   AssessmentListResponse,
   AssessmentSubjectListResponse,
-  AssessmentAdminDetailsResponse,
   AssessmentTypeResponse,
   SharedUsers,
   AssessmentCommentResponse,
   ApiAssessments,
   ApiObjects,
+  ApiAdminAssessments,
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
@@ -40,6 +40,19 @@ export function useDeleteAssessment(token: string) {
   return useMutation({
     mutationFn: (assessmentId: string) => {
       return APIClient(token).delete(`/v2/assessments/${assessmentId}`);
+    },
+    // on success refresh assessments query (so that the deleted assessment dissapears from list)
+    onSuccess: () => {
+      queryClient.invalidateQueries(["assessments"]);
+    },
+  });
+}
+
+export function useAdminDeleteAssessment(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assessmentId: string) => {
+      return APIClient(token).delete(`/v1/admin/assessments/${assessmentId}`);
     },
     // on success refresh assessments query (so that the deleted assessment dissapears from list)
     onSuccess: () => {
@@ -178,38 +191,49 @@ export function useGetAssessment({
 }
 
 export function useGetAdminAssessment({
+  id,
   token,
   isRegistered,
 }: {
+  id: string;
   token?: string;
   isRegistered?: boolean;
 }) {
   return useQuery({
-    queryKey: ["assessment"],
+    queryKey: ["assessment", id],
     queryFn: async () => {
-      let page = 1;
-      let allData: AssessmentAdminDetailsResponse["content"] = [];
-      let totalPages = 1;
+      const response = await APIClient(token).get<AssessmentDetailsResponse>(
+        `/v1/admin/assessments/${id}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: (!!token && isRegistered && id !== "") || id !== "",
+  });
+}
 
-      do {
-        const url = `/v1/admin/assessments?page=${page}&size=10`;
-        const response =
-          await APIClient(token).get<AssessmentAdminDetailsResponse>(url);
-        const data = response.data;
-
-        allData = allData.concat(data.content);
-        totalPages = data.total_pages;
-        page += 1;
-      } while (page <= totalPages);
-
-      return allData;
+export const useGetAdminAssessments = ({
+  size,
+  page,
+  token,
+  isRegistered,
+  search,
+}: ApiAdminAssessments) =>
+  useQuery({
+    queryKey: ["assessments"],
+    queryFn: async () => {
+      const response = await APIClient(token).get<AssessmentListResponse>(
+        `/v1/admin/assessments?size=${size}&page=${page}${search !== "" ? "&search=" + search : ""}`,
+      );
+      return response.data;
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
-}
 
 export function useGetAdminAssessmentById({
   id,
