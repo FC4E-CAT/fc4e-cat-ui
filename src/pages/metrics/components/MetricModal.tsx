@@ -115,7 +115,6 @@ export function MetricModal(props: MetricModalProps) {
                   </span>{" "}
                 </div>
               </div>
-             
             </div>
           </ListGroup>
           <hr></hr>
@@ -132,11 +131,11 @@ export function MetricModal(props: MetricModalProps) {
               {t("fields.motivations")}
             </h6>
             <span className="ms-2">
-            <MotivationRefList
-                  motivations={props.metric?.used_by_motivations || []}
-                />
-                </span>
-            </ListGroup>
+              <MotivationRefList
+                motivations={props.metric?.used_by_motivations || []}
+              />
+            </span>
+          </ListGroup>
         </div>
       </Modal.Body>
       <Modal.Footer className="">
