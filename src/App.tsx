@@ -25,7 +25,6 @@ import { AssessmentEditMode } from "./types";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminValidations from "./pages/admin/AdminValidations";
 import PidSelection from "./pages/PidSelection";
-import AssessmentsTable from "./pages/admin/AssessmentsTable";
 import ViewUsers from "./pages/admin/ViewUsers";
 import Motivations from "./pages/motivations/Motivations";
 import MotivationDetails from "./pages/motivations/MotivationDetails";
@@ -40,6 +39,7 @@ import CriterionDetails from "./pages/criteria/CriterionDetails";
 import MotivationMetricTests from "./pages/motivations/MotivationMetricTests";
 import Tests from "./pages/tests/Tests";
 import Metrics from "./pages/metrics/Metrics";
+import AdminAssessments from "./pages/admin/AdminAssessments";
 
 const queryClient = new QueryClient();
 
@@ -245,7 +245,7 @@ function App() {
                   <Route index element={<Tests />} />
                 </Route>
                 <Route path="/admin/assessments" element={<ProtectedRoute />}>
-                  <Route index element={<AssessmentsTable />} />
+                  <Route index element={<AdminAssessments />} />
                 </Route>
                 <Route path="/admin/metrics" element={<ProtectedRoute />}>
                   <Route index element={<Metrics />} />

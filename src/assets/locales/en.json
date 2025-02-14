@@ -265,6 +265,7 @@
   },
   "page_assessment_list": {
     "subtitle": "Manage your own assessments.",
+    "subtitle_admin": "Manage all assessments as administrator.",
     "subtitle_public": "View public assessments",
     "tip_public": "This assessment is public. Everyone can see the results.",
     "tip_private": "This assessment is private. Only the owners can see the results.",
