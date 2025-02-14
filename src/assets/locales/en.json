@@ -141,7 +141,9 @@
     "type": "Type",
     "role": "Role",
     "ranking": "Ranking",
-    "motivation": "Motivation"
+    "motivation": "Motivation",
+    "motivations": "Motivations",
+    "pattern": "Pattern"
   },
   "footer": {
     "contact_category": "Contact and Service",

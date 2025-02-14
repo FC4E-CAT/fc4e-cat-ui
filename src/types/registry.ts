@@ -13,10 +13,10 @@ export interface RegistryMetric {
   type_benchmark_id: string;
   type_benchmark_label: string;
   type_benchmark_description: string;
+  type_benchmark_patter: string;
   motivation_id: string;
   value_benchmark: string;
   used_by_motivations?: MotivationReference[];
-  
 }
 
 export type RegistryMetricResponse = ResponsePage<RegistryMetric[]>;
