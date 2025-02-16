@@ -59,8 +59,7 @@ export function MetricModal(props: MetricModalProps) {
                 <FaGlasses /> {props.metric?.type_algorithm_label}
               </span>
               <span className="ms-2">
-                <small>{props.metric?.type_algorithm_description}
-              </small>
+                <small>{props.metric?.type_algorithm_description}</small>
               </span>
             </span>
           </ListGroup>
