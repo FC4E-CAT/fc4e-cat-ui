@@ -332,7 +332,7 @@
     "share_email": "Enter user's email to share the assessment with",
     "already_shared": "Already shared with",
     "toast_share_success": "Succesfully shared with",
-    "toast_shared_progress": "Sharing...",
+    "toast_share_progress": "Sharing...",
     "share_url": "Share the URL",
     "share_url_text": "You can also share the URL with users who already have access through the link.",
     "share_with": "Share with",
@@ -378,9 +378,9 @@
     "invalid": "Invalid Assessment",
     "invalid_json": "Invalid JSON format!",
     "reimport": "Please try to import a different file...",
-    "shared1": "This is a",
-    "shared2": "shared",
-    "shared3": "assessment from another user, which includes the following actor information"
+    "share1": "This is a",
+    "share2": "shared",
+    "share3": "assessment from another user, which includes the following actor information"
   },
   "page_preview": {
     "title": "Preview Assessment",

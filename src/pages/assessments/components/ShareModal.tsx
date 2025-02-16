@@ -1,7 +1,7 @@
 import { useGetAssessmentShares, useShareAssessment } from "@/api";
 import { AuthContext } from "@/auth";
 import { AlertInfo } from "@/types";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Modal, Button, ListGroup, Form, InputGroup } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { FaShare, FaUserAlt, FaCopy } from "react-icons/fa";
@@ -33,6 +33,10 @@ export function ShareModal(props: ShareModalProps) {
   });
   const mutateShare = useShareAssessment(keycloak?.token || "", props.id);
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    setEmail("");
+  }, [props.show]);
 
   const [copySuccess, setCopySuccess] = useState("");
 
