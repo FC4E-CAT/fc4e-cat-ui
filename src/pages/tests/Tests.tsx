@@ -23,7 +23,6 @@ import {
 
 import { AlertInfo } from "@/types";
 import { TestModal } from "@/pages/tests/components/TestModal";
-import { TestViewModal } from "@/pages/tests/components/TestViewModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { useTranslation } from "react-i18next";
@@ -44,11 +43,6 @@ type TestsState = {
 type TestModalConfig = {
   id: string;
   lock: boolean;
-  show: boolean;
-};
-
-type TestViewModalConfig = {
-  id: string;
   show: boolean;
 };
 
@@ -127,11 +121,6 @@ export default function Tests() {
     size: 10,
     search: "",
   });
-  
-  const [testViewModalCfg, setTestViewModalCfg] = useState<TestViewModalConfig>({
-    id: "",
-    show: false,
-  });
 
   const [testModalCfg, setTestModalCfg] = useState<TestModalConfig>({
     id: "",
@@ -202,14 +191,6 @@ export default function Tests() {
         show={testModalCfg.show}
         onHide={() => {
           setTestModalCfg({ id: "", lock: false, show: false });
-        }}
-      />
-
-      <TestViewModal
-          id={testModalCfg.id}
-          show={testViewModalCfg.show}
-          onHide={() => {
-          setTestViewModalCfg({id: "",show: false });
         }}
       />
       <div className="cat-view-heading-block row border-bottom">
@@ -339,8 +320,9 @@ export default function Tests() {
                           <Button
                             className="btn btn-light btn-sm m-1"
                             onClick={() => {
-                              setTestViewModalCfg({
+                              setTestModalCfg({
                                 id: item.test.id,
+                                lock: true,
                                 show: true,
                               });
                             }}
