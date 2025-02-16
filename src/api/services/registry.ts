@@ -301,7 +301,7 @@ export const useGetRegistryMetrics = ({
   useQuery({
     queryKey: ["registry-metrics", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
-      let url = `/v1/registry/metrics?size=${size}&page=${page}&sort=metric&order=${sortOrder}`;
+      let url = `/v1/registry/metrics?size=${size}&page=${page}&sort=metric.MTR&order=${sortOrder}`;
       search ? (url = `${url}&search=${search}`) : null;
 
       const response = await APIClient(token).get<RegistryMetricResponse>(url);

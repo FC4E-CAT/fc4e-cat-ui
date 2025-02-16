@@ -53,7 +53,7 @@ export default function Metrics() {
     show: false,
   });
   const [opts, setOpts] = useState<MetricState>({
-    sortBy: "metric",
+    sortBy: "MTR",
     sortOrder: "ASC",
     page: 1,
     size: 10,
@@ -164,17 +164,9 @@ export default function Metrics() {
                 </span>
               </th>
 
-              <th>
-                <span
-                  onClick={() => handleSortClick("label")}
-                  className="cat-cursor-pointer"
-                >
-                  {t("fields.label")}{" "}
-                  {SortMarker("label", opts.sortBy, opts.sortOrder)}
-                </span>
-              </th>
+              <th>{t("fields.label")}</th>
 
-              <th className="w-50 p-3">
+              <th className="w-50">
                 <span>{t("fields.description")}</span>
               </th>
               <th className="w-25">
