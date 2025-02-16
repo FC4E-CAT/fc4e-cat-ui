@@ -929,7 +929,9 @@ const AssessmentEdit = ({
                     <div>
                       <FaLock />
                       {` ${t("page_assessment_edit.share1")}`}
-                      <strong>{t("page_assessment_edit.share2")}</strong>
+                      <strong className="mx-1">
+                        {t("page_assessment_edit.share2")}
+                      </strong>
                       {` ${t("page_assessment_edit.share3")}:`}
                     </div>
                     <div className="border p-2 m-2 text-muted">
