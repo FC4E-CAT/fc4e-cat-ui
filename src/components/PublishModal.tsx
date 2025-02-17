@@ -70,12 +70,12 @@ export function PublishModal(props: PublishModalProps) {
       })
       .then(() => {
         alert.current = {
-          message: t("toast_unpublish_assessment_success"),
+          message: t("toast_assessment_unpublish_success"),
         };
         props.onHide();
       });
     toast.promise(promise, {
-      loading: t("toast_unpublish_assessment_progress"),
+      loading: t("toast_assessment_unpublish_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
