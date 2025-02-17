@@ -58,6 +58,9 @@ export function MetricModal(props: MetricModalProps) {
               <span className="small badge bg-light-cat">
                 <FaGlasses /> {props.metric?.type_algorithm_label}
               </span>
+              <span className="ms-2">
+                <small>{props.metric?.type_algorithm_description}</small>
+              </span>
             </span>
           </ListGroup>
           <hr></hr>
@@ -130,7 +133,7 @@ export function MetricModal(props: MetricModalProps) {
               />
               {t("fields.motivations")}
             </h6>
-            <span className="ms-2">
+            <span className="ms-3">
               <MotivationRefList
                 motivations={props.metric?.used_by_motivations || []}
               />

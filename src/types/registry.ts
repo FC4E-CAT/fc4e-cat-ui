@@ -8,6 +8,7 @@ export interface RegistryMetric {
   metric_description: string;
   type_algorithm_id: string;
   type_algorithm_label: string;
+  type_algorithm_description: string;
   type_metric_id: string;
   type_metric_label: string;
   type_benchmark_id: string;

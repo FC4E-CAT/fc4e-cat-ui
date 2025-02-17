@@ -12,11 +12,13 @@ export const MotivationRefList = ({
   return (
     <div>
       {motivations.map((item) => (
-        <span className="badge bg-primary-cat border" key={item.id}>
-          <Link
-            className="text-muted"
-            to={`/admin/motivations/${item.id}`}
-          >{`${item.label}`}</Link>
+        <span className="px-1" key={item.id}>
+          <span className="badge bg-primary-cat border">
+            <Link
+              className="text-muted"
+              to={`/admin/motivations/${item.id}`}
+            >{`${item.label}`}</Link>
+          </span>
         </span>
       ))}
     </div>
