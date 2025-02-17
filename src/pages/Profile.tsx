@@ -78,16 +78,19 @@ function Profile() {
                 </span>
               )}
               <span className="font-weight-bold">
-                {userProfile?.name} {userProfile?.surname}
+                <span id="name">{userProfile?.name}</span>
+                <span id="surname"> {userProfile?.surname}</span>
               </span>
-              <span className="text-black-50">{userProfile?.email}</span>
+              <span className="text-black-50" id="email">
+                {userProfile?.email}
+              </span>
               {userProfile?.orcid_id && (
                 <div id="orcid">
                   <strong>{t("orcid")}:</strong> {userProfile?.orcid_id}
                 </div>
               )}
               {userProfile?.id && (
-                <span className="text-black-50">
+                <span className="text-black-50" id="user-id">
                   <strong>ID:</strong> {trimField(userProfile.id, 10)}
                   <OverlayTrigger
                     placement="top"

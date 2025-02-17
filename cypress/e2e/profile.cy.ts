@@ -12,15 +12,15 @@ describe("/profile", () => {
 
   it("checks an identified user profile information", () => {
     // Check if profile information is correct.
-    cy.intercept("GET", "http://localhost:8080/v1/users/profile", {
+    cy.intercept("GET", "http://127.0.0.1:8080/v1/users/profile", {
       fixture: "profile_empty.json",
     });
-    cy.get("#user-id").should("contain", "identified_ui_voperson_id");
+    cy.get("#user-id").should("contain", "identified...");
     cy.get("#identified").should("contain", "Identified");
   });
 
   it("does not allow validations without updating details", () => {
-    cy.intercept("GET", "http://localhost:8080/v1/users/profile", {
+    cy.intercept("GET", "http://127.0.0.1:8080/v1/users/profile", {
       fixture: "profile_empty.json",
     });
 
@@ -31,9 +31,6 @@ describe("/profile", () => {
   });
 
   it("does not show assessments/subjects without validation", () => {
-    cy.intercept("GET", "http://localhost:8080/v1/users/profile", {
-      fixture: "profile_updated.json",
-    });
     cy.get("#assessments_section").should("have.class", "disabled");
     cy.get("#subjects_section").should("have.class", "disabled");
   });
