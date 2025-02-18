@@ -22,7 +22,7 @@ function Home() {
             {t("page_home.description")}
             <br />
             <span className="float-right">
-              <Link to="/about" className="btn btn-light mt-4 ">
+              <Link to="/assess" className="btn btn-light mt-4 ">
                 <FaInfoCircle className="me-2 text-muted" />{" "}
                 {t("buttons.about")}...
               </Link>
@@ -67,7 +67,6 @@ function Home() {
         </div>
       </div>
       <div className="row bg-light p-4">
-        <hr />
         <h2>{t("page_home.benefits")}</h2>
         <div className="row">
           <div className="col">
@@ -130,9 +129,7 @@ function Home() {
           </div>
         </div>
       </div>
-      <div className="row p-4">
-        <hr />
-      </div>
+      <div className="row p-4"></div>
     </div>
   );
 }
