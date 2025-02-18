@@ -51,7 +51,7 @@ Cypress.Commands.add("approveValidation", (authToken) => {
 
   cy.request({
     method: "PUT",
-    url: `http://localhost:8080/v1/admin/validations/1/update-status`,
+    url: `http://localhost:8080/v1/admin/validations/3/update-status`,
     body: approveRequestBody,
     headers: {
       Accept: "application/json",

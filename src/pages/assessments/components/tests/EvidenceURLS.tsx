@@ -1,6 +1,7 @@
 import { EvidenceURL } from "@/types";
 import { useState } from "react";
 import { InputGroup, Form, Row, Col } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 /**
  * Small component to add url list
@@ -17,7 +18,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
   const [newURL, setNewURL] = useState<EvidenceURL>({ url: "" });
   const [error, setError] = useState("");
   const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
-
+  const { t } = useTranslation();
   const handleRemoveURL = (index: number) => {
     const updatedUrls = urlList.filter((_, i) => i !== index);
     setUrlList(updatedUrls);
@@ -33,9 +34,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
         setNewURL({ url: "", description: "" });
         setError("");
       } else {
-        setError(
-          "please provide a valid url (e.g. http://example.com/path/to)",
-        );
+        setError(t("page_assessment_edit.err_evidence"));
       }
     }
   };
@@ -44,7 +43,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
     <div className="mt-1">
       {!props.noTitle && (
         <small>
-          <strong>Evidence:</strong>
+          <strong>{t("page_assessment_edit.evidence")}:</strong>
         </small>
       )}
 
@@ -83,7 +82,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
                       className="btn btn-sm btn-light border ms-4"
                       onClick={() => handleRemoveURL(index)}
                     >
-                      remove
+                      {t("buttons.remove").toLowerCase()}
                     </span>
                   </small>
                 </Col>
@@ -95,7 +94,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
       <Row className="m-1 p-2 bg-light border rounded-bottom">
         <Col>
           <InputGroup size="sm">
-            <InputGroup.Text id="label-add-url">URL:</InputGroup.Text>
+            <InputGroup.Text id="label-add-url">{t("url")}:</InputGroup.Text>
             <Form.Control
               id="input-add-url"
               value={newURL.url}
@@ -104,7 +103,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
                 setError("");
               }}
               aria-describedby="label-add-url"
-              placeholder="Please enter and add a valid url to support your claim"
+              placeholder={t("page_assessment_edit.evidence_url")}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   handleAddURL();
@@ -113,7 +112,9 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
             />
           </InputGroup>
           <InputGroup className="mt-2" size="sm">
-            <InputGroup.Text id="label-add-url">description:</InputGroup.Text>
+            <InputGroup.Text id="label-add-url">
+              {t("fields.description")}:
+            </InputGroup.Text>
             <Form.Control
               id="input-add-description"
               value={newURL.description}
@@ -122,7 +123,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
                 setError("");
               }}
               aria-describedby="label-add-url"
-              placeholder="Please enter a description of the evidence"
+              placeholder={t("page_assessment_edit.evidence_description")}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   handleAddURL();
@@ -133,7 +134,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
         </Col>
         <Col md="auto">
           <span className="btn btn-primary btn-sm" onClick={handleAddURL}>
-            Add
+            {t("buttons.add")}
           </span>
         </Col>
       </Row>

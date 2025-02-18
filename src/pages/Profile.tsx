@@ -14,8 +14,10 @@ import { UserProfile } from "@/types";
 import { idToColor, trimField } from "@/utils/admin";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useTranslation } from "react-i18next";
 
 function Profile() {
+  const { t } = useTranslation();
   const { authenticated, keycloak, registered } = useContext(AuthContext)!;
   const [userProfile, setUserProfile] = useState<UserProfile>();
 
@@ -32,7 +34,7 @@ function Profile() {
 
   const renderTooltip = (props: TooltipProps) => (
     <Tooltip id="button-tooltip" {...props}>
-      {copySuccess ? "Copied!" : "Copy to clipboard"}
+      {copySuccess ? t("copied") : t("copy")}
     </Tooltip>
   );
   // check if the user has details
@@ -45,7 +47,9 @@ function Profile() {
       <>
         <div className="cat-view-heading-block row border-bottom">
           <div className="col">
-            <h2 className="text-muted cat-view-heading"> User Dashboard</h2>
+            <h2 className="text-muted cat-view-heading">
+              {t("page_profile.title")}
+            </h2>
           </div>
           <div className="col-md-auto cat-heading-right"></div>
         </div>
@@ -74,16 +78,19 @@ function Profile() {
                 </span>
               )}
               <span className="font-weight-bold">
-                {userProfile?.name} {userProfile?.surname}
+                <span id="name">{userProfile?.name}</span>
+                <span id="surname"> {userProfile?.surname}</span>
               </span>
-              <span className="text-black-50">{userProfile?.email}</span>
+              <span className="text-black-50" id="email">
+                {userProfile?.email}
+              </span>
               {userProfile?.orcid_id && (
                 <div id="orcid">
-                  <strong>ORCID:</strong> {userProfile?.orcid_id}
+                  <strong>{t("orcid")}:</strong> {userProfile?.orcid_id}
                 </div>
               )}
               {userProfile?.id && (
-                <span className="text-black-50">
+                <span className="text-black-50" id="user-id">
                   <strong>ID:</strong> {trimField(userProfile.id, 10)}
                   <OverlayTrigger
                     placement="top"
@@ -111,14 +118,14 @@ function Profile() {
                 to="/profile/update"
                 className="btn btn-lt border-black mt-4"
               >
-                Update Details
+                {t("buttons.update_details")}
               </Link>
             </div>
           </div>
-          <div className="col-md-auto border-right">
+          <div className="col-lg-8 border-right">
             <div className="p-3">
               <div className="row py-3 mt-4">
-                <h4>Validation Requests</h4>
+                <h4>{t("validation_requests")}</h4>
                 <section className="col-9 disabled">
                   {!hasDetails && (
                     <div
@@ -126,15 +133,13 @@ function Profile() {
                       className="alert alert-warning"
                       role="alert"
                     >
-                      <FaLock /> You should update your personal details in
-                      order to be able to create validation requests
+                      <FaLock /> {t("page_profile.validation_requests_alert")}
                     </div>
                   )}
                   {hasDetails && (
                     <>
                       <div>
-                        View your current validation requests or create a new
-                        one.
+                        {t("page_profile.validation_requests_subtitle")}
                       </div>
                       <div className="mt-4">
                         <Link
@@ -142,14 +147,14 @@ function Profile() {
                           to="/validations"
                           className="btn btn-light border-black"
                         >
-                          View List
+                          {t("buttons.view_list")}
                         </Link>
                         <Link
                           id="create_validation_button"
                           to="/validations/request"
                           className="btn btn-light border-black mx-3"
                         >
-                          <FaPlus /> Create New
+                          <FaPlus /> {t("buttons.create_new")}
                         </Link>
                       </div>
                     </>
@@ -157,28 +162,26 @@ function Profile() {
                 </section>
               </div>
               <div className="row border-top py-3 mt-4">
-                <h4>Assessments</h4>
+                <h4>{t("assessments")}</h4>
                 <section id="assessments_section" className="col-9 disabled">
                   {(userProfile?.user_type === "Validated" ||
                     userProfile?.user_type === "Admin") && (
                     <>
-                      <div>
-                        View your current assessments or create a new one.
-                      </div>
+                      <div>{t("page_profile.assessments_subtitle")}</div>
                       <div className="mt-4">
                         <Link
                           id="view_assessments_button"
                           to="/assessments"
                           className="btn btn-light border-black"
                         >
-                          View List
+                          {t("buttons.view_list")}
                         </Link>
                         <Link
                           id="create_assessment_button"
                           to="/assessments/create"
                           className="btn btn-light border-black mx-3"
                         >
-                          <FaPlus /> Create New
+                          <FaPlus /> {t("buttons.create_new")}
                         </Link>
                       </div>
                     </>
@@ -186,29 +189,27 @@ function Profile() {
                 </section>
               </div>
               <div className="row border-top py-3 mt-4">
-                <h4>Subjects</h4>
+                <h4>{t("subjects")}</h4>
 
                 <section id="subjects_section" className="col-9 disabled">
                   {(userProfile?.user_type === "Validated" ||
                     userProfile?.user_type === "Admin") && (
                     <>
-                      <div>
-                        View and manage your current Assessment Subjects
-                      </div>
+                      <div>{t("page_profile.subjects_subtitle")}</div>
                       <div className="mt-4">
                         <Link
                           id="view_subjects_button"
                           to="/subjects"
                           className="btn btn-light border-black"
                         >
-                          View List
+                          {t("buttons.view_list")}
                         </Link>
                         <Link
                           id="create_subject_button"
                           to="/subjects?create"
                           className="btn btn-light border-black mx-3"
                         >
-                          <FaPlus /> Create New
+                          <FaPlus /> {t("buttons.create_new")}
                         </Link>
                       </div>
                     </>
@@ -221,7 +222,7 @@ function Profile() {
       </>
     );
   } else {
-    return <div>Press Login to authenticate</div>;
+    return <div>{t("login_alert")}</div>;
   }
 }
 

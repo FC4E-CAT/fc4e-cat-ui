@@ -12,6 +12,7 @@ import { useParams } from "react-router-dom";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { idToColor, trimField } from "@/utils/admin";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useTranslation } from "react-i18next";
 
 const ViewUsers: React.FC = () => {
   const { authenticated, keycloak, registered } = useContext(AuthContext)!;
@@ -25,9 +26,11 @@ const ViewUsers: React.FC = () => {
 
   const [copySuccess, setCopySuccess] = useState("");
 
+  const { t } = useTranslation();
+
   const renderTooltip = (props: TooltipProps) => (
     <Tooltip id="button-tooltip" {...props}>
-      {copySuccess ? "Copied!" : "Copy to clipboard"}
+      {copySuccess ? t("tip_copied") : t("tip_copy")}
     </Tooltip>
   );
   if (keycloak?.token && authenticated) {
@@ -35,7 +38,9 @@ const ViewUsers: React.FC = () => {
       <>
         <div className="cat-view-heading-block row border-bottom">
           <div className="col">
-            <h2 className="text-muted cat-view-heading"> User Dashboard</h2>
+            <h2 className="text-muted cat-view-heading">
+              {t("page_admin_users.user_details")}
+            </h2>
           </div>
           <div className="col-md-auto cat-heading-right"></div>
         </div>
@@ -69,12 +74,13 @@ const ViewUsers: React.FC = () => {
               <span className="text-black-50">{profile?.email}</span>
               {profile?.orcid_id && (
                 <div id="orcid">
-                  <strong>ORCID:</strong> {profile?.orcid_id}
+                  <strong>{t("orcid")}:</strong> {profile?.orcid_id}
                 </div>
               )}
               {profile?.id && (
                 <span className="text-black-50">
-                  <strong>ID:</strong> {trimField(profile.id, 10)}
+                  <strong>{t("fields.id").toUpperCase()}:</strong>{" "}
+                  {trimField(profile.id, 10)}
                   <OverlayTrigger
                     placement="top"
                     delay={{ show: 250, hide: 400 }}
@@ -101,7 +107,7 @@ const ViewUsers: React.FC = () => {
           <div className="col-md-auto border-right">
             <div className="p-3">
               <div className="row py-3 mt-4">
-                <h4>User Data</h4>
+                <h4>{t("page_admin_users.user_data")}</h4>
 
                 <div className="col-md-6 col-sm-6 bottom-margin text-center counter-section wow sm-margin-bottom-ten py-3">
                   <FaFileCircleCheck className="medium-icon" />
@@ -113,7 +119,9 @@ const ViewUsers: React.FC = () => {
                     {" "}
                     {profile?.count_of_assessments}
                   </span>
-                  <p className="counter-title"># Assessments</p>
+                  <p className="counter-title">
+                    # {t("assessments").toUpperCase()}
+                  </p>
                 </div>
                 <div className="col-md-6 col-sm-6 bottom-margin text-center counter-section wow  sm-margin-bottom-ten py-3">
                   <FaEarlybirds className="medium-icon" />
@@ -125,7 +133,9 @@ const ViewUsers: React.FC = () => {
                     {" "}
                     {profile?.count_of_validations}
                   </span>
-                  <p className="counter-title"># Validations</p>
+                  <p className="counter-title">
+                    # {t("validations").toUpperCase()}
+                  </p>
                 </div>
               </div>
             </div>
@@ -134,7 +144,7 @@ const ViewUsers: React.FC = () => {
       </>
     );
   } else {
-    return <div>Press Login to authenticate</div>;
+    return <div>{t("login_alert")}</div>;
   }
 };
 

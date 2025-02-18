@@ -32,6 +32,8 @@ import {
   TestValue,
   TestBinaryParam,
   TestValueParam,
+  TestAutoHttpsCheck,
+  TestAutoMD1,
   // MetricAlgorithm,
 } from "@/types";
 import {
@@ -43,6 +45,9 @@ import { useEffect, useState } from "react";
 import { CriterionProgress } from "./CriterionProgress";
 import { TestBinaryParamForm } from "./tests/TestBinaryParam";
 import { TestValueFormParam } from "./tests/TestValueFormParam";
+import { TestAutoHttpsCheckForm } from "./tests/TestAutoHttpsCheckForm";
+import { useTranslation } from "react-i18next";
+import { TestAutoMd1Form } from "./tests/TestAutoMd1Form";
 
 type CriteriaTabsProps = {
   principles: AssessmentPrinciple[];
@@ -62,6 +67,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
   const navs: JSX.Element[] = [];
   const tabs: JSX.Element[] = [];
   const [activeKey, setActiveKey] = useState("");
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     // if resetActiveTab signal is set to true try to find the first criterion
@@ -169,7 +176,7 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                       style={{ fontSize: "0.6rem" }}
                       className="ms-2 badge mb-2 rounded-pill text-bg-light text-secondary border align-middle"
                     >
-                      required
+                      {t("required")}
                     </small>
                   </div>
                 )}
@@ -251,6 +258,36 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                 </div>
               </div>,
             );
+          } else if (test.type === "Auto-Check-Url-Binary") {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestAutoHttpsCheckForm
+                    test={test as TestAutoHttpsCheck}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (
+            test.type === "Auto-Check-Xml-MD1a" ||
+            test.type === "Auto-Check-Xml-MD1b1" ||
+            test.type === "Auto-Check-Xml-MD1b2"
+          ) {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestAutoMd1Form
+                    test={test as TestAutoMD1}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
           }
         });
 
@@ -276,11 +313,11 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                 {criterion.imperative === AssessmentCriterionImperative.Must ||
                 criterion.imperative === AssessmentCriterionImperative.MUST ? (
                   <span className="badge bg-success bg-small ms-4 align-middle">
-                    Required
+                    {t("required")}
                   </span>
                 ) : (
                   <span className="badge bg-warning bg-small ms-4 align-middle">
-                    Optional
+                    {t("optional")}
                   </span>
                 )}
                 <p className="text-muted lh-sm mt-2 mb-2">
@@ -288,7 +325,8 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                 </p>
                 <div className="cat-view-heading">
                   <span className="align-middle">
-                    part of principle {principle.id}: {principle.name}{" "}
+                    {t("page_assessment_edit.part_of_principle")} {principle.id}
+                    : {principle.name}{" "}
                   </span>
                   <OverlayTrigger
                     placement="top"

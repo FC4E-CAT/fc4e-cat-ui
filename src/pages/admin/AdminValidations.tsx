@@ -1,6 +1,6 @@
-import { useAdminGetValidations } from "@/api";
+import { useAdminGetValidations, useGetAllRegistryActors } from "@/api";
 import { AuthContext } from "@/auth";
-import { ValidationResponse } from "@/types";
+import { RegistryActor, ValidationResponse } from "@/types";
 import { idToColor, trimField } from "@/utils/admin";
 import { useContext, useEffect, useState } from "react";
 import {
@@ -11,6 +11,7 @@ import {
   Table,
   Tooltip,
 } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import {
   FaArrowDown,
   FaArrowLeft,
@@ -20,11 +21,12 @@ import {
   FaBars,
   FaCheck,
   FaExclamationTriangle,
-  FaGlasses,
   FaTimes,
   FaUserCircle,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+
+import BadgeStatus from "@/components/BadgeStatus";
 
 type ValidationState = {
   sortOrder: string;
@@ -49,43 +51,26 @@ export function SortMarker(
   return <FaArrowsAltV className="text-secondary opacity-50" />;
 }
 
-// create a validation status badge for approved, rejected, pending
-const ValidationStatusBadge = (status: string) => {
-  if (status === "APPROVED") {
-    return (
-      <span className="badge bg-success">
-        <FaCheck /> Approved
-      </span>
-    );
-  } else if (status === "REJECTED") {
-    return (
-      <span className="badge bg-danger">
-        <FaTimes /> Rejected
-      </span>
-    );
-  } else if (status === "REVIEW") {
-    return (
-      <span className="badge bg-primary">
-        <FaGlasses /> Pending Review
-      </span>
-    );
-  } else {
-    return null;
-  }
-};
-
-// create the tooltips
-const tooltipAccept = <Tooltip id="tip-delete">Accept Validation</Tooltip>;
-const tooltipReject = <Tooltip id="tip-restore">Reject Validation</Tooltip>;
-const tooltipView = <Tooltip id="tip-restore">View User Details</Tooltip>;
-
-// the main component that lists the admin users in a table
-export default function AdminUsers() {
+// the main component that lists all the validations for admins
+export default function AdminValidations() {
   const { keycloak, registered } = useContext(AuthContext)!;
 
+  const { t } = useTranslation();
+
+  // create the tooltips
+  const tooltipAccept = (
+    <Tooltip id="tip-accept">{t("page_admin_validations.accept_tip")}</Tooltip>
+  );
+  const tooltipReject = (
+    <Tooltip id="tip-restore">{t("page_admin_validations.reject_tip")}</Tooltip>
+  );
+  const tooltipView = (
+    <Tooltip id="tip-view">{t("page_admin_validations.view_tip")}</Tooltip>
+  );
+
   const [opts, setOpts] = useState<ValidationState>({
-    sortBy: "",
-    sortOrder: "",
+    sortBy: "status",
+    sortOrder: "ASC",
     type: "",
     page: 1,
     size: 20,
@@ -111,7 +96,36 @@ export default function AdminUsers() {
     }
   };
 
-  // data get admin users
+  const [actors, setActors] = useState<RegistryActor[]>();
+
+  const {
+    data: actData,
+    fetchNextPage: actFetchNextPage,
+    hasNextPage: actHasNextPage,
+  } = useGetAllRegistryActors({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    // gather all registry actors types
+    let tmpAct: RegistryActor[] = [];
+
+    // iterate over backend pages and gather all items in the registry actors array
+    if (actData?.pages) {
+      actData.pages.map((page) => {
+        tmpAct = [...tmpAct, ...page.content];
+      });
+      if (actHasNextPage) {
+        actFetchNextPage();
+      }
+    }
+
+    setActors(tmpAct);
+  }, [actData, actHasNextPage, actFetchNextPage]);
+
+  // data get admin validations
   const { isLoading, data, refetch } = useAdminGetValidations({
     size: opts.size,
     page: opts.page,
@@ -137,16 +151,16 @@ export default function AdminUsers() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
-            Validations
+            {t("page_admin_validations.title")}
             <p className="lead cat-view-lead">
-              Manage all Validations as administrator.
+              {t("page_admin_validations.subtitle")}
             </p>
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right"></div>
       </div>
 
-      <Form className="mb-2">
+      <Form className="mb-3">
         <div className="row cat-view-search-block border-bottom">
           <div className="col col-lg-3">
             <Form.Select
@@ -155,12 +169,12 @@ export default function AdminUsers() {
               }}
               value={opts.type}
             >
-              <option value="">Select type...</option>
-              <option>PID Authority</option>
-              <option>PID Manager</option>
-              <option>PID Owner</option>
-              <option>PID Scheme</option>
-              <option>PID Service Provider</option>
+              <option value="">{t("fields.select_type")}</option>
+              <>
+                {actors?.map((item) => (
+                  <option key={item.id}>{item.label}</option>
+                ))}
+              </>
             </Form.Select>
           </div>
           <div className="col-md-auto">
@@ -170,16 +184,16 @@ export default function AdminUsers() {
               }}
               value={opts.status}
             >
-              <option value="">Select status...</option>
-              <option value="APPROVED">Approved</option>
-              <option value="REJECTED">Rejected</option>
-              <option value="REVIEW">Review</option>
+              <option value="">{t("fields.select_status")}</option>
+              <option value="APPROVED">{t("approved")}</option>
+              <option value="REJECTED">{t("rejected")}</option>
+              <option value="REVIEW">{t("review")}</option>
             </Form.Select>
           </div>
           <div className="col col-lg-6">
             <div className="d-flex justify-content-center">
               <Form.Control
-                placeholder="Search ..."
+                placeholder={t("fields.search")}
                 onChange={(e) => {
                   setOpts({ ...opts, search: e.target.value });
                 }}
@@ -191,7 +205,7 @@ export default function AdminUsers() {
                 }}
                 className="ms-4"
               >
-                Clear
+                {t("buttons.clear")}
               </Button>
             </div>
           </div>
@@ -201,26 +215,27 @@ export default function AdminUsers() {
       <Table hover>
         <thead>
           <tr className="table-light">
-            <th>
-              <span>Id</span>
-            </th>
-            <th>
-              <span>Name</span>
-            </th>
+            <th>{t("fields.name")} </th>
             <th>
               <span
                 onClick={() => handleSortClick("organisationName")}
                 className="cat-cursor-pointer"
               >
-                Organization{" "}
+                {t("fields.organisation")}{" "}
                 {SortMarker("organisationName", opts.sortBy, opts.sortOrder)}
               </span>
             </th>
             <th>
-              <span>Actor Name</span>
+              <span>{t("fields.actor_name")}</span>
             </th>
             <th>
-              <span>Status</span>
+              <span
+                onClick={() => handleSortClick("status")}
+                className="cat-cursor-pointer"
+              >
+                {t("fields.status")}{" "}
+                {SortMarker("status", opts.sortBy, opts.sortOrder)}
+              </span>
             </th>
             <th></th>
           </tr>
@@ -230,7 +245,6 @@ export default function AdminUsers() {
             {validations.map((item) => {
               return (
                 <tr key={item.id}>
-                  <td className="align-middle">{item.id}</td>
                   <td className="align-middle">
                     <div className="d-flex  justify-content-start">
                       <div>
@@ -246,7 +260,18 @@ export default function AdminUsers() {
                             style={{ fontSize: "0.64rem" }}
                             className="text-muted"
                           >
-                            id: {trimField(item.user_id, 20)}
+                            {t("fields.id").toLowerCase()}:{" "}
+                            {trimField(item.user_id, 20)}
+                          </span>
+                        </div>
+
+                        <div>
+                          <span
+                            style={{ fontSize: "0.64rem" }}
+                            className="text-muted"
+                          >
+                            {t("fields.created_on").toLowerCase()}:{" "}
+                            {item.created_on.split("T")[0]}
                           </span>
                         </div>
                       </div>
@@ -260,14 +285,14 @@ export default function AdminUsers() {
                           style={{ fontSize: "0.64rem" }}
                           className="text-muted"
                         >
-                          Role: {item.organisation_role}
+                          {t("fields.role")}: {item.organisation_role}
                         </span>
                       </div>
                     </div>
                   </td>
-                  <td className="align-middle">{item.actor_name}</td>
+                  <td className="align-middle">{item.registry_actor_name}</td>
                   <td className="align-middle">
-                    {ValidationStatusBadge(item.status)}
+                    <BadgeStatus status={item.status} />
                   </td>
                   <td>
                     <div className="d-flex flex-nowrap">
@@ -312,12 +337,12 @@ export default function AdminUsers() {
           <h3>
             <FaExclamationTriangle />
           </h3>
-          <h5>No data found...</h5>
+          <h5>{t("no_data")}</h5>
         </Alert>
       )}
       <div className="d-flex justify-content-end">
         <div>
-          <span className="mx-1">rows per page: </span>
+          <span className="mx-1">{t("rows_per_page")} </span>
           <select
             name="per-page"
             value={opts.size.toString() || "20"}

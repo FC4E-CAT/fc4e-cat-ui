@@ -4,17 +4,16 @@ import { AuthContext } from "@/auth";
 import { ValidationResponse } from "@/types";
 import { Link } from "react-router-dom";
 import {
-  FaCheck,
   FaList,
-  FaTimes,
   FaExclamationTriangle,
   FaPlus,
   FaArrowLeft,
   FaArrowRight,
-  FaGlasses,
 } from "react-icons/fa";
 
-import { Alert, Table } from "react-bootstrap";
+import { Alert, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
+import BadgeStatus from "@/components/BadgeStatus";
 
 type ValidationState = {
   sortOrder: string;
@@ -26,32 +25,9 @@ type ValidationState = {
   status: string;
 };
 
-// create a validation status badge for approved, rejected, pending
-const ValidationStatusBadge = (status: string) => {
-  if (status === "APPROVED") {
-    return (
-      <span className="badge bg-success">
-        <FaCheck /> Approved
-      </span>
-    );
-  } else if (status === "REJECTED") {
-    return (
-      <span className="badge bg-danger">
-        <FaTimes /> Rejected
-      </span>
-    );
-  } else if (status === "REVIEW") {
-    return (
-      <span className="badge bg-primary">
-        <FaGlasses /> Pending Review
-      </span>
-    );
-  } else {
-    return null;
-  }
-};
-
 function ValidationList() {
+  const { t } = useTranslation();
+
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const [opts, setOpts] = useState<ValidationState>({
@@ -92,15 +68,15 @@ function ValidationList() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
-            Validation Requests
+            {t("validation_requests")}
             <p className="lead cat-view-lead">
-              All validation Requests in one place.
+              {t("page_validations.subtitle")}
             </p>
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
           <Link to="/validations/request" className="btn btn-warning mx-2">
-            <FaPlus /> Create New
+            <FaPlus className="m2" /> {t("buttons.create_new")}
           </Link>
         </div>
       </div>
@@ -109,22 +85,22 @@ function ValidationList() {
           <thead>
             <tr className="table-light">
               <th>
-                <span>ID</span>
+                <span>{t("fields.id")}</span>
               </th>
               <th>
-                <span>Organization Name </span>
+                <span>{t("page_validations.org_name")}</span>
               </th>
               <th>
-                <span>Organisation Role</span>
+                <span>{t("page_validations.org_role")}</span>
               </th>
               <th>
-                <span>Actor Name</span>
+                <span>{t("page_validations.actor_name")}</span>
               </th>
               <th>
-                <span>Status</span>
+                <span>{t("fields.status")}</span>
               </th>
               <th>
-                <span>Actions </span>
+                <span>{t("fields.actions")}</span>
               </th>
             </tr>
           </thead>
@@ -136,20 +112,28 @@ function ValidationList() {
                     <td className="align-middle">{item.id}</td>
                     <td className="align-middle">{item.organisation_name}</td>
                     <td className="align-middle">{item.organisation_role}</td>
-                    <td className="align-middle">{item.actor_name}</td>
+                    <td className="align-middle">{item.registry_actor_name}</td>
                     <td className="align-middle">
-                      <td className="align-middle">
-                        {ValidationStatusBadge(item.status)}
-                      </td>
+                      <BadgeStatus status={item.status} />
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">
-                        <Link
-                          className="btn btn-light btn-sm m-1"
-                          to={`/validations/${item.id}`}
+                        <OverlayTrigger
+                          key="view"
+                          placement="top"
+                          overlay={
+                            <Tooltip id={`tooltip-view`}>
+                              {t("page_validations.tip_view")}
+                            </Tooltip>
+                          }
                         >
-                          <FaList />
-                        </Link>
+                          <Link
+                            className="btn btn-light btn-sm m-1"
+                            to={`/validations/${item.id}`}
+                          >
+                            <FaList />
+                          </Link>
+                        </OverlayTrigger>
                       </div>
                     </td>
                   </tr>

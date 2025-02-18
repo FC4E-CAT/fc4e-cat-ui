@@ -13,6 +13,7 @@ import { AlertInfo, AssessmentComment } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Col, Form, ListGroup, Row } from "react-bootstrap";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaEdit, FaTimes, FaUser } from "react-icons/fa";
 
 export const Comments = ({ id }: { id: string }) => {
@@ -26,7 +27,7 @@ export const Comments = ({ id }: { id: string }) => {
   const [commentText, setCommentText] = useState("");
   // state: mode to delete something activated or not
   const [toDelete, setToDelete] = useState(false);
-
+  const { t } = useTranslation();
   // alert used in notifications
   const alert = useRef<AlertInfo>({
     message: "",
@@ -61,7 +62,7 @@ export const Comments = ({ id }: { id: string }) => {
       })
       .catch((err) => {
         alert.current = {
-          message: "Error: " + err.response.data.message,
+          message: `${t("error")}: ` + err.response.data.message,
         };
         throw err;
       })
@@ -69,11 +70,11 @@ export const Comments = ({ id }: { id: string }) => {
         setCommentId(-1);
         setCommentText("");
         alert.current = {
-          message: "Comment Added",
+          message: t("page_assessment_edit.toast_comment_add_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Adding Comment...",
+      loading: t("page_assessment_edit.toast_comment_add_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -87,7 +88,7 @@ export const Comments = ({ id }: { id: string }) => {
       })
       .catch((err) => {
         alert.current = {
-          message: "Error: " + err.response.data.message,
+          message: `${t("error")}: ` + err.response.data.message,
         };
         throw err;
       })
@@ -95,11 +96,11 @@ export const Comments = ({ id }: { id: string }) => {
         setCommentId(-1);
         setCommentText("");
         alert.current = {
-          message: "Comment Updated",
+          message: t("page_assessment_edit.toast_comment_update_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Updating Comment...",
+      loading: t("page_assessment_edit.toast_comment_update_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -110,7 +111,7 @@ export const Comments = ({ id }: { id: string }) => {
       .mutateAsync()
       .catch((err) => {
         alert.current = {
-          message: "Error: " + err.response.data.message,
+          message: `${t("error")}: ` + err.response.data.message,
         };
         throw err;
       })
@@ -118,11 +119,11 @@ export const Comments = ({ id }: { id: string }) => {
         setCommentId(-1);
         setCommentText("");
         alert.current = {
-          message: "Comment Deleted",
+          message: t("page_assessment_edit.toast_comment_delete_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Deleting Comment...",
+      loading: t("page_assessment_edit.toast_comment_delete_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -171,7 +172,7 @@ export const Comments = ({ id }: { id: string }) => {
             }
           }
         }}
-        placeholder="type here to add a new comment to the assessment"
+        placeholder={t("page_assessment_edit.add_comment_placeholder")}
         id="input-add-comment"
         rows={3}
       />
@@ -184,7 +185,7 @@ export const Comments = ({ id }: { id: string }) => {
                 handleUpdate();
               }}
             >
-              Update comment
+              {t("page_assessment_edit.update_comment")}
             </button>
             <button
               className="btn btn-sm btn-secondary ms-1"
@@ -193,7 +194,7 @@ export const Comments = ({ id }: { id: string }) => {
                 setCommentId(-1);
               }}
             >
-              Cancel
+              {t("buttons.cancel")}
             </button>
           </>
         ) : (
@@ -203,7 +204,7 @@ export const Comments = ({ id }: { id: string }) => {
               handleAdd();
             }}
           >
-            Add comment
+            {t("page_assessment_edit.add_comment")}
           </button>
         )}
       </div>
@@ -250,14 +251,14 @@ export const Comments = ({ id }: { id: string }) => {
                 >
                   {toDelete && item.id === commentId ? (
                     <>
-                      <span>Are you sure?</span>
+                      <span> {t("page_assessment_edit.confirm_question")}</span>
                       <button
                         className="ms-2 btn btn-sm btn-danger border-white"
                         onClick={() => {
                           handleDelete();
                         }}
                       >
-                        Delete
+                        {t("buttons.delete")}
                       </button>
                       <button
                         className="ms-2 btn btn-sm btn-secondary"
@@ -266,7 +267,7 @@ export const Comments = ({ id }: { id: string }) => {
                           setCommentId(-1);
                         }}
                       >
-                        Cancel
+                        {t("buttons.cancel")}
                       </button>
                     </>
                   ) : (
@@ -298,7 +299,7 @@ export const Comments = ({ id }: { id: string }) => {
           })}
         </ListGroup>
       ) : (
-        <span>No comments found</span>
+        <span>{t("page_assessment_edit.no_comments")}</span>
       )}
     </div>
   );

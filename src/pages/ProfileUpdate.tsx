@@ -7,6 +7,7 @@ import { APIClient } from "@/api";
 import { AxiosError } from "axios";
 import { useGetProfile } from "@/api";
 import logoOrcid from "@/assets/logo-orcid-id.svg";
+import { useTranslation } from "react-i18next";
 
 type FormData = {
   name: string;
@@ -30,6 +31,8 @@ export default function ProfileUpdate() {
     isRegistered: registered,
   });
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (profileData) {
       setValue("name", profileData.name);
@@ -45,7 +48,7 @@ export default function ProfileUpdate() {
     }
     try {
       const response = await APIClient(keycloak?.token || "").put<FormData>(
-        `/users/profile`,
+        `/v1/users/profile`,
         data,
       );
       if (response.status === 200) {
@@ -67,9 +70,9 @@ export default function ProfileUpdate() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
-            Update your personal details
+            {t("page_profile_update.title")}
             <p className="lead cat-view-lead">
-              Fill in the inputs to update your personal details .
+              {t("page_profile_update.subtitle")}
             </p>
           </h2>
         </div>
@@ -80,7 +83,7 @@ export default function ProfileUpdate() {
           <Row className="mb-2">
             <Col>
               <Form.Group>
-                <label htmlFor="inputName">Name (*):</label>
+                <label htmlFor="inputName">{t("fields.name")} (*):</label>
                 <input
                   {...register("name", {
                     required: { value: true, message: "Name is required" },
@@ -98,7 +101,7 @@ export default function ProfileUpdate() {
 
             <Col>
               <Form.Group>
-                <label htmlFor="inputSurname">Surname (*):</label>
+                <label htmlFor="inputSurname">{t("fields.surname")} (*):</label>
                 <input
                   {...register("surname", {
                     required: { value: true, message: "Surname is required" },
@@ -118,7 +121,7 @@ export default function ProfileUpdate() {
           </Row>
 
           <Form.Group>
-            <label htmlFor="inputEmail">Email address (*):</label>
+            <label htmlFor="inputEmail">{t("fields.email")} (*):</label>
             <input
               {...register("email", {
                 required: { value: true, message: "Email is required" },
@@ -145,7 +148,7 @@ export default function ProfileUpdate() {
                 src={logoOrcid}
                 alt="orcid-id logo"
               />
-              ORCID id:
+              {t("orcid")}:
             </label>
             <input
               {...register("orcid_id", {
@@ -171,7 +174,7 @@ export default function ProfileUpdate() {
               type="submit"
               className="btn btn-light border-black"
             >
-              Submit
+              {t("buttons.submit")}
             </button>
             <button
               type="button"
@@ -180,7 +183,7 @@ export default function ProfileUpdate() {
               }}
               className="btn btn-dark mx-3"
             >
-              Cancel
+              {t("buttons.cancel")}
             </button>
           </Form.Group>
         </Form>

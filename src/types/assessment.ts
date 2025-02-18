@@ -10,7 +10,7 @@ export interface TemplateResponse {
 
 /** Assessment type part of TemplateResponse from API */
 export interface AssessmentType {
-  id: number;
+  id: string;
   name: string;
   description: string;
 }
@@ -38,14 +38,14 @@ export interface Assessment {
   shared_with_user: boolean;
 }
 
-/** Reference with numerical id */
-export interface RefNumID {
-  id: number;
+/** Reference with string id */
+export interface RefID {
+  id: string;
   name: string;
 }
 
-export interface AssessmentActor extends RefNumID {}
-export interface AssessmentType extends RefNumID {}
+export interface AssessmentActor extends RefID {}
+export interface AssessmentType extends RefID {}
 
 /** Assessment subject */
 export interface AssessmentSubject {
@@ -102,13 +102,13 @@ export enum AssessmentCriterionImperative {
 
 /** Each criterion includes a SINGLE metric */
 export interface Metric {
-  type: MetricType;
-  algorithm: MetricAlgorithm;
-  benchmark: Benchmark;
+  type: string;
+  label_algorithm_type: string;
+  label_type_metric: string;
+  benchmark_value: number;
   value: number | null;
   result: number | null;
   tests: AssessmentTest[];
-  benchmark_value?: number;
 }
 
 /** Each metric has a type. For now, we only deal with type: number  */
@@ -134,6 +134,7 @@ export interface TestBinary {
   guidance?: Guidance;
   type: "binary";
   text: string;
+  params: string;
   result: number | null;
   value: boolean | null;
   evidence_url?: EvidenceURL[];
@@ -167,6 +168,7 @@ export interface TestValue {
   threshold_name?: string;
   threshold_locked?: boolean;
   benchmark: Benchmark;
+  params: string;
   evidence_url?: EvidenceURL[];
 }
 
@@ -195,12 +197,42 @@ export interface TestValueParam {
   evidence_url?: EvidenceURL[];
 }
 
-/** Supported tests: Binary | Value | BinaryParam | ValueParam **/
+export interface TestAutoHttpsCheck {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type: "Auto-Check-Url-Binary";
+  text: string;
+  result: number | null;
+  value: string | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
+}
+
+export interface TestAutoMD1 {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type: "Auto-Check-Xml-MD1a" | "Auto-Check-Xml-MD1b1" | "Auto-Check-Xml-MD1b2";
+  text: string;
+  result: number | null;
+  value: string | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
+}
+
+/** Supported tests: Binary | Value | BinaryParam | ValueParam | TestAutoHttpsCheck **/
 export type AssessmentTest =
   | TestValue
   | TestBinary
   | TestBinaryParam
-  | TestValueParam;
+  | TestValueParam
+  | TestAutoHttpsCheck
+  | TestAutoMD1;
 
 export interface EvidenceURL {
   url: string;
@@ -221,12 +253,21 @@ export interface ResultStats {
   optional: number;
 }
 
+// export type ActorOrgAsmtType = {
+//   actor_id: number;
+//   actor_name: string;
+//   organisation_id: string;
+//   organisation_name: string;
+//   assessment_type_id: number;
+//   assessment_type_name: string;
+// };
+
 export type ActorOrgAsmtType = {
-  actor_id: number;
+  actor_id: string;
   actor_name: string;
   organisation_id: string;
   organisation_name: string;
-  assessment_type_id: number;
+  assessment_type_id: string;
   assessment_type_name: string;
 };
 
@@ -340,4 +381,13 @@ export interface AssessmentCommentUser {
   name: string;
   surname: string;
   email: string;
+}
+
+export interface AssessmentStats {
+  total_principles: number;
+  total_criteria: number;
+  total_mandatory: number;
+  total_optional: number;
+  completed_mandatory: number;
+  completed_optional: number;
 }

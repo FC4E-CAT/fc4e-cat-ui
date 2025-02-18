@@ -33,23 +33,14 @@ import {
   useGetAssessment,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import { getUniqueValuesForKey } from "@/utils";
+import { getUniqueValuesForKey, prettyPrintRanking } from "@/utils";
 import { Link } from "react-router-dom";
 import { DeleteModal } from "@/components/DeleteModal";
 
 import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
-
-const tooltipPublic = (
-  <Tooltip id="tip-public">
-    This assessment is public. Everyone can see the results.
-  </Tooltip>
-);
-const tooltipPrivate = (
-  <Tooltip id="tip-private">
-    This assessment is private. Only the owners can see the results.
-  </Tooltip>
-);
+import { useTranslation } from "react-i18next";
+import { PublishModal } from "@/components";
 
 type Pagination = {
   page: number;
@@ -80,13 +71,29 @@ interface ShareModalConfig {
   id: string;
 }
 
+interface PublishModalConfig {
+  show: boolean;
+  id: string;
+  name: string;
+  admin: boolean;
+  publish: boolean;
+}
+
 function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   // get the extra url parameters when in public list mode from url
   const urlParams = new URLSearchParams(location.search);
   const actorName = urlParams.get("actor-name");
   const actorIdParam = urlParams.get("actor-id");
-  const assessmentTypeIdParam = urlParams.get("assessment-type-id");
+  const motivationIdParam = urlParams.get("motivation-id");
+  const { t } = useTranslation();
+
+  const tooltipPublic = (
+    <Tooltip id="tip-public">{t("page_assessment_list.tip_public")}</Tooltip>
+  );
+  const tooltipPrivate = (
+    <Tooltip id="tip-private">{t("page_assessment_list.tip_private")}</Tooltip>
+  );
 
   const [opts, setOpts] = useState<Pagination>({
     page: 1,
@@ -121,6 +128,16 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     id: "",
   });
 
+  // Publish Modal
+  const [publishModalConfig, setPublishModalConfig] =
+    useState<PublishModalConfig>({
+      show: false,
+      name: "",
+      id: "",
+      admin: false,
+      publish: true,
+    });
+
   const [filters, setFilters] = useState<AssessmentFiltersType>({
     subject_name: "",
     subject_type: "",
@@ -137,7 +154,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     subject_type: filters.subject_type,
     isPublic: listPublic,
     actorId: actorIdParam || "",
-    assessmentTypeId: assessmentTypeIdParam || "",
+    motivationId: motivationIdParam || "",
   });
 
   // refetch users when parameters change
@@ -149,7 +166,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     size: 100,
     page: 1,
     token: keycloak?.token || "",
-    assessmentTypeId: assessmentTypeIdParam || "",
+    assessmentTypeId: motivationIdParam || "",
     actorId: actorIdParam || "",
   });
 
@@ -182,13 +199,13 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         .mutateAsync(deleteModalConfig.itemId)
         .catch((err) => {
           alert.current = {
-            message: "Error during assessment deletion!",
+            message: t("page_assessment_list.toast_delete_fail"),
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Assessment succesfully deleted.",
+            message: t("page_assessment_list.toast_delete_success"),
           };
           setDeleteModalConfig({
             ...deleteModalConfig,
@@ -198,7 +215,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           });
         });
       toast.promise(promise, {
-        loading: "Deleting...",
+        loading: t("page_assessment_list.toast_delete_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -246,7 +263,23 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const assessments: AssessmentListItem[] = data ? data?.content : [];
 
   return (
-    <div>
+    <div className={listPublic ? "container bg-light p-2 mb-5 rounded" : ""}>
+      <PublishModal
+        show={publishModalConfig.show}
+        name={publishModalConfig.name}
+        admin={publishModalConfig.admin}
+        id={publishModalConfig.id}
+        publish={publishModalConfig.publish}
+        onHide={() => {
+          setPublishModalConfig({
+            id: "",
+            name: "",
+            admin: false,
+            show: false,
+            publish: true,
+          });
+        }}
+      />
       <ShareModal
         show={shareModalConfig.show}
         name={shareModalConfig.name}
@@ -271,18 +304,26 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           <h2 className="cat-view-heading text-muted">
             {/* if component is used in public list mode display the actor name */}
             {listPublic && actorName && <span>{actorName} </span>}
-            Assessments
-            <p className="lead cat-view-lead">Manage your own assessments.</p>
+            {t("assessments")}
+            <p className="lead cat-view-lead">
+              {t(
+                listPublic
+                  ? "page_assessment_list.subtitle_public"
+                  : "page_assessment_list.subtitle",
+              )}
+            </p>
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
           {!listPublic && (
             <>
               <Link to="/assessments/create" className="btn btn-warning  ms-3">
-                <FaPlus /> <span className="align-middle">Create New</span>
+                <FaPlus />{" "}
+                <span className="align-middle">{t("buttons.create_new")}</span>
               </Link>
               <Link to="/assessments/import" className="btn btn-dark  ms-3">
-                <FaFileImport /> <span className="align-middle">Import</span>
+                <FaFileImport />{" "}
+                <span className="align-middle">{t("buttons.import")}</span>
               </Link>
             </>
           )}
@@ -298,10 +339,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-subject-type`}>
-                      Filter by the type of the Subject (such as a web resource
-                      identified by the Owner) or a service provided by an
-                      Authority, Provider, or Manager, the assessment will be
-                      done for.
+                      {t("page_assessment_list.tip_filter_subject_type")}
                     </Tooltip>
                   }
                 >
@@ -311,14 +349,17 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 </OverlayTrigger>
 
                 <Form.Select
-                  aria-label="Filter by subject type"
+                  id="subject-type-select"
+                  aria-label={t("page_assessment_list.filter_subject_type")}
                   onChange={(e) => {
                     setFilters({ ...filters, subject_type: e.target.value });
                     refetch();
                   }}
                   value={filters.subject_type}
                 >
-                  <option value="">Select subject type...</option>
+                  <option value="">
+                    {t("page_assessment_list.filter_subject_type_select")}
+                  </option>
                   {renderSubjectTypeOptions()}
                 </Form.Select>
               </div>
@@ -330,8 +371,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-subject-name`}>
-                      Filter by the name of the Subject the assessment will be
-                      done for
+                      {t("page_assessment_list.tip_filter_subject_name")}
                     </Tooltip>
                   }
                 >
@@ -341,14 +381,17 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                 </OverlayTrigger>
 
                 <Form.Select
-                  aria-label="Filter by subject name"
+                  id="subject-name-select"
+                  aria-label={t("page_assessment_list.filter_subject_name")}
                   onChange={(e) => {
                     setFilters({ ...filters, subject_name: e.target.value });
                     refetch();
                   }}
                   value={filters.subject_name}
                 >
-                  <option value={""}>Select subject name...</option>
+                  <option value={""}>
+                    {t("page_assessment_list.filter_subject_name_select")}
+                  </option>
                   {renderSubjectNameOptions()}
                 </Form.Select>
               </div>
@@ -366,7 +409,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   refetch();
                 }}
               >
-                Clear
+                {t("buttons.clear")}
               </Button>
             </Col>
           </Row>
@@ -378,29 +421,29 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             <thead>
               <tr className="table-light">
                 <th className="col-lg-2">
-                  <span>Name</span>
+                  <span>{t("fields.name")}</span>
                 </th>
 
                 <th>
-                  <span>Compliance</span>
+                  <span>{t("fields.compliance")}</span>
                 </th>
                 <th>
-                  <span>Ranking</span>
+                  <span>{t("fields.ranking")}</span>
                 </th>
                 <th>
-                  <span>Access</span>
+                  <span>{t("fields.access")}</span>
                 </th>
                 <th>
-                  <span>Subject </span>
+                  <span>{t("fields.subject")} </span>
                 </th>
                 <th>
-                  <span>Organization</span>
+                  <span>{t("fields.organisation")}</span>
                 </th>
                 <th className="col-lg-1">
-                  <span>Created On</span>
+                  <span>{t("fields.created_on")}</span>
                 </th>
                 <th className="col-lg-2">
-                  <span>Actions</span>
+                  <span>{t("fields.actions")}</span>
                 </th>
               </tr>
             </thead>
@@ -419,7 +462,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                 placement="top"
                                 overlay={
                                   <Tooltip id={`tip-shared-with-others`}>
-                                    This assessment is shared by you with others
+                                    {t("page_assessment_list.tip_shared_by")}
                                   </Tooltip>
                                 }
                               >
@@ -434,8 +477,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                 placement="top"
                                 overlay={
                                   <Tooltip id={`tip-shared-from-others`}>
-                                    This assessment is shared with you by
-                                    someone else
+                                    {t("page_assessment_list.tip_shared_with")}
                                   </Tooltip>
                                 }
                               >
@@ -456,27 +498,29 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       <td className="align-middle text-center">
                         {item.compliance === null ? (
                           <span className="badge rounded-pill text-bg-light text-warning border border-warning">
-                            N/A
+                            {t("na").toUpperCase()}
                           </span>
                         ) : item.compliance ? (
                           <span className="badge rounded-pill text-bg-light text-success border border-success">
-                            PASS
+                            {t("pass").toUpperCase()}
                           </span>
                         ) : (
                           <span className="badge rounded-pill text-bg-light text-danger border border-danger">
-                            FAIL
+                            {t("fail").toUpperCase()}
                           </span>
                         )}
                       </td>
                       <td className="align-middle text-center">
                         {item.ranking === null ? (
                           <h6>
-                            <span className="badge bg-secondary">N/A</span>
+                            <span className="badge bg-secondary">
+                              {t("na").toUpperCase()}
+                            </span>
                           </h6>
                         ) : (
                           <h5>
                             <span className="badge bg-info">
-                              {item.ranking}
+                              {prettyPrintRanking(item.ranking)}
                             </span>
                           </h5>
                         )}
@@ -522,7 +566,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                               placement="top"
                               overlay={
                                 <Tooltip id="tip-view">
-                                  View Assessment Results
+                                  {t("page_assessment_list.tip_view")}
                                 </Tooltip>
                               }
                             >
@@ -539,7 +583,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                 placement="top"
                                 overlay={
                                   <Tooltip id="tip-edit">
-                                    Edit Assessment
+                                    {t("page_assessment_list.tip_edit")}
                                   </Tooltip>
                                 }
                               >
@@ -556,7 +600,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                               placement="top"
                               overlay={
                                 <Tooltip id="tip-export">
-                                  Export & Download Assessment
+                                  {t("page_assessment_list.tip_export")}
                                 </Tooltip>
                               }
                             >
@@ -572,11 +616,62 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                             </OverlayTrigger>
                             {!listPublic && (
                               <>
+                                {item.published ? (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tip-unpublish">
+                                        {t("tip_unpublish_assessment")}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <Button
+                                      id={`unpublish-button-${item.id}`}
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        setPublishModalConfig({
+                                          id: item.id,
+                                          name: item.name,
+                                          admin: false,
+                                          show: true,
+                                          publish: false,
+                                        });
+                                      }}
+                                    >
+                                      <FaEyeSlash />
+                                    </Button>
+                                  </OverlayTrigger>
+                                ) : (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tip-publish">
+                                        {t("tip_publish_assessment")}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <Button
+                                      id={`publish-button-${item.id}`}
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        setPublishModalConfig({
+                                          id: item.id,
+                                          name: item.name,
+                                          admin: false,
+                                          show: true,
+                                          publish: true,
+                                        });
+                                      }}
+                                    >
+                                      <FaEye />
+                                    </Button>
+                                  </OverlayTrigger>
+                                )}
                                 <OverlayTrigger
                                   placement="top"
                                   overlay={
                                     <Tooltip id="tip-share">
-                                      Share Assessment
+                                      {t("page_assessment_list.tip_share")}
                                     </Tooltip>
                                   }
                                 >
@@ -594,7 +689,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                   placement="top"
                                   overlay={
                                     <Tooltip id="tip-delete">
-                                      Delete Assessment
+                                      {t("page_assessment_list.tip_delete")}
                                     </Tooltip>
                                   }
                                 >
@@ -624,18 +719,18 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
               <h3>
                 <FaExclamationTriangle />
               </h3>
-              <h5>No data found...</h5>
+              <h5>{t("no_data")}</h5>
             </Alert>
           )}
           <div className="d-flex justify-content-between pb-4">
             <div>
               <Link className="btn btn-secondary" to="/assess">
-                Back
+                {t("buttons.back")}
               </Link>
             </div>
             <div className="d-flex justify-content-end">
               <div>
-                <span className="mx-1">rows per page: </span>
+                <span className="mx-1">{t("rows_per_page")}</span>
                 <select
                   name="per-page"
                   value={opts.size.toString() || "20"}

@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState, useContext, useCallback } from "react";
 import Markdown from "react-markdown";
 import { AuthContext } from "@/auth";
-import { useGetAsmtEligibility, useGetProfile, useGetTemplate } from "@/api";
+import {
+  useGetAsmtEligibility,
+  useGetMotivationTemplate,
+  useGetProfile,
+} from "@/api";
 import {
   Assessment,
   AssessmentSubject,
@@ -51,6 +55,7 @@ import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
 import { Comments } from "./components/Comments";
 import FormCheckInput from "react-bootstrap/esm/FormCheckInput";
+import { useTranslation } from "react-i18next";
 
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
@@ -73,18 +78,18 @@ type Guide = {
 const AssessmentEdit = ({
   mode = AssessmentEditMode.Create,
 }: AssessmentEditProps) => {
+  const { t } = useTranslation();
   const [reqFields, setReqFields] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState(1);
   const { keycloak, registered } = useContext(AuthContext)!;
   const [assessment, setAssessment] = useState<Assessment>();
-  const [templateId, setTemplateID] = useState<number>();
-  const [actor, setActor] = useState<{ id: number; name: string }>();
+  const [actor, setActor] = useState<{ id: string; name: string }>();
   const [organisation, setOrganisation] = useState<{
     id: string;
     name: string;
   }>();
   const [asmtType, setAsmtType] = useState<{
-    id: number;
+    id: string;
     name: string;
   }>();
   const alert = useRef<AlertInfo>({
@@ -127,20 +132,13 @@ const AssessmentEdit = ({
   };
 
   const navigate = useNavigate();
-  // const [actorId, setActorId] = useState<number>();
-  // for the time being get the only one assessment template supported
-  // with templateId: 1 (pid policy) and actorId: 6 (for pid owner)
-  // this will be replaced in time with dynamic code
 
-  // signal used in the third step of the wizard in order to trigger
-  // a refresh in the criteria sub-tab component and select the first
-  // criterion as an active sub-tab
   const [resetCriterionTab, setResetCriterionTab] = useState(false);
   const [importInfo, setImportInfo] = useState<Assessment>();
 
-  const qTemplate = useGetTemplate(
-    asmtType?.id || 0,
-    actor?.id,
+  const qTemplate = useGetMotivationTemplate(
+    asmtType?.id || "",
+    actor?.id || "",
     keycloak?.token || "",
     registered,
   );
@@ -173,6 +171,19 @@ const AssessmentEdit = ({
 
   // Control the disabled tabs on wizard
   const [wizardTabActive, setWizardTabActive] = useState<boolean>(false);
+
+  const extraTab = mode === AssessmentEditMode.Import ? 1 : 0;
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === "#actor") {
+      setActiveTab(1 + extraTab);
+    } else if (hash === "#submission") {
+      setActiveTab(2 + extraTab);
+    } else if (hash === "#assessment") {
+      setActiveTab(3 + extraTab);
+      setResetCriterionTab(true);
+    }
+  }, [extraTab]);
 
   // TODO: Get all available pages in an infinite scroll not all sequentially.
   useEffect(() => {
@@ -220,24 +231,24 @@ const AssessmentEdit = ({
   }
 
   function handleCreateAssessment() {
-    if (templateId && assessment && checkRequiredFields(assessment)) {
+    if (assessment && checkRequiredFields(assessment)) {
       const promise = mutationCreateAssessment
         .mutateAsync({
           assessment_doc: assessment,
         })
         .catch((err) => {
           alert.current = {
-            message: `Error during assessment creation:\n${err.response.data.message}`,
+            message: `${t("page_assessment_edit.toast_create_fail")}:\n${err.response.data.message}`,
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Assessment succesfully created.",
+            message: t("page_assessment_edit.toast_create_success"),
           };
         });
       toast.promise(promise, {
-        loading: "Creating",
+        loading: t("page_assessment_edit.toast_create_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -279,20 +290,20 @@ const AssessmentEdit = ({
         })
         .catch((err) => {
           alert.current = {
-            message: "Error during assessment updating.",
+            message: `${t("page_assessment_edit.toast_update_fail")}:\n${err.response.data.message}`,
           };
           throw err;
         })
         .then(() => {
           alert.current = {
-            message: "Assessment succesfully updated.",
+            message: t("page_assessment_edit.toast_update_success"),
           };
           if (exit) {
             navigate("/assessments");
           }
         });
       toast.promise(promise, {
-        loading: "Updating",
+        loading: t("page_assessment_edit.toast_update_progress"),
         success: () => `${alert.current.message}`,
         error: () => `${alert.current.message}`,
       });
@@ -309,11 +320,11 @@ const AssessmentEdit = ({
   }
 
   function handleSelectActor(
-    actorId: number,
+    actorId: string,
     actorName: string,
     orgId: string,
     orgName: string,
-    asmtTypeId: number,
+    asmtTypeId: string,
     asmtTypeName: string,
   ) {
     handleActorChange(
@@ -326,14 +337,25 @@ const AssessmentEdit = ({
     );
   }
 
+  // take care of window location hash when tabs change
+  useEffect(() => {
+    if (activeTab - extraTab === 1) {
+      window.location.hash = "#actor";
+    } else if (activeTab - extraTab === 2) {
+      window.location.hash = "#submission";
+    } else if (activeTab - extraTab === 3) {
+      window.location.hash = "#assessment";
+    }
+  }, [activeTab, extraTab]);
+
   // This is the callback to run upon Actor-Organisation option selection
   const handleActorChange = useCallback(
     (
-      actor_id: number,
+      actor_id: string,
       actor_name: string,
       organisation_id: string,
       organisation_name: string,
-      asmtTypeId: number,
+      asmtTypeId: string,
       asmtTypeName: string,
     ) => {
       if (assessment) {
@@ -371,7 +393,7 @@ const AssessmentEdit = ({
         ...prev_assessment!,
         actor: {
           name: actor?.name || templateData?.actor.name || "",
-          id: actor?.id || templateData?.actor.id || 0,
+          id: actor?.id || templateData?.actor.id || "",
         },
         organisation: {
           name: organisation?.name || templateData?.organisation.name || "",
@@ -384,7 +406,7 @@ const AssessmentEdit = ({
         ...prev_assessment!,
         actor: {
           name: actor?.name || templateData?.actor.name || "",
-          id: actor?.id || templateData?.actor.id || 0,
+          id: actor?.id || templateData?.actor.id || "",
         },
         organisation: {
           name: organisation?.name || templateData?.organisation.name || "",
@@ -392,7 +414,7 @@ const AssessmentEdit = ({
         },
         assessment_type: {
           name: asmtType?.name || templateData?.assessment_type.name || "",
-          id: asmtType?.id || templateData?.assessment_type.id || 0,
+          id: asmtType?.id || templateData?.assessment_type.id || "",
           description: templateData?.assessment_type.description || "",
         },
         principles:
@@ -411,11 +433,10 @@ const AssessmentEdit = ({
   // Handle the resetting of assessment templates
   useEffect(() => {
     if (mode !== AssessmentEditMode.Edit && qTemplate.data) {
-      const data = qTemplate.data?.template_doc;
+      const data = qTemplate.data;
 
       // setAssessment(data);
       setTemplateData(data);
-      setTemplateID(qTemplate.data.id);
       // if not on create mode load assessment itself
     } else if (mode === AssessmentEditMode.Edit && qAssessment.data) {
       const data = qAssessment.data.assessment_doc;
@@ -520,7 +541,10 @@ const AssessmentEdit = ({
 
       newAssessment.principles.forEach((principle) => {
         principle.criteria.forEach((criterion) => {
-          if (criterion.imperative === AssessmentCriterionImperative.Must) {
+          if (
+            criterion.imperative === AssessmentCriterionImperative.Must ||
+            criterion.imperative === AssessmentCriterionImperative.MUST
+          ) {
             mandatory.push(criterion.metric.result);
           } else {
             optional.push(criterion.metric.result);
@@ -534,10 +558,21 @@ const AssessmentEdit = ({
         compliance = mandatory.every((result) => result === 1);
       }
 
-      const ranking: number | null = optional.reduce((sum, result) => {
-        if (sum === null || result === null) return null;
-        return sum + result;
-      }, 0);
+      // get how many optional items have passed
+      const optionalPass: number = optional.reduce(
+        (sum: number, current: number | null) => {
+          if (current && current > 0) {
+            return sum + 1;
+          }
+          return sum;
+        },
+        0,
+      );
+
+      // if there any optional items available, ranking is equal to the percentage of optional passed / total optional
+      // else ranking is 0
+      const ranking =
+        optional.length > 0 ? (optionalPass / optional.length) * 100 : 0;
 
       setAssessment({
         ...newAssessment,
@@ -548,7 +583,7 @@ const AssessmentEdit = ({
 
   // evaluate the assessment
   const evalResult = evalAssessment(assessment);
-  const extraTab = mode === AssessmentEditMode.Import ? 1 : 0;
+
   let importDone = true;
   if (mode === AssessmentEditMode.Import) {
     importDone = Boolean(importInfo?.actor?.id);
@@ -596,7 +631,9 @@ const AssessmentEdit = ({
         backdrop={false}
       >
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Comments</Offcanvas.Title>
+          <Offcanvas.Title>
+            {t("page_assessment_edit.comments")}
+          </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body id="cat-comments-area">
           <Comments id={assessment?.id || ""} />
@@ -607,12 +644,12 @@ const AssessmentEdit = ({
           <h2 className="cat-view-heading text-muted">
             {`${mode} assessment`}
             <p className="lead cat-view-lead">
-              Fill in the required fields of the assessment
+              {t("page_assessment_edit.subtitle")}
               {assessment && assessment.id && (
                 <>
                   <br />
                   <span className="text-info">
-                    <small> with id {assessment.id}</small>
+                    <small>{` ${t("page_assessment_edit.with_id")} ${assessment.id}`}</small>
                   </span>
                 </>
               )}
@@ -624,7 +661,8 @@ const AssessmentEdit = ({
             <>
               {shared ? (
                 <button className="btn btn-secondary">
-                  shared with me <FaUsers className="ms-1" />
+                  {`${t("page_assessment_edit.shared_with_me")} `}{" "}
+                  <FaUsers className="ms-1" />
                 </button>
               ) : (
                 <button
@@ -633,14 +671,16 @@ const AssessmentEdit = ({
                     setShareModalConfig({ ...shareModalConfig, show: true });
                   }}
                 >
-                  <FaShare /> Share
+                  <FaShare />
+                  {` ${t("buttons.share")}`}
                 </button>
               )}
               <button
                 className="btn btn-warning ms-2"
                 onClick={() => setCommentsShow(!commentsShow)}
               >
-                <FaComment /> Comments
+                <FaComment />
+                {` ${t("page_assessment_edit.comments")}`}
               </button>
             </>
           )}
@@ -663,9 +703,9 @@ const AssessmentEdit = ({
                 <Nav.Item className="bg-light border rounded me-2">
                   <Nav.Link eventKey="step-1">
                     <span className="badge text-black bg-light me-2">
-                      Step 1.
+                      {` ${t("page_assessment_edit.step")} 1.`}
                     </span>{" "}
-                    Import File
+                    {t("page_assessment_edit.import_file")}
                   </Nav.Link>
                 </Nav.Item>
               )}
@@ -679,9 +719,9 @@ const AssessmentEdit = ({
                   disabled={!importDone}
                 >
                   <span className="badge text-black bg-light me-2">
-                    Step {1 + extraTab}.
+                    {`${t("page_assessment_edit.step")} ${1 + extraTab}.`}
                   </span>{" "}
-                  Actor
+                  {t("actor")}
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item
@@ -694,9 +734,9 @@ const AssessmentEdit = ({
                   disabled={!wizardTabActive}
                 >
                   <span className="badge text-black bg-light me-2">
-                    Step {2 + extraTab}.
+                    {`${t("page_assessment_edit.step")} ${2 + extraTab}.`}
                   </span>{" "}
-                  Submission
+                  {t("submission")}
                   {reqFields.length > 0 && (
                     <FaExclamationCircle className="ms-2 text-danger rounded-circle bg-white" />
                   )}
@@ -712,9 +752,9 @@ const AssessmentEdit = ({
                   disabled={!wizardTabActive}
                 >
                   <span className="badge text-black bg-light me-2">
-                    Step {3 + extraTab}.
+                    {`${t("page_assessment_edit.step")} ${3 + extraTab}.`}
                   </span>{" "}
-                  Assessment
+                  {t("assessment")}
                 </Nav.Link>
               </Nav.Item>
             </Nav>
@@ -725,36 +765,37 @@ const AssessmentEdit = ({
                 <Tab.Pane className="text-black" eventKey={"step-1"}>
                   <div>
                     <div>
-                      CAT Toolkit gives the ability to{" "}
-                      <em className="text-underline">export</em> and{" "}
-                      <em className="text-underline">import</em> Assessments as{" "}
-                      <code className="text-muted mx-2">*.json</code> format
-                      files that adhere to a specific schema.
+                      {`${t("page_assessment_edit.imp1")} `}
+                      <em className="text-underline">export</em>{" "}
+                      {` ${t("page_assessment_edit.imp2")} `}
+                      <em className="text-underline">import</em>{" "}
+                      {`${t("page_assessment_edit.imp3")} `}
+                      <code className="text-muted mx-2">*.json</code>{" "}
+                      {`${t("page_assessment_edit.imp4")}`}
                     </div>
 
                     <div>
                       <em className="ms-4 text-muted mb-3">
                         <small>
-                          <FaHandPointRight /> You can export an existing
-                          assessment by going to{" "}
-                          <Link to="/assessments">your assement list</Link> and
-                          clicking the <FaDownload className="text-muted" />{" "}
-                          button in the actions column
+                          <FaHandPointRight />{" "}
+                          {` ${t("page_assessment_edit.imp5")} `}
+                          <Link to="/assessments">
+                            {t("page_assessment_edit.imp6")}
+                          </Link>
+                          {` ${t("page_assessment_edit.imp7")} `}
+                          <FaDownload className="text-muted" />
+                          {` ${t("page_assessment_edit.imp8")}`}
                         </small>
                       </em>
                     </div>
 
-                    <div className="mt-1">
-                      You can import an External Assessment that exists as a
-                      json file in your filesystem and use it as a basis to
-                      create a new one.
-                    </div>
+                    <div className="mt-1">{t("page_assessment_edit.imp9")}</div>
 
                     <div className="mt-4">
                       {" "}
                       <FaFileImport className="me-2" />{" "}
                       <strong className="align-middle">
-                        Select External Assessment file (*.json) for importing:
+                        {t("page_assessment_edit.imp10")}
                       </strong>{" "}
                     </div>
 
@@ -771,14 +812,19 @@ const AssessmentEdit = ({
                           <div>
                             <FaCheckCircle className="me-2" />
                             <strong className="align-middle">
-                              Valid assessment imported
+                              {t("page_assessment_edit.valid_import")}
                             </strong>
                           </div>
                           <hr />
                           {importInfo.assessment_type && (
                             <div>
                               <small>
-                                <strong>type of assessment:</strong>{" "}
+                                <strong>
+                                  {t(
+                                    "page_assessment_edit.type_assessment",
+                                  ).toLowerCase()}
+                                  :
+                                </strong>{" "}
                                 {importInfo?.assessment_type?.name} - [id:{" "}
                                 {importInfo?.assessment_type?.id}]
                               </small>
@@ -787,7 +833,9 @@ const AssessmentEdit = ({
                           {importInfo.timestamp && (
                             <div>
                               <small>
-                                <strong>timestamp:</strong>{" "}
+                                <strong>
+                                  {t("fields.timestamp").toLowerCase()}:
+                                </strong>{" "}
                                 {importInfo.timestamp}
                               </small>
                             </div>
@@ -795,38 +843,46 @@ const AssessmentEdit = ({
                           {importInfo.id && (
                             <div>
                               <small>
-                                <strong>id:</strong> {importInfo.id}
+                                <strong>{t("fields.id").toLowerCase()}:</strong>{" "}
+                                {importInfo.id}
                               </small>
                             </div>
                           )}
                           {importInfo.name && (
                             <div>
                               <small>
-                                <strong>name:</strong> {importInfo.name}
+                                <strong>
+                                  {t("fields.name").toLowerCase()}:
+                                </strong>{" "}
+                                {importInfo.name}
                               </small>
                             </div>
                           )}
                           {importInfo.actor && (
                             <div>
                               <small>
-                                <strong>actor:</strong> {importInfo.actor.name}{" "}
-                                - [id: {importInfo.actor.id}]
+                                <strong>
+                                  {t("fields.actor").toLowerCase()}:
+                                </strong>{" "}
+                                {importInfo.actor.name} - [
+                                {t("fields.id").toLowerCase()}:{" "}
+                                {importInfo.actor.id}]
                               </small>
                             </div>
                           )}
                           {importInfo.organisation && (
                             <div>
                               <small>
-                                <strong>organisation:</strong>{" "}
+                                <strong>
+                                  {t("fields.organisation").toLowerCase()}:
+                                </strong>{" "}
                                 {importInfo?.organisation?.name} - [id:{" "}
                                 {importInfo?.organisation?.id}]
                               </small>
                             </div>
                           )}
                         </Alert>
-                        <div>
-                          Please proceed to the next step to select Actor
-                        </div>
+                        <div>{t("page_assessment_edit.next_step_actor")}</div>
                       </>
                     )}
                     {!importError &&
@@ -838,9 +894,9 @@ const AssessmentEdit = ({
                               <FaTimesCircle className="me-2" />
                               <span className="align-middle">
                                 <strong className="me-2">
-                                  Invalid Assessment!
+                                  {t("page_assessment_edit.invalid")}
                                 </strong>
-                                - Please try to import a different file...
+                                - {t("page_assessment_edit.reimport")}
                               </span>
                             </div>
                           </Alert>
@@ -853,7 +909,7 @@ const AssessmentEdit = ({
                             <FaTimesCircle className="me-2" />
                             <span className="align-middle">
                               <strong className="me-2">
-                                Invalid JSON Format!
+                                {t("page_assessment_edit.invalid_json")}
                               </strong>
                               {importError}
                             </span>
@@ -871,9 +927,12 @@ const AssessmentEdit = ({
                 {shared ? (
                   <div>
                     <div>
-                      <FaLock /> This is a <strong>shared</strong> assessment
-                      from another user, which includes the following actor
-                      information:
+                      <FaLock />
+                      {` ${t("page_assessment_edit.share1")}`}
+                      <strong className="mx-1">
+                        {t("page_assessment_edit.share2")}
+                      </strong>
+                      {` ${t("page_assessment_edit.share3")}:`}
                     </div>
                     <div className="border p-2 m-2 text-muted">
                       <FormCheckInput
@@ -910,7 +969,7 @@ const AssessmentEdit = ({
                   name={assessment?.name || ""}
                   actor={
                     assessment?.actor ||
-                    templateData?.actor || { id: 0, name: "" }
+                    templateData?.actor || { id: "", name: "" }
                   }
                   type={assessment?.assessment_type?.name || ""}
                   org={assessment?.organisation?.name || ""}
@@ -963,7 +1022,7 @@ const AssessmentEdit = ({
                 variant="light"
                 onClick={handlePrevTab}
               >
-                ← Prev
+                {`← ${t("buttons.prev")}`}
               </Button>
 
               <Button
@@ -975,7 +1034,7 @@ const AssessmentEdit = ({
                 variant="light"
                 onClick={handleNextTab}
               >
-                Next →
+                {`${t("buttons.next")} →`}
               </Button>
             </div>
             {/* Add SAVE button here and cancel */}
@@ -989,7 +1048,7 @@ const AssessmentEdit = ({
                     handleCreateAssessment();
                   }}
                 >
-                  Create
+                  {t("buttons.create")}
                 </Button>
               ) : (
                 <>
@@ -1001,7 +1060,7 @@ const AssessmentEdit = ({
                       handleUpdateAssessment(false);
                     }}
                   >
-                    Save
+                    {t("buttons.save")}
                   </Button>
 
                   <Button
@@ -1018,7 +1077,7 @@ const AssessmentEdit = ({
                       handleUpdateAssessment(true);
                     }}
                   >
-                    Submit
+                    {t("buttons.submit")}
                   </Button>
                 </>
               )}
@@ -1030,7 +1089,7 @@ const AssessmentEdit = ({
                     : "/assessments"
                 }
               >
-                Close
+                {t("buttons.close")}
               </Link>
             </div>
           </Card.Footer>

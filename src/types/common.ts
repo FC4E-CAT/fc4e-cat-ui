@@ -1,5 +1,7 @@
 // Common or minor stuff here
 
+import { MotivationMetric } from "./motivation";
+
 export type ApiT = {
   base_url: string;
   version: string;
@@ -19,12 +21,33 @@ export interface ResponsePage<T> {
   content: T;
 }
 
+export interface RegistryActor {
+  id: string;
+  act: string;
+  label: string;
+  description: string;
+}
+
 export interface Actor {
   id: string;
   name: string;
   description: string;
 }
 
+export interface RegistryResource {
+  id: string;
+  label: string;
+  description: string;
+}
+
+export interface MetricResponse {
+  code: string;
+}
+
+export type RegistryResourceResponse = ResponsePage<RegistryResource[]>;
+export type MotivationMetricResponse = ResponsePage<MotivationMetric[]>;
+
+export type RegistryActorListResponse = ResponsePage<RegistryActor[]>;
 export type ActorListResponse = ResponsePage<Actor[]>;
 export type SubjectListResponse = ResponsePage<Subject[]>;
 
@@ -96,7 +119,7 @@ export type ApiViewUsers = ApiOptions & {
   id: string;
 };
 
-export type ApiMotivations = ApiOptions & {
+export type ApiOptionsSearch = ApiOptions & {
   search: string;
 };
 
@@ -111,12 +134,16 @@ export type ApiObjects = ApiOptions & {
   assessmentTypeId: string;
 };
 
+export type ApiAdminAssessments = ApiOptions & {
+  search: string;
+};
+
 export type ApiAssessments = ApiOptions & {
   isPublic: boolean;
   subject_type: string;
   subject_name: string;
   actorId: string;
-  assessmentTypeId: string;
+  motivationId: string;
 };
 
 export type ApiValidations = ApiOptions & {
@@ -124,3 +151,51 @@ export type ApiValidations = ApiOptions & {
   search: string;
   status: string;
 };
+
+export interface HttpTestResponse {
+  code: number;
+  is_valid_https?: boolean;
+  message?: string;
+}
+
+export interface Md1TestResponse {
+  code: number;
+  is_valid?: boolean;
+  message?: string;
+}
+
+export interface Statistics {
+  user_statistics: StatsUsers;
+  assessment_statistics: StatsAssessments;
+  validation_statistics: StatsValidations;
+  subject_statistics: StatsSubjects;
+}
+
+export interface StatsUsers {
+  total_users: number;
+  validated_users: number;
+  banned_users: number;
+  identified_users: number;
+}
+
+export interface StatsAssessments {
+  total_assessments: number;
+  public_assessments: number;
+  private_assessments: number;
+  assessment_per_role: AssessmentPerRole[];
+}
+
+export interface AssessmentPerRole {
+  actor: string;
+  total_assessments: number;
+}
+
+export interface StatsValidations {
+  total_validations: number;
+  accepted_validations: number;
+  pending_validations: number;
+}
+
+export interface StatsSubjects {
+  total_subjects: number;
+}

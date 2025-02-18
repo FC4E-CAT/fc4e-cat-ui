@@ -17,39 +17,42 @@ export function evalMetric(metric: Metric): {
   let value: number | null = null,
     result: number | null = null;
 
+  // check if metric aggregates with OR
+  const metricOR = metric.type.endsWith("-OR");
   // if metric algo indicates sum calculate the sum of test scores
-  if (metric.algorithm === "sum" || metric.algorithm === "single") {
+  if (
+    metric.label_algorithm_type === "Simple Sum" ||
+    metric.label_algorithm_type === "Binary"
+  ) {
     // if one of the tests in not filled yet the result of the metric should be -1 (unresolved)
     value = metric.tests.reduce((sum: number | null, item: AssessmentTest) => {
-      // if any of the test values are null (not filled-in) designate the whole metric value/result as null
-      if (sum === null || item.result === null) return null;
+      // if metric aggregates in OR skip unfilled values
+      if (sum === null || item.result === null) return metricOR ? sum : null;
       return sum + item.result;
     }, 0);
-  } else if (metric.algorithm === "max") {
+  } else if (metric.label_algorithm_type === "Simple Maximum") {
     value = metric.tests.reduce((max: number | null, item: AssessmentTest) => {
-      // if any of the test values are null (not filled-in) designate the whole metric value/result as null
-      if (max === null || item.result === null) return null;
+      // if metric aggregates in OR skip unfilled values
+      if (max === null || item.result === null) return metricOR ? max : null;
       return Math.max(item.result, max);
     }, -Infinity);
   } else {
     // same as sum
     // if one of the tests in not filled yet the result of the metric should be -1 (unresolved)
     value = metric.tests.reduce((sum: number | null, item: AssessmentTest) => {
-      // if any of the test values are null (not filled-in) designate the whole metric value/result as null
-      if (sum === null || item.result === null) return null;
+      // if metric aggregates in OR skip unfilled values
+      if (sum === null || item.result === null) return metricOR ? sum : null;
       return sum + item.result;
     }, 0);
   }
   // if all the tests are filled-in and a value has been produced calculate also the rating
-  if (value !== null) {
+
+  if (value !== null && metric.benchmark_value !== undefined) {
     // new templates have benchmark_value parameter
-    if (metric.benchmark_value !== undefined) {
+    if (metric.type.endsWith("-Inverse")) {
+      result = value && value < metric.benchmark_value ? 1 : 0;
+    } else {
       result = value && value >= metric.benchmark_value ? 1 : 0;
-    } else if (
-      "equal_greater_than" in metric.benchmark &&
-      typeof metric.benchmark["equal_greater_than"] === "number"
-    ) {
-      result = value && value >= metric.benchmark["equal_greater_than"] ? 1 : 0;
     }
   }
 

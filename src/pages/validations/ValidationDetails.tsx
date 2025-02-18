@@ -22,8 +22,11 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { idToColor, trimField } from "@/utils/admin";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useTranslation } from "react-i18next";
 
 function ValidationDetails(props: ValidationProps) {
+  const { t } = useTranslation();
+
   const params = useParams();
   const navigate = useNavigate();
   const alert = useRef<AlertInfo>({
@@ -51,7 +54,7 @@ function ValidationDetails(props: ValidationProps) {
 
   const renderTooltip = (props: TooltipProps) => (
     <Tooltip id="button-tooltip" {...props}>
-      {copySuccess ? "Copied!" : "Copy to clipboard"}
+      {copySuccess ? t("tip_copied") : t("tip_copy")}
     </Tooltip>
   );
   const [validation, setValidation] = useState<ValidationResponse>();
@@ -76,16 +79,18 @@ function ValidationDetails(props: ValidationProps) {
         <Modal.Header className="card-header border-danger text-danger text-center">
           <h5>
             <FaExclamationTriangle className="mx-3" />
-            <strong>Validation Request Rejection</strong>
+            <strong>{t("page_validation_details.modal_reject")}</strong>
           </h5>
         </Modal.Header>
         <Modal.Body className=" card-body border-danger text-center">
-          Are you sure you want to reject validation with ID:{" "}
+          {t("page_validation_details.modal_reject_text")}:{" "}
           <strong>{params.id}</strong> ?
           <div className="text-start mt-2">
             <Form.Control
               id="input-share-user"
-              placeholder="Add a reason for rejecting this request (required)"
+              placeholder={t(
+                "page_validation_details.reject_reason_placeholder",
+              )}
               value={rejection}
               as="textarea"
               rows={3}
@@ -105,24 +110,24 @@ function ValidationDetails(props: ValidationProps) {
               const promise = mutateValidationUpdateStatus()
                 .catch((err) => {
                   alert.current = {
-                    message: "Error during validation rejection.",
+                    message: t("page_validation_details.toast_reject_fail"),
                   };
                   throw err;
                 })
                 .then(() => {
                   alert.current = {
-                    message: "Validation successfully rejected.",
+                    message: t("page_validation_details.toast_reject_success"),
                   };
                 })
                 .finally(() => navigate("/admin/validations"));
               toast.promise(promise, {
-                loading: "Rejecting",
+                loading: t("page_validation_details.toast_reject_progress"),
                 success: () => `${alert.current.message}`,
                 error: () => `${alert.current.message}`,
               });
             }}
           >
-            Reject
+            {t("buttons.reject")}
           </button>
           <button
             onClick={() => {
@@ -130,7 +135,7 @@ function ValidationDetails(props: ValidationProps) {
             }}
             className="btn btn-dark mx-4"
           >
-            Cancel
+            {t("buttons.cancel")}
           </button>
         </Modal.Footer>
       </Modal>
@@ -143,11 +148,11 @@ function ValidationDetails(props: ValidationProps) {
         <Modal.Header className="border-success text-success text-center">
           <h5>
             <FaExclamationTriangle className="mx-3" />
-            <strong>Validation Request Approval</strong>
+            <strong>{t("page_validation_details.modal_approve")}</strong>
           </h5>
         </Modal.Header>
         <Modal.Body className="border-info text-center">
-          Are you sure you want to approve validation with ID:{" "}
+          {t("page_validation_details.modal_approve_text")}:{" "}
           <strong>{params.id}</strong> ?
         </Modal.Body>
         <Modal.Footer className="border-success text-success text-center">
@@ -158,24 +163,24 @@ function ValidationDetails(props: ValidationProps) {
               const promise = mutateValidationUpdateStatus()
                 .catch((err) => {
                   alert.current = {
-                    message: "Error during validation approval.",
+                    message: t("page_validation_details.toast_approve_fail"),
                   };
                   throw err;
                 })
                 .then(() => {
                   alert.current = {
-                    message: "Validation successfully approved.",
+                    message: t("page_validation_details.toast_approve_success"),
                   };
                 })
                 .finally(() => navigate("/admin/validations"));
               toast.promise(promise, {
-                loading: "Approving",
+                loading: t("page_validation_details.toast_approve_progress"),
                 success: () => `${alert.current.message}`,
                 error: () => `${alert.current.message}`,
               });
             }}
           >
-            Approve
+            {t("buttons.approve")}
           </button>
           <button
             onClick={() => {
@@ -183,7 +188,7 @@ function ValidationDetails(props: ValidationProps) {
             }}
             className="btn btn-dark mx-4"
           >
-            Cancel
+            {t("buttons.cancel")}
           </button>
         </Modal.Footer>
       </Modal>
@@ -199,16 +204,16 @@ function ValidationDetails(props: ValidationProps) {
         <div className="cat-view-heading-block row border-bottom">
           <div className="col">
             <h2 className="cat-view-heading text-muted">
-              Validation Request
+              {t("page_validation_details.title")}
               <p className="lead cat-view-lead">
                 {props.admin ? (
                   <span className="admin-mode-badge-sm">
                     <small className="small-badge">
-                      <Badge bg="dark">Admin Mode</Badge>
+                      <Badge bg="dark"> {t("admin_mode")}</Badge>
                     </small>
                   </span>
                 ) : null}
-                Manage the validation with id: {validation?.id} .
+                {t("page_validation_details.subtitle")}: {validation?.id} .
               </p>
             </h2>
           </div>
@@ -222,13 +227,13 @@ function ValidationDetails(props: ValidationProps) {
                     className="btn btn-light border-black text-success"
                     to={`/admin/validations/${params.id}/approve#alert-spot`}
                   >
-                    <FaCheck /> Approve
+                    <FaCheck /> {t("buttons.approve")}
                   </Link>
                   <Link
                     className="btn btn-light mx-4 text-danger border-black"
                     to={`/admin/validations/${params.id}/reject#alert-spot`}
                   >
-                    <FaTimes /> Reject
+                    <FaTimes /> {t("buttons.reject")}
                   </Link>
                 </span>
               )}
@@ -278,10 +283,10 @@ function ValidationDetails(props: ValidationProps) {
               <div className="row py-3 mt-4">
                 {validation?.status === "REVIEW" && (
                   <h4>
-                    Status
+                    {t("field.status")}
                     <small className="px-3">
                       <span className="badge bg-primary">
-                        <FaGlasses /> Pending for Review
+                        <FaGlasses /> {t("review")}
                       </span>
                     </small>
                   </h4>
@@ -289,54 +294,69 @@ function ValidationDetails(props: ValidationProps) {
                 {validation?.status === ValidationStatus.REJECTED && (
                   <>
                     <h4>
-                      Status
+                      {t("field.status")}
                       <small className="px-3">
                         <span className="badge bg-danger">
-                          <FaTimes /> REJECTED
+                          <FaTimes /> {t("rejected")}
                         </span>
                       </small>
                     </h4>
                     <div className="alert alert-danger">
-                      <strong>Rejection Reason:</strong>
+                      <strong>
+                        {t("page_validation_details.rejection_reason")}:
+                      </strong>
                       <p>{validation?.rejection_reason}</p>
                     </div>
                     <div>
-                      <strong>Rejected on:</strong> {validation?.validated_on}
+                      <strong>
+                        {t("page_validation_details.rejected_on")}:
+                      </strong>{" "}
+                      {validation?.validated_on}
                     </div>
                     <div>
-                      <strong>Rejected by:</strong> {validation?.validated_by}
+                      <strong>
+                        {t("page_validation_details.rejected_by")}:
+                      </strong>{" "}
+                      {validation?.validated_by}
                     </div>
                   </>
                 )}
                 {validation?.status === ValidationStatus.APPROVED && (
                   <>
                     <h4>
-                      Status
+                      {t("field.status")}
                       <small className="px-3">
                         <span className="badge bg-success">
-                          <FaCheck /> Approved
+                          <FaCheck /> {t("approved")}
                         </span>
                       </small>
                     </h4>
                     <div>
-                      <strong>Approved on:</strong> {validation?.validated_on}
+                      <strong>
+                        {t("page_validation_details.approved_on")}:
+                      </strong>{" "}
+                      {validation?.validated_on}
                     </div>
                     <div>
-                      <strong>Approved by:</strong> {validation?.validated_by}
+                      <strong>
+                        {t("page_validation_details.approved_by")}:
+                      </strong>{" "}
+                      {validation?.validated_by}
                     </div>
                   </>
                 )}{" "}
                 <section className="col-9 disabled">
                   <div>
-                    <strong>Created on:</strong> {validation?.created_on}
+                    <strong>{t("fields.created_on")}:</strong>{" "}
+                    {validation?.created_on}
                   </div>
                 </section>
               </div>
               <div className="row border-top py-3 mt-4">
-                <h4>Organisation</h4>
+                <h4>{t("fields.organisation")}</h4>
                 <section className="col-9 disabled">
                   <div>
-                    <strong>Id: </strong>
+                    <strong>{t("fields.id")}: </strong>
                     {validation?.organisation_source === "ROR" ? (
                       <>
                         <a
@@ -346,7 +366,7 @@ function ValidationDetails(props: ValidationProps) {
                         >
                           {validation?.organisation_id}
                         </a>
-                        <span> - [ROR]</span>
+                        <span> - [{t("ror")}]</span>
                       </>
                     ) : (
                       <>
@@ -356,20 +376,25 @@ function ValidationDetails(props: ValidationProps) {
                     )}
                   </div>
                   <div>
-                    <strong>Name:</strong> {validation?.organisation_name}
+                    <strong>{t("fields.name")}:</strong>{" "}
+                    {validation?.organisation_name}
                   </div>
                 </section>
               </div>
               <div className="row border-top py-3 mt-4">
-                <h4>Roles</h4>
+                <h4>{t("fields.roles")}</h4>
                 <section className="col-9 disabled">
                   <div>
-                    <strong>User role in organisation:</strong>{" "}
+                    <strong>
+                      {t("page_validation_details.org_user_role")}:
+                    </strong>{" "}
                     {validation?.organisation_role}
                   </div>
                   <div>
-                    <strong>User requests as Actor with:</strong>{" "}
-                    {validation?.actor_name}
+                    <strong>
+                      {t("page_validation_details.actor_user_requests")}:
+                    </strong>{" "}
+                    {validation?.registry_actor_name}
                   </div>
                 </section>
               </div>
@@ -381,12 +406,12 @@ function ValidationDetails(props: ValidationProps) {
           className="btn btn-secondary my-4"
           to={`${isAdmin.current ? "/admin" : ""}/validations`}
         >
-          Back
+          {t("buttons.back")}
         </Link>
       </div>
     );
   } else {
-    return <div>Press Login to authenticate</div>;
+    return <div>{t("no_login")}</div>;
   }
 }
 

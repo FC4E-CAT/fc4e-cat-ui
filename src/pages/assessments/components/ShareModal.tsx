@@ -1,12 +1,13 @@
 import { useGetAssessmentShares, useShareAssessment } from "@/api";
 import { AuthContext } from "@/auth";
 import { AlertInfo } from "@/types";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Modal, Button, ListGroup, Form, InputGroup } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { FaShare, FaUserAlt, FaCopy } from "react-icons/fa";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useTranslation } from "react-i18next";
 
 interface ShareModalProps {
   name: string;
@@ -23,6 +24,7 @@ export function ShareModal(props: ShareModalProps) {
   });
 
   const { keycloak, registered } = useContext(AuthContext)!;
+  const { t } = useTranslation();
 
   const qShares = useGetAssessmentShares({
     id: props.id,
@@ -31,6 +33,10 @@ export function ShareModal(props: ShareModalProps) {
   });
   const mutateShare = useShareAssessment(keycloak?.token || "", props.id);
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    setEmail("");
+  }, [props.show]);
 
   const [copySuccess, setCopySuccess] = useState("");
 
@@ -49,18 +55,18 @@ export function ShareModal(props: ShareModalProps) {
       })
       .catch((err) => {
         alert.current = {
-          message: "Error: " + err.response.data.message,
+          message: `${t("error")}: ` + err.response.data.message,
         };
         throw err;
       })
       .then(() => {
         setEmail("");
         alert.current = {
-          message: "Succesfully shared with: " + email,
+          message: `${t("page_assessment_edit.toast_share_success")}: ${email}`,
         };
       });
     toast.promise(promise, {
-      loading: "Sharing...",
+      loading: t("page_assessment_edit.toast_share_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -75,17 +81,18 @@ export function ShareModal(props: ShareModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaShare className="me-2" /> Share assessment
+          <FaShare className="me-2" />
+          {t("page_assessment_list.tip_share")}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <ListGroup>
           <ListGroup.Item>
-            <strong>Name: </strong>
+            <strong>{t("fields.name")}: </strong>
             {props.name}
           </ListGroup.Item>
           <ListGroup.Item>
-            <strong>ID: </strong>
+            <strong>{t("fields.id")}: </strong>
             {props.id}
           </ListGroup.Item>
         </ListGroup>
@@ -94,10 +101,9 @@ export function ShareModal(props: ShareModalProps) {
             <ListGroup.Item>
               <span className="text-black-50">
                 <small>
-                  <strong>Share the URL</strong>
+                  <strong>{t("page_assessment_edit.share_url")}</strong>
                   <br />
-                  You can also share the URL with users who already have access
-                  through the link.{" "}
+                  {t("page_assessment_edit.share_url_text")}{" "}
                 </small>
                 <OverlayTrigger
                   placement="top"
@@ -106,7 +112,7 @@ export function ShareModal(props: ShareModalProps) {
                 >
                   <CopyToClipboard
                     text={`${domainName}/assessments/${props.id}`}
-                    onCopy={() => setCopySuccess("Copied!")}
+                    onCopy={() => setCopySuccess(t("copied"))}
                   >
                     <FaCopy
                       style={{
@@ -124,10 +130,12 @@ export function ShareModal(props: ShareModalProps) {
         </div>
         <div className="mt-2 bg-light p-3 rounded border">
           <InputGroup>
-            <InputGroup.Text id="label-share-user">Share with:</InputGroup.Text>
+            <InputGroup.Text id="label-share-user">
+              {t("page_assessment_edit.share_with")}:
+            </InputGroup.Text>
             <Form.Control
               id="input-share-user"
-              placeholder="Enter user's email to share the assessment with"
+              placeholder={t("page_assessment_edit.share_email")}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -140,14 +148,14 @@ export function ShareModal(props: ShareModalProps) {
                 handleShare();
               }}
             >
-              Confirm
+              {t("buttons.confirm")}
             </Button>
           </InputGroup>
 
           {qShares.data && (
             <div className="mt-2">
               <small>
-                Already Shared with:
+                {t("page_assessment_edit.already_shared")}
                 <ListGroup>
                   {qShares.data.shared_users.map((item) => (
                     <ListGroup.Item key={item.id}>
@@ -163,7 +171,7 @@ export function ShareModal(props: ShareModalProps) {
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={props.onHide}>
-          Close
+          {t("buttons.close")}
         </Button>
       </Modal.Footer>
     </Modal>

@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -18,12 +18,20 @@ import {
   FaArrowUp,
   FaArrowDown,
   FaArrowsAltV,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 
-import { useGetMotivations } from "@/api/services/motivations";
-import { Motivation } from "@/types";
+import {
+  useGetMotivations,
+  usePublishMotivation,
+  useUnpublishMotivation,
+} from "@/api/services/motivations";
+import { AlertInfo, Motivation } from "@/types";
 import { Link } from "react-router-dom";
 import { MotivationModal } from "./components/MotivationModal";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 type MotivationState = {
   sortOrder: string;
@@ -53,6 +61,10 @@ type Clone = {
 
 // the main component that lists the motivations in a table
 export default function Motivations() {
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const [opts, setOpts] = useState<MotivationState>({
@@ -63,9 +75,54 @@ export default function Motivations() {
     search: "",
     status: "",
   });
-
+  const { t } = useTranslation();
   const [showCreate, setShowCreate] = useState(false);
   const [clone, setClone] = useState<Clone>({ id: null, name: "" });
+
+  const mutationPublish = usePublishMotivation(keycloak?.token || "");
+  const mutationUnpublish = useUnpublishMotivation(keycloak?.token || "");
+
+  const handlePublish = (mtvId: string) => {
+    const promise = mutationPublish
+      .mutateAsync(mtvId)
+      .catch((err) => {
+        alert.current = {
+          message: t("page_motivations.toast_publish_fail"),
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: t("page_motivations.toast_publish_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_publish_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
+
+  const handleUnublish = (mtvId: string) => {
+    const promise = mutationUnpublish
+      .mutateAsync(mtvId)
+      .catch((err) => {
+        alert.current = {
+          message: t("page_motivations.toast_unpublish_fail"),
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: t("page_motivations.toast_unpublish_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_unpublish_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
 
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
@@ -118,8 +175,10 @@ export default function Motivations() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="text-muted cat-view-heading ">
-            Motivations
-            <p className="lead cat-view-lead">Manage motivations.</p>
+            {t("page_motivations.title")}
+            <p className="lead cat-view-lead">
+              {t("page_motivations.subtitle")}
+            </p>
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
@@ -129,7 +188,7 @@ export default function Motivations() {
               setShowCreate(true);
             }}
           >
-            <FaPlus /> Create New
+            <FaPlus /> {t("buttons.create_new")}
           </Button>
         </div>
       </div>
@@ -140,7 +199,7 @@ export default function Motivations() {
             <div className="col md-auto col-lg-9">
               <div className="d-flex justify-content-center">
                 <Form.Control
-                  placeholder="Search ..."
+                  placeholder={t("fields.search")}
                   onChange={(e) => {
                     setOpts({ ...opts, search: e.target.value, page: 1 });
                   }}
@@ -152,12 +211,13 @@ export default function Motivations() {
                   }}
                   className="ms-4"
                 >
-                  Clear
+                  {t("buttons.clear")}
                 </Button>
               </div>
             </div>
           </div>
         </Form>
+
         <Table hover>
           <thead>
             <tr className="table-light">
@@ -166,7 +226,8 @@ export default function Motivations() {
                   onClick={() => handleSortClick("mtv")}
                   className="cat-cursor-pointer"
                 >
-                  MTV {SortMarker("mtv", opts.sortBy, opts.sortOrder)}
+                  {t("fields.mtv").toUpperCase()}{" "}
+                  {SortMarker("mtv", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
               <th>
@@ -174,18 +235,19 @@ export default function Motivations() {
                   onClick={() => handleSortClick("label")}
                   className="cat-cursor-pointer"
                 >
-                  label {SortMarker("label", opts.sortBy, opts.sortOrder)}
+                  {t("fields.label")}{" "}
+                  {SortMarker("label", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
-              <th>
-                <span>Description</span>
+              <th className="w-50 p-3">
+                <span>{t("fields.description")}</span>
               </th>
               <th>
                 <span
                   onClick={() => handleSortClick("lastTouch")}
                   className="cat-cursor-pointer"
                 >
-                  Modified{" "}
+                  {t("fields.modified")}{" "}
                   {SortMarker("lastTouch", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
@@ -197,35 +259,86 @@ export default function Motivations() {
               {motivations.map((item) => {
                 return (
                   <tr key={item.id}>
-                    <td className="align-middle">{item.mtv}</td>
-                    <td className="align-middle">{item.label}</td>
+                    <td
+                      className={`align-middle ${item.published ? "" : "text-muted"}`}
+                    >
+                      {item.mtv}
+                    </td>
+                    <td
+                      className={`align-middle ${item.published ? "" : "text-muted "}`}
+                    >
+                      {item.label}
+                    </td>
 
-                    <td className="align-middle">{item.description}</td>
-                    <td className="align-middle">
+                    <td
+                      className={`align-middle ${item.published ? "" : "text-muted"}`}
+                    >
+                      {item.description}
+                    </td>
+                    <td
+                      className={`align-middle ${item.published ? "" : "text-muted "}`}
+                    >
                       <small>{item.last_touch.split("T")[0]}</small>
                     </td>
-                    <td>
+                    <td className="align-middle">
                       <div className="d-flex flex-nowrap">
                         <OverlayTrigger
                           placement="top"
                           overlay={
                             <Tooltip id="tip-view">
-                              View Motivation Details
+                              {t("page_motivations.tip_view")}
                             </Tooltip>
                           }
                         >
                           <Link
                             className="btn btn-light btn-sm m-1"
-                            to={`/motivations/${item.id}`}
+                            to={`/admin/motivations/${item.id}`}
                           >
                             <FaBars />
                           </Link>
                         </OverlayTrigger>
+                        {item.published ? (
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-unpublish">
+                                {t("page_motivations.tip_unpublish")}
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() => {
+                                handleUnublish(item.id);
+                              }}
+                            >
+                              <FaEye />
+                            </Button>
+                          </OverlayTrigger>
+                        ) : (
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-publish">
+                                {t("page_motivations.tip_publish")}
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() => {
+                                handlePublish(item.id);
+                              }}
+                            >
+                              <FaEyeSlash />
+                            </Button>
+                          </OverlayTrigger>
+                        )}
                         <OverlayTrigger
                           placement="top"
                           overlay={
                             <Tooltip id="tip-clone">
-                              Create a new motivation based on this one (clone)
+                              {t("page_motivations.tip_clone")}
                             </Tooltip>
                           }
                         >
@@ -252,12 +365,12 @@ export default function Motivations() {
             <h3>
               <FaExclamationTriangle />
             </h3>
-            <h5>No data found...</h5>
+            <h5>{t("no_data")}</h5>
           </Alert>
         )}
         <div className="d-flex justify-content-end">
           <div>
-            <span className="mx-1">rows per page: </span>
+            <span className="mx-1">{t("rows_per_page")} </span>
             <select
               name="per-page"
               value={opts.size.toString() || "20"}

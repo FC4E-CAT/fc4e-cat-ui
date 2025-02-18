@@ -7,6 +7,7 @@ import { Col, Form, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { TestToolTip } from "./TestToolTip";
 import { AssessmentTest, EvidenceURL, TestBinaryParam } from "@/types";
+import { useTranslation } from "react-i18next";
 
 interface AssessmentTestProps {
   test: TestBinaryParam;
@@ -20,6 +21,7 @@ interface AssessmentTestProps {
 }
 
 export const TestBinaryParamForm = (props: AssessmentTestProps) => {
+  const { t } = useTranslation();
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let result: 0 | 1 = 0;
     let value: boolean = false;
@@ -70,7 +72,7 @@ export const TestBinaryParamForm = (props: AssessmentTestProps) => {
 
               <Form.Check
                 inline
-                label="Yes"
+                label={t("yes")}
                 value="1"
                 name="test-input-group"
                 type="radio"
@@ -80,7 +82,7 @@ export const TestBinaryParamForm = (props: AssessmentTestProps) => {
               />
               <Form.Check
                 inline
-                label="No"
+                label={t("no")}
                 value="0"
                 name="test-input-group"
                 type="radio"

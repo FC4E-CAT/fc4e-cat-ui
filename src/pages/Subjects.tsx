@@ -8,6 +8,7 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaExclamationTriangle,
+  FaStaylinked,
 } from "react-icons/fa";
 import { AlertInfo, Subject } from "@/types";
 import {
@@ -31,6 +32,8 @@ import {
 import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { idToColor } from "@/utils/admin";
 
 // Modes under which SubjectModal operates
 enum SubjectModalMode {
@@ -66,6 +69,8 @@ export function SubjectModal(props: SubjectModalProps) {
     name: "",
     type: "",
   });
+
+  const { t } = useTranslation();
 
   const { keycloak, registered } = useContext(AuthContext)!;
 
@@ -110,19 +115,24 @@ export function SubjectModal(props: SubjectModalProps) {
         <Modal.Title id="contained-modal-title-vcenter">
           {props.mode == SubjectModalMode.Create && (
             <span>
-              <FaPlusCircle className="me-2" /> Create new subject
+              <FaPlusCircle className="me-2" />{" "}
+              {t("page_subjects.modal_create")}
             </span>
           )}
           {props.mode == SubjectModalMode.Update && (
             <span>
-              <FaEdit className="me-2" /> Edit subject
-              <small className="ms-2 badge bg-secondary">id: {data.id}</small>
+              <FaEdit className="me-2" /> {t("page_subjects.modal_edit")}
+              <small className="ms-2 badge bg-secondary">
+                {t("fields.id")}: {data.id}
+              </small>
             </span>
           )}
           {props.mode == SubjectModalMode.Delete && (
             <span>
-              <FaTimes className="me-2" /> Delete subject
-              <small className="ms-2 badge bg-secondary">id: {data.id}</small>
+              <FaTimes className="me-2" /> {t("page_subjects.modal_delete")}
+              <small className="ms-2 badge bg-secondary">
+                {t("fields.id")}: {data.id}
+              </small>
             </span>
           )}
         </Modal.Title>
@@ -136,19 +146,18 @@ export function SubjectModal(props: SubjectModalProps) {
                 placement="top"
                 overlay={
                   <Tooltip id={`tooltip-top`}>
-                    A unique identifier for the current subject - this can be a
-                    URL, a string representing the service or organisation being
-                    assessed, or the PID of a resource owned by you.
+                    {t("page_subjects.tip_subject_id")}
                   </Tooltip>
                 }
               >
                 <InputGroup.Text id="label-info-subject-id">
-                  <FaInfoCircle className="me-2" /> Subject ID (*)
+                  <FaInfoCircle className="me-2" />{" "}
+                  {t("page_subjects.subject_id")} (*)
                 </InputGroup.Text>
               </OverlayTrigger>
               <Form.Control
                 id="input-info-subject-id"
-                placeholder="A unique identifier for the current subject"
+                placeholder={t("page_subjects.subject_id_placeholder")}
                 value={data.subject_id || ""}
                 onChange={(e) => {
                   handleChangeData("subject_id", e.target.value);
@@ -165,18 +174,18 @@ export function SubjectModal(props: SubjectModalProps) {
                 placement="top"
                 overlay={
                   <Tooltip id={`tooltip-top`}>
-                    The name of the subject of the assessment as identified
-                    above
+                    {t("page_subjects.tip_subject_name")}
                   </Tooltip>
                 }
               >
                 <InputGroup.Text id="label-info-subject-name">
-                  <FaInfoCircle className="me-2" /> Subject Name (*)
+                  <FaInfoCircle className="me-2" />{" "}
+                  {t("page_subjects.subject_name")} (*)
                 </InputGroup.Text>
               </OverlayTrigger>
               <Form.Control
                 id="input-info-subject-name"
-                placeholder="The name of the subject of the assessment as identified above"
+                placeholder={t("page_subjects.subject_name_placeholder")}
                 value={data.name}
                 onChange={(e) => {
                   handleChangeData("name", e.target.value);
@@ -193,19 +202,18 @@ export function SubjectModal(props: SubjectModalProps) {
                 placement="top"
                 overlay={
                   <Tooltip id={`tooltip-top`}>
-                    The type of object (such as a web resource identified by the
-                    owner) or service provided by an authority, provider, or
-                    manager, for which the assessment will be completed.
+                    {t("page_subjects.tip_subject_type")}
                   </Tooltip>
                 }
               >
                 <InputGroup.Text id="label-info-subject-type">
-                  <FaInfoCircle className="me-2" /> Subject Type (*)
+                  <FaInfoCircle className="me-2" />{" "}
+                  {t("page_subjects.subject_type")} (*)
                 </InputGroup.Text>
               </OverlayTrigger>
               <Form.Control
                 id="input-info-subject-type"
-                placeholder="The type of object for which the assessment will  be completed"
+                placeholder={t("page_subjects.subject_type_placeholder")}
                 value={data.type}
                 onChange={(e) => {
                   handleChangeData("type", e.target.value);
@@ -225,26 +233,26 @@ export function SubjectModal(props: SubjectModalProps) {
               className="btn-secondary"
               onClick={() => props.onHide()}
             >
-              Cancel
+              {t("buttons.cancel")}
             </Button>
             <Button
               className="btn-success"
               onClick={() => props.onCreate(data)}
             >
-              Create
+              {t("buttons.create")}
             </Button>
           </>
         )}
         {props.mode == SubjectModalMode.Update && (
           <>
             <Button className="btn-secondary" onClick={() => props.onHide()}>
-              Cancel
+              {t("buttons.cancel")}
             </Button>
             <Button
               className="btn-success"
               onClick={() => props.onUpdate(data)}
             >
-              Update
+              {t("buttons.update")}
             </Button>
           </>
         )}
@@ -256,10 +264,10 @@ export function SubjectModal(props: SubjectModalProps) {
                 if (data.id) props.onDelete(data.id);
               }}
             >
-              Delete
+              {t("buttons.delete")}
             </Button>
             <Button className="btn-secondary" onClick={() => props.onHide()}>
-              Cancel
+              {t("buttons.cancel")}
             </Button>
           </>
         )}
@@ -268,15 +276,21 @@ export function SubjectModal(props: SubjectModalProps) {
   );
 }
 
-// create the tooltips
-const tooltipEdit = <Tooltip id="tip-edit">Edit Subject</Tooltip>;
-const tooltipDelete = <Tooltip id="tip-delete">Delete Subject</Tooltip>;
-
 function Subjects() {
   // toast alert reference used in notification messaging
   const toastAlert = useRef<AlertInfo>({
     message: "",
   });
+
+  const { t } = useTranslation();
+
+  // create the tooltips
+  const tooltipEdit = (
+    <Tooltip id="tip-edit">{t("page_subjects.tip_edit")}</Tooltip>
+  );
+  const tooltipDelete = (
+    <Tooltip id="tip-delete">{t("page_subjects.tip_delete")}</Tooltip>
+  );
 
   // This is used to check at the end of url for a ?create param
   // if present, open the modal for the creation of a new object
@@ -337,19 +351,19 @@ function Subjects() {
       .mutateAsync(item)
       .catch((err) => {
         toastAlert.current = {
-          message: "Error during subject creation.",
+          message: t("page_subjects.toast_create_fail"),
         };
         throw err;
       })
       .then(() => {
         toastAlert.current = {
-          message: "Subject succesfully created.",
+          message: t("page_subjects.toast_create_success"),
         };
         // close the modal
         setSubjectModalConfig((prevConfig) => ({ ...prevConfig, show: false }));
       });
     toast.promise(promise, {
-      loading: "Creating...",
+      loading: t("page_subjects.toast_create_progress"),
       success: () => `${toastAlert.current.message}`,
       error: () => `${toastAlert.current.message}`,
     });
@@ -360,19 +374,19 @@ function Subjects() {
       .mutateAsync(item)
       .catch((err) => {
         toastAlert.current = {
-          message: "Error during subject update.",
+          message: t("page_subjects.toast_update_fail"),
         };
         throw err;
       })
       .then(() => {
         toastAlert.current = {
-          message: "Subject succesfully updated.",
+          message: t("page_subjects.toast_update_success"),
         };
         // close the modal
         setSubjectModalConfig((prevConfig) => ({ ...prevConfig, show: false }));
       });
     toast.promise(promise, {
-      loading: "Updating...",
+      loading: t("page_subjects.toast_update_progress"),
       success: () => `${toastAlert.current.message}`,
       error: () => `${toastAlert.current.message}`,
     });
@@ -383,19 +397,19 @@ function Subjects() {
       .mutateAsync(id)
       .catch((err) => {
         toastAlert.current = {
-          message: "Error during subject deletion.",
+          message: t("page_subjects.toast_delete_fail"),
         };
         throw err;
       })
       .then(() => {
         toastAlert.current = {
-          message: "Subject succesfully deleted.",
+          message: t("page_subjects.toast_delete_success"),
         };
         // close the modal
         setSubjectModalConfig((prevConfig) => ({ ...prevConfig, show: false }));
       });
     toast.promise(promise, {
-      loading: "Deleting...",
+      loading: t("page_subjects.toast_delete_progress"),
       success: () => `${toastAlert.current.message}`,
       error: () => `${toastAlert.current.message}`,
     });
@@ -431,7 +445,8 @@ function Subjects() {
               })
             }
           >
-            <FaPlus /> Create New
+            <FaPlus className="me-2" />
+            {t("buttons.create_new")}
           </Button>
         </div>
       </div>
@@ -440,17 +455,14 @@ function Subjects() {
           <thead>
             <tr className="table-light">
               <th>
-                <span>Subject ID</span>
-              </th>
-              <th>
-                <span>Subject Name </span>
+                <span>{t("page_subjects.subject_name")}</span>
               </th>
 
               <th>
-                <span>Subject Type </span>
+                <span>{t("page_subjects.subject_type")}</span>
               </th>
               <th>
-                <span>Actions </span>
+                <span>{t("fields.actions")}</span>
               </th>
             </tr>
           </thead>
@@ -459,10 +471,26 @@ function Subjects() {
               {subjects.map((item) => {
                 return (
                   <tr key={item.id}>
-                    <td className="align-middle">{item.id}</td>
-                    <td className="align-middle">{item.name}</td>
+                    <td className="align-middle">
+                      <div className="d-flex  justify-content-start">
+                        <div>
+                          <FaStaylinked
+                            size={"3rem"}
+                            style={{ color: idToColor(item.subject_id) }}
+                          />
+                        </div>
+                        <div className="ms-2 d-flex flex-column justify-content-between">
+                          <div>{item.name}</div>
+                          <span
+                            style={{ fontSize: "0.64rem" }}
+                            className="text-muted"
+                          >
+                            {t("fields.id")}: {item.id}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
                     <td className="align-middle">{item.type}</td>
-
                     <td>
                       <div className="d-flex flex-nowrap">
                         <OverlayTrigger placement="top" overlay={tooltipEdit}>
@@ -513,12 +541,12 @@ function Subjects() {
           <h3>
             <FaExclamationTriangle />
           </h3>
-          <h5>No data found...</h5>
+          <h5>{t("no_data")}...</h5>
         </Alert>
       )}
       <div className="d-flex justify-content-end">
         <div>
-          <span className="mx-1">rows per page: </span>
+          <span className="mx-1">{t("rows_per_page")}: </span>
           <select
             name="per-page"
             value={opts.size.toString() || "20"}

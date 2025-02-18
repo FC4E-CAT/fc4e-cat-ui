@@ -25,7 +25,7 @@ export const useAdminGetValidations = ({
   useQuery({
     queryKey: ["validations"],
     queryFn: async () => {
-      let url = `/admin/validations?size=${size}&page=${page}`;
+      let url = `/v1/admin/validations?size=${size}&page=${page}`;
       sortBy ? (url = `${url}&sort=${sortBy}`) : null;
       sortOrder ? (url = `${url}&order=${sortOrder}`) : null;
       type ? (url = `${url}&type=${type}`) : null;
@@ -51,7 +51,7 @@ export const useGetValidationList = ({
     queryKey: ["validations", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient(token).get<APIValidationResponse>(
-        `/validations?size=${size}&page=${page}&sortby=${sortBy}`,
+        `/v1/validations?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
     },
@@ -73,7 +73,7 @@ export const useAdminValidations = ({
     queryKey: ["admin_validations", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient(token).get<APIValidationResponse>(
-        `/admin/validations?size=${size}&page=${page}&sortby=${sortBy}`,
+        `/v1/admin/validations?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
     },
@@ -96,11 +96,11 @@ export const useGetValidationDetails = ({
       let response = null;
       if (adminMode) {
         response = await APIClient(token).get<ValidationResponse>(
-          `/admin/validations/${validation_id}`,
+          `/v1/admin/validations/${validation_id}`,
         );
       } else {
         response = await APIClient(token).get<ValidationResponse>(
-          `/validations/${validation_id}`,
+          `/v1/validations/${validation_id}`,
         );
       }
 
@@ -122,20 +122,20 @@ export const useValidationRequest = ({
   organisation_source,
   organisation_name,
   organisation_website,
-  actor_id,
+  registry_actor_id,
   token,
 }: ValidationRequestParams) =>
   useMutation(
     async () => {
       const response = await APIClient(token).post<ValidationResponse>(
-        `/validations`,
+        `/v1/validations`,
         {
           organisation_role,
           organisation_id,
           organisation_source,
           organisation_name,
           organisation_website,
-          actor_id,
+          registry_actor_id,
           token,
         },
       );
@@ -157,7 +157,7 @@ export const useValidationStatusUpdate = ({
   useMutation(
     async () => {
       const response = await APIClient(token).put<ValidationResponse>(
-        `/admin/validations/${validation_id}/update-status`,
+        `/v1/admin/validations/${validation_id}/update-status`,
         {
           status,
           rejection_reason,

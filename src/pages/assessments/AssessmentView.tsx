@@ -9,21 +9,20 @@ import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
 import imgAssessmentBadgePassed from "@/assets/badge-passed.png";
 import imgAssessmentBadgeWip from "@/assets/badge-wip.png";
+import imgAssessmentBadgeFailed from "@/assets/badge-failed.png";
 import Accordion from "react-bootstrap/Accordion";
-import { Assessment, AssessmentCriterionImperative } from "@/types";
+import {
+  Assessment,
+  AssessmentCriterionImperative,
+  AssessmentStats,
+} from "@/types";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
-
-interface Stats {
-  total_principles: number;
-  total_criteria: number;
-  total_mandatory: number;
-  total_optional: number;
-  completed_mandatory: number;
-  completed_optional: number;
-}
+import AssessmentPdf from "./AssessmentPdf";
+import { useTranslation } from "react-i18next";
+import { prettyPrintRanking } from "@/utils";
 
 // dig through the assessment and collect the completion statistics
-function gatherStats(assessment: Assessment | undefined): Stats {
+function gatherStats(assessment: Assessment | undefined): AssessmentStats {
   let total_principles = 0;
   let total_criteria = 0;
   let total_mandatory = 0;
@@ -36,12 +35,12 @@ function gatherStats(assessment: Assessment | undefined): Stats {
     assessment.principles.forEach((pri) => {
       total_criteria += pri.criteria.length;
       pri.criteria.forEach((cri) => {
-        if (cri.imperative == AssessmentCriterionImperative.Must) {
+        if (cri.imperative == AssessmentCriterionImperative.MUST) {
           total_mandatory += 1;
-          if (cri.metric.result !== null) completed_mandatory = +1;
+          if (cri.metric.result !== null) completed_mandatory += 1;
         } else {
           total_optional += 1;
-          if (cri.metric.result !== null) completed_optional = +1;
+          if (cri.metric.result !== null) completed_optional += 1;
         }
       });
     });
@@ -60,6 +59,7 @@ function gatherStats(assessment: Assessment | undefined): Stats {
 /** AssessmentView page that displays the results of an assessment */
 const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { keycloak, registered } = useContext(AuthContext)!;
   const { asmtId } = useParams();
@@ -78,9 +78,12 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
   const stats = gatherStats(assessment);
 
   return (
-    <div>
+    <div className={isPublic ? "container bg-light p-2 mb-5 rounded" : ""}>
       {assessment && (
         <div className="">
+          <Row>
+            <AssessmentPdf assessmentDoc={assessment} assessmentStats={stats} />
+          </Row>
           <Row className="box-ribbon-report cat-view-heading-block border-bottom ">
             <Col>
               <h2 className="cat-view-heading text-muted  ">
@@ -88,17 +91,17 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               </h2>
               <p className="lead cat-view-lead fs-6 ">
                 <span className="text-gray-dark">
-                  Compliance Policy: {assessment.assessment_type.name}{" "}
+                  {t("compliance_policy")}: {assessment.assessment_type.name}{" "}
                 </span>
               </p>
             </Col>
             <Col className="col col-lg-1 ">
               <span className="font-weight-500 text-gray-500 bold">
-                Compliance
+                {t("compliance")}
               </span>
 
               {}
-              {assessment.result.compliance ? (
+              {assessment.result.compliance !== null ? (
                 <p className="text-center">
                   <img
                     src={imgAssessmentPass}
@@ -107,47 +110,51 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                   />
                   {assessment.result.compliance == true ? (
                     <span className="fs-8 text-success bold">
-                      <small>passed</small>
+                      <small>{t("passed")}</small>
                     </span>
                   ) : (
                     <span className="fs-8 text-danger bold">
-                      <small>failed</small>
+                      <small>{t("failed")}</small>
                     </span>
                   )}
                 </p>
               ) : (
                 <p className="text-center">
                   <span className="fs-1 text-warning bold text-center">
-                    n/a
+                    {t("na")}
                   </span>
                 </p>
               )}
             </Col>
-            <Col className="col-md-auto col col-lg-1 text-center">
+            <Col className="col col-lg-1 text-center">
               <span className="font-weight-500 text-gray-500 bold">
-                Ranking
+                {t("ranking")}
               </span>
-              {assessment.result.ranking ? (
+
+              {assessment.result.ranking !== null ? (
                 <p className="text-center">
-                  <span className="fs-1 text-primary bold">
-                    {assessment.result.ranking}
+                  <span className="fs-1 bold text-center">
+                    {prettyPrintRanking(assessment.result.ranking)}
                   </span>
-                  <span className="fs-6 text-secondary">/10</span>
                 </p>
               ) : (
                 <p className="text-center">
-                  <span className="fs-1 text-warning bold">n/a</span>
+                  <span className="fs-1 text-warning bold text-center">
+                    {t("na")}
+                  </span>
                 </p>
               )}
             </Col>
             <Col className="col-md-auto col col-lg-1 text-center">
               {assessment.published == true ? (
                 <div className="ribbon-report ribbon-report-top-right">
-                  <span className="bg-success">PUBLISHED</span>
+                  <span className="bg-success">
+                    {t("published").toUpperCase()}
+                  </span>
                 </div>
               ) : (
                 <div className="ribbon-report ribbon-report-top-right">
-                  <span className="bg-warning">DRAFT</span>
+                  <span className="bg-warning">{t("draft").toUpperCase()}</span>
                 </div>
               )}
             </Col>
@@ -157,8 +164,12 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
           </Row>
           <Row className="bg-light">
             <Col className="col-md-auto col col-lg-3">
-              {assessment.published == true ? (
-                <img src={imgAssessmentBadgePassed} width="80%" />
+              {assessment.result.compliance !== null ? (
+                assessment.result.compliance ? (
+                  <img src={imgAssessmentBadgePassed} width="80%" />
+                ) : (
+                  <img src={imgAssessmentBadgeFailed} width="80%" />
+                )
               ) : (
                 <img src={imgAssessmentBadgeWip} width="80%" />
               )}
@@ -166,30 +177,32 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
 
             <Col className="col-sm-9">
               <Row>
-                <Col lassName="col-sm-6">
+                <Col className="col-sm-6">
                   <Row>
-                    <div className="card-title h5 py-3">Statistics</div>
+                    <div className="card-title h5 py-3">
+                      {t("fields.statistics")}
+                    </div>
                     <Col className="text-center col-lg-2">
                       <span className="font-weight-500 fs-5 text-gray-500">
-                        Principles:
+                        {t("principles")}:
                         <span className="fs-5  bold ms-2">
                           <strong>{stats.total_principles}</strong>
                         </span>
                       </span>
                       <br />
                       <span className="font-weight-500  fs-5 text-gray-500">
-                        Criteria:
+                        {t("criteria")}:
                         <span className="fs-5  bold ms-2">
                           <strong>{stats.total_criteria}</strong>
                         </span>
                       </span>
                     </Col>
                     <Col className="text-center col-lg-2"></Col>
-                    <Col className="text-center col-lg-4">
+                    <Col className="align-items-center col-lg-4">
                       <span className="font-weight-500  text-gray-500">
-                        <strong> Mandatory</strong>
+                        <strong> {t("mandatory")}</strong>
                       </span>
-                      <p>
+                      <p className="circle-70-grey">
                         <span className="fs-1 text-success bold">
                           {stats.completed_mandatory}
                         </span>
@@ -198,11 +211,11 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                         </span>
                       </p>
                     </Col>
-                    <Col className="col-md-auto col col-lg-4  text-center">
+                    <Col className="col-md-auto col col-lg-4  align-items-center">
                       <span className="font-weight-500  text-gray-500">
-                        <strong> Optional</strong>
+                        <strong> {t("optional")}</strong>
                       </span>
-                      <p>
+                      <p className="circle-70-grey">
                         <span className="fs-1 text-warning bold">
                           {stats.completed_optional}
                         </span>
@@ -216,7 +229,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                 <Col className="col-sm-6 py-3">
                   <Card>
                     <Card.Body>
-                      <h5>Details</h5>
+                      <h5>{t("fields.details")}</h5>
 
                       <p className="media-body pb-2 mb-0 small lh-125 border-bottom border-gray">
                         <strong className="text-gray-dark">Actor:</strong>
@@ -224,7 +237,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                       </p>
                       <p className="media-body pb-2 mb-0 small lh-125 border-bottom border-gray">
                         <strong className="text-gray-dark">
-                          Organization:
+                          {t("organisation")}:
                         </strong>
                         <span className="px-2">
                           {assessment.organisation.name}
@@ -239,7 +252,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                       </p>
                       <p className="media-body pb-2 mb-0 small lh-125">
                         <strong className="text-gray-dark">
-                          Latest Update:
+                          {t("fields.latest_update")}:
                         </strong>
                         <span className="px-2">
                           <small>{assessment.timestamp.split(" ")[0]}</small>
@@ -286,7 +299,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                     <small className="ms-2">
                                       <strong>
                                         <span className="text-success">
-                                          Passed
+                                          {t("passed")}
                                         </span>
                                       </strong>
                                     </small>
@@ -297,7 +310,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                     <small className="ms-2">
                                       <strong>
                                         <span className="text-danger">
-                                          Failed
+                                          {t("failed")}
                                         </span>
                                       </strong>
                                     </small>
@@ -307,7 +320,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                     <small className="ms-2">
                                       <strong>
                                         <span className="text-warning">
-                                          n/a
+                                          {t("na")}
                                         </span>
                                       </strong>
                                     </small>
@@ -323,64 +336,92 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                               </small>
                             </div>
                             <div className="m-1">
-                              {cri.metric.tests.map((test) => (
-                                <div key={test.id} className="mb-4">
-                                  <span className="badge rounded-pill text-bg-light text-info">
-                                    {test.id} - {test.name}
-                                  </span>
-                                  <br />
-                                  <strong>Q.</strong>
-                                  <span className="text-secondary p-2">
-                                    {test.text}
-                                  </span>
-                                  <br />
-                                  <strong>A.</strong>
-                                  {test.type === "value" ? (
-                                    <span className="text-primary p-2">
-                                      <strong>F=</strong>
-                                      {test.value} <strong>P=</strong>
-                                      {test.threshold}
+                              {cri.metric.tests.map((test) => {
+                                const params = test.params
+                                  .split("|")
+                                  .filter((item) => item !== "evidence");
+                                return (
+                                  <div key={test.id} className="mb-4">
+                                    <span className="badge rounded-pill text-bg-light text-info">
+                                      {test.id} - {test.name}
                                     </span>
-                                  ) : test.result === 1 ? (
-                                    <span className="text-primary p-2">
-                                      <strong>YES</strong>
+                                    <br />
+                                    <strong>Q.</strong>
+                                    <span className="text-secondary p-2">
+                                      {test.text.split("|")[0]}
                                     </span>
-                                  ) : test.result === 0 ? (
-                                    <span className="text-primary p-2">
-                                      <strong>NO</strong>
-                                    </span>
-                                  ) : (
-                                    <span className="text-warning p-2">
-                                      <strong>N/A</strong>
-                                    </span>
-                                  )}
-                                  <br />
-
-                                  {test.evidence_url &&
-                                    test.evidence_url?.length > 0 && (
-                                      <div>
-                                        {test.evidence_url.map((ev) => (
-                                          <div key={ev.url}>
-                                            {" "}
-                                            <a href={ev.url}>
-                                              <span className="p-2">
-                                                <FaArrowUpRightFromSquare />
-                                              </span>
-                                            </a>
-                                            {ev.description && (
-                                              <a
-                                                href={ev.url}
-                                                className="plain"
-                                              >
-                                                <span>{ev.description}</span>
-                                              </a>
-                                            )}
-                                          </div>
-                                        ))}
-                                      </div>
+                                    <br />
+                                    <strong>A.</strong>
+                                    {[
+                                      "binary",
+                                      "Binary-Binary",
+                                      "Binary-Manual",
+                                      "Binary-Manual-Evidence",
+                                    ].includes(test.type) ? (
+                                      test.result === 1 ? (
+                                        <span className="text-primary p-2">
+                                          <strong>
+                                            {t("yes").toUpperCase()}
+                                          </strong>
+                                        </span>
+                                      ) : test.result === 0 ? (
+                                        <span className="text-primary p-2">
+                                          <strong>
+                                            {t("no").toUpperCase()}
+                                          </strong>
+                                        </span>
+                                      ) : (
+                                        <span className="text-warning p-2">
+                                          <strong>
+                                            {t("na").toUpperCase()}
+                                          </strong>
+                                        </span>
+                                      )
+                                    ) : (
+                                      <span className="text-primary p-2">
+                                        {params.map((item, indx) => {
+                                          return indx === params.length - 1 ? (
+                                            <span className="me-4">
+                                              <strong>{item}:</strong>
+                                              {test.value || t("na")}
+                                            </span>
+                                          ) : (
+                                            <span className="me-4">
+                                              <strong>{item}:</strong> {t("na")}
+                                            </span>
+                                          );
+                                        })}
+                                      </span>
                                     )}
-                                </div>
-                              ))}
+
+                                    <br />
+
+                                    {test.evidence_url &&
+                                      test.evidence_url?.length > 0 && (
+                                        <div>
+                                          {test.evidence_url.map((ev) => (
+                                            <div key={ev.url}>
+                                              {" "}
+                                              <a href={ev.url}>
+                                                <span className="p-2">
+                                                  <FaArrowUpRightFromSquare />
+                                                </span>
+                                              </a>
+                                              {ev.description && (
+                                                <a
+                                                  href={ev.url}
+                                                  className="plain"
+                                                >
+                                                  <span>{ev.description}</span>
+                                                </a>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                  </div>
+                                );
+                              })}
                             </div>
                           </Accordion.Body>
                         </Accordion.Item>
@@ -399,7 +440,7 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               navigate(-1);
             }}
           >
-            Back
+            {t("buttons.back")}
           </Button>
         </div>
       )}

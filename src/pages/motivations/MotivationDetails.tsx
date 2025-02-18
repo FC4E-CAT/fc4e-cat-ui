@@ -1,6 +1,6 @@
 import { AuthContext } from "@/auth";
-import { Motivation, MotivationActor } from "@/types";
-import { useState, useContext, useEffect } from "react";
+import { AlertInfo, Motivation, MotivationActor } from "@/types";
+import { useState, useContext, useEffect, useRef } from "react";
 import {
   Alert,
   Button,
@@ -21,6 +21,12 @@ import {
   FaAward,
   FaTags,
   FaInfo,
+  FaEye,
+  FaEyeSlash,
+  FaTrash,
+  FaLock,
+  FaUnlock,
+  FaBorderNone,
 } from "react-icons/fa";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
@@ -29,14 +35,43 @@ import manageImg from "@/assets/thumb_manage.png";
 import ownersImg from "@/assets/thumb_user.png";
 import notavailImg from "@/assets/thumb_notavail.png";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useGetAllActors, useGetMotivation } from "@/api/services/motivations";
+import {
+  useDeleteMotivationActor,
+  useGetAllActors,
+  useGetMotivation,
+  usePublishMotivation,
+  usePublishMotivationActor,
+  useUnpublishMotivation,
+  useUnpublishMotivationActor,
+} from "@/api/services/motivations";
 import { MotivationActorModal } from "./components/MotivationActorModal";
 import { MotivationModal } from "./components/MotivationModal";
 
 import { MotivationPrinciples } from "./components/MotivationPrinciples";
 import { MotivationCriteria } from "./components/MotivationCriteria";
+import toast from "react-hot-toast";
+import { DeleteModal } from "@/components/DeleteModal";
+import { MotivationMetrics } from "./components/MotivationMetrics";
+import { useTranslation } from "react-i18next";
+
+const actorImages: { [key: string]: string } = {
+  "PID Service Provider (Role)": serviceImg,
+  "PID Manager (Role)": manageImg,
+  "PID Scheme (Component)": schemesImg,
+  "PID Authority (Role)": authImg,
+  "PID Owner (Role)": ownersImg,
+};
+
+function getActorImage(actor: string): string {
+  return actorImages[actor] || notavailImg;
+}
 
 export default function MotivationDetails() {
+  const { t } = useTranslation();
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+
   const navigate = useNavigate();
   const params = useParams();
 
@@ -46,7 +81,152 @@ export default function MotivationDetails() {
   const [availableActors, setAvailableActors] = useState<MotivationActor[]>([]);
   const [showAddActor, setShowAddActor] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
-  const [tabKey, setTabKey] = useState("assess-types");
+  const [tabKey, setTabKey] = useState("assessment-types");
+
+  const mutationPublish = usePublishMotivationActor(keycloak?.token || "");
+  const mutationUnpublish = useUnpublishMotivationActor(keycloak?.token || "");
+
+  interface DeleteActorModalConfig {
+    show: boolean;
+    title: string;
+    message: string;
+    itemId: string;
+    itemName: string;
+    mtvId: string;
+  }
+
+  const mutationMtvPublish = usePublishMotivation(keycloak?.token || "");
+  const mutationMtvUnpublish = useUnpublishMotivation(keycloak?.token || "");
+
+  const handleMtvPublish = (mtvId: string) => {
+    const promise = mutationMtvPublish
+      .mutateAsync(mtvId)
+      .catch((err) => {
+        alert.current = {
+          message: t("page_motivations.toast_publish_fail"),
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: t("page_motivations.toast_publish_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_publish_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
+
+  const handleMtvUnpublish = (mtvId: string) => {
+    const promise = mutationMtvUnpublish
+      .mutateAsync(mtvId)
+      .catch((err) => {
+        alert.current = {
+          message: t("page_motivations.toast_unpublish_fail"),
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: t("page_motivations.toast_unpublish_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_unpublish_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
+
+  // Delete Modal
+  const [deleteActorModalConfig, setDeleteActorModalConfig] =
+    useState<DeleteActorModalConfig>({
+      show: false,
+      title: t("page_motivations.modal_asmt_delete_title"),
+      message: t("page_motivations.modal_asmt_delete_message"),
+      itemId: "",
+      itemName: "",
+      mtvId: params.id || "",
+    });
+
+  const mutationDelete = useDeleteMotivationActor(keycloak?.token || "");
+
+  const handleDeleteConfirmed = () => {
+    if (deleteActorModalConfig.itemId && deleteActorModalConfig.mtvId) {
+      const promise = mutationDelete
+        .mutateAsync({
+          mtvId: deleteActorModalConfig.mtvId,
+          actId: deleteActorModalConfig.itemId,
+        })
+        .catch((err) => {
+          alert.current = {
+            message: t("page_motivations.toast_asmt_delete_fail"),
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: t("page_motivations.toast_asmt_delete_sucess"),
+          };
+          setDeleteActorModalConfig({
+            ...deleteActorModalConfig,
+            show: false,
+            itemId: "",
+            itemName: "",
+            mtvId: params.id || "",
+          });
+        });
+      toast.promise(promise, {
+        loading: t("page_motivations.toast_asmt_delete_progress"),
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
+      });
+    }
+  };
+
+  const handlePublish = (mtvId: string, actId: string) => {
+    const promise = mutationPublish
+      .mutateAsync({ mtvId, actId })
+      .catch((err) => {
+        alert.current = {
+          message: t("page_motivations.toast_asmt_publish_fail"),
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: t("page_motivations.toast_asmt_publish_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_asmt_publish_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
+
+  const handleUnpublish = (mtvId: string, actId: string) => {
+    const promise = mutationUnpublish
+      .mutateAsync({ mtvId, actId })
+      .catch((err) => {
+        alert.current = {
+          message: t("page_motivations.toast_asmt_unpublish_fail"),
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: t("page_motivations.toast_asmt_unpublish_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_asmt_unpublish_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
 
   const { data: motivationData } = useGetMotivation({
     id: params.id!,
@@ -54,22 +234,14 @@ export default function MotivationDetails() {
     isRegistered: registered,
   });
   const tooltipView = (
-    <Tooltip id="tip-restore">View Assesment Details</Tooltip>
+    <Tooltip id="tip-restore">{t("page_motivations.tip_asmt_view")}</Tooltip>
   );
   const tooltipManageCriteria = (
-    <Tooltip id="tip-restore">Manage Criteria</Tooltip>
+    <Tooltip id="tip-restore">
+      {t("page_motivations.tip_manage_criteria")}
+    </Tooltip>
   );
-  // const tooltipManagePrinciples = (
-  //   <Tooltip id="tip-restore">Manage Principles</Tooltip>
-  // );
-  // const tooltipManageMetrics = (
-  //   <Tooltip id="tip-restore">Manage Metrics</Tooltip>
-  // );
-  // const tooltipDeleteActor = (
-  //   <Tooltip id="tip-restore">
-  //     Delete the connection with the motivation
-  //   </Tooltip>
-  // );
+
   const {
     data: actorData,
     fetchNextPage: actorFetchNextPage,
@@ -79,6 +251,32 @@ export default function MotivationDetails() {
     token: keycloak?.token || "",
     isRegistered: registered,
   });
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === "#assessment-types") {
+      setTabKey("assessment-types");
+    } else if (hash === "#principles") {
+      setTabKey("principles");
+    } else if (hash === "#criteria") {
+      setTabKey("criteria");
+    } else if (hash === "#metrics") {
+      setTabKey("metrics");
+    }
+  }, []);
+
+  // take care of window location hash when tabs change
+  useEffect(() => {
+    if (tabKey === "assessment-types") {
+      window.location.hash = "#assessment-types";
+    } else if (tabKey === "principles") {
+      window.location.hash = "#principles";
+    } else if (tabKey === "criteria") {
+      window.location.hash = "#criteria";
+    } else if (tabKey === "metrics") {
+      window.location.hash = "#metrics";
+    }
+  }, [tabKey]);
 
   useEffect(() => {
     // gather all actors in one array
@@ -107,6 +305,20 @@ export default function MotivationDetails() {
   return (
     <div className="pb-4">
       <div className="cat-view-heading-block border-bottom row ">
+        <DeleteModal
+          show={deleteActorModalConfig.show}
+          title={deleteActorModalConfig.title}
+          message={deleteActorModalConfig.message}
+          itemId={deleteActorModalConfig.itemId}
+          itemName={deleteActorModalConfig.itemName}
+          onHide={() => {
+            setDeleteActorModalConfig({
+              ...deleteActorModalConfig,
+              show: false,
+            });
+          }}
+          handleDelete={handleDeleteConfirmed}
+        />
         <MotivationActorModal
           motivationActors={availableActors}
           id={motivation?.id || ""}
@@ -126,22 +338,72 @@ export default function MotivationDetails() {
         />
         <Col>
           <h2 className="cat-view-heading text-muted">
-            Motivation Details
+            {t("page_motivations.details_title")}
             {motivation && (
               <p className="lead cat-view-lead">
                 {motivation?.mtv} - {motivation?.label}
                 <br />
-                <span className="text-sm">
-                  Motivations are the main Capability of the service for
-                  different assessment foci. Motivations provide much of the Why
-                  - the reason an assessment is being performed.
-                </span>
+                <span className="text-sm">{t("page_motivations.mtv1")}</span>
               </p>
             )}
           </h2>
         </Col>
       </div>
-
+      <div className="mt-2">
+        {motivation?.published ? (
+          <Alert className="p-0" variant="warning">
+            <Row>
+              <Col className="d-flex align-items-center">
+                <small className="p-2">
+                  <FaLock className="me-2" />
+                  {t("page_motivations.info_published")}
+                </small>
+              </Col>
+              <Col md="auto">
+                <Button
+                  size="sm"
+                  className="m-2"
+                  variant="warning"
+                  onClick={() => {
+                    if (motivation) {
+                      handleMtvUnpublish(motivation.id);
+                    }
+                  }}
+                >
+                  <FaEyeSlash className="me-2" />
+                  {t("buttons.unpublish")}
+                </Button>
+              </Col>
+            </Row>
+          </Alert>
+        ) : (
+          <Alert className="p-0" variant="light">
+            <Row>
+              <Col className="d-flex align-items-center">
+                <small className="p-2">
+                  <FaUnlock className="me-2" />
+                  {t("page_motivations.info_unpublished")}
+                </small>
+              </Col>
+              <Col md="auto">
+                <Button
+                  size="sm"
+                  className="m-2"
+                  variant="success"
+                  onClick={() => {
+                    if (motivation) {
+                      handleMtvPublish(motivation.id);
+                    }
+                  }}
+                >
+                  <FaEye className="me-2" />
+                  {t("buttons.publish")}
+                </Button>
+              </Col>
+            </Row>
+          </Alert>
+        )}
+      </div>
       <Row>
         <Col className="col col-lg-3 border-right  border-dashed">
           <div className="d-flex flex-column align-items-center text-center p-1 py-1">
@@ -161,17 +423,22 @@ export default function MotivationDetails() {
             >
               {motivation?.motivation_type.label}
             </span>
-
-            <Link
-              id="profile-update-button"
-              to="#"
-              onClick={() => {
-                setShowUpdate(true);
-              }}
-              className="btn btn-lt border-black mt-4"
-            >
-              Update Details
-            </Link>
+            {motivation?.published ? (
+              <span className="opacity-75 btn btn-lt border-black bg-secondary mt-4">
+                {t("buttons.update_details")}
+              </span>
+            ) : (
+              <Link
+                id="profile-update-button"
+                to="#"
+                onClick={() => {
+                  setShowUpdate(true);
+                }}
+                className="btn btn-lt border-black mt-4"
+              >
+                {t("buttons.update_details")}
+              </Link>
+            )}
           </div>
         </Col>
         <Col className="col-md-auto col-lg-9 border-right">
@@ -189,17 +456,17 @@ export default function MotivationDetails() {
         <Tabs
           id="motivation-tabs-inside"
           activeKey={tabKey}
-          onSelect={(tabKey) => setTabKey(tabKey || "assess-types")}
+          onSelect={(tabKey) => setTabKey(tabKey || "assessment-types")}
           fill
         >
           <Tab
-            eventKey="assess-types"
+            eventKey="assessment-types"
             title={
               <span>
                 <span className="fs-6 text-primary">
                   <FaInfo />
                 </span>{" "}
-                Assessment types
+                {t("page_motivations.asmt_types")}
               </span>
             }
           >
@@ -207,12 +474,11 @@ export default function MotivationDetails() {
               <div className="px-5 mt-4">
                 <div className="d-flex justify-content-between mb-2">
                   <h5 className="text-muted cat-view-heading ">
-                    List of Assessment types of specific actors under:{" "}
+                    {t("page_motivations.asmt_types_subtitle")}:{" "}
                     {motivation?.mtv} - {motivation?.label}
                     <p className="lead cat-view-lead">
                       <span className="text-sm">
-                        In order to start the creation of an assessment please
-                        start relating actors to this Motivation.{" "}
+                        {t("page_motivations.asmt_types_info")}{" "}
                       </span>
                     </p>
                   </h5>
@@ -223,14 +489,16 @@ export default function MotivationDetails() {
                         onClick={() => {
                           setShowAddActor(true);
                         }}
-                        disabled={availableActors.length == 0}
+                        disabled={
+                          availableActors.length == 0 || motivation?.published
+                        }
                       >
-                        <FaPlus /> Add Actor
+                        <FaPlus /> {t("page_motivations.add_actor")}
                       </Button>
                     </div>
                   ) : (
                     <span className="text-secondary text-sm">
-                      No available actors
+                      {t("page_motivations.no_actors_available")}
                     </span>
                   )}
                 </div>
@@ -239,71 +507,46 @@ export default function MotivationDetails() {
                     <h3>
                       <FaExclamationTriangle />
                     </h3>
-                    <h5>No actors included in this motivation... </h5>
+                    <h5>{t("page_motivations.no_actors_included")} </h5>
                     <div>
                       <span className="align-baseline">
-                        Please use the button above or{" "}
+                        {t("page_motivations.please_use_the_button")}{" "}
                       </span>
                       <Button
+                        disabled={motivation?.published}
                         variant="link"
                         className="p-0 m-0 align-baseline"
                         onClick={() => {
                           setShowAddActor(true);
                         }}
                       >
-                        click here
+                        {t("page_motivations.click_here")}
                       </Button>
-                      <span className="align-baseline"> to add new ones</span>
+                      <span className="align-baseline">
+                        {" "}
+                        {t("page_motivations.add_new_ones")}
+                      </span>
                     </div>
                   </Alert>
                 ) : (
                   <ListGroup className="mt-2">
                     {motivation?.actors.map((item) => {
                       return (
-                        <ListGroup.Item key={item.id}>
+                        <ListGroup.Item
+                          key={item.id}
+                          className={"align-middle"}
+                        >
                           <Row>
-                            <Col>
+                            <Col
+                              className={`${item.published ? "" : "opacity-50"}`}
+                            >
                               <div className="flex items-center ng-star-inserted">
                                 <div className="margin-right-8 flex justify-center items-center ng-star-inserted radio-card-icon">
-                                  {item.label ===
-                                  "PID Service Provider (Role)" ? (
-                                    <img
-                                      src={serviceImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : item.label === "PID Manager (Role)" ? (
-                                    <img
-                                      src={manageImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : item.label ===
-                                    "PID Scheme (Component)" ? (
-                                    <img
-                                      src={schemesImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : item.label === "PID Authority (Role)" ? (
-                                    <img
-                                      src={authImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : item.label === "PID Owner (Role)" ? (
-                                    <img
-                                      src={ownersImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  ) : (
-                                    <img
-                                      src={notavailImg}
-                                      className="text-center m-1 rounded-full"
-                                      width="60%"
-                                    />
-                                  )}
+                                  <img
+                                    src={getActorImage(item.label)}
+                                    className={`text-center m-1 rounded-full ${item.published ? "" : "cat-greyscale"}`}
+                                    width="60%"
+                                  />
                                 </div>
                                 <div>
                                   <div className="flex text-sm text-gray-900 font-weight-500 items-center cursor-pointer">
@@ -323,59 +566,100 @@ export default function MotivationDetails() {
                                 >
                                   <Link
                                     className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/templates/actors/${item.id}`}
+                                    to={`/admin/motivations/${params.id}/templates/actors/${item.id}`}
                                   >
                                     <FaBars />
                                   </Link>
                                 </OverlayTrigger>
-                                {/*
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={tooltipManagePrinciples}
-                                >
-                                  <Link
-                                    className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/actors/${item.id}`}
-                                  >
-                                    <FaTags />
-                                  </Link>
-                                </OverlayTrigger>
-                                */}
                                 <OverlayTrigger
                                   placement="top"
                                   overlay={tooltipManageCriteria}
                                 >
-                                  <Link
-                                    className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/actors/${item.id}`}
-                                  >
-                                    <FaAward />
-                                  </Link>
+                                  {item.published ? (
+                                    <span className="btn btn-light btn-sm m-1 disabled">
+                                      <FaAward />
+                                    </span>
+                                  ) : (
+                                    <>
+                                      <Link
+                                        className="btn btn-light btn-sm m-1"
+                                        to={`/admin/motivations/${params.id}/actors/${item.id}`}
+                                      >
+                                        <FaAward />
+                                      </Link>
+                                    </>
+                                  )}
                                 </OverlayTrigger>
-                                {/*
+                                {item.published ? (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tip-unpublish">
+                                        {t(
+                                          "page_motivations.tip_unpublish_asmt",
+                                        )}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <Button
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        handleUnpublish(
+                                          params.id || "",
+                                          item.id,
+                                        );
+                                      }}
+                                    >
+                                      <FaEye />
+                                    </Button>
+                                  </OverlayTrigger>
+                                ) : (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tip-publish">
+                                        {t("page_motivations.tip_publish_asmt")}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <Button
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        handlePublish(params.id || "", item.id);
+                                      }}
+                                    >
+                                      <FaEyeSlash />
+                                    </Button>
+                                  </OverlayTrigger>
+                                )}
                                 <OverlayTrigger
                                   placement="top"
-                                  overlay={tooltipManageMetrics}
+                                  overlay={
+                                    <Tooltip id="tip-delete">
+                                      {t("page_motivations.tip_delete_asmt")}
+                                    </Tooltip>
+                                  }
                                 >
-                                  <Link
-                                    className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/actors/${item.id}`}
-                                  >
-                                    <FaBorderNone />
-                                  </Link>
+                                  {item.published ? (
+                                    <span className="btn btn-light btn-sm m-1 disabled">
+                                      <FaTrash />
+                                    </span>
+                                  ) : (
+                                    <Button
+                                      className="btn btn-light btn-sm m-1"
+                                      onClick={() => {
+                                        setDeleteActorModalConfig({
+                                          ...deleteActorModalConfig,
+                                          show: true,
+                                          itemId: item.id,
+                                          itemName: `${item.label} - ${item.act}`,
+                                        });
+                                      }}
+                                    >
+                                      <FaTrash />
+                                    </Button>
+                                  )}
                                 </OverlayTrigger>
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={tooltipDeleteActor}
-                                >
-                                  <Link
-                                    className="btn btn-light btn-sm m-1"
-                                    to={`/motivations/${params.id}/actors/${item.id}`}
-                                  >
-                                    <FaTrashCan className="text-danger" />
-                                  </Link>
-                                </OverlayTrigger>
-                                */}
                               </div>
                             </Col>
                           </Row>
@@ -394,11 +678,14 @@ export default function MotivationDetails() {
                 <span className="fs-6 text-primary">
                   <FaTags />
                 </span>{" "}
-                Principles
+                {t("principles")}
               </span>
             }
           >
-            <MotivationPrinciples mtvId={params.id || ""} />
+            <MotivationPrinciples
+              mtvId={params.id || ""}
+              published={motivation?.published || false}
+            />
           </Tab>
           <Tab
             eventKey="criteria"
@@ -407,27 +694,32 @@ export default function MotivationDetails() {
                 <span className="fs-6 text-primary">
                   <FaAward />
                 </span>{" "}
-                Criteria
+                {t("criteria")}
               </span>
             }
           >
-            <MotivationCriteria mtvId={params.id || ""} />
+            <MotivationCriteria
+              mtvId={params.id || ""}
+              published={motivation?.published || false}
+            />
           </Tab>
-          {/*
+
           <Tab
-            eventKey="Metrics"
+            eventKey="metrics"
             title={
               <span>
                 <span className="fs-6 text-primary">
                   <FaBorderNone />
                 </span>{" "}
-                Metrics
+                {t("metrics")}
               </span>
             }
           >
-            Tab content for Metrics
+            <MotivationMetrics
+              mtvId={params.id || ""}
+              published={motivation?.published || false}
+            />
           </Tab>
-          */}
         </Tabs>
       </div>
 
@@ -435,10 +727,10 @@ export default function MotivationDetails() {
         <Button
           variant="secondary"
           onClick={() => {
-            navigate(-1);
+            navigate(`/admin/motivations`);
           }}
         >
-          Back
+          {t("buttons.back")}
         </Button>
       </div>
     </div>

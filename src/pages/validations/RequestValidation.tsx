@@ -1,28 +1,29 @@
 import {
   useGetProfile,
-  useGetActors,
   useValidationRequest,
   useOrganisationRORSearch,
+  useGetAllRegistryActors,
 } from "@/api";
 import { AuthContext } from "@/auth";
 import {
   UserProfile,
   AlertInfo,
-  Actor,
   OrganisationRORSearchResultModified,
+  RegistryActor,
 } from "@/types";
 import { ErrorMessage } from "@hookform/error-message";
 import { useContext, useState, useRef, useEffect } from "react";
 import { OverlayTrigger, Tooltip, Row, Col, InputGroup } from "react-bootstrap";
 import { useForm, SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaInfoCircle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import Select, { SingleValue } from "react-select";
 
 function RequestValidation() {
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const { data: profileData } = useGetProfile({
@@ -38,16 +39,34 @@ function RequestValidation() {
     setUserProfile(profileData);
   }, [profileData]);
 
-  const { data: actorsData } = useGetActors({
-    size: 100,
-    page: 1,
-    sortBy: "asc",
+  const [actors, setActors] = useState<RegistryActor[]>();
+
+  const {
+    data: actData,
+    fetchNextPage: actFetchNextPage,
+    hasNextPage: actHasNextPage,
+  } = useGetAllRegistryActors({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
   });
 
-  const [actors, setActors] = useState<Actor[]>();
   useEffect(() => {
-    setActors(actorsData?.content);
-  }, [actorsData]);
+    // gather all registry actors types
+    let tmpAct: RegistryActor[] = [];
+
+    // iterate over backend pages and gather all items in the registry actors array
+    if (actData?.pages) {
+      actData.pages.map((page) => {
+        tmpAct = [...tmpAct, ...page.content];
+      });
+      if (actHasNextPage) {
+        actFetchNextPage();
+      }
+    }
+
+    setActors(tmpAct);
+  }, [actData, actHasNextPage, actFetchNextPage]);
 
   type FormValues = {
     organisation_role: string;
@@ -55,15 +74,15 @@ function RequestValidation() {
     organisation_source: string;
     organisation_name: string;
     organisation_website: string;
-    actor_id: number;
+    registry_actor_id: string;
   };
 
-  const [organisation_id, setOrganisationID] = useState("");
-  const [actor_id, setActorID] = useState(-1);
-  const [organisation_name, setOrganisationName] = useState("");
-  const [organisation_role, setOrganisationRole] = useState("");
-  const [organisation_source, setOrganisationSource] = useState("ROR");
-  const [organisation_website, setOrganisationWebsite] = useState("");
+  const [organisationId, setOrganisationID] = useState("");
+  const [registryActorId, setRegistryActorID] = useState("");
+  const [organisationName, setOrganisationName] = useState("");
+  const [organisationRole, setOrganisationRole] = useState("");
+  const [organisationSource, setOrganisationSource] = useState("ROR");
+  const [organisationWebsite, setOrganisationWebsite] = useState("");
   const [inputValue, setInputValue] = useState("");
 
   const {
@@ -74,22 +93,22 @@ function RequestValidation() {
     watch,
   } = useForm<FormValues>({
     defaultValues: {
-      organisation_role: organisation_role,
-      organisation_id: organisation_id,
-      organisation_source: organisation_source,
-      organisation_name: organisation_name,
-      organisation_website: organisation_website,
-      actor_id: actor_id,
+      organisation_role: organisationRole,
+      organisation_id: organisationId,
+      organisation_source: organisationSource,
+      organisation_name: organisationName,
+      organisation_website: organisationWebsite,
+      registry_actor_id: registryActorId,
     },
   });
 
   const { mutateAsync: refetchValidationRequest } = useValidationRequest({
-    organisation_role: organisation_role,
-    organisation_id: organisation_id,
-    organisation_source: organisation_source,
-    organisation_name: organisation_name,
-    organisation_website: organisation_website,
-    actor_id: actor_id,
+    organisation_role: organisationRole,
+    organisation_id: organisationId,
+    organisation_source: organisationSource,
+    organisation_name: organisationName,
+    organisation_website: organisationWebsite,
+    registry_actor_id: registryActorId,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
@@ -107,7 +126,7 @@ function RequestValidation() {
     setOrganisationSource(data.organisation_source);
     setOrganisationName(data.organisation_name);
     setOrganisationWebsite(data.organisation_website);
-    setActorID(data.actor_id);
+    setRegistryActorID(data.registry_actor_id);
     const promise = refetchValidationRequest()
       .catch((err) => {
         console.log(err);
@@ -163,33 +182,35 @@ function RequestValidation() {
         htmlFor="actors"
         className="d-flex align-items-center form-label fw-bold"
       >
-        <FaInfoCircle className="me-2" /> Actor (*)
+        <FaInfoCircle className="me-2" /> {t("page_validation_create.actor")}{" "}
+        (*)
       </label>
       <OverlayTrigger
         key="top"
         placement="top"
         overlay={
           <Tooltip id="tooltip-top-org-role">
-            The organisation’s role (actor) as defined in the EOSC PID Policy
+            {t("page_validation_create.tip_actor")}
           </Tooltip>
         }
       >
         <select
-          className={`form-select ${errors.actor_id ? "is-invalid" : ""}`}
-          id="actor_id"
-          {...register("actor_id", {
+          className={`form-select ${errors.registry_actor_id ? "is-invalid" : ""}`}
+          id="registry_actor_id"
+          {...register("registry_actor_id", {
             required: true,
-            validate: (value) => value > -1 || "Please select an option",
+            validate: (value) =>
+              value != "" || t("page_validation_create.err_select"),
           })}
         >
-          <option disabled value={-1}>
-            Select Actor
+          <option disabled value={""}>
+            {t("page_validation_create.select_actor")}...
           </option>
           {actors &&
             actors.map((t, i) => {
               return (
                 <option key={`type-${i}`} value={t.id}>
-                  {t.name}
+                  {t.label}
                 </option>
               );
             })}
@@ -197,7 +218,7 @@ function RequestValidation() {
       </OverlayTrigger>
       <ErrorMessage
         errors={errors}
-        name="actor_id"
+        name="registry_actor_id"
         render={({ message }) => <p className="text-danger">{message}</p>}
       />
     </>
@@ -208,9 +229,9 @@ function RequestValidation() {
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
-            Create new validation request
+            {t("page_validation_create.title")}
             <p className="lead cat-view-lead">
-              Fill in the required inputs for a new validation request.
+              {t("page_validation_create.subtitle")}
             </p>
           </h2>
         </div>
@@ -223,13 +244,16 @@ function RequestValidation() {
               htmlFor="organisation_name"
               className="d-flex align-items-center form-label fw-bold"
             >
-              <FaInfoCircle className="me-2" /> Organisation Name (*)
+              <FaInfoCircle className="me-2" />{" "}
+              {t("page_validation_create.org_name")} (*)
             </label>
             <OverlayTrigger
               key="top"
               placement="top"
               overlay={
-                <Tooltip id="tooltip-top-org-name">Organisation Name</Tooltip>
+                <Tooltip id="tooltip-top-org-name">
+                  {t("page_validation_create.tip_org_name")}
+                </Tooltip>
               }
             >
               {watchOrgSource === "ROR" ? (
@@ -240,7 +264,7 @@ function RequestValidation() {
                     {...register("organisation_name", {
                       required: {
                         value: true,
-                        message: "Organisation name is required",
+                        message: t("page_validation_create.err_org_name"),
                       },
                     })}
                   />
@@ -266,7 +290,7 @@ function RequestValidation() {
                   {...register("organisation_name", {
                     required: {
                       value: true,
-                      message: "Organisation name is required",
+                      message: t("page_validation_create.err_org_name"),
                     },
                   })}
                   onChange={(e) => {
@@ -287,15 +311,15 @@ function RequestValidation() {
               htmlFor="organisation_source"
               className="d-flex align-items-center form-label fw-bold"
             >
-              <FaInfoCircle className="me-2" /> Organisation Source (*)
+              <FaInfoCircle className="me-2" />{" "}
+              {t("page_validation_create.org_source")} (*)
             </label>
             <OverlayTrigger
               key="top"
               placement="top"
               overlay={
                 <Tooltip id="tooltip-top-org-source">
-                  Source of a persistent identifier representing the
-                  organisation (ROR)
+                  {t("page_validation_create.tip_org_source")}
                 </Tooltip>
               }
             >
@@ -308,9 +332,12 @@ function RequestValidation() {
                 {...register("organisation_source", {
                   required: {
                     value: true,
-                    message: "Organisation Source is required",
+                    message: t("page_validation_create.err_org_source"),
                   },
-                  minLength: { value: 3, message: "Minimum length is 3" },
+                  minLength: {
+                    value: 3,
+                    message: t("page_validation_create.err_min_length"),
+                  },
                 })}
                 defaultValue="ROR"
                 onChange={(e) => {
@@ -319,8 +346,8 @@ function RequestValidation() {
                   setValue("organisation_website", "");
                 }}
               >
-                <option value="ROR">ROR</option>
-                <option value="CUSTOM">Custom</option>
+                <option value="ROR">{t("ror")}</option>
+                <option value="CUSTOM">{t("custom")}</option>
               </select>
             </OverlayTrigger>
             <ErrorMessage
@@ -335,14 +362,14 @@ function RequestValidation() {
               className="d-flex align-items-center form-label fw-bold"
             >
               <FaInfoCircle className="me-2" />
-              Organisation Website
+              {t("page_validation_create.org_website")}
             </label>
             <OverlayTrigger
               key="top"
               placement="top"
               overlay={
                 <Tooltip id="tooltip-top-org-website">
-                  The organisation’s website
+                  {t("page_validation_create.tip_org_website")}
                 </Tooltip>
               }
             >
@@ -370,14 +397,15 @@ function RequestValidation() {
               htmlFor="organisation_role"
               className="d-flex align-items-center form-label fw-bold"
             >
-              <FaInfoCircle className="me-2" /> Organisation Role (*)
+              <FaInfoCircle className="me-2" />{" "}
+              {t("page_validation_create.org_role")} (*)
             </label>
             <OverlayTrigger
               key="top"
               placement="top"
               overlay={
                 <Tooltip id="tooltip-top-org-role">
-                  The user’s role in the organisation
+                  {t("page_validation_create.tip_org_role")}
                 </Tooltip>
               }
             >
@@ -391,7 +419,7 @@ function RequestValidation() {
                 {...register("organisation_role", {
                   required: {
                     value: true,
-                    message: "Organisation Role is required",
+                    message: t("page_validation_create.err_org_role"),
                   },
                 })}
               />
@@ -408,10 +436,13 @@ function RequestValidation() {
         </Row>
 
         <Row className="mt-3">
-          <span className="form-label fw-bold">User Details (*)</span>
+          <span className="form-label fw-bold">
+            {" "}
+            {t("page_validation_create.user_details")} (*)
+          </span>
           <Col sm={12} md={4}>
             <InputGroup className="mb-2">
-              <InputGroup.Text>Name: </InputGroup.Text>
+              <InputGroup.Text>{t("fields.name")}: </InputGroup.Text>
               <input
                 type="text"
                 className={`form-control`}
@@ -424,7 +455,7 @@ function RequestValidation() {
           </Col>
           <Col sm={12} md={4}>
             <InputGroup className="mb-2">
-              <InputGroup.Text>Surname: </InputGroup.Text>
+              <InputGroup.Text>{t("fields.surname")}: </InputGroup.Text>
               <input
                 type="text"
                 className={`form-control`}
@@ -437,7 +468,7 @@ function RequestValidation() {
           </Col>
           <Col sm={12} md={4}>
             <InputGroup className="mb-2">
-              <InputGroup.Text>Email: </InputGroup.Text>
+              <InputGroup.Text>{t("fields.email")}: </InputGroup.Text>
               <input
                 type="text"
                 className={`form-control`}
@@ -455,10 +486,10 @@ function RequestValidation() {
             className="btn btn-light border-black"
             type="submit"
           >
-            Submit
+            {t("buttons.submit")}
           </button>
           <Link to="/validations" className="my-2 btn btn-secondary mx-3">
-            <span>Cancel</span>
+            <span>{t("buttons.cancel")}</span>
           </Link>
         </div>
       </form>

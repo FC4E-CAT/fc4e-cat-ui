@@ -1,4 +1,5 @@
 import { ResponsePage } from "./common";
+import { MotivationReference } from "./motivation";
 
 export interface Principle {
   id: string;
@@ -7,6 +8,7 @@ export interface Principle {
   description: string;
   populated_by: string | null;
   last_touch: string;
+  used_by_motivations?: MotivationReference[];
 }
 
 export interface PrincipleInput {

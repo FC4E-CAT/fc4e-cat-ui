@@ -23,6 +23,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaFile, FaInfoCircle } from "react-icons/fa";
 import { FaTriangleExclamation } from "react-icons/fa6";
 
@@ -37,6 +38,7 @@ interface MotivationModalProps {
  * Modal component for creating/editing a motivation
  */
 export function MotivationModal(props: MotivationModalProps) {
+  const { t } = useTranslation();
   const alert = useRef<AlertInfo>({
     message: "",
   });
@@ -133,11 +135,11 @@ export function MotivationModal(props: MotivationModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Motivation Created!",
+          message: t("page_motivations.toast_create_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Creating Motivation...",
+      loading: t("page_motivations.toast_create_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -156,11 +158,11 @@ export function MotivationModal(props: MotivationModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Motivation Updated!",
+          message: t("page_motivations.toast_update_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Updating Motivation...",
+      loading: t("page_motivations.toast_update_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -177,14 +179,15 @@ export function MotivationModal(props: MotivationModalProps) {
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
           <FaFile className="me-2" />{" "}
-          {props.motivation === null ? "Create new" : "Edit"} Motivation
+          {props.motivation === null ? t("create_new") : t("edit")}{" "}
+          {t("motivation")}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div>
           {props.cloneId && (
             <Alert variant="success">
-              <FaTriangleExclamation /> The new motivation will be based on:{" "}
+              <FaTriangleExclamation /> {`${t("page_motivations.based_on")}: `}
               <strong className="ms-2">{props.cloneName}</strong>{" "}
               <span className="badge bg-light ms-2 border">
                 <code>{props.cloneId}</code>
@@ -199,12 +202,12 @@ export function MotivationModal(props: MotivationModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Acronym to quickly distinguish the Motivation item
+                      {t("page_motivations.tip_mtv")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-motivation-mtv">
-                    <FaInfoCircle className="me-2" /> Mtv (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.mtv")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -220,7 +223,7 @@ export function MotivationModal(props: MotivationModalProps) {
                 />
               </InputGroup>
               {showErrors && motivationInput.mtv === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
             <Col>
@@ -230,12 +233,12 @@ export function MotivationModal(props: MotivationModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Label (Name) of the motivation item
+                      {t("page_motivations.tip_label")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-motivation-label">
-                    <FaInfoCircle className="me-2" /> Label (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.label")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -251,7 +254,7 @@ export function MotivationModal(props: MotivationModalProps) {
                 />
               </InputGroup>
               {showErrors && motivationInput.label === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
           </Row>
@@ -263,18 +266,18 @@ export function MotivationModal(props: MotivationModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Select the type of motivation
+                      {t("page_motivations.tip_select_mtv_type")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-motivation-type">
-                    <FaInfoCircle className="me-2" /> Type (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.type")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Select
                   id="input-motivation-type"
                   aria-describedby="label-motivation-type"
-                  placeholder="Select a Motivation type"
+                  placeholder={t("page_motivations.select_mtv_type")}
                   value={
                     motivationInput.motivation_type_id
                       ? motivationInput.motivation_type_id
@@ -289,7 +292,7 @@ export function MotivationModal(props: MotivationModalProps) {
                 >
                   <>
                     <option value="" disabled>
-                      Select motivation type
+                      {t("page_motivations.select_mtv_type")}
                     </option>
                     {motivationTypes.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -300,7 +303,7 @@ export function MotivationModal(props: MotivationModalProps) {
                 </Form.Select>
               </InputGroup>
               {showErrors && motivationInput.motivation_type_id === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
               {motivationInput.motivation_type_id != "" && (
                 <div className="bg-light text-secondary border rounded mt-2 p-3">
@@ -325,12 +328,13 @@ export function MotivationModal(props: MotivationModalProps) {
                 placement="top"
                 overlay={
                   <Tooltip id={`tooltip-top`}>
-                    Short description of this motivation item
+                    {t("page_motivations.tip_description")}
                   </Tooltip>
                 }
               >
                 <span id="label-motivation-description">
-                  <FaInfoCircle className="ms-1 me-2" /> Description (*):
+                  <FaInfoCircle className="ms-1 me-2" />{" "}
+                  {t("fields.description")} (*):
                 </span>
               </OverlayTrigger>
               <Form.Control
@@ -346,7 +350,7 @@ export function MotivationModal(props: MotivationModalProps) {
                 }}
               />
               {showErrors && motivationInput.description === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
           </Row>
@@ -354,7 +358,7 @@ export function MotivationModal(props: MotivationModalProps) {
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={props.onHide}>
-          Close
+          {t("buttons.close")}
         </Button>
         <Button
           className="btn-success"
@@ -368,7 +372,9 @@ export function MotivationModal(props: MotivationModalProps) {
             }
           }}
         >
-          {props.motivation === null ? "Create" : "Update"}
+          {props.motivation === null
+            ? t("buttons.create")
+            : t("buttons.update")}
         </Button>
       </Modal.Footer>
     </Modal>

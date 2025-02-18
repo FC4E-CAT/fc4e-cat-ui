@@ -16,6 +16,7 @@ import { EvidenceURLS } from "./EvidenceURLS";
 import { AssessmentTest, EvidenceURL, TestValue } from "@/types";
 import { FaLock, FaRegQuestionCircle } from "react-icons/fa";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface AssessmentTestProps {
   test: TestValue;
@@ -35,6 +36,7 @@ enum TestValueEventType {
 }
 
 export const TestValueForm = (props: AssessmentTestProps) => {
+  const { t } = useTranslation();
   const [localValue, setLocalValue] = useState<string>(
     props.test.value?.toString() || "",
   );
@@ -86,7 +88,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
 
     let result: 0 | 1 | null = null;
 
-    if (newTest.value) {
+    if (newTest.value !== null) {
       if (comparisonMode === "equal_greater_than") {
         result = newTest.value >= comparisonValue ? 1 : 0;
       } else if (comparisonMode === "equal_less_than") {
@@ -122,8 +124,10 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                 //setShowHelp(!showHelp);
                 props.handleGuide(
                   props.test.id + props.test.guidance?.id || " ",
-                  "Guidance " + props.test.guidance?.id || "",
-                  props.test.guidance?.description || "No guidance Available",
+                  `${t("page_assessment_edit.guidance")} ${props.test.guidance?.id}` ||
+                    "",
+                  props.test.guidance?.description ||
+                    t("page_assessment_edit.no_guidance"),
                 );
               }}
             >
@@ -177,7 +181,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                         placement="top"
                         overlay={
                           <Tooltip id={`tooltip-top`}>
-                            This threshold is predefined (non-editable)
+                            {t("page_assessment_edit.threshold_predefined")}
                           </Tooltip>
                         }
                       >

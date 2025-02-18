@@ -1,9 +1,15 @@
 import { AxiosError } from "axios";
 import { APIClient } from "@/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
 import {
   ApiOptions,
+  ApiOptionsSearch,
   Principle,
   PrincipleInput,
   PrincipleResponse,
@@ -13,14 +19,19 @@ export const useGetPrinciples = ({
   size,
   page,
   token,
+  sortBy,
+  sortOrder,
+  search,
   isRegistered,
-}: ApiOptions) =>
+}: ApiOptionsSearch) =>
   useQuery({
-    queryKey: ["principles", { size, page }],
+    queryKey: ["principles", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
-      const response = await APIClient(token).get<PrincipleResponse>(
-        `/registry/principles?size=${size}&page=${page}`,
-      );
+      let url = `/v1/registry/principles?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
+      search ? (url = `${url}&search=${search}`) : null;
+
+      const response = await APIClient(token).get<PrincipleResponse>(url);
+
       return response.data;
     },
     onError: (error: AxiosError) => {
@@ -44,7 +55,7 @@ export const useGetPrinciple = ({
       let response = null;
 
       response = await APIClient(token).get<Principle>(
-        `/registry/principles/${id}`,
+        `/v1/registry/principles/${id}`,
       );
       return response.data;
     },
@@ -52,6 +63,33 @@ export const useGetPrinciple = ({
       return handleBackendError(error);
     },
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
+  });
+
+export const useGetAllPrinciples = ({
+  token,
+  isRegistered,
+  size,
+}: ApiOptions) =>
+  useInfiniteQuery({
+    queryKey: ["all-principles"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<PrincipleResponse>(
+        `/v1/registry/principles?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
   });
 
 export const useCreatePrinciple = (
@@ -62,7 +100,7 @@ export const useCreatePrinciple = (
   return useMutation(
     async () => {
       const response = await APIClient(token).post<PrincipleResponse>(
-        `/registry/principles`,
+        `/v1/registry/principles`,
         {
           pri,
           label,
@@ -92,7 +130,7 @@ export const useUpdatePrinciple = (
   return useMutation(
     async () => {
       const response = await APIClient(token).patch<PrincipleResponse>(
-        `/registry/principles/${id}`,
+        `/v1/registry/principles/${id}`,
         {
           pri,
           label,
@@ -117,7 +155,7 @@ export function useDeletePrinciple(token: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (principleId: string) => {
-      return APIClient(token).delete(`/registry/principles/${principleId}`);
+      return APIClient(token).delete(`/v1/registry/principles/${principleId}`);
     },
     // on success refresh principles query (so that the deleted principle dissapears from list)
     onSuccess: () => {

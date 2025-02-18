@@ -2,12 +2,49 @@ import { useGetMotivationCriteria } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
 import { Criterion } from "@/types";
 import { useContext, useEffect, useState } from "react";
-import { Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  ListGroup,
+  ListGroupItem,
+  OverlayTrigger,
+  Row,
+  Tooltip,
+} from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
+import { MotivationMetricDetailsModal } from "./MotivationMetricDetailsModal";
+import { FaBars, FaBorderNone, FaEdit } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { MotivationMetricAssignModal } from "./MotivationMetricAssignModal";
+import { useTranslation } from "react-i18next";
 
-export const MotivationCriteria = ({ mtvId }: { mtvId: string }) => {
+interface MetricModalConfig {
+  show: boolean;
+  itemId: string;
+}
+
+export const MotivationCriteria = ({
+  mtvId,
+  published,
+}: {
+  mtvId: string;
+  published: boolean;
+}) => {
+  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
   const [mtvCriteria, setMtvCriteria] = useState<Criterion[]>([]);
+
+  const [metricModal, setMetricModal] = useState<MetricModalConfig>({
+    show: false,
+    itemId: "",
+  });
+
+  const [metricAssignModal, setMetricAssignModal] = useState<MetricModalConfig>(
+    {
+      show: false,
+      itemId: "",
+    },
+  );
 
   const {
     data: criData,
@@ -37,15 +74,49 @@ export const MotivationCriteria = ({ mtvId }: { mtvId: string }) => {
 
   return (
     <div className="px-5 mt-4">
+      <MotivationMetricDetailsModal
+        show={metricModal.show}
+        onHide={() => {
+          setMetricModal({ itemId: "", show: false });
+        }}
+        mtvId={mtvId}
+        itemId={metricModal.itemId}
+        getByCriterion
+      />
+      <MotivationMetricAssignModal
+        show={metricAssignModal.show}
+        onHide={() => {
+          setMetricAssignModal({ itemId: "", show: false });
+        }}
+        mtvId={mtvId}
+        criId={metricAssignModal.itemId}
+      />
       <div className="d-flex justify-content-between mb-2">
         <h5 className="text-muted cat-view-heading ">
-          List of criteria
+          {t("page_motivations.criteria_list")}
           <p className="lead cat-view-lead">
             <span className="text-sm">
-              Criteria related with principles under motivation
+              {t("page_motivations.criteria_list_subtitle")}
             </span>
           </p>
         </h5>
+        <div>
+          {published ? (
+            <span className="btn btn-warning disabled">
+              <FaEdit className="me-2" />{" "}
+              {t("page_motivations.manage_criteria")}
+            </span>
+          ) : (
+            <Link
+              id="manage-motivation-criteria-principles"
+              to={`/admin/motivations/${mtvId}/manage-criteria-principles`}
+              className="btn btn-warning"
+            >
+              <FaEdit className="me-2" />
+              {t("page_motivations.manage_criteria")}
+            </Link>
+          )}
+        </div>
       </div>
       <div>
         <ListGroup>
@@ -81,6 +152,44 @@ export const MotivationCriteria = ({ mtvId }: { mtvId: string }) => {
                         {principle.pri} - {principle.label}
                       </span>
                     ))}
+                  </div>
+                </Col>
+                <Col xs="auto">
+                  <div className="d-flex flex-nowrap">
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={
+                        <Tooltip>
+                          {t("page_motivations.tip_assign_metric")}
+                        </Tooltip>
+                      }
+                    >
+                      <Button
+                        className="btn btn-light btn-sm m-1"
+                        onClick={() => {
+                          setMetricAssignModal({ show: true, itemId: item.id });
+                        }}
+                      >
+                        <FaBorderNone />
+                      </Button>
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={
+                        <Tooltip>
+                          {t("page_motivations.view_cri_metric_tests")}
+                        </Tooltip>
+                      }
+                    >
+                      <Button
+                        className="btn btn-light btn-sm m-1"
+                        onClick={() => {
+                          setMetricModal({ show: true, itemId: item.id });
+                        }}
+                      >
+                        <FaBars />
+                      </Button>
+                    </OverlayTrigger>
                   </div>
                 </Col>
               </Row>

@@ -1,6 +1,6 @@
 {
   "api": {
-    "base_url": "http://localhost:8080",
+    "base_url": "http://127.0.0.1:8080",
     "version": "v1"
   },
   "embedded_views": {
@@ -8,6 +8,15 @@
   },
   "relation_ids": {
     "motivation_principle": "isSupportedBy",
-    "motivation_actor": "dcterms:isRequiredBy"
+    "motivation_actor": "dcterms:isRequiredBy",
+    "motivation_principle_criterion": "maintainedBy",
+    "motivation_metric_test": "maintainedBy"
+  },
+  "default_values": {
+    "criterion_type": "Criterion",
+    "criterion_imperative": "MUST",
+    "motivation_metric_type": "Binary",
+    "motivation_metric_algorithm": "Simple Sum",
+    "motivation_metric_benchmark_type": "Binary-Binary "
   }
 }

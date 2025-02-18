@@ -7,8 +7,6 @@ export default defineConfig({
       bundler: "vite",
     },
   },
-
-  hosts: { localhost: "127.0.0.1" },
   env: {
     auth_base_url: "http://localhost:58080/",
     auth_realm: "quarkus",

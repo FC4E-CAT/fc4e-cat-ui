@@ -8,14 +8,14 @@ describe("/subjects", () => {
     cy.visit("/subjects");
     cy.intercept(
       "GET",
-      "http://localhost:8080/v1/subjects?size=10&page=1&sortby=asc",
+      "http://127.0.0.1:8080/v1/subjects?size=20&page=1&sortby=undefined",
       {
         fixture: "subjects/subjects",
       },
     ).as("getSubjects");
   });
   it("deletes a subject", () => {
-    cy.intercept("GET", "http://localhost:8080/v1/subjects/9", {
+    cy.intercept("GET", "http://127.0.0.1:8080/v1/subjects/9", {
       fixture: "subjects/subject",
     }).as("getSubject");
     cy.get("table")
@@ -34,7 +34,7 @@ describe("/subjects", () => {
     cy.contains("Subject succesfully deleted.").should("be.visible");
   });
   it("edits a subject", () => {
-    cy.intercept("GET", "http://localhost:8080/v1/subjects/9", {
+    cy.intercept("GET", "http://127.0.0.1:8080/v1/subjects/9", {
       fixture: "subjects/subject",
     }).as("getSubject");
     cy.get("table")
@@ -73,7 +73,7 @@ describe("/subjects?create", () => {
   });
 
   it("creates a subject", () => {
-    cy.intercept("POST", "http://localhost:8080/v1/subjects", {
+    cy.intercept("POST", "http://127.0.0.1:8080/v1/subjects", {
       fixture: "subjects/subject",
     }).as("postSubject");
     cy.get("#input-info-subject-id").type("subject_test_id");
@@ -86,19 +86,19 @@ describe("/subjects?create", () => {
   it("requires a subject id", () => {
     cy.get(".btn-success").click();
     cy.get(".modal-content").should("be.visible");
-    cy.contains("Error during subject creation.").should("be.visible");
+    cy.contains("Error during subject creation!").should("be.visible");
   });
   it("requires a subject name", () => {
     cy.get("#input-info-subject-id").type("subject_test_id{enter}");
     cy.get(".btn-success").click();
     cy.get(".modal-content").should("be.visible");
-    cy.contains("Error during subject creation.").should("be.visible");
+    cy.contains("Error during subject creation!").should("be.visible");
   });
   it("requires a subject type", () => {
     cy.get("#input-info-subject-id").type("subject_test_id");
     cy.get("#input-info-subject-name").type("subject_test_name{enter}");
     cy.get(".btn-success").click();
     cy.get(".modal-content").should("be.visible");
-    cy.contains("Error during subject creation.").should("be.visible");
+    cy.contains("Error during subject creation!").should("be.visible");
   });
 });

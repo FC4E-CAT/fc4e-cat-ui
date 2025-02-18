@@ -1,3 +1,4 @@
+import { useCreateMotivationPrinciple } from "@/api";
 import {
   useCreatePrinciple,
   useUpdatePrinciple,
@@ -16,10 +17,12 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FaFile, FaInfoCircle } from "react-icons/fa";
 
 interface PrincipleModalProps {
   principle: Principle | null;
+  mtvId?: string;
   show: boolean;
   onHide: () => void;
 }
@@ -27,6 +30,7 @@ interface PrincipleModalProps {
  * Modal component for creating/editing a principle
  */
 export function PrincipleModal(props: PrincipleModalProps) {
+  const { t } = useTranslation();
   const alert = useRef<AlertInfo>({
     message: "",
   });
@@ -52,6 +56,12 @@ export function PrincipleModal(props: PrincipleModalProps) {
 
   const mutateCreate = useCreatePrinciple(
     keycloak?.token || "",
+    principleInput,
+  );
+
+  const mutateCreateMtv = useCreateMotivationPrinciple(
+    keycloak?.token || "",
+    props.mtvId || "",
     principleInput,
   );
 
@@ -94,11 +104,33 @@ export function PrincipleModal(props: PrincipleModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Principle Created!",
+          message: t("page_principles.toast_create_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Creating Principle...",
+      loading: t("page_principles.toast_create_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  }
+
+  function handleCreateMtv() {
+    const promise = mutateCreateMtv
+      .mutateAsync()
+      .catch((err) => {
+        alert.current = {
+          message: "Error: " + err.response.data.message,
+        };
+        throw err;
+      })
+      .then(() => {
+        props.onHide();
+        alert.current = {
+          message: t("page_principles.toast_create_mtv_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_principles.toast_create_mtv_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -117,11 +149,11 @@ export function PrincipleModal(props: PrincipleModalProps) {
       .then(() => {
         props.onHide();
         alert.current = {
-          message: "Principle Updated!",
+          message: t("page_principles.toast_update_success"),
         };
       });
     toast.promise(promise, {
-      loading: "Updating Principle...",
+      loading: t("page_principles.toast_update_progress"),
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -137,7 +169,9 @@ export function PrincipleModal(props: PrincipleModalProps) {
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
           <FaFile className="me-2" />{" "}
-          {props.principle === null ? "Create new" : "Edit"} Principle
+          {props.principle === null ? t("create_new") : t("edit")}{" "}
+          {` ${t("principle")}`}
+          {props.mtvId && ` (${t("under_motivation")})`}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -150,7 +184,7 @@ export function PrincipleModal(props: PrincipleModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Acronym to quickly distinguish the Principle item
+                      {t("page_principles.tip_pri")}
                     </Tooltip>
                   }
                 >
@@ -171,7 +205,7 @@ export function PrincipleModal(props: PrincipleModalProps) {
                 />
               </InputGroup>
               {showErrors && principleInput.pri === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
             <Col>
@@ -181,12 +215,12 @@ export function PrincipleModal(props: PrincipleModalProps) {
                   placement="top"
                   overlay={
                     <Tooltip id={`tooltip-top`}>
-                      Label (Name) of the principle item
+                      {t("page_principles.tip_description")}
                     </Tooltip>
                   }
                 >
                   <InputGroup.Text id="label-principle-label">
-                    <FaInfoCircle className="me-2" /> Label (*):
+                    <FaInfoCircle className="me-2" /> {t("fields.label")} (*):
                   </InputGroup.Text>
                 </OverlayTrigger>
                 <Form.Control
@@ -202,7 +236,7 @@ export function PrincipleModal(props: PrincipleModalProps) {
                 />
               </InputGroup>
               {showErrors && principleInput.label === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
           </Row>
@@ -213,12 +247,13 @@ export function PrincipleModal(props: PrincipleModalProps) {
                 placement="top"
                 overlay={
                   <Tooltip id={`tooltip-top`}>
-                    Short description of this principle item
+                    {t("page_principles.tip_description")}
                   </Tooltip>
                 }
               >
                 <span id="label-principle-description">
-                  <FaInfoCircle className="ms-1 me-2" /> Description (*):
+                  <FaInfoCircle className="ms-1 me-2" />{" "}
+                  {t("fields.description")} (*):
                 </span>
               </OverlayTrigger>
               <Form.Control
@@ -234,7 +269,7 @@ export function PrincipleModal(props: PrincipleModalProps) {
                 }}
               />
               {showErrors && principleInput.description === "" && (
-                <span className="text-danger">Required</span>
+                <span className="text-danger">{t("required")}</span>
               )}
             </Col>
           </Row>
@@ -242,21 +277,25 @@ export function PrincipleModal(props: PrincipleModalProps) {
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={props.onHide}>
-          Close
+          {t("buttons.close")}
         </Button>
         <Button
           className="btn-success"
           onClick={() => {
             if (handleValidate() === true) {
               if (props.principle === null) {
-                handleCreate();
+                if (props.mtvId && props.mtvId !== "") {
+                  handleCreateMtv();
+                } else {
+                  handleCreate();
+                }
               } else {
                 handleUpdate();
               }
             }
           }}
         >
-          {props.principle === null ? "Create" : "Update"}
+          {props.principle === null ? t("buttons.create") : t("buttons.update")}
         </Button>
       </Modal.Footer>
     </Modal>

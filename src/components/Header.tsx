@@ -7,10 +7,13 @@ import { trimProfileID } from "@/utils";
 import { AuthContext } from "@/auth";
 import { FaUser, FaShieldAlt } from "react-icons/fa";
 import { UserProfile } from "@/types";
+import { useTranslation } from "react-i18next";
 
 function Header() {
   const { authenticated, keycloak, registered } = useContext(AuthContext)!;
   const [userProfile, setUserProfile] = useState<UserProfile>();
+
+  const { t } = useTranslation();
 
   const { data } = useGetProfile({
     token: keycloak?.token || "",
@@ -47,7 +50,7 @@ function Header() {
                 <>
                   <NavItem>
                     <Link to="/validations" className="cat-nav-link">
-                      VALIDATIONS
+                      {t("validations").toUpperCase()}
                     </Link>
                   </NavItem>
                 </>
@@ -55,12 +58,12 @@ function Header() {
 
               <NavItem>
                 <Link to="/assess" className="cat-nav-link">
-                  ASSESSMENTS
+                  {t("assessments").toUpperCase()}
                 </Link>
               </NavItem>
               <NavItem>
                 <Link to="/pid-selection" className="cat-nav-link">
-                  PID SELECTION
+                  {t("pid_selection").toUpperCase()}
                 </Link>
               </NavItem>
             </Nav>
@@ -73,7 +76,7 @@ function Header() {
                   to="/login"
                   className="btn btn-primary my-2"
                 >
-                  Login
+                  {t("buttons.login")}
                 </Link>
               )}
 
@@ -86,36 +89,39 @@ function Header() {
 
                   <Dropdown.Menu>
                     <Dropdown.Item as={Link} to="/profile">
-                      Profile
+                      {t("profile")}
                     </Dropdown.Item>
 
                     {userProfile?.user_type === "Admin" && (
                       <>
                         <Dropdown.Divider />
-                        <Dropdown.Item as={Link} to="/motivations">
-                          <FaShieldAlt /> Motivations
+                        <Dropdown.Item as={Link} to="/admin/motivations">
+                          <FaShieldAlt /> {t("motivations")}
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/principles">
-                          <FaShieldAlt /> Principles
+                        <Dropdown.Item as={Link} to="/admin/principles">
+                          <FaShieldAlt /> {t("principles")}
+                        </Dropdown.Item>
+                        <Dropdown.Item as={Link} to="/admin/criteria">
+                          <FaShieldAlt /> {t("criteria")}
                         </Dropdown.Item>
                         <Dropdown.Item as={Link} to="/admin/users">
-                          <FaShieldAlt /> Users
+                          <FaShieldAlt /> {t("users")}
                         </Dropdown.Item>
                         <Dropdown.Item
                           id="admin_validation"
                           as={Link}
                           to="/admin/validations"
                         >
-                          <FaShieldAlt /> Validations
+                          <FaShieldAlt /> {t("validations")}
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/assessments/view">
-                          <FaShieldAlt /> Assessments
+                        <Dropdown.Item as={Link} to="/admin/assessments">
+                          <FaShieldAlt /> {t("assessments")}
                         </Dropdown.Item>
                         <Dropdown.Divider />
                       </>
                     )}
                     <Dropdown.Item as={Link} to="/logout">
-                      Logout
+                      {t("buttons.logout")}
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>

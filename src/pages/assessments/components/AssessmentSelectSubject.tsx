@@ -14,6 +14,7 @@ import { FaInfoCircle } from "react-icons/fa";
 import { AuthContext } from "@/auth";
 import { AssessmentSubject } from "@/types";
 import { useGetSubjects } from "@/api/services/subjects";
+import { useTranslation } from "react-i18next";
 
 type AssessmentSelectSubjectProps = {
   subject: AssessmentSubject;
@@ -32,7 +33,7 @@ export const AssessmentSelectSubject = (
     token: keycloak?.token || "",
     isRegistered: registered,
   });
-
+  const { t } = useTranslation();
   const [selected, setSelected] = useState(props.subject.id || "-1");
 
   function handleSubjectChange(fieldName: string, value: string) {
@@ -45,15 +46,13 @@ export const AssessmentSelectSubject = (
   return (
     <>
       <div className="mb-">
-        <h6>
-          Select an existing subject from previous assessments or define a new
-          one
-        </h6>
+        <h6>{t("page_assessment_edit.select_subject_text")}</h6>
       </div>
       <Row className="mb-2">
         <div className="input-group mb-3">
           <label className="input-group-text" htmlFor="inputGroupSelect01">
-            Subject (*)
+            {" "}
+            {t("fields.subject")} (*)
           </label>
           <select
             className="form-select"
@@ -77,7 +76,7 @@ export const AssessmentSelectSubject = (
             }}
           >
             <option disabled value={-1}>
-              Select Object
+              {t("page_assessment_edit.select_object")}
             </option>
             {data?.content &&
               data?.content.map((t, i) => {
@@ -105,7 +104,7 @@ export const AssessmentSelectSubject = (
               });
             }}
           >
-            Clear Selection
+            {t("buttons.clear_selection")}
           </button>
         </div>
       </Row>
@@ -117,20 +116,19 @@ export const AssessmentSelectSubject = (
               placement="top"
               overlay={
                 <Tooltip id={`tooltip-top`}>
-                  A unique identifier for the current subject - this can be a
-                  URL, a string representing the service or organisation being
-                  assessed, or the PID of a resource owned by you.
+                  {t("page_subjects.tip_subject_id")}
                 </Tooltip>
               }
             >
               <InputGroup.Text id="label-info-subject-id">
-                <FaInfoCircle className="me-2" /> Subject ID (*)
+                <FaInfoCircle className="me-2" />{" "}
+                {t("page_subjects.subject_id")} (*)
               </InputGroup.Text>
             </OverlayTrigger>
             <Form.Control
               disabled={selected != "-1"}
               id="input-info-subject-id"
-              placeholder="A unique identifier for the current subject"
+              placeholder={t("page_subjects.subject_id_placeholder")}
               value={props.subject?.id || ""}
               maxLength={200}
               onChange={(e) => {
@@ -145,7 +143,9 @@ export const AssessmentSelectSubject = (
             />
           </InputGroup>
           {props.reqFields.includes("subject_id") && (
-            <p className="text-danger text-end">Subject id required</p>
+            <p className="text-danger text-end">
+              {t("page_subjects.err_subject_id")}
+            </p>
           )}
         </Row>
         <Row>
@@ -155,18 +155,19 @@ export const AssessmentSelectSubject = (
               placement="top"
               overlay={
                 <Tooltip id={`tooltip-top`}>
-                  The name of the subject of the assessment as identified above
+                  {t("page_subjects.tip_subject_name")}
                 </Tooltip>
               }
             >
               <InputGroup.Text id="label-info-subject-name">
-                <FaInfoCircle className="me-2" /> Subject Name (*)
+                <FaInfoCircle className="me-2" />{" "}
+                {t("page_subjects.subject_name")} (*)
               </InputGroup.Text>
             </OverlayTrigger>
             <Form.Control
               disabled={selected != "-1"}
               id="input-info-subject-name"
-              placeholder="The name of the subject of the assessment as identified above"
+              placeholder={t("page_subjects.subject_name_placeholder")}
               value={props.subject?.name || ""}
               maxLength={200}
               onChange={(e) => {
@@ -181,7 +182,9 @@ export const AssessmentSelectSubject = (
             />
           </InputGroup>
           {props.reqFields.includes("subject_name") && (
-            <p className="text-danger text-end">The subject name is required</p>
+            <p className="text-danger text-end">
+              {t("page_subjects.err_subject_name")}
+            </p>
           )}
         </Row>
         <Row>
@@ -191,20 +194,19 @@ export const AssessmentSelectSubject = (
               placement="top"
               overlay={
                 <Tooltip id={`tooltip-top`}>
-                  The type of object (such as a web resource identified by the
-                  owner) or service provided by an authority, provider, or
-                  manager, for which the assessment will be completed.
+                  {t("page_subjects.tip_subject_type")}
                 </Tooltip>
               }
             >
               <InputGroup.Text id="label-info-subject-type">
-                <FaInfoCircle className="me-2" /> Subject Type (*)
+                <FaInfoCircle className="me-2" />{" "}
+                {t("page_subjects.subject_type")} (*)
               </InputGroup.Text>
             </OverlayTrigger>
             <Form.Control
               disabled={selected != "-1"}
               id="input-info-subject-type"
-              placeholder="The type of object for which the assessment will  be completed"
+              placeholder={t("page_subjects.subject_type_placeholder")}
               value={props.subject?.type || ""}
               maxLength={200}
               onChange={(e) => {
@@ -219,7 +221,9 @@ export const AssessmentSelectSubject = (
             />
           </InputGroup>
           {props.reqFields.includes("subject_type") && (
-            <p className="text-danger text-end">The subject type is required</p>
+            <p className="text-danger text-end">
+              {t("page_subjects.err_subject_type")}
+            </p>
           )}
         </Row>
       </Row>

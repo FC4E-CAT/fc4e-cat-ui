@@ -18,9 +18,7 @@ import {
   FaArrowUp,
   FaArrowsAltV,
   FaBars,
-  FaCheckCircle,
   FaExclamationTriangle,
-  FaShieldAlt,
   FaTrashAlt,
   FaTrashRestoreAlt,
   FaUserCircle,
@@ -28,6 +26,10 @@ import {
 import toast from "react-hot-toast";
 import { idToColor, trimField } from "@/utils/admin";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
+import BadgeUserType from "@/components/BadgeUserType";
+import BadgeUserStatus from "@/components/BadgeUserStatus";
 
 type UserState = {
   sortOrder: string;
@@ -65,6 +67,8 @@ export function UserModal(props: UserModalProps) {
   const [reason, setReason] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (props.show) {
       setReason("");
@@ -90,12 +94,14 @@ export function UserModal(props: UserModalProps) {
         <Modal.Title id="contained-modal-title-vcenter">
           {props.mode == UserModalMode.Delete && (
             <span>
-              <FaTrashAlt className="me-2" /> Delete user
+              <FaTrashAlt className="me-2" />
+              {t("page_admin_users.delete")}
             </span>
           )}
           {props.mode == UserModalMode.Restore && (
             <span>
-              <FaTrashRestoreAlt className="me-2" /> Restore user
+              <FaTrashRestoreAlt className="me-2" />
+              {t("page_admin_users.restore")}
             </span>
           )}
         </Modal.Title>
@@ -103,19 +109,19 @@ export function UserModal(props: UserModalProps) {
       <Modal.Body>
         <Form>
           <div>
-            <div>Are you sure you want to delete the following user ?</div>
+            <div>{t("page_admin_users.delete_confirm")}</div>
             <div>
-              id: <strong>{props.id}</strong>
+              {t("fields.id")}: <strong>{props.id}</strong>
             </div>
             {props.name && (
               <div>
-                name: <strong>{props.name}</strong>
+                {t("fields.name")}: <strong>{props.name}</strong>
               </div>
             )}
           </div>
           <Form.Group className="mb-3" controlId="input-delete-user-reason">
             <Form.Label>
-              <strong>Reason (*)</strong>
+              <strong>{t("page_admin_users.reason")} (*)</strong>
             </Form.Label>
             <Form.Control
               className={error ? "is-invalid" : ""}
@@ -124,13 +130,15 @@ export function UserModal(props: UserModalProps) {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
             />
-            {error && <p className="text-danger">You must specify a reason</p>}
+            {error && (
+              <p className="text-danger">{t("page_admin_users.reason_tip")}</p>
+            )}
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={() => props.onHide()}>
-          Cancel
+          {t("buttons.cancel")}
         </Button>
         {props.mode == UserModalMode.Delete && (
           <Button
@@ -143,7 +151,7 @@ export function UserModal(props: UserModalProps) {
               }
             }}
           >
-            Delete
+            {t("buttons.delete")}
           </Button>
         )}
         {props.mode == UserModalMode.Restore && (
@@ -159,7 +167,7 @@ export function UserModal(props: UserModalProps) {
               }
             }}
           >
-            Restore
+            {t("buttons.restore")}
           </Button>
         )}
       </Modal.Footer>
@@ -176,43 +184,16 @@ const SortMarker = (field: string, sortField: string, sortOrder: string) => {
   return <FaArrowsAltV className="text-secondary opacity-50" />;
 };
 
-// create a user status badge for deleted and active
-const UserStatusBadge = (banned: boolean) => {
-  if (banned)
-    return (
-      <small className="badge bg-light text-danger border-danger">
-        Deleted
-      </small>
-    );
-  return <span className="badge bg-light text-success border">Active</span>;
-};
-
-// create a user type badge for identified, admin and verified
-const UserTypeBadge = (userType: string) => {
-  const userTypeLower = userType.toLowerCase();
-  if (userTypeLower === "identified") {
-    return <span className="badge bg-secondary">Identified</span>;
-  } else if (userTypeLower === "admin") {
-    return (
-      <span className="badge bg-primary">
-        <FaShieldAlt /> Admin
-      </span>
-    );
-  } else if (userTypeLower === "validated") {
-    return (
-      <span className="badge bg-success">
-        <FaCheckCircle /> Validated
-      </span>
-    );
-  } else {
-    return null;
-  }
-};
-
 // create the tooltips
-const tooltipDelete = <Tooltip id="tip-delete">Delete User</Tooltip>;
-const tooltipRestore = <Tooltip id="tip-restore">Restore User</Tooltip>;
-const tooltipView = <Tooltip id="tip-restore">View User Details</Tooltip>;
+const tooltipDelete = (
+  <Tooltip id="tip-delete">{t("page_admin_users.delete_tip")}</Tooltip>
+);
+const tooltipRestore = (
+  <Tooltip id="tip-restore">{t("page_admin_users.restore_tip")}</Tooltip>
+);
+const tooltipView = (
+  <Tooltip id="tip-restore">{t("page_admin_users.details_tip")}</Tooltip>
+);
 
 // the main component that lists the admin users in a table
 export default function AdminUsers() {
@@ -239,19 +220,19 @@ export default function AdminUsers() {
       .mutateAsync({ user_id: id, reason: reason })
       .catch((err) => {
         toastAlert.current = {
-          message: "Error during user restore.",
+          message: t("page_admin_users.toast_restore_fail"),
         };
         throw err;
       })
       .then(() => {
         toastAlert.current = {
-          message: "User succesfully restored",
+          message: t("page_admin_users.toast_restore_success"),
         };
         // close the modal
         setUserModalConfig((prevConfig) => ({ ...prevConfig, show: false }));
       });
     toast.promise(promise, {
-      loading: "Restoring User...",
+      loading: t("page_admin_users.toast_restore_progress"),
       success: () => `${toastAlert.current.message}`,
       error: () => `${toastAlert.current.message}`,
     });
@@ -262,19 +243,19 @@ export default function AdminUsers() {
       .mutateAsync({ user_id: id, reason: reason })
       .catch((err) => {
         toastAlert.current = {
-          message: "Error during user ban.",
+          message: t("page_admin_users.toast_ban_fail"),
         };
         throw err;
       })
       .then(() => {
         toastAlert.current = {
-          message: "Subject succesfully banned.",
+          message: t("page_admin_users.toast_ban_success"),
         };
         // close the modal
         setUserModalConfig((prevConfig) => ({ ...prevConfig, show: false }));
       });
     toast.promise(promise, {
-      loading: "Banning...",
+      loading: t("page_admin_users.toast_ban_progress"),
       success: () => `${toastAlert.current.message}`,
       error: () => `${toastAlert.current.message}`,
     });
@@ -340,8 +321,10 @@ export default function AdminUsers() {
         />
         <div className="col">
           <h2 className="text-muted cat-view-heading ">
-            Users
-            <p className="lead cat-view-lead">Manage all Users.</p>
+            {t("page_admin_users.title")}
+            <p className="lead cat-view-lead">
+              {t("page_admin_users.subtitle")}
+            </p>
           </h2>
         </div>
         <div className="col-md-auto  cat-heading-right"></div>
@@ -356,10 +339,10 @@ export default function AdminUsers() {
                 }}
                 value={opts.type}
               >
-                <option value="">Select type...</option>
-                <option>Identified</option>
-                <option>Validated</option>
-                <option>Admin</option>
+                <option value="">{t("fields.select_type")}</option>
+                <option>{t("page_admin_users.identified")}</option>
+                <option>{t("page_admin_users.validated")}</option>
+                <option>{t("page_admin_users.admin")}</option>
               </Form.Select>
             </div>
             <div className="col-md-auto">
@@ -369,15 +352,15 @@ export default function AdminUsers() {
                 }}
                 value={opts.status}
               >
-                <option value="">Select status...</option>
-                <option value="active">Active</option>
-                <option value="deleted">Deleted</option>
+                <option value="">{t("fields.select_status")}</option>
+                <option value="active">{t("page_admin_users.active")}</option>
+                <option value="deleted">{t("page_admin_users.deleted")}</option>
               </Form.Select>
             </div>
             <div className="col col-lg-6">
               <div className="d-flex justify-content-center">
                 <Form.Control
-                  placeholder="Search ..."
+                  placeholder={t("fields.search")}
                   onChange={(e) => {
                     setOpts({ ...opts, search: e.target.value });
                   }}
@@ -389,7 +372,7 @@ export default function AdminUsers() {
                   }}
                   className="ms-4"
                 >
-                  Clear
+                  {t("buttons.clear")}
                 </Button>
               </div>
             </div>
@@ -404,7 +387,8 @@ export default function AdminUsers() {
                   onClick={() => handleSortClick("name")}
                   className="cat-cursor-pointer"
                 >
-                  Name {SortMarker("name", opts.sortBy, opts.sortOrder)}
+                  {t("fields.name")}{" "}
+                  {SortMarker("name", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
               <th>
@@ -412,17 +396,18 @@ export default function AdminUsers() {
                   onClick={() => handleSortClick("email")}
                   className="cat-cursor-pointer"
                 >
-                  Email {SortMarker("email", opts.sortBy, opts.sortOrder)}
+                  {t("fields.email")}{" "}
+                  {SortMarker("email", opts.sortBy, opts.sortOrder)}
                 </span>
               </th>
               <th>
-                <span>Registered</span>
+                <span>{t("fields.registered")}</span>
               </th>
               <th>
-                <span>User Type</span>
+                <span>{t("fields.user_type")}</span>
               </th>
               <th>
-                <span>Status</span>
+                <span>{t("fields.status")}</span>
               </th>
               <th></th>
             </tr>
@@ -449,7 +434,7 @@ export default function AdminUsers() {
                               style={{ fontSize: "0.64rem" }}
                               className="text-muted"
                             >
-                              id: {trimField(item.id, 20)}
+                              {t("fields.id")}: {trimField(item.id, 20)}
                             </span>
                           </div>
                         </div>
@@ -460,10 +445,10 @@ export default function AdminUsers() {
                       {item.registered_on.split("T")[0]}
                     </td>
                     <td className="align-middle">
-                      {UserTypeBadge(item.user_type)}
+                      <BadgeUserType userType={item.user_type} />
                     </td>
                     <td className="align-middle">
-                      {UserStatusBadge(item.banned)}
+                      <BadgeUserStatus banned={item.banned} />
                     </td>
                     <td>
                       <OverlayTrigger placement="top" overlay={tooltipView}>
@@ -522,12 +507,12 @@ export default function AdminUsers() {
             <h3>
               <FaExclamationTriangle />
             </h3>
-            <h5>No data found...</h5>
+            <h5>{t("no_data")}</h5>
           </Alert>
         )}
         <div className="d-flex justify-content-end">
           <div>
-            <span className="mx-1">rows per page: </span>
+            <span className="mx-1">{t("rows_per_page")} </span>
             <select
               name="per-page"
               value={opts.size.toString() || "20"}
