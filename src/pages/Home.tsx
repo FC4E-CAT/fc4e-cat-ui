@@ -1,156 +1,137 @@
 import { useGetStatistics } from "@/api/services/registry";
-import { Card, Col, ListGroup, Row } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { Card } from "react-bootstrap";
 import { FaCheckCircle, FaCube, FaInfoCircle, FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import serviceImg from "@/assets/thumb_service.png";
+import manageImg from "@/assets/thumb_manage.png";
+import ownersImg from "@/assets/thumb_user.png";
 
 function Home() {
   const { data } = useGetStatistics();
   const { t } = useTranslation();
+
   return (
     <div className="container rounded bg-white mt-1 mb-5">
-      <div className="page-center text-center p-4">
+      <div className="page-center p-4">
         <h2>{t("page_home.title")}</h2>
-        <Link to="/about" className="btn btn-light border mt-4">
-          <FaInfoCircle className="me-2 text-muted" /> {t("buttons.about")}...
-        </Link>
       </div>
+      <div className="row">
+        <div className="col-9 px-4 pb-4">
+          <p>
+            {t("page_home.description")}
+            <br />
+            <span className="float-right">
+              <Link to="/about" className="btn btn-light mt-4 ">
+                <FaInfoCircle className="me-2 text-muted" />{" "}
+                {t("buttons.about")}...
+              </Link>
+            </span>
+          </p>
+        </div>
+        <div className="col-2">
+          <div className="home-content">
+            <div className="overview-boxes">
+              <div className="box">
+                <div className="right-side">
+                  <div className="box-topic">
+                    {t("total")} {t("users")}
+                  </div>
+                  <div className="number">
+                    {data?.user_statistics.total_users}
+                  </div>
+                </div>
+                <FaUser className="bx bx-cart-alt cart p-2" />
+              </div>
+              <div className="box">
+                <div className="right-side">
+                  <div className="box-topic"> {t("assessments")}</div>
+                  <div className="number">
+                    {" "}
+                    {data?.validation_statistics.total_validations}
+                  </div>
+                </div>
+                <FaCheckCircle className="bx bx-cart-alt cart two p-2" />
+              </div>
+              <div className="box">
+                <div className="right-side">
+                  <div className="box-topic">All {t("subjects")}</div>
+                  <div className="number">
+                    {data?.subject_statistics.total_subjects}
+                  </div>
+                </div>
+                <FaCube className="bx bx-cart-alt cart three p-2" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="row bg-light p-4">
+        <hr />
+        <h2>{t("page_home.benefits")}</h2>
+        <div className="row">
+          <div className="col">
+            <Card className="p-2 border-grey shadow-sm mb-2">
+              <Card.Img
+                className="mx-auto p-2"
+                src={manageImg}
+                alt={t("page_home.managers")}
+                style={{ maxWidth: "80px" }}
+              />
 
-      <div className="px-5 pb-5">
-        <Row>
-          <Col>
-            <Card>
-              <Card.Header>
-                <FaUser /> Users
-              </Card.Header>
               <Card.Body>
-                <ListGroup>
-                  <ListGroup.Item>
-                    <strong>Total:</strong>
-                    <span className="ms-2">
-                      {data?.user_statistics.total_users}
-                    </span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <strong>Validated:</strong>
-                    <span className="ms-2">
-                      {data?.user_statistics.validated_users}
-                    </span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <strong>Banned:</strong>
-                    <span className="ms-2">
-                      {data?.user_statistics.banned_users}
-                    </span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <strong>Identified:</strong>
-                    <span className="ms-2">
-                      {data?.user_statistics.identified_users}
-                    </span>
-                  </ListGroup.Item>
-                </ListGroup>
+                <Card.Title className="d-flex justify-content-between">
+                  {t("page_home.managers")}
+                </Card.Title>
+                <span className="lead cat-home-lead">
+                  <small>{t("page_home.managers_description")}</small>
+                </span>
               </Card.Body>
+              <Card.Footer className="bg-transparent border-0"></Card.Footer>
             </Card>
-          </Col>
-          <Col>
-            <Card>
-              <Card.Header>
-                <FaUser /> Validations
-              </Card.Header>
+          </div>
+          <div className="col">
+            <Card className="p-2 border-grey shadow-sm mb-2">
+              <Card.Img
+                className="mx-auto p-2"
+                src={ownersImg}
+                alt={t("page_home.owners")}
+                style={{ maxWidth: "80px" }}
+              />
               <Card.Body>
-                <ListGroup>
-                  <ListGroup.Item>
-                    <strong>Total:</strong>
-                    <span className="ms-2">
-                      {data?.validation_statistics.total_validations}
-                    </span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <strong>Accepted:</strong>
-                    <span className="ms-2">
-                      {data?.validation_statistics.accepted_validations}
-                    </span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <strong>Pending:</strong>
-                    <span className="ms-2">
-                      {data?.validation_statistics.pending_validations}
-                    </span>
-                  </ListGroup.Item>
-                </ListGroup>
+                <Card.Title className="d-flex justify-content-between">
+                  {t("page_home.owners")}
+                </Card.Title>
+                <span className="lead cat-home-lead">
+                  <small>{t("page_home.owners_description")}</small>
+                </span>
               </Card.Body>
+              <Card.Footer className="bg-transparent border-0"></Card.Footer>
             </Card>
-          </Col>
-          <Col>
-            <Card>
-              <Card.Header>
-                <FaCheckCircle /> Assessments
-              </Card.Header>
+          </div>
+          <div className="col cat-heading-right">
+            <Card className="p-2 border-grey shadow-sm mb-2">
+              <Card.Img
+                className="mx-auto p-2"
+                src={serviceImg}
+                alt={t("page_home.providers")}
+                style={{ maxWidth: "80px" }}
+              />
               <Card.Body>
-                <ListGroup>
-                  <ListGroup.Item>
-                    <strong>Total:</strong>
-                    <span className="ms-2">
-                      {data?.assessment_statistics.total_assessments}
-                    </span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <strong>Private:</strong>
-                    <span className="ms-2">
-                      {data?.assessment_statistics.private_assessments}
-                    </span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <strong>Public:</strong>
-                    <span className="ms-2">
-                      {data?.assessment_statistics.public_assessments}
-                    </span>
-                  </ListGroup.Item>
-                  {data?.assessment_statistics.assessment_per_role !==
-                    undefined &&
-                    data?.assessment_statistics.assessment_per_role.length >
-                      0 && (
-                      <ListGroup.Item>
-                        Number of assessments per role:
-                        <ul>
-                          {data.assessment_statistics.assessment_per_role.map(
-                            (item) => {
-                              return (
-                                <li key={item.actor}>
-                                  <strong>{item.actor}</strong>
-                                  <span className="m-2">
-                                    {item.total_assessments}
-                                  </span>
-                                </li>
-                              );
-                            },
-                          )}
-                        </ul>
-                      </ListGroup.Item>
-                    )}
-                </ListGroup>
+                <Card.Title className="d-flex justify-content-between">
+                  {t("page_home.providers")}
+                </Card.Title>
+                <span className="lead cat-home-lead">
+                  <small>{t("page_home.providers_description")}</small>
+                </span>
               </Card.Body>
+              <Card.Footer className="bg-transparent border-0"></Card.Footer>
             </Card>
-          </Col>
-          <Col>
-            <Card>
-              <Card.Header>
-                <FaCube /> Subjects
-              </Card.Header>
-              <Card.Body>
-                <ListGroup>
-                  <ListGroup.Item>
-                    <strong>Total:</strong>
-                    <span className="ms-2">
-                      {data?.subject_statistics.total_subjects}
-                    </span>
-                  </ListGroup.Item>
-                </ListGroup>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+          </div>
+        </div>
+      </div>
+      <div className="row p-4">
+        <hr />
       </div>
     </div>
   );

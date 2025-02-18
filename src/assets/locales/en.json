@@ -59,6 +59,7 @@
   "toast_assessment_publish_progress": "Publishing Assessment...",
   "toast_assessment_unpublish_success": "Assessment Unpublished!",
   "toast_assessment_unpublish_progress": "Unpublishing Assessment...",
+  "total": "Total",
   "buttons": {
     "login": "Login",
     "logout": "Logout",
@@ -163,9 +164,7 @@
     "version": "Version",
     "commit": "Commit"
   },
-  "page_home": {
-    "title": "Welcome to Compliance Assesment Tool"
-  },
+
   "page_profile": {
     "title": "User Dashboard",
     "validation_requests_subtitle": "View your current validation requests or create a new one.",
@@ -207,6 +206,17 @@
     "toast_delete_fail": "Error during subject deletion!",
     "toast_delete_success": "Subject succesfully deleted.",
     "toast_delete_progress": "Deleting subject..."
+  },
+  "page_home": {
+    "title": "Welcome to Compliance Assesment Tool",
+    "description": "A Compliance Assessment Toolkit for EOSC: a set of concepts, implemented as a graph database and accessible via APIs, and supported by user interfaces via the APIs. The Compliance Assessment Toolkit  supports the EOSC PID policy with services to encode, record, and query compliance with the policy.o do so, a wide range of compliance requirements ( TRUST, FAIR, PID Policy, Reproducibility, GDPR, Licences) will be evaluated as use cases for definition of a conceptual model. At the same time, vocabularies, concepts, and designs are intended to be re-usable for other compliance needs: TRUST, FAIR, POSI, CARE, Data Commons, etc. This will be followed by a supporting service specification (the framework), accompanied by development and testing of operational services for PID Policy Compliance monitoring. Though primarily aimed at machine-actionable operations, the API-based services will be complemented by user interfaces to broaden its use. ",
+    "benefits": "Benefits",
+    "managers": "For Managers",
+    "managers_description": "Optional disclosure of policy compliance for purposes of trust and community acceptance.  initially self-assessments and there is no obligation to publish ",
+    "providers": "For Providers",
+    "providers_description": "It is important to back up public claims of EOSC Policy Compliance and of performance/ features with publicly available information. (self-assessments). ",
+    "owners": "For Owners, Users",
+    "owners_description": "Matching PID services with use cases and expected benefits.  Find PID services and assess their characteristics, features, and how it matches use cases."
   },
   "page_validations": {
     "subtitle": "All validation Requests in one place.",
