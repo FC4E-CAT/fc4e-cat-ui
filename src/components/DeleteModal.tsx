@@ -47,11 +47,11 @@ export function DeleteModal(props: DeleteModalProps) {
         </ListGroup>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
-        <Button className="btn-danger me-4" onClick={props.handleDelete}>
-          {t("buttons.confirm_delete")}
-        </Button>
         <Button className="btn-secondary" onClick={props.onHide}>
           {t("buttons.cancel")}
+        </Button>
+        <Button className="btn-danger" onClick={props.handleDelete}>
+          {t("buttons.confirm_delete")}
         </Button>
       </Modal.Footer>
     </Modal>

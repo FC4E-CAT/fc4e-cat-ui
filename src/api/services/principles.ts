@@ -146,6 +146,7 @@ export const useUpdatePrinciple = (
       },
       onSuccess: () => {
         queryClient.invalidateQueries(["principle", id]);
+        queryClient.invalidateQueries(["principles"]);
       },
     },
   );

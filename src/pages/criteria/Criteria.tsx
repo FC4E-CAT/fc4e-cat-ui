@@ -11,7 +11,6 @@ import {
 import {
   FaArrowLeft,
   FaArrowRight,
-  FaBars,
   FaExclamationTriangle,
   FaPlus,
   FaTrash,
@@ -19,10 +18,11 @@ import {
   FaArrowUp,
   FaArrowDown,
   FaArrowsAltV,
+  FaEdit,
+  FaBars,
 } from "react-icons/fa";
 
 import { AlertInfo, Criterion } from "@/types";
-import { Link } from "react-router-dom";
 import { CriterionModal } from "./components/CriterionModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
@@ -30,6 +30,7 @@ import { useDeleteCriterion, useGetCriteria } from "@/api/services/criteria";
 import { MotivationRefList } from "@/components/MotivationRefList";
 import { useTranslation } from "react-i18next";
 import { idToColor } from "@/utils/admin";
+import { CriterionDetailsModal } from "./components/CriterionDetailsModal";
 
 type CriteriaState = {
   sortOrder: string;
@@ -47,15 +48,15 @@ interface DeleteModalConfig {
   itemName: string;
 }
 
+interface CriModalConfig {
+  id: string;
+  show: boolean;
+}
+
 // the main component that lists the criteria in a table
 export default function Criteria() {
   const { t } = useTranslation();
-  const tooltipView = (
-    <Tooltip id="tip-restore">{t("page_criteria.tip_view")}</Tooltip>
-  );
-  const tooltipDelete = (
-    <Tooltip id="tip-restore">{t("page_criteria.tip_delete")}</Tooltip>
-  );
+
   const { keycloak, registered } = useContext(AuthContext)!;
 
   const alert = useRef<AlertInfo>({
@@ -112,7 +113,15 @@ export default function Criteria() {
     search: "",
   });
 
-  const [showCreate, setShowCreate] = useState(false);
+  const [criModalCfg, setCriModalCfg] = useState<CriModalConfig>({
+    id: "",
+    show: false,
+  });
+
+  const [criDetailsModalCfg, setCriDetailsModalCfg] = useState<CriModalConfig>({
+    id: "",
+    show: false,
+  });
 
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
@@ -172,10 +181,17 @@ export default function Criteria() {
         handleDelete={handleDeleteConfirmed}
       />
       <CriterionModal
-        criterion={null}
-        show={showCreate}
+        id={criModalCfg.id}
+        show={criModalCfg.show}
         onHide={() => {
-          setShowCreate(false);
+          setCriModalCfg({ id: "", show: false });
+        }}
+      />
+      <CriterionDetailsModal
+        id={criDetailsModalCfg.id}
+        show={criDetailsModalCfg.show}
+        onHide={() => {
+          setCriDetailsModalCfg({ id: "", show: false });
         }}
       />
       <div className="cat-view-heading-block row border-bottom">
@@ -189,7 +205,7 @@ export default function Criteria() {
           <Button
             variant="warning"
             onClick={() => {
-              setShowCreate(true);
+              setCriModalCfg({ id: "", show: true });
             }}
           >
             <FaPlus /> {t("buttons.create_new")}
@@ -295,15 +311,54 @@ export default function Criteria() {
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">
-                        <OverlayTrigger placement="top" overlay={tooltipView}>
-                          <Link
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-view">
+                              {t("page_criteria.tip_view")}
+                            </Tooltip>
+                          }
+                        >
+                          <Button
                             className="btn btn-light btn-sm m-1"
-                            to={`/admin/criteria/${item.id}`}
+                            onClick={() => {
+                              setCriDetailsModalCfg({
+                                id: item.id,
+                                show: true,
+                              });
+                            }}
                           >
                             <FaBars />
-                          </Link>
+                          </Button>
                         </OverlayTrigger>
-                        <OverlayTrigger placement="top" overlay={tooltipDelete}>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-edit">
+                              {t("page_criteria.tip_edit")}
+                            </Tooltip>
+                          }
+                        >
+                          <Button
+                            className="btn btn-light btn-sm m-1"
+                            onClick={() => {
+                              setCriModalCfg({
+                                id: item.id,
+                                show: true,
+                              });
+                            }}
+                          >
+                            <FaEdit />
+                          </Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-delete">
+                              {t("page_criteria.tip_delete")}
+                            </Tooltip>
+                          }
+                        >
                           <Button
                             className="btn btn-light btn-sm m-1"
                             onClick={() => {

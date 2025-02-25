@@ -1,10 +1,11 @@
 import { useCreateMotivationPrinciple } from "@/api";
 import {
   useCreatePrinciple,
+  useGetPrinciple,
   useUpdatePrinciple,
 } from "@/api/services/principles";
 import { AuthContext } from "@/auth";
-import { AlertInfo, Principle, PrincipleInput } from "@/types";
+import { AlertInfo, PrincipleInput } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -18,10 +19,10 @@ import {
 } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { FaFile, FaInfoCircle } from "react-icons/fa";
+import { FaEdit, FaFile, FaInfoCircle } from "react-icons/fa";
 
 interface PrincipleModalProps {
-  principle: Principle | null;
+  id: string;
   mtvId?: string;
   show: boolean;
   onHide: () => void;
@@ -35,12 +36,18 @@ export function PrincipleModal(props: PrincipleModalProps) {
     message: "",
   });
 
-  const { keycloak } = useContext(AuthContext)!;
+  const { keycloak, registered } = useContext(AuthContext)!;
 
   const [principleInput, setPrincipleInput] = useState<PrincipleInput>({
     pri: "",
     label: "",
     description: "",
+  });
+
+  const { data: principleData } = useGetPrinciple({
+    id: props.id!,
+    token: keycloak?.token || "",
+    isRegistered: registered,
   });
 
   const [showErrors, setShowErrors] = useState(false);
@@ -67,29 +74,25 @@ export function PrincipleModal(props: PrincipleModalProps) {
 
   const mutateUpdate = useUpdatePrinciple(
     keycloak?.token || "",
-    props.principle?.id || "",
+    props.id || "",
     principleInput,
   );
 
   useEffect(() => {
     if (props.show) {
-      if (props.principle) {
+      if (principleData !== undefined) {
         setPrincipleInput({
-          pri: props.principle.pri,
-          label: props.principle.label,
-          description: props.principle.description,
+          pri: principleData.pri,
+          label: principleData.label,
+          description: principleData.description,
         });
       } else {
-        setPrincipleInput({
-          pri: "",
-          label: "",
-          description: "",
-        });
+        setPrincipleInput({ pri: "", label: "", description: "" });
       }
 
       setShowErrors(false);
     }
-  }, [props.show, props.principle]);
+  }, [props.show, principleData]);
 
   // handle backend call to add a new principle
   function handleCreate() {
@@ -168,16 +171,25 @@ export function PrincipleModal(props: PrincipleModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaFile className="me-2" />{" "}
-          {props.principle === null ? t("create_new") : t("edit")}{" "}
-          {` ${t("principle")}`}
-          {props.mtvId && ` (${t("under_motivation")})`}
+          <Modal.Title id="contained-modal-title-vcenter">
+            {props.id ? (
+              <>
+                <FaEdit className="me-2" />
+                {t("page_principles.edit")}
+              </>
+            ) : (
+              <>
+                <FaFile className="me-2" />
+                {t("page_principles.create_new")}
+              </>
+            )}
+          </Modal.Title>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div>
           <Row>
-            <Col xs={3}>
+            <Col xs={4}>
               <InputGroup className="mt-2">
                 <OverlayTrigger
                   key="top"
@@ -277,13 +289,13 @@ export function PrincipleModal(props: PrincipleModalProps) {
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={props.onHide}>
-          {t("buttons.close")}
+          {t("buttons.cancel")}
         </Button>
         <Button
           className="btn-success"
           onClick={() => {
             if (handleValidate() === true) {
-              if (props.principle === null) {
+              if (props.id === "") {
                 if (props.mtvId && props.mtvId !== "") {
                   handleCreateMtv();
                 } else {
@@ -295,7 +307,7 @@ export function PrincipleModal(props: PrincipleModalProps) {
             }
           }}
         >
-          {props.principle === null ? t("buttons.create") : t("buttons.update")}
+          {props.id === "" ? t("buttons.create") : t("buttons.update")}
         </Button>
       </Modal.Footer>
     </Modal>

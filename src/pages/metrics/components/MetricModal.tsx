@@ -24,7 +24,7 @@ export function MetricModal(props: MetricModalProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header closeButton>
+      <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
           <FaBorderNone className="me-2" /> {t("page_metrics.tip_view")}
         </Modal.Title>
