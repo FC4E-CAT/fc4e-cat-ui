@@ -29,13 +29,11 @@ import ViewUsers from "./pages/admin/ViewUsers";
 import Motivations from "./pages/motivations/Motivations";
 import MotivationDetails from "./pages/motivations/MotivationDetails";
 import Principles from "./pages/principles/Principles";
-import PrincipleDetails from "./pages/principles/PrincipleDetails";
 import MotivationActorCriteria from "./pages/motivations/MotivationActorCriteria";
 import AssessmentView from "./pages/assessments/AssessmentView";
 import { MotivationAssessmentEditor } from "./pages/assessments/MotivationAssessmentEditor";
 import MotivationCriteriaPrinciples from "./pages/motivations/MotivationCriteriaPrinciples";
 import Criteria from "./pages/criteria/Criteria";
-import CriterionDetails from "./pages/criteria/CriterionDetails";
 import MotivationMetricTests from "./pages/motivations/MotivationMetricTests";
 import Tests from "./pages/tests/Tests";
 import Metrics from "./pages/metrics/Metrics";
@@ -229,17 +227,8 @@ function App() {
                 <Route path="/admin/principles" element={<ProtectedRoute />}>
                   <Route index element={<Principles />} />
                 </Route>
-                <Route
-                  path="/admin/principles/:id"
-                  element={<ProtectedRoute />}
-                >
-                  <Route index element={<PrincipleDetails />} />
-                </Route>
                 <Route path="/admin/criteria" element={<ProtectedRoute />}>
                   <Route index element={<Criteria />} />
-                </Route>
-                <Route path="/admin/criteria/:id" element={<ProtectedRoute />}>
-                  <Route index element={<CriterionDetails />} />
                 </Route>
                 <Route path="/admin/tests" element={<ProtectedRoute />}>
                   <Route index element={<Tests />} />

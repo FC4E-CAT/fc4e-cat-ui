@@ -50,7 +50,7 @@ export const MotivationPrinciples = ({
   return (
     <div className="px-5 mt-4">
       <PrincipleModal
-        principle={null}
+        id=""
         show={showCreatePri}
         mtvId={mtvId}
         onHide={() => {

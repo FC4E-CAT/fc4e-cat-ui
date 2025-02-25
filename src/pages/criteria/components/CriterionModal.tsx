@@ -2,17 +2,12 @@ import {
   useCreateCriterion,
   useGetAllCriterionTypes,
   useGetAllImperatives,
+  useGetCriterion,
   useUpdateCriterion,
 } from "@/api";
 import { AuthContext } from "@/auth";
 import { defaultCriterionImperative, defaultCriterionType } from "@/config";
-import {
-  AlertInfo,
-  Criterion,
-  CriterionInput,
-  CriterionType,
-  Imperative,
-} from "@/types";
+import { AlertInfo, CriterionInput, CriterionType, Imperative } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -26,10 +21,10 @@ import {
 } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { FaFile, FaInfoCircle } from "react-icons/fa";
+import { FaEdit, FaFile, FaInfoCircle } from "react-icons/fa";
 
 interface CriterionModalProps {
-  criterion: Criterion | null;
+  id: string;
   show: boolean;
   onHide: () => void;
 }
@@ -52,6 +47,12 @@ export function CriterionModal(props: CriterionModalProps) {
     imperative: "",
     description: "",
     type_criterion_id: "",
+  });
+
+  const { data: criData } = useGetCriterion({
+    id: props.id!,
+    token: keycloak?.token || "",
+    isRegistered: registered,
   });
 
   const {
@@ -127,19 +128,19 @@ export function CriterionModal(props: CriterionModalProps) {
 
   const mutateUpdate = useUpdateCriterion(
     keycloak?.token || "",
-    props.criterion?.id || "",
+    props.id || "",
     criterionInput,
   );
 
   useEffect(() => {
     if (props.show) {
-      if (props.criterion) {
+      if (criData) {
         setCriterionInput({
-          cri: props.criterion.cri,
-          label: props.criterion.label,
-          description: props.criterion.description,
-          imperative: props.criterion.imperative.id,
-          type_criterion_id: props.criterion.type_criterion_id,
+          cri: criData.cri,
+          label: criData.label,
+          description: criData.description,
+          imperative: criData.imperative,
+          type_criterion_id: criData.type_criterion_id,
         });
       } else {
         // get default imperative
@@ -163,7 +164,7 @@ export function CriterionModal(props: CriterionModalProps) {
 
       setShowErrors(false);
     }
-  }, [props.show, props.criterion, criterionTypes, imperatives]);
+  }, [props.show, criData, criterionTypes, imperatives]);
 
   // handle backend call to add a new criterion
   function handleCreate() {
@@ -220,15 +221,23 @@ export function CriterionModal(props: CriterionModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          <FaFile className="me-2" />{" "}
-          {props.criterion === null ? t("create_new") : t("edit")}{" "}
-          {` ${t("criterion")} `}
+          {props.id ? (
+            <>
+              <FaEdit className="me-2" />
+              {t("page_criteria.edit")}
+            </>
+          ) : (
+            <>
+              <FaFile className="me-2" />
+              {t("page_criteria.create_new")}
+            </>
+          )}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div>
           <Row>
-            <Col xs={3}>
+            <Col xs={4}>
               <InputGroup className="mt-2">
                 <OverlayTrigger
                   key="top"
@@ -390,13 +399,13 @@ export function CriterionModal(props: CriterionModalProps) {
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={props.onHide}>
-          Close
+          {t("buttons.cancel")}
         </Button>
         <Button
           className="btn-success"
           onClick={() => {
             if (handleValidate() === true) {
-              if (props.criterion === null) {
+              if (props.id === "") {
                 handleCreate();
               } else {
                 handleUpdate();
@@ -404,7 +413,7 @@ export function CriterionModal(props: CriterionModalProps) {
             }
           }}
         >
-          {props.criterion === null ? t("buttons.create") : t("buttons.update")}
+          {props.id === "" ? t("buttons.create") : t("buttons.update")}
         </Button>
       </Modal.Footer>
     </Modal>

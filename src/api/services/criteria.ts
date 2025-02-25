@@ -9,11 +9,11 @@ import {
 import { handleBackendError } from "@/utils";
 import {
   ApiOptionsSearch,
-  Criterion,
   CriterionInput,
   CriterionResponse,
   CriterionTypeResponse,
   ImperativeResponse,
+  RegistryCriterion,
 } from "@/types";
 
 export const useGetCriteria = ({
@@ -55,7 +55,7 @@ export const useGetCriterion = ({
     queryFn: async () => {
       let response = null;
 
-      response = await APIClient(token).get<Criterion>(
+      response = await APIClient(token).get<RegistryCriterion>(
         `/v1/registry/criteria/${id}`,
       );
       return response.data;

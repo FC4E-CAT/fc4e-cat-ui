@@ -18,6 +18,21 @@ export interface Criterion {
   used_by_motivations?: MotivationReference[];
 }
 
+export interface RegistryCriterion {
+  id: string;
+  cri: string;
+  label: string;
+  description: string;
+  imperative: string;
+  type_criterion_id: string;
+  url: string;
+  criterion_parent_id: string;
+  populated_by: string;
+  last_touch: string;
+  principles: Principle[];
+  used_by_motivations?: MotivationReference[];
+}
+
 export interface CriterionImperative {
   id: string;
   imp: string;
