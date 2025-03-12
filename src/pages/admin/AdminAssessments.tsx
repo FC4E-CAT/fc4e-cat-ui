@@ -32,6 +32,7 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { PublishModal } from "@/components";
+import { trimField } from "@/utils/admin";
 
 type Pagination = {
   page: number;
@@ -304,7 +305,16 @@ function AdminAssessments() {
                       </td>
                       <td className="align-middle">
                         <div>
-                          <small>{item.user_id}</small>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id={"tip-user-" + item.user_id}>
+                                {item.user_id}
+                              </Tooltip>
+                            }
+                          >
+                            <small>{trimField(item.user_id, 15)}</small>
+                          </OverlayTrigger>
                         </div>
                       </td>
                       <td className="align-middle text-center">
