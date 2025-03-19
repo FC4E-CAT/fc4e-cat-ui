@@ -30,7 +30,7 @@ function Profile() {
     setUserProfile(profileData);
   }, [profileData]);
 
-  const [copySuccess, setCopySuccess] = useState("");
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const renderTooltip = (props: TooltipProps) => (
     <Tooltip id="button-tooltip" {...props}>
@@ -99,7 +99,7 @@ function Profile() {
                   >
                     <CopyToClipboard
                       text={userProfile.id}
-                      onCopy={() => setCopySuccess("Copied!")}
+                      onCopy={() => setCopySuccess(true)}
                     >
                       <FaCopy
                         style={{
@@ -107,7 +107,7 @@ function Profile() {
                           cursor: "pointer",
                           marginLeft: "10px",
                         }}
-                        onMouseLeave={() => setCopySuccess("")}
+                        onMouseLeave={() => setCopySuccess(false)}
                       />
                     </CopyToClipboard>
                   </OverlayTrigger>
