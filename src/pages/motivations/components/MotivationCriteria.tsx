@@ -1,7 +1,7 @@
 import { useGetMotivationCriteria } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
 import { Criterion } from "@/types";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Col,
@@ -17,6 +17,7 @@ import { FaBars, FaBorderNone, FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { MotivationMetricAssignModal } from "./MotivationMetricAssignModal";
 import { useTranslation } from "react-i18next";
+import { SearchBox } from "@/components/SearchBox";
 
 interface MetricModalConfig {
   show: boolean;
@@ -45,6 +46,26 @@ export const MotivationCriteria = ({
       itemId: "",
     },
   );
+
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+  const handleSearchClear = () => {
+    setSearchInput("");
+  };
+
+  const filteredCriteria = useMemo(() => {
+    return mtvCriteria.filter((item) => {
+      const query = searchInput.toLowerCase();
+      return (
+        item.cri.toLowerCase().includes(query) ||
+        item.label.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+      );
+    });
+  }, [searchInput, mtvCriteria]);
 
   const {
     data: criData,
@@ -119,8 +140,15 @@ export const MotivationCriteria = ({
         </div>
       </div>
       <div>
+        <SearchBox
+          searchInput={searchInput}
+          handleChange={handleSearchChange}
+          handleClear={handleSearchClear}
+        />
+      </div>
+      <div>
         <ListGroup>
-          {mtvCriteria.map((item) => (
+          {filteredCriteria.map((item) => (
             <ListGroupItem key={item.id}>
               <Row>
                 <Col>

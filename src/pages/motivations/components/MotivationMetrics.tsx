@@ -1,6 +1,6 @@
 import { AuthContext } from "@/auth";
 import { AlertInfo, MotivationMetric } from "@/types";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { MotivationMetricDetailsModal } from "./MotivationMetricDetailsModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
+import { SearchBox } from "@/components/SearchBox";
 
 interface MetricModalConfig {
   show: boolean;
@@ -125,6 +126,26 @@ export const MotivationMetrics = ({
     setMtvMetrics(tmpMtr);
   }, [mtrData, mtrHasNextPage, mtrFetchNextPage]);
 
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+  const handleSearchClear = () => {
+    setSearchInput("");
+  };
+
+  const filteredMetrics = useMemo(() => {
+    return mtvMetrics.filter((item) => {
+      const query = searchInput.toLowerCase();
+      return (
+        item.metric_id.toLowerCase().includes(query) ||
+        item.metric_label.toLowerCase().includes(query) ||
+        item.metric_description.toLowerCase().includes(query)
+      );
+    });
+  }, [searchInput, mtvMetrics]);
+
   return (
     <div className="px-5 mt-4">
       <DeleteModal
@@ -188,8 +209,15 @@ export const MotivationMetrics = ({
         </div>
       </div>
       <div>
+        <SearchBox
+          searchInput={searchInput}
+          handleChange={handleSearchChange}
+          handleClear={handleSearchClear}
+        />
+      </div>
+      <div>
         <ListGroup>
-          {mtvMetrics.map((item) => (
+          {filteredMetrics.map((item) => (
             <ListGroupItem key={item.metric_id}>
               <Row>
                 <Col>
