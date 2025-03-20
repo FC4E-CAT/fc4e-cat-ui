@@ -1,12 +1,13 @@
 import { useGetMotivationPrinciples } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
 import { Principle } from "@/types";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Button, Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";
 import { FaPlus } from "react-icons/fa";
 import { PrincipleModal } from "@/pages/principles/components/PrincipleModal";
 import { useTranslation } from "react-i18next";
+import { SearchBox } from "@/components/SearchBox";
 
 export const MotivationPrinciples = ({
   mtvId,
@@ -47,6 +48,26 @@ export const MotivationPrinciples = ({
     setMtvPrinciples(tmpPri);
   }, [priData, priHasNextPage, priFetchNextPage]);
 
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+  const handleSearchClear = () => {
+    setSearchInput("");
+  };
+
+  const filteredPrinciples = useMemo(() => {
+    return mtvPrinciples.filter((item) => {
+      const query = searchInput.toLowerCase();
+      return (
+        item.pri.toLowerCase().includes(query) ||
+        item.label.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+      );
+    });
+  }, [searchInput, mtvPrinciples]);
+
   return (
     <div className="px-5 mt-4">
       <PrincipleModal
@@ -80,8 +101,15 @@ export const MotivationPrinciples = ({
         </div>
       </div>
       <div>
+        <SearchBox
+          searchInput={searchInput}
+          handleChange={handleSearchChange}
+          handleClear={handleSearchClear}
+        />
+      </div>
+      <div>
         <ListGroup>
-          {mtvPrinciples.map((item) => (
+          {filteredPrinciples.map((item) => (
             <ListGroupItem key={item.id}>
               <Row>
                 <Col>
