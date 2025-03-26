@@ -3,7 +3,7 @@ import { Row, Col, Accordion } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { FaInfoCircle } from "react-icons/fa";
 
-function About() {
+function AboutCat() {
   const { t } = useTranslation();
   return (
     <div className="container rounded bg-white mt-1 mb-5">
@@ -81,4 +81,4 @@ function About() {
   );
 }
 
-export default About;
+export default AboutCat;

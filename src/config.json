@@ -18,5 +18,9 @@
     "motivation_metric_type": "Binary",
     "motivation_metric_algorithm": "Simple Sum",
     "motivation_metric_benchmark_type": "Binary-Binary "
+  },
+  "links": {
+    "github": "https://github.com/fc4e-cat",
+    "docs": "https://fc4e-cat.github.io/fc4e-cat-doc/"
   }
 }
