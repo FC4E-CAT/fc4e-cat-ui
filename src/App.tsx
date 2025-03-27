@@ -40,9 +40,10 @@ import AdminAssessments from "./pages/admin/AdminAssessments";
 import AboutCat from "./pages/about/AboutCat";
 import Disclaimer from "./pages/about/Disclaimer";
 import Interoperability from "./pages/about/Interoperability";
-import Terms from "./pages/about/Terms";
 import AcceptableUse from "./pages/about/AcceptableUse";
 import Privacy from "./pages/about/Privacy";
+import Cookies from "./pages/about/Cookies";
+import Terms from "./pages/about/Terms";
 
 const queryClient = new QueryClient();
 
@@ -92,10 +93,11 @@ function App() {
                   path="/about/acceptable-use"
                   element={<AcceptableUse />}
                 />
-                <Route path="/about/terms" element={<Terms />} />
                 <Route path="/about/privacy" element={<Privacy />} />
                 <Route path="/about/disclaimer" element={<Disclaimer />} />
                 <Route path="/pid-selection" element={<PidSelection />} />
+                <Route path="/about/cookies" element={<Cookies />} />
+                <Route path="/about/terms" element={<Terms />} />
                 <Route
                   path="/assessments/create/:valID"
                   element={<ProtectedRoute />}
