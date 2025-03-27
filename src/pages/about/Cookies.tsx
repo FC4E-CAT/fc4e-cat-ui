@@ -14,32 +14,33 @@ function Cookies() {
         <Row>
           <h4>1. Purpose of this cookie policy</h4>
           <p>
-            This Website uses technologies such as \"cookies\" and \"pixel tags\".
-            By browsing the webpage, the User agrees to the creation and use of
-            cookies. If User does not wish to consent to the use of cookies,
-            User may either disable them or discontinue browsing this webpage.
+            This Website uses technologies such as <strong>cookies</strong> and{" "}
+            <strong>pixel</strong> tags. By browsing the webpage, the User
+            agrees to the creation and use of cookies. If User does not wish to
+            consent to the use of cookies, User may either disable them or
+            discontinue browsing this webpage.
           </p>
           <p>
             For the purpose of this Policy, the following terms shall have the
             following meaning:
             <ul>
               <li>
-                \"Cookie\" or \"Cookies\": Cookies are small text or message files
-                sent from the server of an organization and stored on your
-                computer. Cookies do not have access to data stored on your
-                computer's hard disk or to Cookies placed by other websites, and
-                they may not harm or damage your system.
+                Cookie or Cookies: Cookies are small text or message files sent
+                from the server of an organization and stored on your computer.
+                Cookies do not have access to data stored on your computers hard
+                disk or to Cookies placed by other websites, and they may not
+                harm or damage your system.
               </li>
               <li>
-                \"Persistence cookies\" remain during multiple website visits and
+                Persistence cookies remain during multiple website visits and
                 get stored on your hard disk.
               </li>
               <li>
-                \"Session Cookies\" are temporary cookies that disappear
+                Session Cookies are temporary cookies that disappear
                 automatically after you leave a website;
               </li>
               <li>
-                \"Third Party Cookies\" are cookies used by the websites of our
+                Third Party Cookies are cookies used by the websites of our
                 partners, as integrated in our own Website or used by websites
                 we link to.
               </li>
@@ -81,11 +82,11 @@ function Cookies() {
           <h4>3. How long are cookies stored on your device?</h4>
           <p>
             The duration for which a cookie will be stored on your browsing
-            device depends on whether it is a "persistence" or a "session"
-            cookie. Session cookies will be stored on a device until you turn
-            off your web browser. "Persistence cookies" shall remain on your
-            device after you have finished browsing until they expire or until
-            they are deleted by you.
+            device depends on whether it is a &quot;persistence&quot; or a
+            &quot;session&quot; cookie. Session cookies will be stored on a
+            device until you turn off your web browser. &quot;Persistence
+            cookies&quot; shall remain on your device after you have finished
+            browsing until they expire or until they are deleted by you.
           </p>
         </Row>
         <Row>
@@ -95,9 +96,9 @@ function Cookies() {
           <p>
             You can usually use your web browser to enable, disable, or delete
             cookies. To do so, follow the instructions provided for by your web
-            browser (usually located in the "Help", "Tools" or "Edit" settings).
-            You can also set your web browser to reject all cookies or to
-            indicate when a cookie is being sent.
+            browser (usually located in the &quot;Help&quot;, &quot;Tools&quot;
+            or &quot;Edit&quot; settings). You can also set your web browser to
+            reject all cookies or to indicate when a cookie is being sent.
           </p>
         </Row>
       </div>

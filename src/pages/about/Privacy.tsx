@@ -15,12 +15,12 @@ function Privacy() {
         <Row>
           <h4>Controller details</h4>
           <p>
-            Α public limited company (societe anonyme) under the corporate name
-            "National Infrastructures for Technology and Research S.A." and the
-            distinctive title "GRNET S.A."
+            A public limited company (societe anonyme) under the corporate name
+            &quot;National Infrastructures for Technology and Research
+            S.A.&quot; and the distinctive title &quot;GRNET S.A.&quot;
           </p>
           <h6>
-            <strong>Controller's Contact Details</strong>
+            <strong>Controller&apos;s Contact Details</strong>
           </h6>
           <p>dpo at grnet.gr</p>
           <h6>
@@ -28,7 +28,7 @@ function Privacy() {
           </h6>
           <p>AT Support Team</p>
           <h6>
-            <strong>Processor's Contact Details</strong>
+            <strong>Processor&apos;s Contact Details</strong>
           </h6>
           <p>cat at grnet.gr</p>
 
@@ -39,7 +39,7 @@ function Privacy() {
             Parliament and of the Council of 27 April 2016 on the protection of
             natural persons with regard to the processing of personal data and
             on the free movement of such data (General Data Protection
-            Regulation – GDPR).
+            Regulation - GDPR).
           </p>
           <p>
             This Privacy Statement describes the policies and procedures in
@@ -70,37 +70,39 @@ function Privacy() {
             </a>
           </p>
           <p>
-            For the purposes of this Privacy Statement, the terms "data
-            controller", "data processor", "third party", "supervisory
-            authority", "personal data", "processing", "data subject" shall have
-            the meaning ascribed to them by the applicable law on the protection
-            of personal data. Moreover, for the purposes of the present, the
-            following terms shall also apply:
+            For the purposes of this Privacy Statement, the terms &quot;data
+            controller&quot;, &quot;data processor&quot;,&quot;third
+            party&quot;, &quot;supervisory authority&quot;, &quot;personal
+            data&quot;, &quot;processing&quot;, &quot;data subject&quot; shall
+            have the meaning ascribed to them by the applicable law on the
+            protection of personal data. Moreover, for the purposes of the
+            present, the following terms shall also apply:
             <ul>
               <li>
-                "Website" - the website accessible through the domain names{" "}
+                &quot;Website&quot; - the website accessible through the domain
+                names{" "}
                 <a href="https://cat.argo.grnet.gr/">
                   https://cat.argo.grnet.gr/
                 </a>{" "}
                 , including all of the web pages thereof.
               </li>
               <li>
-                "User" - the internet user of the "Website", whom the data refer
-                to and whose identity is known or who may be, directly or
-                indirectly, identified.
+                &quot;User&quot; - the internet user of the &quot;Website&quot;,
+                whom the data refer to and whose identity is known or who may
+                be, directly or indirectly, identified.
               </li>
             </ul>
           </p>
         </Row>
         <Row>
-          <h3>A. Purpose/s for processing the data collected:​</h3>
+          <h3>A. Purpose/s for processing the data collected:</h3>
           <p>
             GRNET collects and processes the personal data of its Clients-Users,
             referred to here below, for the following purposes:
             <ul>
               <li>
                 Technical capability for a smooth and uninterrupted operation of
-                the "Website".
+                the &quot;Website&quot;.
               </li>
               <li>Troubleshooting connection problems</li>
               <li>Metric Collection</li>
@@ -112,23 +114,23 @@ function Privacy() {
           </p>
           <p>
             Creating statistics reports and graphics. Information contained in
-            statistics reports and graphics statistics do not contain any User's
-            personal data.
+            statistics reports and graphics statistics do not contain any
+            User&apos;s personal data.
           </p>
           <p>
-            GRNET collects and processes Users-clients' personal data solely and
-            exclusively for the purposes mentioned above and only to the extent
-            strictly necessary to effectively satisfy such purposes. These data
-            are always relevant, reasonable and not more than those required to
-            meet the purposes set out above. Moreover they are accurate and,
-            where appropriate, subject to updates. Furthermore, such data are
-            retained only during the period required for collection and
-            processing purposes as aforementioned, and are deleted at the end of
-            that period.
+            GRNET collects and processes Users-clients&apos; personal data
+            solely and exclusively for the purposes mentioned above and only to
+            the extent strictly necessary to effectively satisfy such purposes.
+            These data are always relevant, reasonable and not more than those
+            required to meet the purposes set out above. Moreover they are
+            accurate and, where appropriate, subject to updates. Furthermore,
+            such data are retained only during the period required for
+            collection and processing purposes as aforementioned, and are
+            deleted at the end of that period.
           </p>
         </Row>
         <Row>
-          <h3>B. Categories of personal data processed​</h3>
+          <h3>B. Categories of personal data processed</h3>
           <p>
             (a) When entering and using the Website, either through a user
             account or anonymously
@@ -159,11 +161,11 @@ function Privacy() {
         <Row>
           <h3>C. Lawfulness of the processing operation</h3>
           <p>
-            The personal data of "Users" are processed in the context of the
-            provision of CAT Services and for the purposes described in this
-            Privacy Statement, in line with the need (technical and
+            The personal data of &quot;Users&quot; are processed in the context
+            of the provision of CAT Services and for the purposes described in
+            this Privacy Statement, in line with the need (technical and
             organizational) to best perform CAT Services as well as to respond
-            to "Users" requests concerning the CAT Service.
+            to &quot;Users&quot; requests concerning the CAT Service.
           </p>
         </Row>
         <Row>
@@ -180,8 +182,8 @@ function Privacy() {
               <li>
                 The processing of the Users personal data by the aforementioned
                 natural persons and/or legal entities, in their capacity as
-                GRNET's partners, may be conducted only under the control and
-                upon authorization issued by GRNET. Finally, such partners
+                GRNET&apos;s partners, may be conducted only under the control
+                and upon authorization issued by GRNET. Finally, such partners
                 should comply with the same privacy requirements as GRNET in
                 accordance with the present Privacy Statement.
               </li>
@@ -193,29 +195,30 @@ function Privacy() {
           <h3>E. Recipients of collected personal data</h3>
           <p>
             GRNET SA does not, in any way, transfer/transmit or disclose the
-            personal data of the "Users" to any third party business
+            personal data of the &quot;Users&quot; to any third party business
             organizations, natural persons or legal entities, public authorities
             or agencies or any other organizations, other than those
             specifically referred to herein.
           </p>
           <p>
-            The personal data of the"Users" may be communicated or transferred
-            to government authorities and/or law enforcement officers, if that
-            is required for the above purposes, or within the scope of enforcing
-            a court decision or order, or for complying with a provision of law,
-            or if so required in order to serve the legitimate interests of
-            GRNET as Data Controller, in accordance with applicable law.
+            The personal data of the &quot;Users&quot; may be communicated or
+            transferred to government authorities and/or law enforcement
+            officers, if that is required for the above purposes, or within the
+            scope of enforcing a court decision or order, or for complying with
+            a provision of law, or if so required in order to serve the
+            legitimate interests of GRNET as Data Controller, in accordance with
+            applicable law.
           </p>
         </Row>
         <Row>
           <h3>F. Rights of Data Subjects</h3>
           <p>
             GRNET performs all necessary actions both during collection and at
-            each subsequent processing stage of the CAT Users personal data, so
-            that each User is fully enabled to exercise the rights guaranteed by
-            applicable data protection laws, namely the rights to access,
-            rectify, erase and restrict processing, as well as the right to data
-            portability, which are described below:
+            each subsequent processing stage of the CAT &quot;Users&quot;
+            personal data, so that each &quot;User&quot; is fully enabled to
+            exercise the rights guaranteed by applicable data protection laws,
+            namely the rights to access, rectify, erase and restrict processing,
+            as well as the right to data portability, which are described below:
           </p>
           <p>
             <ul>
@@ -227,7 +230,8 @@ function Privacy() {
                 the case, access to the personal data and to certain
                 information, as laid out by applicable law. It may also request
                 a copy of the personal data undergoing processing as described
-                herein by sending an email message to the address: cat@grnet.gr
+                herein by sending an email message to the address: cat AT
+                grnet.gr
               </li>
               <li>
                 Right to rectification: The data subject has the right to
@@ -264,12 +268,13 @@ function Privacy() {
           <p>
             These rights are subject to various restrictions pursuant to
             applicable law, including for example if the fulfillment of the data
-            subject's request may disclose personal data of another person or in
-            the event that GRNET is required by law to retain such data.
+            subject&apos;s request may disclose personal data of another person
+            or in the event that GRNET is required by law to retain such data.
           </p>
           <p>
-            To exercise any of the aforementioned rights, the "User" may contact
-            the CAT Support Team at the email address referred to hereinabove.
+            To exercise any of the aforementioned rights, the &quot; User &quot;
+            may contact the CAT Support Team at the email address referred to
+            hereinabove.
           </p>
           <p className="mt-1 mb-5">
             <table className="table table-bordered mb-4">
@@ -303,7 +308,7 @@ function Privacy() {
             accidental loss, alteration, prohibited dissemination or access or
             any other form of unfair processing. The services provided by GRNET
             SA are constantly evaluated to be in line with the safety
-            requirements of international standards. GRNET's Information
+            requirements of international standards. GRNET&apos;s Information
             Security Management System (ISMS) has been certified by the
             accredited certification body, EUROCERT SA In particular:
           </p>
@@ -374,6 +379,7 @@ function Privacy() {
             <a
               href="http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
               target="_blank"
+              rel="noreferrer"
             >
               {" "}
               Code of Conduct for Service Providers
@@ -386,9 +392,9 @@ function Privacy() {
         <Row>
           <h3>G. Personal data retention periods</h3>
           <p>
-            The personal data of CAT "Users" shall not be retained for a period
-            of time longer than is necessary for the operations of the Service
-            and the audits that it undergoes to that effect.
+            The personal data of CAT Users shall not be retained for a period of
+            time longer than is necessary for the operations of the Service and
+            the audits that it undergoes to that effect.
           </p>
         </Row>
 
@@ -397,14 +403,14 @@ function Privacy() {
           <p>
             For any questions or clarifications regarding this Privacy Statement
             and as well as in the event of any issues related to violation of
-            personal data, "Users" may contact the CAT Support team at the
-            e-mail address mentioned above. They may also contact the GRNET Data
+            personal data, Users may contact the CAT Support team at the e-mail
+            address mentioned above. They may also contact the GRNET Data
             Protection Officer (DPO), Vasiliki Konstantinopoulou, at the e-mail
-            address: gdprteam@grnet.gr
+            address: gdprteam AT grnet.gr
           </p>
           <h3>K. Recourse/Complaint:</h3>
           <p>
-            In case a request of an CAT "User" is not satisfied by the Data
+            In case a request of an CAT User is not satisfied by the Data
             Controller or by the Data Protection Officer, the User may at any
             time file a complaint with the Competent Supervisory Authority,
             namely the Data Protection Authority http://www.dpa.gr.
