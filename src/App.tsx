@@ -43,6 +43,7 @@ import Interoperability from "./pages/about/Interoperability";
 import AcceptableUse from "./pages/about/AcceptableUse";
 import Privacy from "./pages/about/Privacy";
 import Cookies from "./pages/about/Cookies";
+import Terms from "./pages/about/Terms";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +97,7 @@ function App() {
                 <Route path="/about/disclaimer" element={<Disclaimer />} />
                 <Route path="/pid-selection" element={<PidSelection />} />
                 <Route path="/about/cookies" element={<Cookies />} />
+                <Route path="/about/terms" element={<Terms />} />
                 <Route
                   path="/assessments/create/:valID"
                   element={<ProtectedRoute />}

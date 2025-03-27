@@ -712,5 +712,8 @@
   },
   "page_cookies": {
     "title": "Cookies Policy"
+  },
+  "page_terms": {
+    "title": "Terms of Use"
   }
 }

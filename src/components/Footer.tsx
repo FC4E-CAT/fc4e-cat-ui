@@ -38,6 +38,9 @@ function Footer() {
                 </Link>
               </li>
               <li>
+                <Link to="/about/terms">{t("page_terms.title")}</Link>
+              </li>
+              <li>
                 <Link to="/about/cookies">{t("page_cookies.title")}</Link>
               </li>
               <li>
