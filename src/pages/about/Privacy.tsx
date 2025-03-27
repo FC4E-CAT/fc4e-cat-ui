@@ -30,7 +30,7 @@ function Privacy() {
           <h6>
             <strong>Processor&apos;s Contact Details</strong>
           </h6>
-          <p>cat at grnet.gr</p>
+          <p>cat at einfra.grnet.gr</p>
 
           <h3>Scope of this Privacy Statement</h3>
           <p>
@@ -231,7 +231,7 @@ function Privacy() {
                 information, as laid out by applicable law. It may also request
                 a copy of the personal data undergoing processing as described
                 herein by sending an email message to the address: cat AT
-                grnet.gr
+                einfra.grnet.gr
               </li>
               <li>
                 Right to rectification: The data subject has the right to
