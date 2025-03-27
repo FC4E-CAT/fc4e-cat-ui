@@ -8,9 +8,9 @@ function AboutCat() {
   return (
     <div className="container rounded bg-white mt-1 mb-5">
       <div className="p-4">
-        <h3 className="cat-view-heading mb-4">
+        <h2 className="cat-view-heading text-muted mb-4">
           <FaInfoCircle /> {t("page_about.title")}
-        </h3>
+        </h2>
         <h2>{t("page_about.subtitle")}</h2>
         <Row className="mt-2 mb-4">
           <Col>
