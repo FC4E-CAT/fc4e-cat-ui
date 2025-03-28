@@ -184,17 +184,6 @@ const SortMarker = (field: string, sortField: string, sortOrder: string) => {
   return <FaArrowsAltV className="text-secondary opacity-50" />;
 };
 
-// create the tooltips
-const tooltipDelete = (
-  <Tooltip id="tip-delete">{t("page_admin_users.delete_tip")}</Tooltip>
-);
-const tooltipRestore = (
-  <Tooltip id="tip-restore">{t("page_admin_users.restore_tip")}</Tooltip>
-);
-const tooltipView = (
-  <Tooltip id="tip-restore">{t("page_admin_users.details_tip")}</Tooltip>
-);
-
 // the main component that lists the admin users in a table
 export default function AdminUsers() {
   // toast alert reference used in notification messaging
@@ -451,7 +440,14 @@ export default function AdminUsers() {
                       <BadgeUserStatus banned={item.banned} />
                     </td>
                     <td>
-                      <OverlayTrigger placement="top" overlay={tooltipView}>
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip id="user-tip-view">
+                            {t("page_admin_users.details_tip")}
+                          </Tooltip>
+                        }
+                      >
                         <Link
                           className="btn btn-sm btn-light"
                           to={`/admin/users/view/${item.id}`}
@@ -462,7 +458,11 @@ export default function AdminUsers() {
                       {item.banned ? (
                         <OverlayTrigger
                           placement="top"
-                          overlay={tooltipRestore}
+                          overlay={
+                            <Tooltip id="user-tip-restore">
+                              {t("page_admin_users.restore_tip")}
+                            </Tooltip>
+                          }
                         >
                           <Button
                             className="btn-light btn-sm m-1"
@@ -479,7 +479,14 @@ export default function AdminUsers() {
                           </Button>
                         </OverlayTrigger>
                       ) : (
-                        <OverlayTrigger placement="top" overlay={tooltipDelete}>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="user-tip-delete">
+                              {t("page_admin_users.delete_tip")}
+                            </Tooltip>
+                          }
+                        >
                           <Button
                             className="btn-light btn-sm m-1"
                             onClick={() => {
