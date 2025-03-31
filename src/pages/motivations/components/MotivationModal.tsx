@@ -195,7 +195,7 @@ export function MotivationModal(props: MotivationModalProps) {
             </Alert>
           )}
           <Row>
-            <Col xs={3}>
+            <Col xs={4}>
               <InputGroup className="mt-2">
                 <OverlayTrigger
                   key="top"

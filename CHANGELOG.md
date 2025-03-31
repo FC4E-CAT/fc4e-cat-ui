@@ -2,6 +2,25 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
+## [v3.1.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v3.1.0) (2025-03-31)
+
+### Added
+
+- CAT-824 Add search boxes in motivation details for asmt types, criter… ([#510](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/510))
+- CAT-841 Add terms, privacy, etc pages ([#511](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/511))
+- CAT-854: Interoperability Guidelines ([#514](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/514))
+
+### Changed
+
+- first-page minor changes ([#506](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/506))
+- CAT-823 Use new modals to view details of principles, criteria, tests… ([#507](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/507))
+- CAT-813 Trim user_id in admin assessments table ([#508](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/508))
+- CAT-813 Add copy user id button in view assessments list for admins ([#509](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/509))
+
+### Fixed
+
+- CAT-857 Fix tooltips in user admin page ([#515](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/515))
+
 ## [v3.0.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v3.0.0) (2024-10-18)
 
 ### Added

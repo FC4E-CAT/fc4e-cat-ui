@@ -19,6 +19,7 @@ import {
   FaArrowUp,
   FaArrowDown,
   FaArrowsAltV,
+  FaEdit,
 } from "react-icons/fa";
 import { idToColor } from "@/utils/admin";
 
@@ -27,12 +28,12 @@ import {
   useGetPrinciples,
 } from "@/api/services/principles";
 import { AlertInfo, Principle } from "@/types";
-import { Link } from "react-router-dom";
 import { PrincipleModal } from "./components/PrincipleModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { MotivationRefList } from "@/components/MotivationRefList";
 import { useTranslation } from "react-i18next";
+import { PrincipleDetailsModal } from "./components/PrincipleDetailsModal";
 
 type PrincipleState = {
   sortOrder: string;
@@ -42,6 +43,16 @@ type PrincipleState = {
   search: string;
 };
 
+interface PrincipleModalConfig {
+  show: boolean;
+  id: string;
+}
+
+interface PrincipleDetailsModalConfig {
+  show: boolean;
+  id: string;
+}
+
 interface DeleteModalConfig {
   show: boolean;
   title: string;
@@ -49,9 +60,6 @@ interface DeleteModalConfig {
   itemId: string;
   itemName: string;
 }
-
-const tooltipView = <Tooltip id="tip-restore">View Principle Details</Tooltip>;
-const tooltipDelete = <Tooltip id="tip-restore">Delete Principle</Tooltip>;
 
 // the main component that lists the motivations in a table
 export default function Principles() {
@@ -111,7 +119,16 @@ export default function Principles() {
     search: "",
   });
 
-  const [showCreate, setShowCreate] = useState(false);
+  const [priModalCfg, setPriModalCfg] = useState<PrincipleModalConfig>({
+    id: "",
+    show: false,
+  });
+
+  const [priDetailsModalCfg, setPriDetailsModalCfg] =
+    useState<PrincipleDetailsModalConfig>({
+      id: "",
+      show: false,
+    });
 
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
@@ -172,10 +189,17 @@ export default function Principles() {
         handleDelete={handleDeleteConfirmed}
       />
       <PrincipleModal
-        principle={null}
-        show={showCreate}
+        id={priModalCfg.id}
+        show={priModalCfg.show}
         onHide={() => {
-          setShowCreate(false);
+          setPriModalCfg({ id: "", show: false });
+        }}
+      />
+      <PrincipleDetailsModal
+        id={priDetailsModalCfg.id}
+        show={priDetailsModalCfg.show}
+        onHide={() => {
+          setPriDetailsModalCfg({ id: "", show: false });
         }}
       />
       <div className="cat-view-heading-block row border-bottom">
@@ -191,7 +215,7 @@ export default function Principles() {
           <Button
             variant="warning"
             onClick={() => {
-              setShowCreate(true);
+              setPriModalCfg({ id: "", show: true });
             }}
           >
             <FaPlus /> {t("buttons.create_new")}
@@ -297,15 +321,54 @@ export default function Principles() {
                     </td>
                     <td>
                       <div className="d-flex flex-nowrap">
-                        <OverlayTrigger placement="top" overlay={tooltipView}>
-                          <Link
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-view">
+                              {t("page_principles.tip_view")}
+                            </Tooltip>
+                          }
+                        >
+                          <Button
                             className="btn btn-light btn-sm m-1"
-                            to={`/admin/principles/${item.id}`}
+                            onClick={() => {
+                              setPriDetailsModalCfg({
+                                id: item.id,
+                                show: true,
+                              });
+                            }}
                           >
                             <FaBars />
-                          </Link>
+                          </Button>
                         </OverlayTrigger>
-                        <OverlayTrigger placement="top" overlay={tooltipDelete}>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-update">
+                              {t("page_principles.tip_edit")}
+                            </Tooltip>
+                          }
+                        >
+                          <Button
+                            className="btn btn-light btn-sm m-1"
+                            onClick={() => {
+                              setPriModalCfg({
+                                id: item.id,
+                                show: true,
+                              });
+                            }}
+                          >
+                            <FaEdit />
+                          </Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-delete">
+                              {t("page_principles.tip_delete")}
+                            </Tooltip>
+                          }
+                        >
                           <Button
                             className="btn btn-light btn-sm m-1"
                             onClick={() => {

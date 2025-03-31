@@ -25,7 +25,6 @@ import { FaEdit, FaFile, FaInfoCircle, FaTrash } from "react-icons/fa";
 interface TestModalProps {
   id: string;
   show: boolean;
-  lock: boolean;
   onHide: () => void;
 }
 /**
@@ -267,21 +266,14 @@ export function TestModal(props: TestModalProps) {
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
           {props.id ? (
-            props.lock ? (
-              <>
-                <FaFile className="me-2" />
-                {t("page_tests.view_test")}
-              </>
-            ) : (
-              <>
-                <FaEdit className="me-2" />
-                {t("page_tests.edit_test")}
-              </>
-            )
+            <>
+              <FaEdit className="me-2" />
+              {t("page_tests.update")}
+            </>
           ) : (
             <>
               <FaFile className="me-2" />
-              {t("page_tests.create_new_test")}
+              {t("page_tests.create_new")}
             </>
           )}
         </Modal.Title>
@@ -289,7 +281,7 @@ export function TestModal(props: TestModalProps) {
       <Modal.Body>
         <div>
           <Row>
-            <Col xs={3}>
+            <Col xs={4}>
               <InputGroup className="mt-2">
                 <OverlayTrigger
                   key="top"
@@ -315,7 +307,6 @@ export function TestModal(props: TestModalProps) {
                     });
                   }}
                   aria-describedby="label-metric-mtr"
-                  disabled={props.lock}
                 />
               </InputGroup>
               {showErrors && testHeader.tes === "" && (
@@ -347,7 +338,6 @@ export function TestModal(props: TestModalProps) {
                       label: e.target.value,
                     });
                   }}
-                  disabled={props.lock}
                 />
               </InputGroup>
               {showErrors && testHeader.label === "" && (
@@ -382,7 +372,6 @@ export function TestModal(props: TestModalProps) {
                     description: e.target.value,
                   });
                 }}
-                disabled={props.lock}
               />
               {showErrors && testHeader.description === "" && (
                 <span className="text-danger">{t("required")}</span>
@@ -421,7 +410,6 @@ export function TestModal(props: TestModalProps) {
                       test_method_id: e.target.value,
                     });
                   }}
-                  disabled={props.lock}
                 >
                   <>
                     <option value="" disabled>
@@ -463,7 +451,6 @@ export function TestModal(props: TestModalProps) {
                 onClick={() => {
                   addNewParam(false);
                 }}
-                disabled={props.lock}
               >
                 {t("page_tests.parameters_add")}
               </Button>
@@ -475,7 +462,6 @@ export function TestModal(props: TestModalProps) {
                   addNewParam(true);
                 }}
                 disabled={
-                  props.lock ||
                   params.find((item) => item.name === "evidence") !== undefined
                 }
               >
@@ -503,7 +489,7 @@ export function TestModal(props: TestModalProps) {
                             onChange={(e) => {
                               updateParam(param.id, "name", e.target.value);
                             }}
-                            disabled={props.lock || param.name === "evidence"}
+                            disabled={param.name === "evidence"}
                           />
                         </td>
                         <td>
@@ -513,7 +499,6 @@ export function TestModal(props: TestModalProps) {
                             onChange={(e) => {
                               updateParam(param.id, "text", e.target.value);
                             }}
-                            disabled={props.lock}
                           />
                         </td>
                         <td>
@@ -523,7 +508,6 @@ export function TestModal(props: TestModalProps) {
                             onChange={(e) => {
                               updateParam(param.id, "tooltip", e.target.value);
                             }}
-                            disabled={props.lock}
                           />
                         </td>
                         <td>
@@ -533,7 +517,6 @@ export function TestModal(props: TestModalProps) {
                             onClick={() => {
                               removeParam(param.id);
                             }}
-                            disabled={props.lock}
                           >
                             <FaTrash />
                           </Button>
@@ -549,21 +532,19 @@ export function TestModal(props: TestModalProps) {
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button className="btn-secondary" onClick={props.onHide}>
-          {t("buttons.close")}
+          {t("buttons.cancel")}
         </Button>
         {props.id ? (
-          props.lock ? null : (
-            <Button
-              className="btn-success"
-              onClick={() => {
-                if (handleValidate() === true) {
-                  handleUpdate();
-                }
-              }}
-            >
-              {t("buttons.update")}
-            </Button>
-          )
+          <Button
+            className="btn-success"
+            onClick={() => {
+              if (handleValidate() === true) {
+                handleUpdate();
+              }
+            }}
+          >
+            {t("buttons.update")}
+          </Button>
         ) : (
           <Button
             className="btn-success"

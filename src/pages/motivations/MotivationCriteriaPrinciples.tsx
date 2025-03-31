@@ -212,7 +212,7 @@ export default function MotivationCriteriaPrinciples() {
   return (
     <div className="pb-4">
       <CriterionModal
-        criterion={null}
+        id=""
         show={showCreate}
         onHide={() => {
           setShowCreate(false);

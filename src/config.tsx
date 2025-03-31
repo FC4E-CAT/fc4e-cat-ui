@@ -19,6 +19,10 @@ const defaultMotivationMetricBenchmarkType =
 const defaultMotivationMetricAlgorithm =
   config.default_values?.motivation_metric_algorithm || "";
 
+const linksGithub = config.links?.github || "";
+
+const linksDocs = config.links?.docs || "";
+
 export {
   API,
   relMtvActorId,
@@ -30,4 +34,6 @@ export {
   defaultMotivationMetricAlgorithm,
   defaultMotivationMetricType,
   defaultMotivationMetricBenchmarkType,
+  linksGithub,
+  linksDocs,
 };

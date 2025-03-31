@@ -7,6 +7,7 @@ import {
   FaDownload,
   FaEye,
   FaEyeSlash,
+  FaCopy,
 } from "react-icons/fa";
 import {
   Alert,
@@ -17,6 +18,7 @@ import {
   OverlayTrigger,
   Tooltip,
   Table,
+  TooltipProps,
 } from "react-bootstrap";
 import { AssessmentListItem, AlertInfo } from "@/types";
 import {
@@ -32,6 +34,8 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { PublishModal } from "@/components";
+import { trimField } from "@/utils/admin";
+import CopyToClipboard from "react-copy-to-clipboard";
 
 type Pagination = {
   page: number;
@@ -65,6 +69,14 @@ function AdminAssessments() {
   );
   const tooltipPrivate = (
     <Tooltip id="tip-private">{t("page_assessment_list.tip_private")}</Tooltip>
+  );
+
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const renderTooltip = (props: TooltipProps) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {copySuccess ? t("copied") : t("copy")}
+    </Tooltip>
   );
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -303,8 +315,36 @@ function AdminAssessments() {
                         </div>
                       </td>
                       <td className="align-middle">
-                        <div>
-                          <small>{item.user_id}</small>
+                        <div className="d-flex flex-nowrap">
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id={"tip-user-" + item.user_id}>
+                                {item.user_id}
+                              </Tooltip>
+                            }
+                          >
+                            <small>{trimField(item.user_id, 15)}</small>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            placement="top"
+                            delay={{ show: 250, hide: 400 }}
+                            overlay={renderTooltip}
+                          >
+                            <CopyToClipboard
+                              text={item.user_id}
+                              onCopy={() => setCopySuccess(true)}
+                            >
+                              <FaCopy
+                                style={{
+                                  color: "#FF7F50",
+                                  cursor: "pointer",
+                                  marginLeft: "10px",
+                                }}
+                                onMouseLeave={() => setCopySuccess(false)}
+                              />
+                            </CopyToClipboard>
+                          </OverlayTrigger>
                         </div>
                       </td>
                       <td className="align-middle text-center">

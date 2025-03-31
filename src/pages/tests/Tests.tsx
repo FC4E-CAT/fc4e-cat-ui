@@ -31,6 +31,7 @@ import { useDeleteTest, useGetTests } from "@/api/services/registry";
 import { MotivationRefList } from "@/components/MotivationRefList";
 import { RegistryTest } from "@/types/tests";
 import { FaClipboardQuestion } from "react-icons/fa6";
+import { TestDetailsModal } from "./components/TestDetailsModal";
 
 type TestsState = {
   sortOrder: string;
@@ -42,7 +43,11 @@ type TestsState = {
 
 type TestModalConfig = {
   id: string;
-  lock: boolean;
+  show: boolean;
+};
+
+type TestModalDetailsConfig = {
+  id: string;
   show: boolean;
 };
 
@@ -124,9 +129,14 @@ export default function Tests() {
 
   const [testModalCfg, setTestModalCfg] = useState<TestModalConfig>({
     id: "",
-    lock: false,
     show: false,
   });
+
+  const [testDetailsModalCfg, setTestDetailsModalCfg] =
+    useState<TestModalDetailsConfig>({
+      id: "",
+      show: false,
+    });
 
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
@@ -187,10 +197,16 @@ export default function Tests() {
       />
       <TestModal
         id={testModalCfg.id}
-        lock={testModalCfg.lock}
         show={testModalCfg.show}
         onHide={() => {
-          setTestModalCfg({ id: "", lock: false, show: false });
+          setTestModalCfg({ id: "", show: false });
+        }}
+      />
+      <TestDetailsModal
+        id={testDetailsModalCfg.id}
+        show={testDetailsModalCfg.show}
+        onHide={() => {
+          setTestDetailsModalCfg({ id: "", show: false });
         }}
       />
       <div className="cat-view-heading-block row border-bottom">
@@ -204,7 +220,7 @@ export default function Tests() {
           <Button
             variant="warning"
             onClick={() => {
-              setTestModalCfg({ id: "", lock: false, show: true });
+              setTestModalCfg({ id: "", show: true });
             }}
           >
             <FaPlus /> {t("buttons.create_new")}
@@ -320,9 +336,8 @@ export default function Tests() {
                           <Button
                             className="btn btn-light btn-sm m-1"
                             onClick={() => {
-                              setTestModalCfg({
+                              setTestDetailsModalCfg({
                                 id: item.test.id,
-                                lock: true,
                                 show: true,
                               });
                             }}
@@ -336,7 +351,6 @@ export default function Tests() {
                             onClick={() => {
                               setTestModalCfg({
                                 id: item.test.id,
-                                lock: false,
                                 show: true,
                               });
                             }}

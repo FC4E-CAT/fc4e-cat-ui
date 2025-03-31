@@ -1,6 +1,6 @@
 import { AuthContext } from "@/auth";
 import { AlertInfo, Motivation, MotivationActor } from "@/types";
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import {
   Alert,
   Button,
@@ -53,6 +53,7 @@ import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { MotivationMetrics } from "./components/MotivationMetrics";
 import { useTranslation } from "react-i18next";
+import { SearchBox } from "@/components/SearchBox";
 
 const actorImages: { [key: string]: string } = {
   "PID Service Provider (Role)": serviceImg,
@@ -302,6 +303,26 @@ export default function MotivationDetails() {
     setMotivation(motivationData);
   }, [motivationData]);
 
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+  const handleSearchClear = () => {
+    setSearchInput("");
+  };
+
+  const filteredActors = useMemo(() => {
+    return motivation?.actors.filter((item) => {
+      const query = searchInput.toLowerCase();
+      return (
+        item.act.toLowerCase().includes(query) ||
+        item.label.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+      );
+    });
+  }, [searchInput, motivation?.actors]);
+
   return (
     <div className="pb-4">
       <div className="cat-view-heading-block border-bottom row ">
@@ -529,144 +550,158 @@ export default function MotivationDetails() {
                     </div>
                   </Alert>
                 ) : (
-                  <ListGroup className="mt-2">
-                    {motivation?.actors.map((item) => {
-                      return (
-                        <ListGroup.Item
-                          key={item.id}
-                          className={"align-middle"}
-                        >
-                          <Row>
-                            <Col
-                              className={`${item.published ? "" : "opacity-50"}`}
-                            >
-                              <div className="flex items-center ng-star-inserted">
-                                <div className="margin-right-8 flex justify-center items-center ng-star-inserted radio-card-icon">
-                                  <img
-                                    src={getActorImage(item.label)}
-                                    className={`text-center m-1 rounded-full ${item.published ? "" : "cat-greyscale"}`}
-                                    width="60%"
-                                  />
-                                </div>
-                                <div>
-                                  <div className="flex text-sm text-gray-900 font-weight-500 items-center cursor-pointer">
-                                    {item.label}
+                  <>
+                    <div>
+                      <SearchBox
+                        searchInput={searchInput}
+                        handleChange={handleSearchChange}
+                        handleClear={handleSearchClear}
+                      />
+                    </div>
+                    <ListGroup className="mt-2">
+                      {filteredActors?.map((item) => {
+                        return (
+                          <ListGroup.Item
+                            key={item.id}
+                            className={"align-middle"}
+                          >
+                            <Row>
+                              <Col
+                                className={`${item.published ? "" : "opacity-50"}`}
+                              >
+                                <div className="flex items-center ng-star-inserted">
+                                  <div className="margin-right-8 flex justify-center items-center ng-star-inserted radio-card-icon">
+                                    <img
+                                      src={getActorImage(item.label)}
+                                      className={`text-center m-1 rounded-full ${item.published ? "" : "cat-greyscale"}`}
+                                      width="60%"
+                                    />
                                   </div>
-                                  <div className="text-xs text-gray-600 ng-star-inserted">
-                                    {item.act}
+                                  <div>
+                                    <div className="flex text-sm text-gray-900 font-weight-500 items-center cursor-pointer">
+                                      {item.label}
+                                    </div>
+                                    <div className="text-xs text-gray-600 ng-star-inserted">
+                                      {item.act}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </Col>
-                            <Col md="auto">
-                              <div className="d-flex flex-nowrap">
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={tooltipView}
-                                >
-                                  <Link
-                                    className="btn btn-light btn-sm m-1"
-                                    to={`/admin/motivations/${params.id}/templates/actors/${item.id}`}
+                              </Col>
+                              <Col md="auto">
+                                <div className="d-flex flex-nowrap">
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={tooltipView}
                                   >
-                                    <FaBars />
-                                  </Link>
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={tooltipManageCriteria}
-                                >
-                                  {item.published ? (
-                                    <span className="btn btn-light btn-sm m-1 disabled">
-                                      <FaAward />
-                                    </span>
-                                  ) : (
-                                    <>
-                                      <Link
-                                        className="btn btn-light btn-sm m-1"
-                                        to={`/admin/motivations/${params.id}/actors/${item.id}`}
-                                      >
+                                    <Link
+                                      className="btn btn-light btn-sm m-1"
+                                      to={`/admin/motivations/${params.id}/templates/actors/${item.id}`}
+                                    >
+                                      <FaBars />
+                                    </Link>
+                                  </OverlayTrigger>
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={tooltipManageCriteria}
+                                  >
+                                    {item.published ? (
+                                      <span className="btn btn-light btn-sm m-1 disabled">
                                         <FaAward />
-                                      </Link>
-                                    </>
-                                  )}
-                                </OverlayTrigger>
-                                {item.published ? (
-                                  <OverlayTrigger
-                                    placement="top"
-                                    overlay={
-                                      <Tooltip id="tip-unpublish">
-                                        {t(
-                                          "page_motivations.tip_unpublish_asmt",
-                                        )}
-                                      </Tooltip>
-                                    }
-                                  >
-                                    <Button
-                                      className="btn btn-light btn-sm m-1"
-                                      onClick={() => {
-                                        handleUnpublish(
-                                          params.id || "",
-                                          item.id,
-                                        );
-                                      }}
-                                    >
-                                      <FaEye />
-                                    </Button>
+                                      </span>
+                                    ) : (
+                                      <>
+                                        <Link
+                                          className="btn btn-light btn-sm m-1"
+                                          to={`/admin/motivations/${params.id}/actors/${item.id}`}
+                                        >
+                                          <FaAward />
+                                        </Link>
+                                      </>
+                                    )}
                                   </OverlayTrigger>
-                                ) : (
-                                  <OverlayTrigger
-                                    placement="top"
-                                    overlay={
-                                      <Tooltip id="tip-publish">
-                                        {t("page_motivations.tip_publish_asmt")}
-                                      </Tooltip>
-                                    }
-                                  >
-                                    <Button
-                                      className="btn btn-light btn-sm m-1"
-                                      onClick={() => {
-                                        handlePublish(params.id || "", item.id);
-                                      }}
-                                    >
-                                      <FaEyeSlash />
-                                    </Button>
-                                  </OverlayTrigger>
-                                )}
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={
-                                    <Tooltip id="tip-delete">
-                                      {t("page_motivations.tip_delete_asmt")}
-                                    </Tooltip>
-                                  }
-                                >
                                   {item.published ? (
-                                    <span className="btn btn-light btn-sm m-1 disabled">
-                                      <FaTrash />
-                                    </span>
-                                  ) : (
-                                    <Button
-                                      className="btn btn-light btn-sm m-1"
-                                      onClick={() => {
-                                        setDeleteActorModalConfig({
-                                          ...deleteActorModalConfig,
-                                          show: true,
-                                          itemId: item.id,
-                                          itemName: `${item.label} - ${item.act}`,
-                                        });
-                                      }}
+                                    <OverlayTrigger
+                                      placement="top"
+                                      overlay={
+                                        <Tooltip id="tip-unpublish">
+                                          {t(
+                                            "page_motivations.tip_unpublish_asmt",
+                                          )}
+                                        </Tooltip>
+                                      }
                                     >
-                                      <FaTrash />
-                                    </Button>
+                                      <Button
+                                        className="btn btn-light btn-sm m-1"
+                                        onClick={() => {
+                                          handleUnpublish(
+                                            params.id || "",
+                                            item.id,
+                                          );
+                                        }}
+                                      >
+                                        <FaEye />
+                                      </Button>
+                                    </OverlayTrigger>
+                                  ) : (
+                                    <OverlayTrigger
+                                      placement="top"
+                                      overlay={
+                                        <Tooltip id="tip-publish">
+                                          {t(
+                                            "page_motivations.tip_publish_asmt",
+                                          )}
+                                        </Tooltip>
+                                      }
+                                    >
+                                      <Button
+                                        className="btn btn-light btn-sm m-1"
+                                        onClick={() => {
+                                          handlePublish(
+                                            params.id || "",
+                                            item.id,
+                                          );
+                                        }}
+                                      >
+                                        <FaEyeSlash />
+                                      </Button>
+                                    </OverlayTrigger>
                                   )}
-                                </OverlayTrigger>
-                              </div>
-                            </Col>
-                          </Row>
-                        </ListGroup.Item>
-                      );
-                    })}
-                  </ListGroup>
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tip-delete">
+                                        {t("page_motivations.tip_delete_asmt")}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    {item.published ? (
+                                      <span className="btn btn-light btn-sm m-1 disabled">
+                                        <FaTrash />
+                                      </span>
+                                    ) : (
+                                      <Button
+                                        className="btn btn-light btn-sm m-1"
+                                        onClick={() => {
+                                          setDeleteActorModalConfig({
+                                            ...deleteActorModalConfig,
+                                            show: true,
+                                            itemId: item.id,
+                                            itemName: `${item.label} - ${item.act}`,
+                                          });
+                                        }}
+                                      >
+                                        <FaTrash />
+                                      </Button>
+                                    )}
+                                  </OverlayTrigger>
+                                </div>
+                              </Col>
+                            </Row>
+                          </ListGroup.Item>
+                        );
+                      })}
+                    </ListGroup>
+                  </>
                 )}
               </div>
             </Row>

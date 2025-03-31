@@ -1,5 +1,5 @@
 import { Col, Row, Container } from "react-bootstrap";
-import { FaEnvelope, FaYoutube, FaTwitter, FaCalendar } from "react-icons/fa";
+import { FaCalendar, FaBook, FaGithub } from "react-icons/fa";
 import logoDans from "@/assets/logo-dans.svg";
 import logoDatacite from "@/assets/logo-datacite.svg";
 import logoGrnet from "@/assets/logo-grnet.png";
@@ -7,6 +7,7 @@ import logoGwdg from "@/assets/logo-gwdg.svg";
 import { Link } from "react-router-dom";
 import packageJson from "@/../package.json";
 import { useTranslation } from "react-i18next";
+import { linksDocs, linksGithub } from "@/config";
 
 function Footer() {
   // tag build information on footer
@@ -21,57 +22,54 @@ function Footer() {
       <Container className="text-left">
         <Row className="mt-4">
           <Col sm>
-            <h6>{t("footer.contact_category")}</h6>
-            <ul className="list-unstyled">
-              <li>
-                <Link to="/">{t("footer.contact")}</Link>
-              </li>
-              <li>
-                <Link to="/">{t("footer.terms")}</Link>
-              </li>
-              <li>
-                <Link to="/">{t("footer.data")}</Link>
-              </li>
-              <li>
-                <Link to="/">{t("footer.privacy")}</Link>
-              </li>
-            </ul>
-          </Col>
-          <Col sm>
             <h6>{t("footer.about_category")}</h6>
             <ul className="list-unstyled">
               <li>
-                <Link to="/">{t("footer.team")}</Link>
+                <Link to="/about/cat">{t("footer.about_cat")}</Link>
               </li>
               <li>
-                <Link to="/">{t("footer.github")}</Link>
+                <Link to="/about/interoperability">
+                  {t("interoperability_guidelines")}
+                </Link>
               </li>
               <li>
-                <Link to="/">{t("footer.disclaimer")}</Link>
+                <Link to="/about/acceptable-use">
+                  {t("acceptable_use_policy")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/about/terms">{t("page_terms.title")}</Link>
+              </li>
+              <li>
+                <Link to="/about/cookies">{t("page_cookies.title")}</Link>
+              </li>
+              <li>
+                <Link to="/about/privacy">{t("privacy_statement")}</Link>
+              </li>
+              <li>
+                <Link to="/about/disclaimer">{t("disclaimer")}</Link>
               </li>
             </ul>
           </Col>
           <Col sm>
-            <h6>{t("footer.social_category")}</h6>
+            <h6>{t("footer.development_category")}</h6>
             <ul className="list-unstyled">
-              <li>
-                <Link to="/">
-                  <FaEnvelope className="me-2" />
-                  {t("footer.newsletter")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/">
-                  <FaYoutube className="me-2" />
-                  {t("footer.youtube")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/">
-                  <FaTwitter className="me-2" />
-                  {t("footer.twitter")}
-                </Link>
-              </li>
+              {linksGithub && (
+                <li>
+                  <FaGithub color="grey" className="me-2" />
+                  <a href={linksGithub} target="_blank" rel="noreferrer">
+                    {t("github")}
+                  </a>
+                </li>
+              )}
+              {linksDocs && (
+                <li>
+                  <FaBook color="grey" className="me-2" />
+                  <a href={linksDocs} target="_blank" rel="noreferrer">
+                    {t("documentation")}
+                  </a>
+                </li>
+              )}
             </ul>
           </Col>
           <Col sm>
