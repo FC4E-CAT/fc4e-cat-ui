@@ -22,5 +22,14 @@
   "links": {
     "github": "https://github.com/fc4e-cat",
     "docs": "https://fc4e-cat.github.io/fc4e-cat-doc/"
+  },
+  "g069_providers": {
+    "EGI": "egi",
+    "Bildung Proxy Student": "bildungsproxy-student",
+    "NFDI RegApp": "nfdi-regapp",
+    "Login": "login",
+    "NFDI Infra Staging": "nfdiinfrastaging",
+    "Academic Id": "academic-id",
+    "Cilogon": "cilogon"
   }
 }

@@ -197,6 +197,42 @@ export interface TestValueParam {
   evidence_url?: EvidenceURL[];
 }
 
+export interface TestAutoG069 {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type: "Auto-Check-String-Binary";
+  text: string;
+  result: number | null;
+  value: string | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
+}
+
+export interface TestAutoError {
+  code: number;
+  message: string;
+}
+
+export interface TestAutoResponseStatus {
+  code: number;
+  message: string;
+  is_valid: boolean;
+}
+
+export interface AdditionalInfoItem {
+  is_valid: boolean;
+  message: string;
+}
+
+export interface TestAutoResponse {
+  test_status: TestAutoResponseStatus;
+  last_run: string;
+  additional_info: Record<string, AdditionalInfoItem>;
+}
+
 export interface TestAutoHttpsCheck {
   id: string;
   name: string;
@@ -232,7 +268,8 @@ export type AssessmentTest =
   | TestBinaryParam
   | TestValueParam
   | TestAutoHttpsCheck
-  | TestAutoMD1;
+  | TestAutoMD1
+  | TestAutoG069;
 
 export interface EvidenceURL {
   url: string;
