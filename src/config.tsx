@@ -23,6 +23,8 @@ const linksGithub = config.links?.github || "";
 
 const linksDocs = config.links?.docs || "";
 
+const g069Providers: Record<string, string> = config.g069_providers;
+
 export {
   API,
   relMtvActorId,
@@ -36,4 +38,5 @@ export {
   defaultMotivationMetricBenchmarkType,
   linksGithub,
   linksDocs,
+  g069Providers,
 };
