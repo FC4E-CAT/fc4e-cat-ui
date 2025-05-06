@@ -283,7 +283,7 @@ function ValidationDetails(props: ValidationProps) {
               <div className="row py-3 mt-4">
                 {validation?.status === "REVIEW" && (
                   <h4>
-                    {t("field.status")}
+                    {t("fields.status")}
                     <small className="px-3">
                       <span className="badge bg-primary">
                         <FaGlasses /> {t("review")}
@@ -294,7 +294,7 @@ function ValidationDetails(props: ValidationProps) {
                 {validation?.status === ValidationStatus.REJECTED && (
                   <>
                     <h4>
-                      {t("field.status")}
+                      {t("fields.status")}
                       <small className="px-3">
                         <span className="badge bg-danger">
                           <FaTimes /> {t("rejected")}
@@ -324,7 +324,7 @@ function ValidationDetails(props: ValidationProps) {
                 {validation?.status === ValidationStatus.APPROVED && (
                   <>
                     <h4>
-                      {t("field.status")}
+                      {t("fields.status")}
                       <small className="px-3">
                         <span className="badge bg-success">
                           <FaCheck /> {t("approved")}

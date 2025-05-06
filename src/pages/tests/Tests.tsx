@@ -19,6 +19,7 @@ import {
   FaArrowsAltV,
   FaEdit,
   FaBars,
+  FaCodeBranch,
 } from "react-icons/fa";
 
 import { AlertInfo } from "@/types";
@@ -44,6 +45,7 @@ type TestsState = {
 type TestModalConfig = {
   id: string;
   show: boolean;
+  isVersioning?: boolean;
 };
 
 type TestModalDetailsConfig = {
@@ -70,6 +72,11 @@ export default function Tests() {
   );
   const tooltipDelete = (
     <Tooltip id="tip-delete">{t("page_tests.tip_delete")}</Tooltip>
+  );
+  const tooltipCreateVersion = (
+    <Tooltip id="tip-create-version">
+      {t("page_tests.tip_create_version")}
+    </Tooltip>
   );
   const { keycloak, registered } = useContext(AuthContext)!;
 
@@ -130,6 +137,7 @@ export default function Tests() {
   const [testModalCfg, setTestModalCfg] = useState<TestModalConfig>({
     id: "",
     show: false,
+    isVersioning: false,
   });
 
   const [testDetailsModalCfg, setTestDetailsModalCfg] =
@@ -137,6 +145,10 @@ export default function Tests() {
       id: "",
       show: false,
     });
+
+  const handleCreateVersion = (testId: string) => {
+    setTestModalCfg({ id: testId, show: true, isVersioning: true });
+  };
 
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
@@ -182,6 +194,7 @@ export default function Tests() {
     }
     return <FaArrowsAltV className="text-secondary opacity-50" />;
   };
+
   return (
     <div>
       <DeleteModal
@@ -198,8 +211,9 @@ export default function Tests() {
       <TestModal
         id={testModalCfg.id}
         show={testModalCfg.show}
+        isVersioning={testModalCfg?.isVersioning}
         onHide={() => {
-          setTestModalCfg({ id: "", show: false });
+          setTestModalCfg({ id: "", show: false, isVersioning: false });
         }}
       />
       <TestDetailsModal
@@ -356,6 +370,19 @@ export default function Tests() {
                             }}
                           >
                             <FaEdit />
+                          </Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={tooltipCreateVersion}
+                        >
+                          <Button
+                            className="btn btn-light btn-sm m-1"
+                            onClick={() => {
+                              handleCreateVersion(item.test.id);
+                            }}
+                          >
+                            <FaCodeBranch />
                           </Button>
                         </OverlayTrigger>
                         <OverlayTrigger placement="top" overlay={tooltipDelete}>
