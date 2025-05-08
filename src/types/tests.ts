@@ -7,6 +7,7 @@ export interface RegistryTestHeader {
   label: string;
   description: string;
   last_touch?: string;
+  version?: number;
 }
 
 export interface RegistryTestDefinition {
@@ -23,6 +24,8 @@ export interface RegistryTest {
   test: RegistryTestHeader;
   test_definition: RegistryTestDefinition;
   used_by_motivations?: MotivationReference[];
+  test_versions?: RegistryTest[];
+  is_latest_version?: boolean;
 }
 
 export type RegistryTestsResponse = ResponsePage<RegistryTest[]>;
