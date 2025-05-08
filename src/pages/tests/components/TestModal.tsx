@@ -3,6 +3,7 @@ import {
   useGetAllTestMethods,
   useGetTest,
   useUpdateTest,
+  useCreateTestVersion,
 } from "@/api/services/registry";
 import { AuthContext } from "@/auth";
 import { AlertInfo, RegistryResource } from "@/types";
@@ -20,11 +21,18 @@ import {
 } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { FaEdit, FaFile, FaInfoCircle, FaTrash } from "react-icons/fa";
+import {
+  FaEdit,
+  FaFile,
+  FaInfoCircle,
+  FaTrash,
+  FaCodeBranch,
+} from "react-icons/fa";
 
 interface TestModalProps {
   id: string;
   show: boolean;
+  isVersioning?: boolean;
   onHide: () => void;
 }
 /**
@@ -207,6 +215,13 @@ export function TestModal(props: TestModalProps) {
     testDefinition,
   );
 
+  const mutateCreateVersion = useCreateTestVersion({
+    token: keycloak?.token || "",
+    id: props.id,
+    testHeader,
+    testDefinition,
+  });
+
   // handle backend call to update a test
   function handleUpdate() {
     updateParamTestDef();
@@ -255,6 +270,29 @@ export function TestModal(props: TestModalProps) {
     });
   }
 
+  function handleCreateNewVersion() {
+    updateParamTestDef();
+    const promise = mutateCreateVersion
+      .mutateAsync()
+      .catch((err) => {
+        alert.current = {
+          message: "Error: " + err.response.data.message,
+        };
+        throw err;
+      })
+      .then(() => {
+        props.onHide();
+        alert.current = {
+          message: t("page_tests.toast_create_version_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_tests.toast_create_version_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  }
+
   return (
     <Modal
       show={props.show}
@@ -265,10 +303,15 @@ export function TestModal(props: TestModalProps) {
     >
       <Modal.Header className="bg-success text-white" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {props.id ? (
+          {props.id && !props.isVersioning ? (
             <>
               <FaEdit className="me-2" />
               {t("page_tests.update")}
+            </>
+          ) : props.id && props.isVersioning ? (
+            <>
+              <FaCodeBranch className="me-2" />
+              {t("page_tests.create_new_version")}
             </>
           ) : (
             <>
@@ -307,6 +350,7 @@ export function TestModal(props: TestModalProps) {
                     });
                   }}
                   aria-describedby="label-metric-mtr"
+                  disabled={props.isVersioning}
                 />
               </InputGroup>
               {showErrors && testHeader.tes === "" && (
@@ -534,7 +578,18 @@ export function TestModal(props: TestModalProps) {
         <Button className="btn-secondary" onClick={props.onHide}>
           {t("buttons.cancel")}
         </Button>
-        {props.id ? (
+        {props.id && props.isVersioning ? (
+          <Button
+            className="btn-success"
+            onClick={() => {
+              if (handleValidate() === true) {
+                handleCreateNewVersion();
+              }
+            }}
+          >
+            {t("buttons.create_version")}
+          </Button>
+        ) : props.id ? (
           <Button
             className="btn-success"
             onClick={() => {

@@ -79,6 +79,7 @@
     "update_details": "Update Details",
     "create": "Create",
     "create_new": "Create New",
+    "create_version": "Create New Version",
     "delete": "Delete",
     "confirm_delete": "Confirm Delete",
     "about": "About",
@@ -685,6 +686,7 @@
     "tip_view": "View test details",
     "tip_delete": "Delete test",
     "tip_edit": "Edit test",
+    "tip_create_version": "Create a new version of this test",
     "tip_label": "Label (Name) of the test item",
     "modal_delete_title": "Delete test",
     "modal_delete_message": "Are you sure you want to delete the following test?",
@@ -697,6 +699,7 @@
     "parameters_add": "Add new",
     "parameters_add_evidence": "Add Evidence",
     "create_new": "Create New Test",
+    "create_new_version": "Create New Test Version",
     "edit": "Edit Test",
     "view": "View Test Details",
     "toast_delete_success": "Test succesfully deleted!",
@@ -704,7 +707,9 @@
     "toast_create_success": "Test Created!",
     "toast_create_progress": "Creating Test...",
     "toast_update_success": "Test Updated!",
-    "toast_update_progress": "Updating Test..."
+    "toast_update_progress": "Updating Test...",
+    "toast_create_version_success": "New test version successfully created!",
+    "toast_create_version_progress": "Creating new test version..."
   },
   "page_metrics": {
     "title": "Metrics",

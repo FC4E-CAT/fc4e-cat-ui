@@ -289,6 +289,35 @@ export function useDeleteTest(token: string) {
   });
 }
 
+export function useCreateTestVersion({
+  token,
+  id,
+  testHeader,
+  testDefinition,
+}: {
+  token: string;
+  id: string;
+  testHeader: TestHeaderInput;
+  testDefinition: TestDefinitionInput;
+}) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      return APIClient(token).post(`/v1/registry/tests/${id}/version`, {
+        test: testHeader,
+        test_definition: testDefinition,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["registry-tests"]);
+      queryClient.invalidateQueries(["all-tests"]);
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+}
+
 export const useGetRegistryMetrics = ({
   size,
   page,
