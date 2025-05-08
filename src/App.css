@@ -664,3 +664,20 @@ a.plain:hover {
   align-items: center;
   justify-content: space-between;
 }
+
+.opened-table-row {
+  border-bottom: none;
+}
+
+.version-row {
+  font-size: 0.9rem;
+  box-shadow: -6px 0 0 0 #ced4da;
+}
+
+.version-row td {
+  border-top: none;
+}
+
+.version-row td:first-child {
+  padding-left: 2.5rem;
+}

@@ -32,6 +32,7 @@ import {
 interface TestModalProps {
   id: string;
   show: boolean;
+  isEditing?: boolean;
   isVersioning?: boolean;
   onHide: () => void;
 }
@@ -350,7 +351,7 @@ export function TestModal(props: TestModalProps) {
                     });
                   }}
                   aria-describedby="label-metric-mtr"
-                  disabled={props.isVersioning}
+                  disabled={props?.isEditing || props?.isVersioning}
                 />
               </InputGroup>
               {showErrors && testHeader.tes === "" && (
