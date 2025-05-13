@@ -169,21 +169,22 @@ export function PrincipleModal(props: PrincipleModalProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-success text-white" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          <Modal.Title id="contained-modal-title-vcenter">
-            {props.id ? (
-              <>
-                <FaEdit className="me-2" />
-                {t("page_principles.edit")}
-              </>
-            ) : (
-              <>
-                <FaFile className="me-2" />
-                {t("page_principles.create_new")}
-              </>
-            )}
-          </Modal.Title>
+      <Modal.Header closeButton>
+        <Modal.Title
+          className="d-flex align-items-center gap-1"
+          id="contained-modal-title-vcenter"
+        >
+          {props.id ? (
+            <>
+              <FaEdit className="me-2" />
+              {t("page_principles.edit")}
+            </>
+          ) : (
+            <>
+              <FaFile className="me-2" />
+              {t("page_principles.create_new")}
+            </>
+          )}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

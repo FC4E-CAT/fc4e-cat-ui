@@ -71,8 +71,11 @@ export default function MotivationPrinciplesModal(
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-success text-white" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
+      <Modal.Header closeButton>
+        <Modal.Title
+          className="d-flex align-items-center gap-1"
+          id="contained-modal-title-vcenter"
+        >
           <FaTags className="me-2" />{" "}
           {t("page_motivations.modal_principles_title")}
         </Modal.Title>

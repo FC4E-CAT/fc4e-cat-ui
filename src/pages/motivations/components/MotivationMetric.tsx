@@ -1,10 +1,12 @@
 import { useGetMotivationMetric } from "@/api";
 import { AuthContext } from "@/auth";
+import { TestAutoG069Form } from "@/pages/assessments/components/tests/TestAutoG069Form";
 import { TestAutoHttpsCheckForm } from "@/pages/assessments/components/tests/TestAutoHttpsCheckForm";
 import { TestAutoMd1Form } from "@/pages/assessments/components/tests/TestAutoMd1Form";
 import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParam";
 import { TestValueFormParam } from "@/pages/assessments/components/tests/TestValueFormParam";
 import {
+  TestAutoG069,
   TestAutoHttpsCheck,
   TestAutoMD1,
   TestBinaryParam,
@@ -66,6 +68,19 @@ export default function MotivationMetric({
             <div className="cat-test-div">
               <TestValueFormParam
                 test={test as TestValueParam}
+                onTestChange={() => {}}
+                criterionId={getByCriterion ? itemId : ""}
+                principleId={""}
+              />
+            </div>
+          </div>,
+        );
+      } else if (test.type === "Auto-Check-String-Binary") {
+        testList.push(
+          <div className="border mt-4" key={test.id}>
+            <div className="cat-test-div">
+              <TestAutoG069Form
+                test={test as TestAutoG069}
                 onTestChange={() => {}}
                 criterionId={getByCriterion ? itemId : ""}
                 principleId={""}
