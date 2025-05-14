@@ -46,6 +46,7 @@ import { TestAutoHttpsCheckForm } from "./tests/TestAutoHttpsCheckForm";
 import { useTranslation } from "react-i18next";
 import { TestAutoMd1Form } from "./tests/TestAutoMd1Form";
 import { TestAutoG069Form } from "./tests/TestAutoG069Form";
+import { defaultG069tokenIntrospection, defaultG069userInfo } from "@/config";
 
 type CriteriaTabsProps = {
   principles: AssessmentPrinciple[];
@@ -274,6 +275,35 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
               <div className="border mt-4" key={test.id}>
                 <div className="cat-test-div">
                   <TestAutoG069Form
+                    g069param=""
+                    test={test as TestAutoG069}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (test.type === "Auto-Check-AARC-G069-User-Info") {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestAutoG069Form
+                    g069param={defaultG069userInfo}
+                    test={test as TestAutoG069}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (test.type === "Auto-Check-AARC-G069-Token-Introspection") {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestAutoG069Form
+                    g069param={defaultG069tokenIntrospection}
                     test={test as TestAutoG069}
                     onTestChange={props.onTestChange}
                     criterionId={criterion.id}

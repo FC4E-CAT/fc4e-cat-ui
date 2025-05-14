@@ -17,7 +17,9 @@
     "criterion_imperative": "MUST",
     "motivation_metric_type": "Binary",
     "motivation_metric_algorithm": "Simple Sum",
-    "motivation_metric_benchmark_type": "Binary-Binary "
+    "motivation_metric_benchmark_type": "Binary-Binary ",
+    "g069_param_user_info": "entitlements_in_user_info",
+    "g069_param_token_introspection": "entitlements_in_token_introspection"
   },
   "links": {
     "github": "https://github.com/fc4e-cat",

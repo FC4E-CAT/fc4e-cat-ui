@@ -202,7 +202,10 @@ export interface TestAutoG069 {
   name: string;
   description?: string;
   guidance?: Guidance;
-  type: "Auto-Check-String-Binary";
+  type:
+    | "Auto-Check-String-Binary"
+    | "Auto-Check-AARC-G069-User-Info"
+    | "Auto-Check-AARC-G069-Token-Introspection";
   text: string;
   result: number | null;
   value: string | null;
