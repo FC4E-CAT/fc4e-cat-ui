@@ -18,6 +18,9 @@ const defaultMotivationMetricBenchmarkType =
   config.default_values?.motivation_metric_benchmark_type || "";
 const defaultMotivationMetricAlgorithm =
   config.default_values?.motivation_metric_algorithm || "";
+const defaultG069userInfo = config.default_values?.g069_param_user_info || "";
+const defaultG069tokenIntrospection =
+  config.default_values?.g069_param_token_introspection || "";
 
 const linksGithub = config.links?.github || "";
 
@@ -36,6 +39,8 @@ export {
   defaultMotivationMetricAlgorithm,
   defaultMotivationMetricType,
   defaultMotivationMetricBenchmarkType,
+  defaultG069userInfo,
+  defaultG069tokenIntrospection,
   linksGithub,
   linksDocs,
   g069Providers,

@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { g069Providers } from "@/config";
 
 interface AssessmentTestProps {
+  g069param: string;
   test: TestAutoG069;
   principleId: string;
   criterionId: string;
@@ -62,12 +63,29 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
       )
       .then((resp) => {
         if (resp.status === 200) {
+          // get results from succesfull execution of automated g069 test
           const okResp = resp.data as TestAutoResponse;
+          // if g069param empty then we treat the test results as they come from the remote endpoint
+          // meaning we process the total validation result
+          // if g069param is user token related or token introspection related then we only process those parts
+          // in the additional info dictionary. In each case the result of the specific sub validation becomes the
+          // result of the new test
+          const respResult =
+            props.g069param &&
+            okResp.additional_info &&
+            okResp.additional_info[props.g069param]
+              ? okResp.additional_info[props.g069param].is_valid
+                ? 1
+                : 0
+              : okResp.test_status.is_valid
+                ? 1
+                : 0;
           const newTest = {
             ...props.test,
             value: localValue,
-            result: okResp.test_status.is_valid ? 1 : 0,
+            result: respResult,
           };
+
           props.onTestChange(props.principleId, props.criterionId, newTest);
           setOkStatus(okResp);
         } else {
@@ -143,33 +161,57 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
           )}
           {!runningTest && okStatus !== null && (
             <>
-              <div>{okStatus?.test_status.message}</div>
-              <div>
-                Validation:{" "}
-                {okStatus?.test_status.is_valid ? (
-                  <Badge bg="success">PASS</Badge>
-                ) : (
-                  <Badge bg="danger">FAIL</Badge>
-                )}
-                <div className="m-2">
-                  <ul>
-                    {Object.entries(okStatus.additional_info).map(
-                      ([key, value]) => (
-                        <li key={key}>
-                          <small>
-                            {value.message}:{" "}
-                            {value.is_valid ? (
-                              <Badge bg="success">PASS</Badge>
-                            ) : (
-                              <Badge bg="danger">FAIL</Badge>
-                            )}
-                          </small>
-                        </li>
-                      ),
+              {props.g069param &&
+              okStatus.additional_info &&
+              okStatus.additional_info[props.g069param] ? (
+                <div>
+                  <span>
+                    Validation:{" "}
+                    {okStatus.additional_info[props.g069param].is_valid ? (
+                      <Badge bg="success">PASS</Badge>
+                    ) : (
+                      <Badge bg="danger">FAIL</Badge>
                     )}
-                  </ul>
+                  </span>
+                  <div>
+                    <small>
+                      <ul>
+                        <li>
+                          {okStatus.additional_info[props.g069param].message}
+                        </li>
+                      </ul>
+                    </small>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div>
+                  <div>{okStatus?.test_status.message}</div>
+                  Validation:{" "}
+                  {okStatus?.test_status.is_valid ? (
+                    <Badge bg="success">PASS</Badge>
+                  ) : (
+                    <Badge bg="danger">FAIL</Badge>
+                  )}
+                  <div className="m-2">
+                    <ul>
+                      {Object.entries(okStatus.additional_info).map(
+                        ([key, value]) => (
+                          <li key={key}>
+                            <small>
+                              {value.message}:{" "}
+                              {value.is_valid ? (
+                                <Badge bg="success">PASS</Badge>
+                              ) : (
+                                <Badge bg="danger">FAIL</Badge>
+                              )}
+                            </small>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
             </>
           )}
           {!runningTest && setErrStatus !== null && (

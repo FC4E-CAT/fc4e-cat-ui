@@ -1,5 +1,6 @@
 import { useGetMotivationMetric } from "@/api";
 import { AuthContext } from "@/auth";
+import { defaultG069tokenIntrospection, defaultG069userInfo } from "@/config";
 import { TestAutoG069Form } from "@/pages/assessments/components/tests/TestAutoG069Form";
 import { TestAutoHttpsCheckForm } from "@/pages/assessments/components/tests/TestAutoHttpsCheckForm";
 import { TestAutoMd1Form } from "@/pages/assessments/components/tests/TestAutoMd1Form";
@@ -80,6 +81,35 @@ export default function MotivationMetric({
           <div className="border mt-4" key={test.id}>
             <div className="cat-test-div">
               <TestAutoG069Form
+                g069param=""
+                test={test as TestAutoG069}
+                onTestChange={() => {}}
+                criterionId={getByCriterion ? itemId : ""}
+                principleId={""}
+              />
+            </div>
+          </div>,
+        );
+      } else if (test.type === "Auto-Check-AARC-G069-User-Info") {
+        testList.push(
+          <div className="border mt-4" key={test.id}>
+            <div className="cat-test-div">
+              <TestAutoG069Form
+                g069param={defaultG069userInfo}
+                test={test as TestAutoG069}
+                onTestChange={() => {}}
+                criterionId={getByCriterion ? itemId : ""}
+                principleId={""}
+              />
+            </div>
+          </div>,
+        );
+      } else if (test.type === "Auto-Check-AARC-G069-Token-Introspection") {
+        testList.push(
+          <div className="border mt-4" key={test.id}>
+            <div className="cat-test-div">
+              <TestAutoG069Form
+                g069param={defaultG069tokenIntrospection}
                 test={test as TestAutoG069}
                 onTestChange={() => {}}
                 criterionId={getByCriterion ? itemId : ""}
