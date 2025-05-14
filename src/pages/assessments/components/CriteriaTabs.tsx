@@ -1,14 +1,11 @@
 import {
-  // Alert,
   Col,
   ListGroup,
   Nav,
   OverlayTrigger,
-  // OverlayTrigger,
   Row,
   Tab,
   Tooltip,
-  // Tooltip,
 } from "react-bootstrap";
 import {
   FaCableCar,
@@ -35,7 +32,6 @@ import {
   TestAutoHttpsCheck,
   TestAutoMD1,
   TestAutoG069,
-  // MetricAlgorithm,
 } from "@/types";
 import {
   TestBinaryForm,

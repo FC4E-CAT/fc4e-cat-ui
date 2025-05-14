@@ -12,6 +12,7 @@ import TestsHeader from "./components/TestsHeader";
 import TestSearch from "./components/TestSearch";
 import TestTable from "./components/TestTable";
 import TestPagination from "./components/TestPagination";
+import CreateTestModal from "./components/CreateTestModal";
 
 type TestsState = {
   sortOrder: string;
@@ -223,9 +224,27 @@ function Tests() {
         }}
         handleDelete={handleDeleteConfirmed}
       />
+      <CreateTestModal
+        id={testModalCfg.id}
+        show={
+          testModalCfg.show &&
+          !(testModalCfg.isEditing || testModalCfg.isVersioning)
+        }
+        onHide={() => {
+          setTestModalCfg({
+            id: "",
+            show: false,
+            isVersioning: false,
+            isEditing: false,
+          });
+        }}
+      />
       <TestModal
         id={testModalCfg.id}
-        show={testModalCfg.show}
+        show={
+          testModalCfg.show &&
+          (testModalCfg?.isEditing || testModalCfg?.isVersioning || false)
+        }
         isEditing={testModalCfg?.isEditing}
         isVersioning={testModalCfg?.isVersioning}
         onHide={() => {

@@ -22,8 +22,11 @@ export function MotivationMetricDetailsModal(props: MotivationMetricProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-success text-white" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
+      <Modal.Header closeButton>
+        <Modal.Title
+          className="d-flex align-items-center gap-1"
+          id="contained-modal-title-vcenter"
+        >
           {props.getByCriterion
             ? t("page_motivations.criterion_metric_tests")
             : t("page_motivations.metric_details")}

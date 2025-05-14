@@ -29,8 +29,11 @@ export function CriterionDetailsModal(props: CriDetailsModalProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-success text-white" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
+      <Modal.Header closeButton>
+        <Modal.Title
+          className="d-flex align-items-center gap-1"
+          id="contained-modal-title-vcenter"
+        >
           <FaAward className="me-2" />
           {t("page_criteria.view")}
         </Modal.Title>

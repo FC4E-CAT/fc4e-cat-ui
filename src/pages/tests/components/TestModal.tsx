@@ -1,5 +1,4 @@
 import {
-  useCreateTest,
   useGetAllTestMethods,
   useGetTest,
   useUpdateTest,
@@ -21,13 +20,7 @@ import {
 } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import {
-  FaEdit,
-  FaFile,
-  FaInfoCircle,
-  FaTrash,
-  FaCodeBranch,
-} from "react-icons/fa";
+import { FaEdit, FaInfoCircle, FaTrash, FaCodeBranch } from "react-icons/fa";
 
 interface TestModalProps {
   id: string;
@@ -36,9 +29,7 @@ interface TestModalProps {
   isVersioning?: boolean;
   onHide: () => void;
 }
-/**
- * Modal component for creating a test
- */
+
 export function TestModal(props: TestModalProps) {
   const alert = useRef<AlertInfo>({
     message: "",
@@ -203,12 +194,6 @@ export function TestModal(props: TestModalProps) {
     return testHeader.tes !== "" && testHeader.label !== "";
   }
 
-  const mutateCreate = useCreateTest(
-    keycloak?.token || "",
-    testHeader,
-    testDefinition,
-  );
-
   const mutateUpdate = useUpdateTest(
     keycloak?.token || "",
     props.id,
@@ -247,30 +232,6 @@ export function TestModal(props: TestModalProps) {
     });
   }
 
-  // handle backend call to add a new test
-  function handleCreate() {
-    updateParamTestDef();
-    const promise = mutateCreate
-      .mutateAsync()
-      .catch((err) => {
-        alert.current = {
-          message: "Error: " + err.response.data.message,
-        };
-        throw err;
-      })
-      .then(() => {
-        props.onHide();
-        alert.current = {
-          message: t("page_tests.toast_create_success"),
-        };
-      });
-    toast.promise(promise, {
-      loading: t("page_tests.toast_create_progress"),
-      success: () => `${alert.current.message}`,
-      error: () => `${alert.current.message}`,
-    });
-  }
-
   function handleCreateNewVersion() {
     updateParamTestDef();
     const promise = mutateCreateVersion
@@ -302,22 +263,20 @@ export function TestModal(props: TestModalProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-success text-white" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
+      <Modal.Header closeButton>
+        <Modal.Title
+          className="d-flex align-items-center gap-1"
+          id="contained-modal-title-vcenter"
+        >
           {props.id && !props.isVersioning ? (
             <>
               <FaEdit className="me-2" />
               {t("page_tests.update")}
             </>
-          ) : props.id && props.isVersioning ? (
+          ) : (
             <>
               <FaCodeBranch className="me-2" />
               {t("page_tests.create_new_version")}
-            </>
-          ) : (
-            <>
-              <FaFile className="me-2" />
-              {t("page_tests.create_new")}
             </>
           )}
         </Modal.Title>
@@ -590,7 +549,7 @@ export function TestModal(props: TestModalProps) {
           >
             {t("buttons.create_version")}
           </Button>
-        ) : props.id ? (
+        ) : (
           <Button
             className="btn-success"
             onClick={() => {
@@ -600,17 +559,6 @@ export function TestModal(props: TestModalProps) {
             }}
           >
             {t("buttons.update")}
-          </Button>
-        ) : (
-          <Button
-            className="btn-success"
-            onClick={() => {
-              if (handleValidate() === true) {
-                handleCreate();
-              }
-            }}
-          >
-            {t("buttons.create")}
           </Button>
         )}
       </Modal.Footer>
