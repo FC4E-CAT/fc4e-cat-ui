@@ -154,7 +154,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     subject_type: filters.subject_type,
     isPublic: listPublic,
     actorId: actorIdParam || "",
-    motivationId: motivationIdParam || "",
+    motivationId: "",
   });
 
   // refetch users when parameters change

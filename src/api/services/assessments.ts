@@ -99,7 +99,9 @@ export const useGetAssessments = ({
     queryKey: ["assessments"],
     queryFn: async () => {
       let url = isPublic
-        ? `/v2/assessments/by-motivation/${motivationId}/by-actor/${actorId}?size=${size}&page=${page}`
+        ? motivationId == ""
+          ? `/v2/assessments/by-actor/${actorId}?size=${size}&page=${page}`
+          : `/v2/assessments/by-motivation/${motivationId}/by-actor/${actorId}?size=${size}&page=${page}`
         : `/v2/assessments?size=${size}&page=${page}`;
 
       subject_name ? (url = `${url}&subject_name=${subject_name}`) : null;

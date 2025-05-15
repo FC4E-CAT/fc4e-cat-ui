@@ -54,7 +54,7 @@ function Assessments() {
           title: actorItem.label,
           description: actorItem.description,
           image: cardImg,
-          linkText: t("page_assessments.view"),
+          linkText: t("page_assessments.public_view"),
           link: `/public-assessments?actor-id=${
             actorItem.id
           }&motivation-id=${"pid_graph:3E109BBA"}&actor-name=${actorItem.label}`,
