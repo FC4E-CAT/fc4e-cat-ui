@@ -297,6 +297,7 @@
     "tip_delete": "Delete Assessment"
   },
   "page_assessments": {
+    "public_view": "View public assessments",
     "view": "View your assessments",
     "subtitle": "Read about different actors in the ecosystem before starting."
   },
