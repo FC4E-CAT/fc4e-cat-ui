@@ -14,13 +14,7 @@ import {
 import { APIClient } from "../client";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
-import {
-  RegistryTest,
-  RegistryTestsResponse,
-  TestDefinitionInput,
-  TestHeaderInput,
-  TestInput,
-} from "@/types/tests";
+import { RegistryTest, RegistryTestsResponse, TestInput } from "@/types/tests";
 
 export const useGetAllAlgorithms = ({
   token,
@@ -153,20 +147,13 @@ export const useGetAllTests = ({ token, isRegistered, size }: ApiOptions) =>
     enabled: isRegistered,
   });
 
-export const useCreateTest = (
-  token: string,
-  testHeader: TestHeaderInput,
-  testDefinition: TestDefinitionInput,
-) => {
+export const useCreateTest = (token: string, test: TestInput) => {
   const queryClient = useQueryClient();
   return useMutation(
     async () => {
       const response = await APIClient(token).post<TestInput>(
         `/v1/registry/tests`,
-        {
-          test: testHeader,
-          test_definition: testDefinition,
-        },
+        test,
       );
       return response.data;
     },
@@ -247,21 +234,13 @@ export const useGetStatistics = () =>
     },
   });
 
-export const useUpdateTest = (
-  token: string,
-  id: string,
-  testHeader: TestHeaderInput,
-  testDefinition: TestDefinitionInput,
-) => {
+export const useUpdateTest = (token: string, id: string, test: TestInput) => {
   const queryClient = useQueryClient();
   return useMutation(
     async () => {
       const response = await APIClient(token).patch<TestInput>(
         `/v1/registry/tests/${id}`,
-        {
-          test: testHeader,
-          test_definition: testDefinition,
-        },
+        test,
       );
       return response.data;
     },
@@ -292,21 +271,16 @@ export function useDeleteTest(token: string) {
 export function useCreateTestVersion({
   token,
   id,
-  testHeader,
-  testDefinition,
+  test,
 }: {
   token: string;
   id: string;
-  testHeader: TestHeaderInput;
-  testDefinition: TestDefinitionInput;
+  test: TestInput;
 }) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
-      return APIClient(token).post(`/v1/registry/tests/${id}/version`, {
-        test: testHeader,
-        test_definition: testDefinition,
-      });
+      return APIClient(token).post(`/v1/registry/tests/${id}/version`, test);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["registry-tests"]);

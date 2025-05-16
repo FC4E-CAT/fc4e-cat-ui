@@ -30,17 +30,17 @@ const TestVersionRow: React.FC<TestVersionRowProps> = ({
       <td className="align-middle">
         <div className="d-flex flex-column gap-2 ps-4">
           <span className="w-25 badge bg-secondary px-2 py-1 text-center text-truncate">
-            {version.test.version ? `v${version.test.version}` : "old version"}
+            {version?.version ? `v${version.version}` : "old version"}
           </span>
           <span style={{ fontSize: "0.64rem" }} className="text-muted">
-            {version.test.id}
+            {version.id}
           </span>
         </div>
       </td>
-      <td className="align-middle">{version.test.label}</td>
-      <td className="align-middle">{version.test.description}</td>
+      <td className="align-middle">{version.label}</td>
+      <td className="align-middle">{version.description}</td>
       <td className="align-middle">
-        <small>{version.test.last_touch?.split("T")[0]}</small>
+        <small>{version?.last_touch?.split("T")[0]}</small>
       </td>
       <td>
         {version?.used_by_motivations ? (
@@ -52,7 +52,7 @@ const TestVersionRow: React.FC<TestVersionRowProps> = ({
           <OverlayTrigger placement="top" overlay={tooltipView}>
             <Button
               className="btn btn-light btn-sm m-1"
-              onClick={() => onView(version.test.id)}
+              onClick={() => onView(version.id)}
             >
               <FaBars />
             </Button>
@@ -60,7 +60,7 @@ const TestVersionRow: React.FC<TestVersionRowProps> = ({
           <OverlayTrigger placement="top" overlay={tooltipEdit}>
             <Button
               className="btn btn-light btn-sm m-1"
-              onClick={() => onEdit(version.test.id)}
+              onClick={() => onEdit(version.id)}
             >
               <FaEdit />
             </Button>

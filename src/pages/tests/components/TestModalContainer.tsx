@@ -1,7 +1,7 @@
 import { Modal, Button } from "react-bootstrap";
 import { FaFile, FaEdit, FaCodeBranch } from "react-icons/fa";
 import { RegistryResource } from "@/types";
-import { TestDefinitionInput, TestHeaderInput, TestParam } from "@/types/tests";
+import { TestInput, TestParam } from "@/types/tests";
 import TestPreviewModal from "./TestPreviewModal";
 import { useTranslation } from "react-i18next";
 import TestHeaderForm from "./TestHeaderForm";
@@ -15,13 +15,11 @@ export interface TestModalUIProps {
   onHide: () => void;
   testMethods: RegistryResource[];
   showErrors: boolean;
-  testHeader: TestHeaderInput;
-  testDefinition: TestDefinitionInput;
+  test: TestInput;
   params: TestParam[];
   hasEvidence: boolean;
   areParamsDisabled: boolean;
-  setTestHeader: (value: TestHeaderInput) => void;
-  setTestDefinition: (value: TestDefinitionInput) => void;
+  setTest: (value: TestInput) => void;
   setHasEvidence: (value: boolean) => void;
   addNewParam: () => void;
   updateParam: (id: number, field: keyof TestParam, value: string) => void;
@@ -41,13 +39,11 @@ function TestModalContainer(props: TestModalUIProps) {
     onHide,
     testMethods,
     showErrors,
-    testHeader,
-    testDefinition,
+    test,
     params,
     hasEvidence,
     areParamsDisabled,
-    setTestHeader,
-    setTestDefinition,
+    setTest,
     setHasEvidence,
     addNewParam,
     updateParam,
@@ -100,16 +96,16 @@ function TestModalContainer(props: TestModalUIProps) {
       >
         <div style={{ width: "50%" }}>
           <TestHeaderForm
-            testHeader={testHeader}
-            setTestHeader={setTestHeader}
-            showErrors={showErrors}
             isEditing={isEditing}
             isVersioning={isVersioning}
+            setTest={setTest}
+            showErrors={showErrors}
+            test={test}
           />
           <TestMethodAndParams
             testMethods={testMethods}
-            testDefinition={testDefinition}
-            setTestDefinition={setTestDefinition}
+            test={test}
+            setTest={setTest}
             params={params}
             showErrors={showErrors}
             setHasEvidence={setHasEvidence}
@@ -132,12 +128,10 @@ function TestModalContainer(props: TestModalUIProps) {
         ></div>
         <div style={{ width: "50%" }}>
           <TestPreviewModal
-            testHeader={testHeader}
-            testDefinition={testDefinition}
+            test={test}
             params={params}
             testMethodName={
-              testMethods.find((m) => m.id === testDefinition.test_method_id)
-                ?.label
+              testMethods.find((m) => m.id === test?.test_method_id)?.label
             }
             hasEvidenceParam={hasEvidence}
           />

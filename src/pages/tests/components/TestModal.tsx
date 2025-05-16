@@ -7,7 +7,7 @@ import {
 } from "@/api/services/registry";
 import { AuthContext } from "@/auth";
 import { AlertInfo, RegistryResource } from "@/types";
-import { TestDefinitionInput, TestHeaderInput, TestParam } from "@/types/tests";
+import { TestInput, TestParam } from "@/types/tests";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -30,20 +30,18 @@ function TestModal(props: TestModalProps) {
 
   const [testMethods, setTestMethods] = useState<RegistryResource[]>([]);
   const [showErrors, setShowErrors] = useState(false);
-  const [testHeader, setTestHeader] = useState<TestHeaderInput>({
+  const [test, setTest] = useState<TestInput>({
     label: "",
     tes: "",
     description: "",
-  });
-
-  const [testDefinition, setTestDefinition] = useState<TestDefinitionInput>({
     test_method_id: "",
-    label: "",
+    label_test_definition: "",
     param_type: "onscreen",
     test_params: "",
     test_question: "",
     tool_tip: "",
   });
+
   const [params, setParams] = useState<TestParam[]>([]);
   const [hasEvidence, setHasEvidence] = useState<boolean>(false);
 
@@ -60,15 +58,14 @@ function TestModal(props: TestModalProps) {
 
   useEffect(() => {
     if (props.id && data) {
-      console.log("data.test_definition", data.test_definition);
       // split params
-      const paramNames = data.test_definition.test_params.split("|");
-      const paramTexts = data.test_definition.test_question.split("|");
-      const paramTips = data.test_definition.tool_tip.split("|");
+      const paramNames = data?.test_params?.split("|") || [];
+      const paramTexts = data?.test_question?.split("|") || [];
+      const paramTips = data?.tool_tip?.split("|") || [];
       const params: TestParam[] = [];
 
       // Check if evidence exists in the loaded parameters
-      const evidenceIndex = paramNames.indexOf("evidence");
+      const evidenceIndex = paramNames?.indexOf("evidence");
       const evidenceExists = evidenceIndex !== -1;
       setHasEvidence(evidenceExists);
 
@@ -84,8 +81,9 @@ function TestModal(props: TestModalProps) {
         }
       }
 
-      setTestHeader(data.test);
-      setTestDefinition(data.test_definition);
+      console.log("data - TestModal", data);
+
+      setTest(data);
       setParams(params);
     }
   }, [data, props.id]);
@@ -95,8 +93,6 @@ function TestModal(props: TestModalProps) {
     let text = "";
     let tips = "";
     const subParams = params.filter((item) => item.name !== "evidence");
-
-    console.log("subParams", subParams);
 
     // iterate over params (minus evidence) and update test def
     subParams.map((item) => {
@@ -116,12 +112,12 @@ function TestModal(props: TestModalProps) {
       names = names === "" ? "evidence" : names + "|evidence";
     }
 
-    setTestDefinition({
-      ...testDefinition,
+    setTest((test) => ({
+      ...test,
       test_question: text,
       test_params: names,
       tool_tip: tips,
-    });
+    }));
   };
 
   const updateParam = (id: number, field: keyof TestParam, value: string) => {
@@ -149,14 +145,12 @@ function TestModal(props: TestModalProps) {
   useEffect(() => {
     setShowErrors(false);
     if (props.id === "") {
-      setTestHeader({
+      setTest({
         label: "",
         tes: "",
         description: "",
-      });
-      setTestDefinition({
         test_method_id: "",
-        label: "",
+        label_test_definition: "",
         param_type: "onscreen",
         test_params: "",
         test_question: "",
@@ -191,27 +185,17 @@ function TestModal(props: TestModalProps) {
 
   function handleValidate() {
     setShowErrors(true);
-    return testHeader.tes !== "" && testHeader.label !== "";
+    return test.tes !== "" && test.label !== "";
   }
 
-  const mutateCreate = useCreateTest(
-    keycloak?.token || "",
-    testHeader,
-    testDefinition,
-  );
+  const mutateCreate = useCreateTest(keycloak?.token || "", test);
 
-  const mutateUpdate = useUpdateTest(
-    keycloak?.token || "",
-    props.id,
-    testHeader,
-    testDefinition,
-  );
+  const mutateUpdate = useUpdateTest(keycloak?.token || "", props.id, test);
 
   const mutateCreateVersion = useCreateTestVersion({
     token: keycloak?.token || "",
     id: props.id,
-    testHeader,
-    testDefinition,
+    test,
   });
 
   function handleCreate() {
@@ -284,8 +268,7 @@ function TestModal(props: TestModalProps) {
   }
 
   const areParamsDisabled =
-    testDefinition.test_method_id === "" ||
-    testDefinition.test_method_id == null;
+    test.test_method_id === "" || test.test_method_id == null;
 
   return (
     <TestModalContainer
@@ -296,13 +279,11 @@ function TestModal(props: TestModalProps) {
       onHide={props.onHide}
       testMethods={testMethods}
       showErrors={showErrors}
-      testHeader={testHeader}
-      testDefinition={testDefinition}
+      test={test}
       params={params}
       hasEvidence={hasEvidence}
       areParamsDisabled={areParamsDisabled}
-      setTestHeader={setTestHeader}
-      setTestDefinition={setTestDefinition}
+      setTest={setTest}
       setHasEvidence={setHasEvidence}
       addNewParam={addNewParam}
       updateParam={updateParam}

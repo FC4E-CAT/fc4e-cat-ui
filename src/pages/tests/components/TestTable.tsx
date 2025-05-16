@@ -101,12 +101,12 @@ const TestTable: React.FC<TestTableProps> = ({
       {tests.length > 0 && (
         <tbody>
           {tests.map((item) => {
-            const isExpanded = expandedTests[item.test.id] || false;
+            const isExpanded = expandedTests[item.id] || false;
             const hasVersions =
               item.test_versions && item.test_versions.length > 0;
 
             return (
-              <Fragment key={`fragment-${item.test.id}`}>
+              <Fragment key={`fragment-${item.id}`}>
                 <TestRow
                   test={item}
                   isExpanded={isExpanded}
@@ -120,7 +120,7 @@ const TestTable: React.FC<TestTableProps> = ({
                   hasVersions &&
                   item.test_versions?.map((version) => (
                     <TestVersionRow
-                      key={`version-${version.test.id}`}
+                      key={`version-${version.id}`}
                       version={version}
                       onView={onViewTest}
                       onEdit={onEditTest}
