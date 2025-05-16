@@ -11,6 +11,7 @@ interface EvidenceURLSProps {
   urls: EvidenceURL[];
   onListChange(newURLs: EvidenceURL[]): void;
   noTitle?: boolean;
+  isPreviewMode?: boolean;
 }
 
 export const EvidenceURLS = (props: EvidenceURLSProps) => {
@@ -109,6 +110,7 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
                   handleAddURL();
                 }
               }}
+              title={t("page_assessment_edit.evidence_url")}
             />
           </InputGroup>
           <InputGroup className="mt-2" size="sm">
@@ -129,11 +131,15 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
                   handleAddURL();
                 }
               }}
+              title={t("page_assessment_edit.evidence_description")}
             />
           </InputGroup>
         </Col>
         <Col md="auto">
-          <span className="btn btn-primary btn-sm" onClick={handleAddURL}>
+          <span
+            className={`btn btn-primary btn-sm ${props?.isPreviewMode && "disabled"}`}
+            onClick={handleAddURL}
+          >
             {t("buttons.add")}
           </span>
         </Col>

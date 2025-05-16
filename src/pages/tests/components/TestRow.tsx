@@ -3,7 +3,7 @@ import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import {
   FaBars,
   FaChevronDown,
-  FaChevronUp,
+  FaChevronRight,
   FaCodeBranch,
   FaEdit,
   FaTrash,
@@ -53,7 +53,6 @@ const TestRow: React.FC<TestRowProps> = ({
   );
 
   const hasMotivations = (test: RegistryTest): boolean => {
-    console.log("test", test);
     return Boolean(
       test?.used_by_motivations && test.used_by_motivations?.length > 0,
     );
@@ -73,7 +72,7 @@ const TestRow: React.FC<TestRowProps> = ({
               style={{ cursor: "pointer", width: "1rem" }}
               onClick={() => toggleExpand(test.test.id)}
             >
-              {isExpanded ? <FaChevronDown /> : <FaChevronUp />}
+              {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
             </div>
           )}
           <div>
@@ -82,7 +81,7 @@ const TestRow: React.FC<TestRowProps> = ({
               style={{ color: idToColor(test.test.id) }}
             />
           </div>
-          <div className="ms-2 d-flex flex-column justify-content-between">
+          <div className="ms-2 d-flex flex-column justify-content-between ">
             <div>
               {test.test.tes}{" "}
               {hasVersions && test.is_latest_version !== false && (
