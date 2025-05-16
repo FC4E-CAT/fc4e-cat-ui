@@ -12,7 +12,7 @@ import {
   useGetMotivationMetricTests,
   useUpdateMotivationMetricTests,
 } from "@/api";
-import { RegistryTest, RegistryTestHeader } from "@/types/tests";
+import { RegistryTest } from "@/types/tests";
 import { useGetAllTests } from "@/api/services/registry";
 import TestModal from "@/pages/tests/components/TestModal";
 import { useTranslation } from "react-i18next";
@@ -24,10 +24,8 @@ export default function MotivationMetricTests() {
   const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
   const [showCreateTest, setShowCreateTest] = useState(false);
-  const [availableTests, setAvailableTests] = useState<RegistryTestHeader[]>(
-    [],
-  );
-  const [selectedTests, setSelectedTests] = useState<RegistryTestHeader[]>([]);
+  const [availableTests, setAvailableTests] = useState<RegistryTest[]>([]);
+  const [selectedTests, setSelectedTests] = useState<RegistryTest[]>([]);
 
   const alert = useRef<AlertInfo>({
     message: "",
@@ -74,10 +72,10 @@ export default function MotivationMetricTests() {
       tmpTests
         .map((item) => {
           return {
-            id: item.test.id,
-            tes: item.test.tes,
-            label: item.test.label,
-            description: item.test.description,
+            id: item.id,
+            tes: item.tes,
+            label: item.label,
+            description: item.description,
           };
         })
         .filter((item) => !selTests.includes(item.id)),

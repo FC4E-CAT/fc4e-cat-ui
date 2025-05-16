@@ -34,7 +34,7 @@ const TestRow: React.FC<TestRowProps> = ({
   onDelete,
 }) => {
   const { t } = useTranslation();
-  const hasVersions = test.test_versions && test.test_versions.length > 0;
+  const hasVersions = test?.test_versions && test.test_versions?.length > 0;
 
   const tooltipView = (
     <Tooltip id="tip-view">{t("page_tests.tip_view")}</Tooltip>
@@ -59,7 +59,7 @@ const TestRow: React.FC<TestRowProps> = ({
   };
 
   return (
-    <tr key={test.test.id} className={isExpanded ? "opened-table-row" : ""}>
+    <tr key={test.id} className={isExpanded ? "opened-table-row" : ""}>
       <td
         className={
           isExpanded ? "align-middle opened-table-row" : "align-middle"
@@ -70,7 +70,7 @@ const TestRow: React.FC<TestRowProps> = ({
             <div
               className="me-2 d-flex align-items-center"
               style={{ cursor: "pointer", width: "1rem" }}
-              onClick={() => toggleExpand(test.test.id)}
+              onClick={() => toggleExpand(test.id)}
             >
               {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
             </div>
@@ -78,23 +78,23 @@ const TestRow: React.FC<TestRowProps> = ({
           <div>
             <FaClipboardQuestion
               size={"2.5rem"}
-              style={{ color: idToColor(test.test.id) }}
+              style={{ color: idToColor(test.id) }}
             />
           </div>
           <div className="ms-2 d-flex flex-column justify-content-between ">
             <div>
-              {test.test.tes}{" "}
+              {test.tes}{" "}
               {hasVersions && test.is_latest_version !== false && (
                 <span className="ms-2 badge bg-success">
                   latest
-                  {test.test.version ? ` v${test.test.version}` : ""}
+                  {test?.version ? ` v${test.version}` : ""}
                 </span>
               )}
             </div>
 
             <div>
               <span style={{ fontSize: "0.64rem" }} className="text-muted">
-                {test.test.id}
+                {test.id}
               </span>
             </div>
           </div>
@@ -107,7 +107,7 @@ const TestRow: React.FC<TestRowProps> = ({
             : "align-middle"
         }
       >
-        {test.test.label}
+        {test.label}
       </td>
       <td
         className={
@@ -116,7 +116,7 @@ const TestRow: React.FC<TestRowProps> = ({
             : "align-middle"
         }
       >
-        {test.test.description}
+        {test.description}
       </td>
       <td
         className={
@@ -125,7 +125,7 @@ const TestRow: React.FC<TestRowProps> = ({
             : "align-middle"
         }
       >
-        <small>{test.test.last_touch?.split("T")[0]}</small>
+        <small>{test.last_touch?.split("T")[0]}</small>
       </td>
       <td className={hasVersions && isExpanded ? "opened-table-row" : ""}>
         <MotivationRefList motivations={test.used_by_motivations || []} />
@@ -135,7 +135,7 @@ const TestRow: React.FC<TestRowProps> = ({
           <OverlayTrigger placement="top" overlay={tooltipView}>
             <Button
               className="btn btn-light btn-sm m-1"
-              onClick={() => onView(test.test.id)}
+              onClick={() => onView(test.id)}
             >
               <FaBars />
             </Button>
@@ -143,7 +143,7 @@ const TestRow: React.FC<TestRowProps> = ({
           <OverlayTrigger placement="top" overlay={tooltipEdit}>
             <Button
               className="btn btn-light btn-sm m-1"
-              onClick={() => onEdit(test.test.id)}
+              onClick={() => onEdit(test.id)}
             >
               <FaEdit />
             </Button>
@@ -152,7 +152,7 @@ const TestRow: React.FC<TestRowProps> = ({
           <OverlayTrigger placement="top" overlay={tooltipCreateVersion}>
             <Button
               className="btn btn-light btn-sm m-1"
-              onClick={() => onCreateVersion(test.test.id)}
+              onClick={() => onCreateVersion(test.id)}
             >
               <FaCodeBranch />
             </Button>
@@ -162,12 +162,7 @@ const TestRow: React.FC<TestRowProps> = ({
             <OverlayTrigger placement="top" overlay={tooltipDelete}>
               <Button
                 className="btn btn-light btn-sm m-1"
-                onClick={() =>
-                  onDelete(
-                    test.test.id,
-                    `${test.test.label} - ${test.test.tes}`,
-                  )
-                }
+                onClick={() => onDelete(test.id, `${test.label} - ${test.tes}`)}
               >
                 <FaTrash />
               </Button>

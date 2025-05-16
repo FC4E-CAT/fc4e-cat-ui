@@ -1,20 +1,18 @@
 import React from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { TestDefinitionInput, TestHeaderInput, TestParam } from "@/types/tests";
+import { TestInput, TestParam } from "@/types/tests";
 import { EvidenceURLS, TestToolTip } from "@/pages/assessments/components";
 
 interface TestPreviewProps {
-  testHeader: TestHeaderInput;
-  testDefinition?: TestDefinitionInput;
+  test: TestInput;
   params: TestParam[];
   testMethodName?: string;
   hasEvidenceParam?: boolean;
 }
 
 const TestPreviewModal: React.FC<TestPreviewProps> = ({
-  testHeader,
-  testDefinition,
+  test,
   params,
   testMethodName,
   hasEvidenceParam,
@@ -23,7 +21,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
 
   // Determine the test type based on the test_method_id
   const getTestType = (): string => {
-    if (!testDefinition?.test_method_id) return "binary"; // Default type
+    if (!test?.test_method_id) return "binary"; // Default type
 
     // Map test_method_id to test type based on the method name
     const methodName = testMethodName?.toLowerCase() || "";
@@ -307,11 +305,11 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
           <div className="d-flex align-items-start mb-3">
             <div>
               <h5>
-                {testHeader.tes || t("{TES Name placeholder}")} -{" "}
-                {testHeader.label || t("{Test Label placeholder}")}
+                {test.tes || t("{TES Name placeholder}")} -{" "}
+                {test.label || t("{Test Label placeholder}")}
               </h5>
               <p className="text-muted mb-2">
-                {testHeader.description || t("{Test Description placeholder}")}
+                {test.description || t("{Test Description placeholder}")}
               </p>
               {testMethodName && (
                 <span className="badge bg-secondary me-1">
@@ -338,7 +336,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
               />
             </div>
           )}
-          <div className="mb-2">
+          <div className="ms-1 mb-2">
             {params.length > 0 ? (
               renderParams()
             ) : (

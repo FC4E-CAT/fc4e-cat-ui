@@ -9,17 +9,17 @@ import {
 } from "react-bootstrap";
 import { FaInfoCircle, FaTrash } from "react-icons/fa";
 import { RegistryResource } from "@/types";
-import { TestDefinitionInput, TestParam } from "@/types/tests";
+import { TestInput, TestParam } from "@/types/tests";
 import { useTranslation } from "react-i18next";
 
 interface TestMethodAndParamsProps {
   testMethods: RegistryResource[];
   showErrors: boolean;
-  testDefinition: TestDefinitionInput;
+  test: TestInput;
   params: TestParam[];
   hasEvidence: boolean;
   areParamsDisabled: boolean;
-  setTestDefinition: (value: TestDefinitionInput) => void;
+  setTest: (value: TestInput) => void;
   setHasEvidence: (value: boolean) => void;
   addNewParam: () => void;
   updateParam: (id: number, field: keyof TestParam, value: string) => void;
@@ -30,11 +30,11 @@ function TestMethodAndParams(props: TestMethodAndParamsProps) {
   const {
     testMethods,
     showErrors,
-    testDefinition,
+    test,
     params,
     hasEvidence,
     areParamsDisabled,
-    setTestDefinition,
+    setTest,
     setHasEvidence,
     addNewParam,
     updateParam,
@@ -47,35 +47,32 @@ function TestMethodAndParams(props: TestMethodAndParamsProps) {
       <Row>
         <Col className="mb-1">
           <InputGroup className="mt-2">
-            <OverlayTrigger
-              key="top"
-              placement="top"
-              overlay={
-                <Tooltip id={`tooltip-top`}>
-                  {t("page_tests.tip_test_method")}
-                </Tooltip>
-              }
-            >
-              <InputGroup.Text id="label-test-method">
-                <FaInfoCircle className="me-2" /> {t("page_tests.test_method")}{" "}
-                (*):
-              </InputGroup.Text>
-            </OverlayTrigger>
+            <InputGroup.Text id="label-test-method">
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip id={`tooltip-top`}>
+                    {t("page_tests.tip_test_method")}
+                  </Tooltip>
+                }
+              >
+                <span className="me-2 d-flex align-items-center">
+                  <FaInfoCircle />
+                </span>
+              </OverlayTrigger>
+              {t("page_tests.test_method")} (*):
+            </InputGroup.Text>
             <Form.Select
               id="input-test-method"
               aria-describedby="label-test-method"
               placeholder={t("page_tests.select_test_method")}
               onChange={(e) => {
-                setTestDefinition({
-                  ...testDefinition,
+                setTest({
+                  ...test,
                   test_method_id: e.target.value,
                 });
               }}
-              value={
-                testDefinition.test_method_id
-                  ? testDefinition.test_method_id
-                  : ""
-              }
+              value={test.test_method_id ? test.test_method_id : ""}
             >
               <>
                 <option value="" disabled>
@@ -89,16 +86,15 @@ function TestMethodAndParams(props: TestMethodAndParamsProps) {
               </>
             </Form.Select>
           </InputGroup>
-          {showErrors && testDefinition.test_method_id === "" && (
+          {showErrors && test.test_method_id === "" && (
             <span className="text-danger">{t("required")}</span>
           )}
-          {testDefinition.test_method_id != "" && (
+          {test.test_method_id != "" && (
             <div className="bg-light text-secondary border rounded mt-2 p-3">
               <small>
                 {
-                  testMethods.find(
-                    (item) => item.id == testDefinition.test_method_id,
-                  )?.description
+                  testMethods.find((item) => item.id == test.test_method_id)
+                    ?.description
                 }
               </small>
             </div>
@@ -124,13 +120,13 @@ function TestMethodAndParams(props: TestMethodAndParamsProps) {
                 </span>
               </OverlayTrigger>
             </div>
-            {areParamsDisabled && params?.length === 0 ? (
+            {areParamsDisabled ? (
               <OverlayTrigger
                 placement="top"
                 overlay={
                   <Tooltip id="toggle-tooltip">
-                    You must select a test method and add at least one test
-                    parameter before adding an evidence parameter
+                    You must select a test method before adding an evidence
+                    parameter
                   </Tooltip>
                 }
               >
@@ -141,11 +137,7 @@ function TestMethodAndParams(props: TestMethodAndParamsProps) {
                   isValid
                   onChange={(e) => {
                     console.log("e.target.checked", e.target.checked);
-                    if (
-                      e.target.checked &&
-                      areParamsDisabled &&
-                      params?.length === 0
-                    ) {
+                    if (e.target.checked && areParamsDisabled) {
                       return;
                     }
                     setHasEvidence(e.target.checked);
@@ -173,7 +165,7 @@ function TestMethodAndParams(props: TestMethodAndParamsProps) {
                 placement="top"
                 overlay={
                   <Tooltip id="toggle-tooltip">
-                    You must select a test method first to add parameters
+                    You must select a test method before adding parameters
                   </Tooltip>
                 }
               >

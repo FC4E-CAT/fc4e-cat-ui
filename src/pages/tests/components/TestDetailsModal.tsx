@@ -23,15 +23,13 @@ export function TestDetailsModal(props: TestModalDetailsProps) {
     isRegistered: registered,
   });
 
-  const testParams: string[] = data?.test_definition
-    ? data.test_definition.test_params.split("|")
+  const testParams: string[] = data?.test_params
+    ? data.test_params.split("|")
     : [];
-  const testQuestions: string[] = data?.test_definition
-    ? data.test_definition.test_question.split("|")
+  const testQuestions: string[] = data?.test_question
+    ? data.test_question.split("|")
     : [];
-  const testTips: string[] = data?.test_definition
-    ? data.test_definition.tool_tip.split("|")
-    : [];
+  const testTips: string[] = data?.tool_tip ? data.tool_tip.split("|") : [];
 
   return (
     <Modal
@@ -55,21 +53,21 @@ export function TestDetailsModal(props: TestModalDetailsProps) {
           <h5>General Info:</h5>
           <div>
             <strong className="me-2">Id:</strong>
-            {data?.test.id}
+            {data?.id}
           </div>
           <div>
             <strong className="me-2">Label:</strong>
-            {data?.test.label}
+            {data?.label}
           </div>
           <div>
             <strong className="me-2">Description:</strong>
-            {data?.test.description}
+            {data?.description}
           </div>
         </div>
         <hr />
         <h5>Parameters:</h5>
         <ListGroup>
-          {data?.test_definition.test_params.split("|").map((item, index) => {
+          {data?.test_params?.split("|")?.map((item, index) => {
             return (
               <ListGroupItem key={item}>
                 <div>
@@ -78,11 +76,17 @@ export function TestDetailsModal(props: TestModalDetailsProps) {
                 </div>
                 <div>
                   <strong className="me-2">Text:</strong>
-                  {testQuestions[index]}
+                  {testParams[index] === "evidence"
+                    ? testQuestions[index] ||
+                      "Provide evidence of that via a URL to a page or to a documentation"
+                    : testQuestions[index]}
                 </div>
                 <div>
                   <strong className="me-2">Tooltip:</strong>
-                  {testTips[index]}
+                  {testParams[index] === "evidence"
+                    ? testTips[index] ||
+                      "A document, web page, or publication describing provisions"
+                    : testTips[index]}
                 </div>
               </ListGroupItem>
             );
