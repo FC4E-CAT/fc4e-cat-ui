@@ -1,10 +1,8 @@
 import React from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaBars, FaEdit } from "react-icons/fa";
-import { FaClipboardQuestion } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
 import { RegistryTest } from "@/types/tests";
-import { idToColor } from "@/utils/admin";
 import { MotivationRefList } from "@/components/MotivationRefList";
 
 interface TestVersionRowProps {
@@ -28,23 +26,12 @@ const TestVersionRow: React.FC<TestVersionRowProps> = ({
   );
 
   return (
-    <tr className="version-row version-child-column">
+    <tr className="version-row">
       <td className="align-middle">
         <div className="d-flex flex-column gap-2 ps-4">
-          <div className="d-flex align-items-center gap-1">
-            <FaClipboardQuestion
-              size={"2.2rem"}
-              style={{
-                color: idToColor(version.test.id),
-                opacity: 0.7,
-              }}
-            />
-            <span className="badge bg-secondary">
-              {version.test.version
-                ? `v${version.test.version}`
-                : "old version"}
-            </span>
-          </div>
+          <span className="w-25 badge bg-secondary px-2 py-1 text-center text-truncate">
+            {version.test.version ? `v${version.test.version}` : "old version"}
+          </span>
           <span style={{ fontSize: "0.64rem" }} className="text-muted">
             {version.test.id}
           </span>

@@ -1,7 +1,6 @@
 import { AuthContext } from "@/auth";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AlertInfo } from "@/types";
-import { TestModal } from "@/pages/tests/components/TestModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { useTranslation } from "react-i18next";
@@ -12,7 +11,7 @@ import TestsHeader from "./components/TestsHeader";
 import TestSearch from "./components/TestSearch";
 import TestTable from "./components/TestTable";
 import TestPagination from "./components/TestPagination";
-import CreateTestModal from "./components/CreateTestModal";
+import TestModal from "./components/TestModal";
 
 type TestsState = {
   sortOrder: string;
@@ -224,38 +223,22 @@ function Tests() {
         }}
         handleDelete={handleDeleteConfirmed}
       />
-      <CreateTestModal
-        id={testModalCfg.id}
-        show={
-          testModalCfg.show &&
-          !(testModalCfg.isEditing || testModalCfg.isVersioning)
-        }
-        onHide={() => {
-          setTestModalCfg({
-            id: "",
-            show: false,
-            isVersioning: false,
-            isEditing: false,
-          });
-        }}
-      />
-      <TestModal
-        id={testModalCfg.id}
-        show={
-          testModalCfg.show &&
-          (testModalCfg?.isEditing || testModalCfg?.isVersioning || false)
-        }
-        isEditing={testModalCfg?.isEditing}
-        isVersioning={testModalCfg?.isVersioning}
-        onHide={() => {
-          setTestModalCfg({
-            id: "",
-            show: false,
-            isVersioning: false,
-            isEditing: false,
-          });
-        }}
-      />
+      {testModalCfg?.show && (
+        <TestModal
+          id={testModalCfg.id}
+          show={testModalCfg.show}
+          isEditing={testModalCfg?.isEditing}
+          isVersioning={testModalCfg?.isVersioning}
+          onHide={() => {
+            setTestModalCfg({
+              id: "",
+              show: false,
+              isVersioning: false,
+              isEditing: false,
+            });
+          }}
+        />
+      )}
       <TestDetailsModal
         id={testDetailsModalCfg.id}
         show={testDetailsModalCfg.show}
