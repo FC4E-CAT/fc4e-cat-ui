@@ -1,28 +1,20 @@
 import { ResponsePage } from "./common";
 import { MotivationReference } from "./motivation";
 
-export interface RegistryTestHeader {
+export interface RegistryTest {
   id: string;
   tes: string;
   label: string;
   description: string;
   last_touch?: string;
   version?: number;
-}
-
-export interface RegistryTestDefinition {
-  id: string;
-  test_method_id: string;
-  label: string;
-  param_type: string;
-  test_params: string;
-  test_question: string;
-  tool_tip: string;
-}
-
-export interface RegistryTest {
-  test: RegistryTestHeader;
-  test_definition: RegistryTestDefinition;
+  test_method_id?: string;
+  label_test_definition?: string;
+  motivation_id?: string;
+  param_type?: string;
+  test_params?: string;
+  test_question?: string;
+  tool_tip?: string;
   used_by_motivations?: MotivationReference[];
   test_versions?: RegistryTest[];
   is_latest_version?: boolean;
@@ -30,24 +22,16 @@ export interface RegistryTest {
 
 export type RegistryTestsResponse = ResponsePage<RegistryTest[]>;
 
-export interface TestDefinitionInput {
-  test_method_id: string;
-  label: string;
-  param_type: string;
-  test_params: string;
-  test_question: string;
-  tool_tip: string;
-}
-
-export interface TestHeaderInput {
+export interface TestInput {
   tes: string;
   label: string;
   description: string;
-}
-
-export interface TestInput {
-  test: TestHeaderInput;
-  test_definition: TestDefinitionInput;
+  test_method_id?: string;
+  label_test_definition?: string;
+  param_type?: string;
+  test_params?: string;
+  test_question?: string;
+  tool_tip?: string;
 }
 
 export interface TestParam {
