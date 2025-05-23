@@ -660,7 +660,6 @@
     "list_principles_subtitle": "Principles related with criteria under motivation",
     "create_principle": "Create Principle",
     "modal_principles_title": "Manage Principles",
-
     "modal_asmt_delete_title": "Delete Assessment Type",
     "modal_asmt_delete_message": "Are you sure you want to delete the following Assessment type ?",
     "asmt_types": "Assessment Types",
@@ -679,7 +678,8 @@
     "tip_view_metric_tests": "View metric details and included tests",
     "metric_details": "Metric details",
     "modal_metric_delete_title": "Delete Metric",
-    "modal_metric_delete_message": "Are you sure you want to delete the following Metric ?"
+    "modal_metric_delete_message": "Are you sure you want to delete the following Metric ?",
+    "create_new_metric_version": "Create New Metric Version"
   },
   "page_tests": {
     "title": "Tests",

@@ -717,3 +717,46 @@ export function useUpdateMotivationMetricTests(
     },
   });
 }
+
+export function useCreateMetricVersion(
+  token: string,
+  mtvId: string,
+  mtrId: string,
+  {
+    mtr,
+    label,
+    description,
+    type_algorithm_id,
+    type_metric_id,
+    type_benchmark_id,
+    url,
+    value_benchmark,
+  }: MetricInput,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      return APIClient(token).post(
+        `/v1/registry/motivations/${mtvId}/metric/${mtrId}/version-metric`,
+        {
+          mtr: mtr,
+          label: label,
+          description: description,
+          type_algorithm_id: type_algorithm_id,
+          type_metric_id: type_metric_id,
+          type_benchmark_id: type_benchmark_id,
+          url: url,
+          value_benchmark: value_benchmark,
+        },
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["motivation-metrics"]);
+      queryClient.invalidateQueries(["all-metrics"]);
+      queryClient.invalidateQueries(["motivation-metric-full", mtvId, mtrId]);
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+}

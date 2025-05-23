@@ -678,7 +678,7 @@ a.plain:hover {
 }
 
 .version-row td:first-child {
-  padding-left: 2.8rem;
+  padding-left: 3rem;
   background: linear-gradient(to right, #eee 8%, transparent 8%);
 }
 

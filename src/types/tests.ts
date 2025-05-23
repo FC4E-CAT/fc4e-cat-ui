@@ -7,7 +7,7 @@ export interface RegistryTest {
   label: string;
   description: string;
   last_touch?: string;
-  version?: number;
+  version?: string;
   test_method_id?: string;
   label_test_definition?: string;
   motivation_id?: string;
