@@ -82,16 +82,16 @@ const TestRow: React.FC<TestRowProps> = ({
             />
           </div>
           <div className="ms-2 d-flex flex-column justify-content-between ">
-            <div>
-              {test.tes}{" "}
-              {hasVersions && test.is_latest_version !== false && (
-                <span className="ms-2 badge bg-success">
-                  latest
-                  {test?.version ? ` v${test.version}` : ""}
-                </span>
-              )}
-            </div>
-
+            {test.tes}
+            {hasVersions && test.is_latest_version !== false && (
+              <span
+                className="badge bg-success mt-1"
+                style={{ width: "fit-content" }}
+              >
+                latest
+                {test?.version ? ` v${test.version}` : ""}
+              </span>
+            )}
             <div>
               <span style={{ fontSize: "0.64rem" }} className="text-muted">
                 {test.id}
