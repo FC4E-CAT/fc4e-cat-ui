@@ -88,7 +88,7 @@ const TestTable: React.FC<TestTableProps> = ({
               onClick={() => onSortChange("lastTouch")}
               className="cat-cursor-pointer text-nowrap"
             >
-              {t("fields.modified")}{" "}
+              {t("fields.modified")}
               {SortMarker("lastTouch", sortBy, sortOrder)}
             </span>
           </th>
@@ -121,7 +121,12 @@ const TestTable: React.FC<TestTableProps> = ({
                   item.test_versions?.map((version) => (
                     <TestVersionRow
                       key={`version-${version.id}`}
-                      version={version}
+                      id={version.id}
+                      version={version.version}
+                      label={version.label}
+                      description={version.description}
+                      last_touch={version.last_touch}
+                      used_by_motivations={version?.used_by_motivations}
                       onView={onViewTest}
                       onEdit={onEditTest}
                     />

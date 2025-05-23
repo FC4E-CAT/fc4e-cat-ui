@@ -8,6 +8,13 @@ interface MotivationMetricProps {
   show: boolean;
   getByCriterion: boolean;
   onHide: () => void;
+  onMetricMetadata?: () => {
+    id: string;
+    name: string;
+    label_algorithm_type: string;
+    label_type_metric: string;
+    benchmark_value: string;
+  };
 }
 /**
  * Modal component for displaying criterion metric
@@ -38,6 +45,7 @@ export function MotivationMetricDetailsModal(props: MotivationMetricProps) {
             mtvId={props.mtvId}
             itemId={props.itemId}
             getByCriterion={props.getByCriterion}
+            metricMetadata={props?.onMetricMetadata && props.onMetricMetadata()}
           />
         )}
       </Modal.Body>

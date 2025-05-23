@@ -21,13 +21,22 @@ export default function MotivationMetric({
   mtvId,
   itemId,
   getByCriterion,
+  metricMetadata,
 }: {
   mtvId: string;
   itemId: string;
   getByCriterion: boolean;
+  metricMetadata?: {
+    id: string;
+    name: string;
+    label_algorithm_type: string;
+    label_type_metric: string;
+    benchmark_value: string;
+  };
 }) {
   const { keycloak } = useContext(AuthContext)!;
   const { t } = useTranslation();
+  console.log("itemId", itemId);
   const { data: metricData } = useGetMotivationMetric({
     mtvId: mtvId,
     itemId: itemId,
@@ -151,6 +160,16 @@ export default function MotivationMetric({
       }
     });
 
+  const metricDetails = metricData?.metric
+    ? {
+        id: metricData.metric.id,
+        name: metricData.metric.name,
+        label_type_metric: metricData.metric.label_type_metric,
+        label_algorithm_type: metricData.metric.label_algorithm_type,
+        benchmark_value: metricData.metric.benchmark_value,
+      }
+    : metricMetadata;
+
   return (
     <div className="pb-4">
       <div className="p-2 rounded border">
@@ -158,25 +177,25 @@ export default function MotivationMetric({
           <Col>
             <div>
               <strong className="me-2">{t("fields.id")}:</strong>
-              <span>{metricData?.metric?.id}</span>
+              <span>{metricDetails?.id || ""}</span>
             </div>
             <div>
               <strong className="me-2">{t("fields.name")}:</strong>
-              <span>{metricData?.metric?.name}</span>
+              <span>{metricDetails?.name || ""}</span>
             </div>
           </Col>
           <Col>
             <div>
               <strong className="me-2">{t("fields.type")}:</strong>
-              <span>{metricData?.metric?.label_type_metric}</span>
+              <span>{metricDetails?.label_type_metric || ""}</span>
             </div>
             <div>
               <strong className="me-2">{t("fields.algorithm")}:</strong>
-              <span>{metricData?.metric?.label_algorithm_type}</span>
+              <span>{metricDetails?.label_algorithm_type || ""}</span>
             </div>
             <div>
               <strong className="me-2">{t("fields.benchmark")}:</strong>
-              <span>{metricData?.metric?.benchmark_value}</span>
+              <span>{metricDetails?.benchmark_value || ""}</span>
             </div>
           </Col>
         </Row>

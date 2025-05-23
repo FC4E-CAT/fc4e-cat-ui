@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import {
   Alert,
   Button,
@@ -17,6 +17,8 @@ import {
   FaArrowDown,
   FaArrowsAltV,
   FaBorderNone,
+  FaChevronDown,
+  FaChevronRight,
 } from "react-icons/fa";
 
 import { RegistryMetric } from "@/types";
@@ -25,6 +27,7 @@ import { idToColor } from "@/utils/admin";
 import { useGetRegistryMetrics } from "@/api/services/registry";
 import { MetricModal } from "./components/MetricModal";
 import { MotivationRefList } from "@/components/MotivationRefList";
+import TestVersionRow from "../tests/components/TestVersionRow";
 
 type MetricState = {
   sortOrder: string;
@@ -41,6 +44,10 @@ type MetricModalConfig = {
 
 // the main component that lists the metrics in a table
 export default function Metrics() {
+  const [expandedTests, setExpandedTests] = useState<{
+    [key: string]: boolean;
+  }>({});
+
   const { t } = useTranslation();
   const tooltipView = (
     <Tooltip id="tip-view">{t("page_metrics.tip_view")}</Tooltip>
@@ -105,17 +112,7 @@ export default function Metrics() {
     return <FaArrowsAltV className="text-secondary opacity-50" />;
   };
   return (
-    <div>
-      <MetricModal
-        metric={modalConfig.metric}
-        show={modalConfig.show}
-        onHide={() => {
-          setModalConfig({
-            metric: null,
-            show: false,
-          });
-        }}
-      />
+    <>
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
           <h2 className="text-muted cat-view-heading ">
@@ -183,58 +180,160 @@ export default function Metrics() {
           {metrics.length > 0 ? (
             <tbody>
               {metrics.map((item) => {
+                const isExpanded = expandedTests[item?.metric_id] || false;
+                const hasVersions =
+                  item?.metric_versions && item.metric_versions?.length > 0;
+
                 return (
-                  <tr key={item.metric_id + item.motivation_id}>
-                    <td className="align-middle">
-                      <div className="d-flex  justify-content-start">
-                        <div>
-                          <FaBorderNone
-                            size={"2.5rem"}
-                            style={{ color: idToColor(item.metric_id) }}
-                          />
-                        </div>
-                        <div className="ms-2 d-flex flex-column justify-content-between">
-                          <div>{item.metric_mtr}</div>
-                          <div>
-                            <span
-                              style={{ fontSize: "0.64rem" }}
-                              className="text-muted"
+                  <Fragment key={item.metric_id}>
+                    <tr
+                      className={isExpanded ? "opened-table-row" : ""}
+                      key={item.metric_id + item.motivation_id}
+                    >
+                      <td
+                        className={
+                          isExpanded
+                            ? "align-middle opened-table-row"
+                            : "align-middle"
+                        }
+                      >
+                        <div className="d-flex justify-content-start">
+                          {hasVersions && (
+                            <div
+                              className="me-2 d-flex align-items-center"
+                              style={{ cursor: "pointer", width: "1rem" }}
+                              onClick={() => {
+                                setExpandedTests((prev) => {
+                                  console.log("item222", item);
+
+                                  return {
+                                    ...prev,
+                                    [item.metric_id]: !prev[item.metric_id],
+                                  };
+                                });
+                              }}
                             >
-                              {item.metric_id}
-                            </span>
+                              {isExpanded ? (
+                                <FaChevronDown />
+                              ) : (
+                                <FaChevronRight />
+                              )}
+                            </div>
+                          )}
+                          <div>
+                            <FaBorderNone
+                              size={"2.5rem"}
+                              style={{ color: idToColor(item.metric_id) }}
+                            />
+                          </div>
+
+                          <div className="ms-2 d-flex flex-column justify-content-between">
+                            {item.metric_mtr}{" "}
+                            {hasVersions && (
+                              <span
+                                className="badge bg-success mt-1"
+                                style={{ width: "fit-content" }}
+                              >
+                                latest
+                                {item?.metric_version
+                                  ? ` v${item.metric_version}`
+                                  : ""}
+                              </span>
+                            )}
+                            <div>
+                              <span
+                                style={{ fontSize: "0.64rem" }}
+                                className="text-muted"
+                              >
+                                {item.metric_id}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td className="align-middle">{item.metric_label}</td>
-                    <td className="align-middle">{item.metric_description}</td>
-                    <td className="align-middle">
-                      <span>{item.type_algorithm_label}</span>
-                    </td>
-                    <td>
-                      <MotivationRefList
-                        motivations={item.used_by_motivations || []}
-                      />
-                    </td>
-                    <td>
-                      <div className="d-flex flex-nowrap">
-                        <OverlayTrigger placement="top" overlay={tooltipView}>
-                          <Button
-                            className="btn btn-light btn-sm m-1"
-                            onClick={() => {
-                              setModalConfig({
-                                metric: item,
-                                show: true,
-                              });
-                            }}
-                          >
-                            <FaBars />
-                          </Button>
-                        </OverlayTrigger>
-                      </div>
-                    </td>
-                  </tr>
+                      <td
+                        className={
+                          isExpanded
+                            ? "align-middle opened-table-row"
+                            : "align-middle"
+                        }
+                      >
+                        {item.metric_label}
+                      </td>
+                      <td
+                        className={
+                          isExpanded
+                            ? "align-middle opened-table-row"
+                            : "align-middle"
+                        }
+                      >
+                        {item.metric_description}
+                      </td>
+                      <td
+                        className={
+                          isExpanded
+                            ? "align-middle opened-table-row"
+                            : "align-middle"
+                        }
+                      >
+                        <span>{item.type_algorithm_label}</span>
+                      </td>
+                      <td
+                        className={
+                          isExpanded
+                            ? "align-middle opened-table-row"
+                            : "align-middle"
+                        }
+                      >
+                        <MotivationRefList
+                          motivations={item.used_by_motivations || []}
+                        />
+                      </td>
+                      <td
+                        className={
+                          isExpanded
+                            ? "align-middle opened-table-row"
+                            : "align-middle"
+                        }
+                      >
+                        <div className="d-flex flex-nowrap">
+                          <OverlayTrigger placement="top" overlay={tooltipView}>
+                            <Button
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() => {
+                                setModalConfig({
+                                  metric: item,
+                                  show: true,
+                                });
+                              }}
+                            >
+                              <FaBars />
+                            </Button>
+                          </OverlayTrigger>
+                        </div>
+                      </td>
+                    </tr>
+                    {isExpanded &&
+                      hasVersions &&
+                      item?.metric_versions?.map((version) => (
+                        <TestVersionRow
+                          key={`version-${version.metric_id}`}
+                          id={version.metric_id}
+                          version={version.metric_version}
+                          label={version.metric_label}
+                          description={version.metric_description}
+                          type_algorithm_label={version?.type_algorithm_label}
+                          used_by_motivations={version?.used_by_motivations}
+                          onView={() => {
+                            setModalConfig({
+                              metric: version,
+                              show: true,
+                            });
+                          }}
+                        />
+                      ))}
+                  </Fragment>
                 );
               })}
             </tbody>
@@ -300,6 +399,16 @@ export default function Metrics() {
       <div className="row py-3 p-4">
         <div className="col"></div>
       </div>
-    </div>
+      <MetricModal
+        metric={modalConfig.metric}
+        show={modalConfig.show}
+        onHide={() => {
+          setModalConfig({
+            metric: null,
+            show: false,
+          });
+        }}
+      />
+    </>
   );
 }

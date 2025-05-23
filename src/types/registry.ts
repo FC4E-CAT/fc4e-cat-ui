@@ -6,6 +6,8 @@ export interface RegistryMetric {
   metric_mtr: string;
   metric_label: string;
   metric_description: string;
+  metric_version?: string;
+  metric_versions?: RegistryMetric[];
   type_algorithm_id: string;
   type_algorithm_label: string;
   type_algorithm_description: string;
