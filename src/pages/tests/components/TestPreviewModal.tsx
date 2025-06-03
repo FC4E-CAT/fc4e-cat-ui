@@ -293,24 +293,18 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
   };
 
   return (
-    <div
-      className="mt-1"
-      style={{ borderRadius: 0, border: "none", wordBreak: "break-word" }}
-    >
-      <div className="text-black">
-        <h4 className="mb-2">Test Preview</h4>
-      </div>
+    <div style={{ borderRadius: 0, border: "none", wordBreak: "break-word" }}>
       <div>
-        <div className="p-2 ps-0">
+        <div className="p-2">
           <div className="d-flex align-items-start mb-3">
             <div>
               <h5>
                 {test.tes || t("{TES Name placeholder}")} -{" "}
                 {test.label || t("{Test Label placeholder}")}
               </h5>
-              <p className="text-muted mb-2">
+              <h5 className="text-muted mb-2">
                 {test.description || t("{Test Description placeholder}")}
-              </p>
+              </h5>
               {testMethodName && (
                 <span className="badge bg-secondary me-1">
                   {testMethodName}
@@ -340,7 +334,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
             {params.length > 0 ? (
               renderParams()
             ) : (
-              <p className="text-muted">{t("No parameters defined yet")}</p>
+              <h5 className="text-muted">{t("No parameters defined yet")}</h5>
             )}
           </div>
         </div>

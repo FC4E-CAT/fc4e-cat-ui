@@ -11,7 +11,7 @@ import TestsHeader from "./components/TestsHeader";
 import TestSearch from "./components/TestSearch";
 import TestTable from "./components/TestTable";
 import TestPagination from "./components/TestPagination";
-import TestModal from "./components/TestModal";
+import { useNavigate } from "react-router-dom";
 
 type TestsState = {
   sortOrder: string;
@@ -19,13 +19,6 @@ type TestsState = {
   page: number;
   size: number;
   search: string;
-};
-
-type TestModalConfig = {
-  id: string;
-  show: boolean;
-  isEditing?: boolean;
-  isVersioning?: boolean;
 };
 
 type TestModalDetailsConfig = {
@@ -44,6 +37,7 @@ interface DeleteModalConfig {
 function Tests() {
   const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
+  const navigate = useNavigate();
 
   const alert = useRef<AlertInfo>({
     message: "",
@@ -65,13 +59,6 @@ function Tests() {
     page: 1,
     size: 10,
     search: "",
-  });
-
-  const [testModalCfg, setTestModalCfg] = useState<TestModalConfig>({
-    id: "",
-    show: false,
-    isEditing: false,
-    isVersioning: false,
   });
 
   const [testDetailsModalCfg, setTestDetailsModalCfg] =
@@ -149,9 +136,7 @@ function Tests() {
 
   return (
     <>
-      <TestsHeader
-        onCreateTest={() => setTestModalCfg({ id: "", show: true })}
-      />
+      <TestsHeader />
       <TestSearch
         searchValue={opts.search}
         onSearchChange={(searchText) =>
@@ -178,19 +163,11 @@ function Tests() {
             show: true,
           })
         }
-        onEditTest={(testId) =>
-          setTestModalCfg({
-            id: testId,
-            show: true,
-            isEditing: true,
-          })
+        onEditTest={(testId: string) =>
+          navigate(`/admin/tests/edit-test/${testId}`)
         }
-        onCreateVersion={(testId) =>
-          setTestModalCfg({
-            id: testId,
-            show: true,
-            isVersioning: true,
-          })
+        onCreateVersion={(testId: string) =>
+          navigate(`/admin/tests/create-version-test/${testId}`)
         }
         onDeleteTest={(testId, name) =>
           setDeleteModalConfig({
@@ -223,22 +200,6 @@ function Tests() {
         }}
         handleDelete={handleDeleteConfirmed}
       />
-      {testModalCfg?.show && (
-        <TestModal
-          id={testModalCfg.id}
-          show={testModalCfg.show}
-          isEditing={testModalCfg?.isEditing}
-          isVersioning={testModalCfg?.isVersioning}
-          onHide={() => {
-            setTestModalCfg({
-              id: "",
-              show: false,
-              isVersioning: false,
-              isEditing: false,
-            });
-          }}
-        />
-      )}
       <TestDetailsModal
         id={testDetailsModalCfg.id}
         show={testDetailsModalCfg.show}

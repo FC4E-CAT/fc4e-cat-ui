@@ -1,13 +1,8 @@
-import React from "react";
 import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
-interface TestsHeaderProps {
-  onCreateTest: () => void;
-}
-
-const TestsHeader: React.FC<TestsHeaderProps> = ({ onCreateTest }) => {
+const TestsHeader = () => {
   const { t } = useTranslation();
 
   return (
@@ -19,7 +14,7 @@ const TestsHeader: React.FC<TestsHeaderProps> = ({ onCreateTest }) => {
         </h2>
       </div>
       <div className="col-md-auto cat-heading-right">
-        <Button variant="warning" onClick={onCreateTest}>
+        <Button href="/admin/tests/create-test" variant="warning">
           <FaPlus /> {t("buttons.create_new")}
         </Button>
       </div>

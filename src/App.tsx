@@ -35,6 +35,7 @@ import MotivationCriteriaPrinciples from "./pages/motivations/MotivationCriteria
 import Criteria from "./pages/criteria/Criteria";
 import MotivationMetricTests from "./pages/motivations/MotivationMetricTests";
 import Tests from "./pages/tests/Tests";
+import CreateTest from "./pages/tests/components/CreateTest";
 import Metrics from "./pages/metrics/Metrics";
 import AdminAssessments from "./pages/admin/AdminAssessments";
 import AboutCat from "./pages/about/AboutCat";
@@ -250,6 +251,24 @@ function App() {
                 </Route>
                 <Route path="/admin/tests" element={<ProtectedRoute />}>
                   <Route index element={<Tests />} />
+                </Route>
+                <Route
+                  path="/admin/tests/create-test"
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<CreateTest />} />
+                </Route>
+                <Route
+                  path="/admin/tests/edit-test/:testId"
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<CreateTest />} />
+                </Route>
+                <Route
+                  path="/admin/tests/create-version-test/:testId"
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<CreateTest />} />
                 </Route>
                 <Route path="/admin/assessments" element={<ProtectedRoute />}>
                   <Route index element={<AdminAssessments />} />

@@ -47,12 +47,13 @@ export const useGetAllTestMethods = ({
   token,
   isRegistered,
   size,
+  search = "",
 }: ApiOptions) =>
   useInfiniteQuery({
-    queryKey: ["all-test-methods"],
+    queryKey: ["all-test-methods", search],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<RegistryResourceResponse>(
-        `/v1/registry/tests/test-method?size=${size}&page=${pageParam}`,
+        `/v1/registry/tests/test-method?size=${size}&page=${pageParam}&search=${search}`,
       );
       return response.data;
     },
