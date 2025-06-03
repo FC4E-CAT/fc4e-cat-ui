@@ -38,6 +38,7 @@ export interface RegistryResource {
   id: string;
   label: string;
   description: string;
+  num_params?: number;
 }
 
 export interface MetricResponse {
@@ -92,7 +93,10 @@ export type OrganisationRORSearchParams = ApiAuthOptions & {
   page?: number;
 };
 
-export type ApiOptions = ApiAuthOptions & ApiPaginationOptions;
+export type ApiOptions = ApiAuthOptions &
+  ApiPaginationOptions & {
+    search?: string;
+  };
 
 export type ApproveRejectProps = {
   toReject?: boolean;

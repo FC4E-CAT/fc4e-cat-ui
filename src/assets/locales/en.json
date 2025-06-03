@@ -710,7 +710,8 @@
     "toast_update_success": "Test Updated!",
     "toast_update_progress": "Updating Test...",
     "toast_create_version_success": "New test version successfully created!",
-    "toast_create_version_progress": "Creating new test version..."
+    "toast_create_version_progress": "Creating new test version...",
+    "update": "Update Test"
   },
   "page_metrics": {
     "title": "Metrics",
