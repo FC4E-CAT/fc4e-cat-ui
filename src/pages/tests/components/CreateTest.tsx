@@ -73,7 +73,7 @@ function CreateTest() {
 
   // Watch for changes in test_method_id to update the selected method
   useEffect(() => {
-    if (test.test_method_id) {
+    if (!testId && test.test_method_id) {
       const method = testMethods.find((m) => m.id === test.test_method_id);
       if (method) {
         addNewParams(method?.num_params);
@@ -87,7 +87,7 @@ function CreateTest() {
       const paramNames = data?.test_params?.split("|") || [];
       const paramTexts = data?.test_question?.split("|") || [];
       const paramTips = data?.tool_tip?.split("|") || [];
-      const params: TestParam[] = [];
+      const tmpParams: TestParam[] = [];
 
       // Check if evidence exists in the loaded parameters
       const evidenceIndex = paramNames?.indexOf("evidence");
@@ -97,7 +97,7 @@ function CreateTest() {
       // Add all parameters except evidence to the params array
       for (let i = 0; i < paramNames.length; i++) {
         if (paramNames[i] !== "evidence") {
-          params.push({
+          tmpParams.push({
             id: i,
             name: paramNames[i],
             text: paramTexts[i],
@@ -107,7 +107,7 @@ function CreateTest() {
       }
 
       setTest(data);
-      setParams(params);
+      setParams(tmpParams);
     }
   }, [data, testId]);
 
@@ -173,6 +173,15 @@ function CreateTest() {
   });
 
   useEffect(() => {
+    if (testMethods?.length > 0 && !test.test_method_id) {
+      setTest((prevTest) => ({
+        ...prevTest,
+        test_method_id: testMethods[0]?.id || "",
+      }));
+    }
+  }, [test.test_method_id, testMethods]);
+
+  useEffect(() => {
     // gather all test methods
     let tmpTestMethods: RegistryResource[] = [];
 
@@ -189,7 +198,8 @@ function CreateTest() {
     tmpTestMethods = tmpTestMethods?.filter(
       (testMethod) =>
         testMethod?.label !== "String-Auto" &&
-        testMethod?.label !== "String-Manual",
+        testMethod?.label !== "String-Manual" &&
+        testMethod?.label !== "Binary-Auto",
     );
 
     setTestMethods(tmpTestMethods);
@@ -315,6 +325,7 @@ function CreateTest() {
   };
 
   const handleFilterChange = (value: string) => {
+    setSearchTerm("");
     setFilterType(value);
     setIsSearching(true);
     refetchTestMethods().finally(() => {

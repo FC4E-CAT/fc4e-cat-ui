@@ -660,6 +660,11 @@ a.plain:hover {
   background: #e6f4ea;
 }
 
+.bg-danger-cat {
+  color: #b02a37 !important;
+  background: #f8d7da;
+}
+
 .bg-primary-cat {
   color: #1967d2 !important;
   background: #d2e3fc;
@@ -824,14 +829,14 @@ a.plain:hover {
 }
 
 .form-group-label {
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.1rem;
   font-size: 16px;
   font-weight: 500;
   color: #555;
 }
 
 .test-methods-sidebar-container {
-  max-height: 85vh;
+  max-height: 80vh;
   overflow-y: auto;
 }
 

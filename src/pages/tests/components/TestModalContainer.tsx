@@ -1,9 +1,9 @@
 import { Button } from "react-bootstrap";
-import { FaFile, FaEdit, FaCodeBranch } from "react-icons/fa";
 import { RegistryResource } from "@/types";
 import { TestInput, TestParam } from "@/types/tests";
 import TestPreviewModal from "./TestPreviewModal";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import TestHeaderForm from "./TestHeaderForm";
 import TestMethodAndParams from "./TestMethodAndParams";
 
@@ -60,35 +60,23 @@ function TestModalContainer(props: TestModalUIProps) {
     handleFilterChange,
   } = props;
 
-  console.log("test:", test);
-
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const testMethodName = testMethods.find(
+    (m) => m.id === test?.test_method_id,
+  )?.label;
 
   return (
-    <div className="test-container py-3 px-5">
+    <div className="test-container py-3">
       <div className="row mb-3">
-        <div className="col-12">
-          <div className="d-flex align-items-center">
-            <h2>
-              {id && isVersioning ? (
-                <>
-                  <FaCodeBranch className="me-2" />
-                  {t("page_tests.create_new_version")}
-                </>
-              ) : id && isEditing ? (
-                <>
-                  <FaEdit className="me-2" />
-                  {t("page_tests.update")}
-                </>
-              ) : (
-                <>
-                  <FaFile className="me-2" />
-                  {t("page_tests.create_new")}
-                </>
-              )}
-            </h2>
-          </div>
-        </div>
+        <h2 className="text-muted cat-view-heading">
+          {id && isVersioning
+            ? t("page_tests.create_new_version")
+            : id && isEditing
+              ? t("page_tests.update")
+              : t("page_tests.create_new")}
+        </h2>
       </div>
 
       <div className="row g-4 mb-4">
@@ -113,7 +101,7 @@ function TestModalContainer(props: TestModalUIProps) {
             </div>
 
             {/* Filter Type Radio Buttons */}
-            <div className="d-flex justify-content-center px-1 mb-2 gap-2">
+            <div className="d-flex justify-content-center px-1 mb-1 gap-2">
               <div className="form-check form-check-inline">
                 <input
                   className="form-check-input"
@@ -139,7 +127,7 @@ function TestModalContainer(props: TestModalUIProps) {
                   onChange={() => handleFilterChange?.("manual")}
                 />
                 <label className="form-check-label" htmlFor="filterManual">
-                  Manual Tests
+                  Manual
                 </label>
               </div>
               <div className="form-check form-check-inline">
@@ -153,13 +141,13 @@ function TestModalContainer(props: TestModalUIProps) {
                   onChange={() => handleFilterChange?.("automated")}
                 />
                 <label className="form-check-label" htmlFor="filterAuto">
-                  Automated Tests
+                  Automated
                 </label>
               </div>
             </div>
-
+            <hr className="m-0" />
             <div
-              className="test-methods-list flex-grow-1"
+              className="test-methods-list flex-grow-1 mt-2"
               style={{
                 overflowY: "auto",
                 overflowX: "hidden",
@@ -185,9 +173,10 @@ function TestModalContainer(props: TestModalUIProps) {
                 testMethods.map((method) => (
                   <div
                     key={method.id}
-                    onClick={() =>
-                      setTest({ ...test, test_method_id: method.id })
-                    }
+                    onClick={() => {
+                      setTest({ ...test, test_method_id: method?.id || "" });
+                      setHasEvidence(false);
+                    }}
                     className={`test-method-item border-bottom ${
                       test.test_method_id === method.id ? "selected-method" : ""
                     }`}
@@ -227,8 +216,7 @@ function TestModalContainer(props: TestModalUIProps) {
           <div className="test-content-container border rounded-3 shadow-sm">
             <div className="p-3 border-bottom bg-light flex-shrink-0 rounded-top-3">
               <h6 className="mb-0 fw-bold test-section-header">
-                {testMethods.find((m) => m.id === test?.test_method_id)
-                  ?.label || "Configure your test"}
+                Configure Your Test
               </h6>
               <small className="test-header-description">
                 {test?.test_method_id
@@ -244,22 +232,36 @@ function TestModalContainer(props: TestModalUIProps) {
                 showErrors={showErrors}
                 test={test}
               />
-              {test?.test_method_id && (
-                <TestMethodAndParams
-                  test={test}
-                  setTest={setTest}
-                  params={params}
-                  showErrors={showErrors}
-                  setHasEvidence={setHasEvidence}
-                  hasEvidence={hasEvidence}
-                  areParamsDisabled={areParamsDisabled}
-                  updateParam={updateParam}
-                />
-              )}
-              <hr className="my-3" />
-              <div className="test-preview-section">
-                <div className="mb-1 test-section-header">Preview Test</div>
-                <div className="border rounded bg-light p-3">
+              <div className="row mt-3">
+                <div className="col-lg-12 col-xl-6 mb-4">
+                  {test?.test_method_id && (
+                    <div>
+                      <div className="d-flex gap-1 align-items-center mb-1 test-section-header ">
+                        <span className="fw-medium form-group-label">
+                          Test Method Parameters:
+                        </span>
+                        <span className="fw-medium fw-bold">
+                          {testMethodName}
+                        </span>
+                      </div>
+
+                      <div className="border rounded px-3 py-2">
+                        <TestMethodAndParams
+                          params={params}
+                          showErrors={showErrors}
+                          setHasEvidence={setHasEvidence}
+                          hasEvidence={hasEvidence}
+                          areParamsDisabled={areParamsDisabled}
+                          updateParam={updateParam}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="col-lg-12 col-xl-6">
+                  <div className="fw-medium form-group-label mb-2">
+                    Preview Test
+                  </div>
                   <TestPreviewModal
                     test={test}
                     params={params}
@@ -279,7 +281,7 @@ function TestModalContainer(props: TestModalUIProps) {
       <div className="row mt-5">
         <div className="col-12">
           <div className="d-flex justify-content-between">
-            <Button className="btn btn-secondary" href="/admin/tests">
+            <Button className="btn btn-secondary" onClick={() => navigate(-1)}>
               Back
             </Button>
             {id && isVersioning ? (
