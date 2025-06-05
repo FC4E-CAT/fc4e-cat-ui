@@ -107,26 +107,33 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
     <div>
       <Row>
         <Col>
-          <h6>
-            <small className="text-muted badge badge-pill border bg-light">
-              <span className="me-4">{props.test.id}</span>
-              {props.test.name}
-            </small>
-          </h6>
+          {props.test.id && (
+            <h6>
+              <small
+                className="text-muted badge badge-pill border bg-light"
+                style={{ textWrap: "wrap", textAlign: "start" }}
+              >
+                <span className="me-3">{props.test.id}</span>
+                {props.test.name}
+              </small>
+            </h6>
+          )}
         </Col>
         <Col xs={3} className="text-start"></Col>
       </Row>
 
       <Row>
         <div>
-          <h5>{textParams[0]}</h5>
+          {textParams[0] && <h5>{textParams[0]}</h5>}
           <InputGroup className="mt-1">
             <InputGroup.Text id="label-first-value">
-              <TestToolTip
-                tipId={"params-1-" + props.test.id}
-                tipText={tipParams[0]}
-              />
-              <span className="ms-2">{testParams[0]}</span>:
+              {tipParams[0] && (
+                <TestToolTip
+                  tipId={"params-1-" + props.test.id}
+                  tipText={tipParams[0]}
+                />
+              )}
+              {testParams[0] && <span className="ms-2">{testParams[0]}</span>}:
             </InputGroup.Text>
             <Form.Select
               value={localValue || ""}

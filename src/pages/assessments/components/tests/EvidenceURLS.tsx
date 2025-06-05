@@ -48,8 +48,8 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
         </small>
       )}
 
-      <Row cclassName="justify-content-md-right">
-        <Col md={11}>
+      <Row className="justify-content-md-right">
+        <Col md={10}>
           <InputGroup size="sm">
             <Form.Control
               id="input-add-url"
@@ -92,7 +92,6 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
         </Col>
 
         <Col md={1}>
-          {" "}
           <span
             className={`btn btn-evidence text-evidence btn-sm float-right ${props?.isPreviewMode && "disabled"}`}
             onClick={handleAddURL}
