@@ -48,54 +48,9 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
         </small>
       )}
 
-      {urlList.length > 0 && (
-        <ul className="list-group mt-2">
-          {urlList.map((item, index) => (
-            <li className="list-group-item p-2" key={index}>
-              <Row>
-                <Col md="auto">
-                  <small>[{index}]</small>
-                </Col>
-                <Col>
-                  <div>
-                    <small>
-                      <a
-                        className="ms-2"
-                        href={item.url}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {item.url}
-                      </a>{" "}
-                    </small>
-                  </div>
-                  <div>
-                    {item.description && (
-                      <small>
-                        <em className="ms-2">{item.description}</em>
-                      </small>
-                    )}
-                  </div>
-                </Col>
-                <Col md="auto">
-                  <small>
-                    <span
-                      className="btn btn-sm btn-light border ms-4"
-                      onClick={() => handleRemoveURL(index)}
-                    >
-                      {t("buttons.remove").toLowerCase()}
-                    </span>
-                  </small>
-                </Col>
-              </Row>
-            </li>
-          ))}
-        </ul>
-      )}
-      <Row className="m-1 p-2 bg-light border rounded-bottom">
-        <Col>
+      <Row cclassName="justify-content-md-right">
+        <Col md={11}>
           <InputGroup size="sm">
-            <InputGroup.Text id="label-add-url">{t("url")}:</InputGroup.Text>
             <Form.Control
               id="input-add-url"
               value={newURL.url}
@@ -113,12 +68,12 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
               title={t("page_assessment_edit.evidence_url")}
             />
           </InputGroup>
+
           <InputGroup className="mt-2" size="sm">
-            <InputGroup.Text id="label-add-url">
-              {t("fields.description")}:
-            </InputGroup.Text>
             <Form.Control
               id="input-add-description"
+              as="textarea"
+              aria-label="With textarea"
               value={newURL.description}
               onChange={(e) => {
                 setNewURL({ ...newURL, description: e.target.value });
@@ -135,17 +90,44 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
             />
           </InputGroup>
         </Col>
-        <Col md="auto">
+
+        <Col md={1}>
+          {" "}
           <span
-            className={`btn btn-primary btn-sm ${props?.isPreviewMode && "disabled"}`}
+            className={`btn btn-evidence text-evidence btn-sm float-right ${props?.isPreviewMode && "disabled"}`}
             onClick={handleAddURL}
           >
-            {t("buttons.add")}
+            +
           </span>
         </Col>
       </Row>
-
       {error && <small className="text-danger">{error}</small>}
+
+      {urlList.map((evid, index) => (
+        <Row className="mt-2" key={index}>
+          <Col md={10}>
+            <p className="lh-sm">
+              <small>
+                <a key={index} href={evid.url} target="_blank" rel="noreferrer">
+                  # Evidence [{index}]
+                </a>
+
+                <span> {evid.description}</span>
+              </small>
+            </p>
+          </Col>
+          <Col md="auto">
+            <small>
+              <span
+                className="btn btn-secondary btn-sm float-right"
+                onClick={() => handleRemoveURL(index)}
+              >
+                -
+              </span>
+            </small>
+          </Col>
+        </Row>
+      ))}
     </div>
   );
 };

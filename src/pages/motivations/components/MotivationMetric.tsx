@@ -45,7 +45,7 @@ export default function MotivationMetric({
         test.type === "Binary-Manual"
       ) {
         testList.push(
-          <div className="border mt-4" key={test.id}>
+          <div className="border rounded-lg mt-4" key={test.id}>
             <div className="cat-test-div">
               <TestBinaryParamForm
                 test={test as TestBinaryParam}
@@ -65,7 +65,7 @@ export default function MotivationMetric({
         test.type === "Years-Manual"
       ) {
         testList.push(
-          <div className="border mt-4" key={test.id}>
+          <div className="border rounded mt-4" key={test.id}>
             <div className="cat-test-div">
               <TestValueFormParam
                 test={test as TestValueParam}
@@ -78,7 +78,7 @@ export default function MotivationMetric({
         );
       } else if (test.type === "Auto-Check-String-Binary") {
         testList.push(
-          <div className="border mt-4" key={test.id}>
+          <div className="border rounded mt-4" key={test.id}>
             <div className="cat-test-div">
               <TestAutoG069Form
                 g069param=""
@@ -92,7 +92,7 @@ export default function MotivationMetric({
         );
       } else if (test.type === "Auto-Check-AARC-G069-User-Info") {
         testList.push(
-          <div className="border mt-4" key={test.id}>
+          <div className="border rounded mt-4" key={test.id}>
             <div className="cat-test-div">
               <TestAutoG069Form
                 g069param={defaultG069userInfo}
@@ -106,7 +106,7 @@ export default function MotivationMetric({
         );
       } else if (test.type === "Auto-Check-AARC-G069-Token-Introspection") {
         testList.push(
-          <div className="border mt-4" key={test.id}>
+          <div className="border rounded mt-4" key={test.id}>
             <div className="cat-test-div">
               <TestAutoG069Form
                 g069param={defaultG069tokenIntrospection}
@@ -120,7 +120,7 @@ export default function MotivationMetric({
         );
       } else if (test.type === "Auto-Check-Url-Binary") {
         testList.push(
-          <div className="border mt-4" key={test.id}>
+          <div className="border rounded mt-4" key={test.id}>
             <div className="cat-test-div">
               <TestAutoHttpsCheckForm
                 test={test as TestAutoHttpsCheck}
@@ -137,7 +137,7 @@ export default function MotivationMetric({
         test.type === "Auto-Check-Xml-MD1b2"
       ) {
         testList.push(
-          <div className="border mt-4" key={test.id}>
+          <div className="border rounded mt-4" key={test.id}>
             <div className="cat-test-div">
               <TestAutoMd1Form
                 test={test as TestAutoMD1}

@@ -43,7 +43,47 @@
 
 .cat-test-div {
   padding: 1rem;
-  border-left: 0.8rem solid rgb(240 240 240);
+}
+
+.cat-test-div .cat-test-title {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.block {
+  display: block;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.fw-light-500 {
+  font-weight: 500 !important;
+}
+
+.btn-evidence {
+  color: #fff !important;
+  background-color: rgb(99 102 241) !important;
+}
+
+.btn-evidence:hover {
+  color: rgb(99 102 241) !important;
+  background-color: #fff !important;
+  background-image: none;
+  border-color: rgb(99 102 241) !important;
+}
+
+.text-evidence {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgb(99 102 241);
 }
 
 .cat-crit-tab .nav-link {
@@ -575,11 +615,6 @@ a.plain:hover {
 
 .text-xs {
   font-size: 10px !important;
-}
-
-.text-sm {
-  font-size: 14px;
-  line-height: 20px;
 }
 
 .items-center {
