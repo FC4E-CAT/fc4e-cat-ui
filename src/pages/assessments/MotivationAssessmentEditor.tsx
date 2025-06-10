@@ -159,6 +159,8 @@ export const MotivationAssessmentEditor = () => {
           )}
           <div className="row bg-secondary" style={{ height: "1px" }}></div>
           <CriteriaTabs
+            autogroups={undefined}
+            onAutoTestGroup={() => {}}
             principles={assessment.principles || []}
             resetActiveTab={resetCriterionTab}
             onTestChange={handleCriterionChange}

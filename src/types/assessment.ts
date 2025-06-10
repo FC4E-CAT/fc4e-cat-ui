@@ -36,6 +36,20 @@ export interface Assessment {
   principles: AssessmentPrinciple[];
   published: boolean;
   shared_with_user: boolean;
+  automated_group_test: AutoGroupTest[];
+}
+
+/** Information on automated group tests */
+export interface AutoGroupTest {
+  endpoint: string;
+  test_method: string;
+  params: GroupTestParam[];
+}
+
+export interface GroupTestParam {
+  name: "string";
+  assessment_ref?: "string";
+  value?: "string";
 }
 
 /** Reference with string id */
@@ -236,6 +250,32 @@ export interface TestAutoResponse {
   additional_info: Record<string, AdditionalInfoItem>;
 }
 
+export interface GroupTestRef {
+  criterionId: string;
+  criterionName: string;
+  criterionImperative: AssessmentCriterionImperative;
+  testId: string;
+  testName: string;
+  result: number | null;
+  message: string;
+}
+
+export interface TestAutoValidation {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type: "Fully-Automated-Validation";
+  text: string;
+  result: number | null;
+  value: string | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
+  message?: string;
+  lastRun?: string;
+}
+
 export interface TestAutoHttpsCheck {
   id: string;
   name: string;
@@ -272,7 +312,8 @@ export type AssessmentTest =
   | TestValueParam
   | TestAutoHttpsCheck
   | TestAutoMD1
-  | TestAutoG069;
+  | TestAutoG069
+  | TestAutoValidation;
 
 export interface EvidenceURL {
   url: string;
