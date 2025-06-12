@@ -45,6 +45,9 @@ import AcceptableUse from "./pages/about/AcceptableUse";
 import Privacy from "./pages/about/Privacy";
 import Cookies from "./pages/about/Cookies";
 import Terms from "./pages/about/Terms";
+import Settings from "./pages/admin/Settings";
+import TestMethodsSettings from "./pages/admin/settings/TestMethodsSettings";
+import MetricDefinitionsSettings from "./pages/admin/settings/MetricDefinitionsSettings";
 
 const queryClient = new QueryClient();
 
@@ -278,6 +281,21 @@ function App() {
                 </Route>
                 <Route path="/login" element={<ProtectedRoute />}>
                   <Route index element={<Profile />} />
+                </Route>
+                <Route path="/admin/settings" element={<ProtectedRoute />}>
+                  <Route index element={<Settings />} />
+                </Route>
+                <Route
+                  path="/admin/settings/test-methods"
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<TestMethodsSettings />} />
+                </Route>
+                <Route
+                  path="/admin/settings/metric-definitions"
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<MetricDefinitionsSettings />} />
                 </Route>
                 <Route path="/logout" element={<KeycloakLogout />} />
               </Routes>

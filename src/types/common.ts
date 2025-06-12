@@ -96,6 +96,7 @@ export type OrganisationRORSearchParams = ApiAuthOptions & {
 export type ApiOptions = ApiAuthOptions &
   ApiPaginationOptions & {
     search?: string;
+    enabled?: boolean;
   };
 
 export type ApproveRejectProps = {

@@ -48,12 +48,13 @@ export const useGetAllTestMethods = ({
   isRegistered,
   size,
   search = "",
+  enabled,
 }: ApiOptions) =>
   useInfiniteQuery({
     queryKey: ["all-test-methods", search],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<RegistryResourceResponse>(
-        `/v1/registry/tests/test-method?size=${size}&page=${pageParam}&search=${search}`,
+        `/v1/registry/tests/test-method?size=${size}&page=${pageParam}&search=${search}${enabled ? `&enabled=${enabled}` : ""}`,
       );
       return response.data;
     },
@@ -70,6 +71,25 @@ export const useGetAllTestMethods = ({
     retry: false,
     enabled: isRegistered,
   });
+
+export const useUpdateTestMethodStatus = (token: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
+      const response = await APIClient(token).put(
+        `/v1/registry/tests/test-method/${id}`,
+        { enabled },
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["all-test-methods"]);
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+};
 
 export const useGetAllMetricTypes = ({
   token,
