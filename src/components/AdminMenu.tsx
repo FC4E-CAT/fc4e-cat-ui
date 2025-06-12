@@ -6,6 +6,7 @@ import {
   FaFile,
   FaTags,
   FaUsers,
+  FaCog,
 } from "react-icons/fa";
 import { FaClipboardQuestion, FaFileCircleCheck } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
@@ -131,6 +132,20 @@ export default function AdminMenu() {
                 className={`cat-nav-link-item ${isSel(adminPath, "metrics") ? "active" : ""}`}
               >
                 <FaBorderNone /> {t("metrics")}
+              </Link>
+            </li>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="cat-sidebar-section">{t("system")}</h3>
+          <div>
+            <li>
+              <Link
+                to="/admin/settings"
+                className={`cat-nav-link-item ${isSel(adminPath, "settings") ? "active" : ""}`}
+              >
+                <FaCog /> {t("Settings")}
               </Link>
             </li>
           </div>

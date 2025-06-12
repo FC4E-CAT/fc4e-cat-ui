@@ -14,7 +14,6 @@ import {
 } from "@/api";
 import { RegistryTest } from "@/types/tests";
 import { useGetAllTests } from "@/api/services/registry";
-import TestModal from "@/pages/tests/components/TestModal";
 import { useTranslation } from "react-i18next";
 import { SearchBox } from "@/components/SearchBox";
 
@@ -23,7 +22,6 @@ export default function MotivationMetricTests() {
   const params = useParams();
   const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
-  const [showCreateTest, setShowCreateTest] = useState(false);
   const [availableTests, setAvailableTests] = useState<RegistryTest[]>([]);
   const [selectedTests, setSelectedTests] = useState<RegistryTest[]>([]);
 
@@ -163,13 +161,6 @@ export default function MotivationMetricTests() {
 
   return (
     <div className="pb-4">
-      <TestModal
-        id=""
-        show={showCreateTest}
-        onHide={() => {
-          setShowCreateTest(false);
-        }}
-      />
       <Row className="cat-view-heading-block row border-bottom">
         <Col>
           <h2 className="text-muted cat-view-heading ">
@@ -193,7 +184,7 @@ export default function MotivationMetricTests() {
           </h2>
         </Col>
       </Row>
-      <Row className="mt-4  pb-4">
+      <Row className="mt-4 pb-4">
         <Col className="px-4">
           <div className="d-flex justify-content-between">
             <div>
@@ -206,13 +197,11 @@ export default function MotivationMetricTests() {
             </div>
             <div>
               <Button
+                href="/admin/tests/create-test"
                 size="sm"
                 variant="warning"
-                onClick={() => {
-                  setShowCreateTest(true);
-                }}
               >
-                <FaPlus /> {t("page_tests.create_new_test")}
+                <FaPlus /> {t("page_tests.create_new")}
               </Button>
             </div>
           </div>

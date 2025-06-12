@@ -917,3 +917,68 @@ a.plain:hover {
 .test-content-container .fw-medium {
   font-size: 14px;
 }
+
+.settings-section-header {
+  margin-bottom: 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settings-section-card {
+  max-width: 380px;
+  min-height: 100px;
+  background-color: #fff;
+  border: 1px solid #e9ecef !important;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%) !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.settings-section-card:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6 !important;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%) !important;
+}
+
+.settings-section-card .card-body {
+  padding: 1.25rem !important;
+}
+
+.settings-section-card h6 {
+  margin-bottom: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #212529;
+}
+
+.settings-section-card span {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.test-method-settings-item {
+  padding: 0.5rem 0.3rem;
+}
+
+.test-method-settings-item h6 {
+  margin-bottom: 0.1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #212529;
+}
+
+.test-method-settings-item .form-check-input {
+  width: 3rem !important;
+  height: 1.3rem !important;
+}
+
+.test-method-settings-item .form-check-input:hover {
+  cursor: pointer;
+}
+
+.test-method-settings-item .form-check-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}

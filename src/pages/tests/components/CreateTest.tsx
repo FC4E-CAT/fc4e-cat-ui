@@ -170,6 +170,7 @@ function CreateTest() {
     token: keycloak?.token || "",
     isRegistered: registered,
     search: getSearchString(),
+    enabled: true,
   });
 
   useEffect(() => {
