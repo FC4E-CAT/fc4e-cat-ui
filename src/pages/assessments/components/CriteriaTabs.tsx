@@ -32,6 +32,8 @@ import {
   TestAutoHttpsCheck,
   TestAutoMD1,
   TestAutoG069,
+  TestAutoValidation,
+  AutoGroupTest,
 } from "@/types";
 import {
   TestBinaryForm,
@@ -47,8 +49,11 @@ import { useTranslation } from "react-i18next";
 import { TestAutoMd1Form } from "./tests/TestAutoMd1Form";
 import { TestAutoG069Form } from "./tests/TestAutoG069Form";
 import { defaultG069tokenIntrospection, defaultG069userInfo } from "@/config";
+import { TestAutoValidationForm } from "./tests/TestAutoValidationForm";
 
 type CriteriaTabsProps = {
+  autogroups: AutoGroupTest[] | undefined;
+  onAutoTestGroup(autogroup: AutoGroupTest): void;
   principles: AssessmentPrinciple[];
   resetActiveTab: boolean;
   handleGuide(id: string, title: string, text: string): void;
@@ -280,6 +285,20 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
                     onTestChange={props.onTestChange}
                     criterionId={criterion.id}
                     principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (test.type === "Fully-Automated-Validation") {
+            testList.push(
+              <div className="border mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestAutoValidationForm
+                    autogroup={props.autogroups?.find(
+                      (item) => item.test_method === test.type,
+                    )}
+                    test={test as TestAutoValidation}
+                    onAutoGroupTestCall={props.onAutoTestGroup}
                   />
                 </div>
               </div>,

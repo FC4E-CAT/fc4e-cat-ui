@@ -99,7 +99,9 @@
     "next": "Next",
     "restore": "Restore",
     "publish": "Publish",
-    "unpublish": "Unpublish"
+    "unpublish": "Unpublish",
+    "run_test_group": "Run Test Group",
+    "running_test_group": "Test Group is running..."
   },
   "fields": {
     "actions": "Actions",
@@ -389,7 +391,8 @@
     "reimport": "Please try to import a different file...",
     "share1": "This is a",
     "share2": "shared",
-    "share3": "assessment from another user, which includes the following actor information"
+    "share3": "assessment from another user, which includes the following actor information",
+    "include_group_tests": "This assessment includes the following automated group test(s):"
   },
   "page_preview": {
     "title": "Preview Assessment",

@@ -157,6 +157,12 @@
   border-top: transparent;
 }
 
+.cat-alert-warning-colors {
+  color: #856404;
+  background-color: #fff3cd;
+  border-color: #ffeeba;
+}
+
 #motivation-tabs .tab-content .tab-pane {
   height: auto;
   min-height: 200px;

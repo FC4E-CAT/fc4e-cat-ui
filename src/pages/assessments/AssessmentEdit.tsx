@@ -15,6 +15,7 @@ import {
   AssessmentEditMode,
   ActorOrgAsmtType,
   AssessmentCriterion,
+  AutoGroupTest,
 } from "@/types";
 import { useParams } from "react-router";
 import {
@@ -56,6 +57,8 @@ import { ShareModal } from "./components/ShareModal";
 import { Comments } from "./components/Comments";
 import FormCheckInput from "react-bootstrap/esm/FormCheckInput";
 import { useTranslation } from "react-i18next";
+import { GroupTestModal } from "./components/tests/GroupTestModal";
+import { FaGears } from "react-icons/fa6";
 
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
@@ -65,6 +68,11 @@ interface ShareModalConfig {
   show: boolean;
   name: string;
   id: string;
+}
+
+interface GroupTestModalConfig {
+  group: AutoGroupTest | null;
+  show: boolean;
 }
 
 type Guide = {
@@ -105,6 +113,13 @@ const AssessmentEdit = ({
     text: "",
     show: false,
   });
+
+  // state to show/hide group_testing_modal
+  const [groupTestModalConfig, setGroupTestModalConfig] =
+    useState<GroupTestModalConfig>({
+      group: null,
+      show: false,
+    });
 
   // Share Modal
   const [shareModalConfig, setShareModalConfig] = useState<ShareModalConfig>({
@@ -280,6 +295,10 @@ const AssessmentEdit = ({
     if (activeTab > 1) {
       handleChangeTab(activeTab - 1);
     }
+  }
+
+  function handleAutoTestGroup(autogroup: AutoGroupTest) {
+    setGroupTestModalConfig({ group: autogroup, show: true });
   }
 
   function handleUpdateAssessment(exit: boolean) {
@@ -468,6 +487,10 @@ const AssessmentEdit = ({
     }
   }
 
+  const handleUpdateAutoResults = (assessment: Assessment) => {
+    setAssessment(assessment);
+  };
+
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -596,8 +619,25 @@ const AssessmentEdit = ({
         : false
       : wizardTabActive && activeTab < 3;
 
+  // check if assessment has automated test groups
+  const hasAutoGroups =
+    assessment && assessment?.automated_group_test?.length > 0;
+
   return (
     <>
+      {hasAutoGroups && (
+        <GroupTestModal
+          show={
+            groupTestModalConfig.show && Boolean(groupTestModalConfig.group)
+          }
+          groupTest={groupTestModalConfig.group}
+          onHide={() => {
+            setGroupTestModalConfig({ group: null, show: false });
+          }}
+          assessment={assessment}
+          onUpdateResults={handleUpdateAutoResults}
+        />
+      )}
       <ShareModal
         show={shareModalConfig.show}
         name={shareModalConfig.name}
@@ -1000,7 +1040,37 @@ const AssessmentEdit = ({
                   className="row bg-secondary"
                   style={{ height: "1px" }}
                 ></div>
+                {hasAutoGroups && (
+                  <div className="row cat-alert-warning-colors p-2">
+                    <div>
+                      <small className="me-2">
+                        <FaGears size="1.2rem" className="me-2" />
+                        {t("page_assessment_edit.include_group_tests")}
+                      </small>
+
+                      {assessment?.automated_group_test.map((item) => {
+                        return (
+                          <Button
+                            size="sm"
+                            variant="success"
+                            key={item.test_method}
+                            onClick={() => {
+                              setGroupTestModalConfig({
+                                group: item,
+                                show: true,
+                              });
+                            }}
+                          >
+                            {item.test_method}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
                 <CriteriaTabs
+                  onAutoTestGroup={handleAutoTestGroup}
+                  autogroups={assessment?.automated_group_test}
                   principles={assessment?.principles || []}
                   resetActiveTab={resetCriterionTab}
                   onTestChange={handleCriterionChange}

@@ -6,6 +6,7 @@ import {
   Metric,
   ResultStats,
   AssessmentTest,
+  GroupTestRef,
 } from "../types";
 
 /** Evaluates all tests of a metric if the metric is number */
@@ -104,4 +105,83 @@ export function evalAssessment(
     mandatory: mandatoryCount,
     optional: optionalCount,
   };
+}
+
+/** iterates over the nested fields based on query to get the appropriate value */
+export function queryValue<T>(obj: T, query: string) {
+  const keys = query.split(".");
+  return keys.reduce((cur: unknown, key: string) => {
+    return cur && typeof cur === "object" && key in cur
+      ? (cur as Record<string, unknown>)[key]
+      : undefined;
+  }, obj);
+}
+
+export function applyAutoGroupResults(
+  assessment: Assessment,
+  group: string,
+  groupTests: Record<string, GroupTestRef>,
+): Assessment | null {
+  // create a deep copy of the existing assessment
+  if (assessment) {
+    // organise criteria results to mandatory and optional
+    const mandatory: (number | null)[] = [];
+    const optional: (number | null)[] = [];
+    let compliance: boolean | null;
+
+    // create a deep copy
+    const asmtUpdate = JSON.parse(JSON.stringify(assessment)) as Assessment;
+
+    asmtUpdate.principles.map((pri) => {
+      pri.criteria.map((cri) => {
+        // for each criterion check the tests and then calculate the metric
+
+        cri.metric.tests.map((test) => {
+          if (test.type === group && test.params in groupTests)
+            test.result = groupTests[test.params].result;
+          test.value = test.result ? "Validated" : "Validation Failed";
+        });
+        const { result, value } = evalMetric(cri.metric);
+        cri.metric.value = value;
+        cri.metric.result = result;
+        if (
+          cri.imperative === AssessmentCriterionImperative.Must ||
+          cri.imperative === AssessmentCriterionImperative.MUST
+        ) {
+          mandatory.push(cri.metric.result);
+        } else {
+          optional.push(cri.metric.result);
+        }
+      });
+    });
+
+    if (mandatory.some((result) => result === null)) {
+      compliance = null;
+    } else {
+      compliance = mandatory.every((result) => result === 1);
+    }
+
+    // get how many optional items have passed
+    const optionalPass: number = optional.reduce(
+      (sum: number, current: number | null) => {
+        if (current && current > 0) {
+          return sum + 1;
+        }
+        return sum;
+      },
+      0,
+    );
+
+    // if there any optional items available, ranking is equal to the percentage of optional passed / total optional
+    // else ranking is 0
+    const ranking =
+      optional.length > 0 ? (optionalPass / optional.length) * 100 : 0;
+
+    asmtUpdate.result.compliance = compliance;
+    asmtUpdate.result.ranking = ranking;
+
+    return asmtUpdate;
+  }
+
+  return null;
 }
