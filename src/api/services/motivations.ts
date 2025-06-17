@@ -10,6 +10,7 @@ import { handleBackendError } from "@/utils";
 import {
   ApiOptions,
   ApiOptionsSearch,
+  AutoGroupTest,
   CriImp,
   MetricAssignment,
   MetricFull,
@@ -277,6 +278,7 @@ export const useMotivationAddActor = (
   motivationId: string,
   actorId: string,
   relation: string,
+  autoGroups: AutoGroupTest[],
 ) => {
   const queryClient = useQueryClient();
   return useMutation(
@@ -287,6 +289,7 @@ export const useMotivationAddActor = (
           {
             actor_id: actorId,
             relation: relation,
+            automated_group_test: autoGroups,
           },
         ],
       );
