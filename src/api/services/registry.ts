@@ -73,7 +73,6 @@ export const useGetAllTestMethods = ({
   });
 
 export const useUpdateTestMethodStatus = (token: string) => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
       const response = await APIClient(token).put(
@@ -81,9 +80,6 @@ export const useUpdateTestMethodStatus = (token: string) => {
         { enabled },
       );
       return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["all-test-methods"]);
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
@@ -144,6 +140,51 @@ export const useGetAllBenchmarkTypes = ({
     retry: false,
     enabled: isRegistered,
   });
+
+export const useUpdateMetricTypeStatus = (token: string) => {
+  return useMutation({
+    mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
+      const response = await APIClient(token).put(
+        `/v1/registry/type-metric/${id}`,
+        { enabled },
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+};
+
+export const useUpdateAlgorithmStatus = (token: string) => {
+  return useMutation({
+    mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
+      const response = await APIClient(token).put(
+        `/v1/registry/type-algorithm/${id}`,
+        { enabled },
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+};
+
+export const useUpdateBenchmarkTypeStatus = (token: string) => {
+  return useMutation({
+    mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
+      const response = await APIClient(token).put(
+        `/v1/registry/benchmark-types/${id}`,
+        { enabled },
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+};
 
 export const useGetAllTests = ({ token, isRegistered, size }: ApiOptions) =>
   useInfiniteQuery({

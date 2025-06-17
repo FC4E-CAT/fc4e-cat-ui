@@ -929,7 +929,7 @@ a.plain:hover {
 
 .settings-section-card {
   max-width: 380px;
-  min-height: 100px;
+  min-height: 120px;
   background-color: #fff;
   border: 1px solid #e9ecef !important;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%) !important;

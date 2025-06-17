@@ -47,7 +47,9 @@ import Cookies from "./pages/about/Cookies";
 import Terms from "./pages/about/Terms";
 import Settings from "./pages/admin/Settings";
 import TestMethodsSettings from "./pages/admin/settings/TestMethodsSettings";
-import MetricDefinitionsSettings from "./pages/admin/settings/MetricDefinitionsSettings";
+import MetricTypesSettings from "./pages/admin/settings/MetricTypesSettings";
+import AlgorithmsSettings from "./pages/admin/settings/AlgorithmsSettings";
+import BenchmarkTypesSettings from "./pages/admin/settings/BenchmarkTypesSettings";
 
 const queryClient = new QueryClient();
 
@@ -292,10 +294,22 @@ function App() {
                   <Route index element={<TestMethodsSettings />} />
                 </Route>
                 <Route
-                  path="/admin/settings/metric-definitions"
+                  path="/admin/settings/metric-types"
                   element={<ProtectedRoute />}
                 >
-                  <Route index element={<MetricDefinitionsSettings />} />
+                  <Route index element={<MetricTypesSettings />} />
+                </Route>
+                <Route
+                  path="/admin/settings/algorithms"
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<AlgorithmsSettings />} />
+                </Route>
+                <Route
+                  path="/admin/settings/benchmark-types"
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<BenchmarkTypesSettings />} />
                 </Route>
                 <Route path="/logout" element={<KeycloakLogout />} />
               </Routes>
