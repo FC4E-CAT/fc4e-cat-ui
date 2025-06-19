@@ -1,4 +1,5 @@
 import {
+  useCreateMetricVersion,
   useCreateMotivationMetric,
   useGetMotivationMetricFull,
   useUpdateMotivationMetric,
@@ -28,13 +29,14 @@ import {
 } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { FaEdit, FaFile, FaInfoCircle } from "react-icons/fa";
+import { FaCodeBranch, FaEdit, FaFile, FaInfoCircle } from "react-icons/fa";
 
 interface MetricModalProps {
   mtvId: string;
   mtrId: string;
   show: boolean;
   onHide: () => void;
+  isVersioning?: boolean;
 }
 /**
  * Modal component for creating/editing a metric
@@ -176,6 +178,13 @@ export function MotivationMetricModal(props: MetricModalProps) {
     metricInput,
   );
 
+  const mutateCreateVersion = useCreateMetricVersion(
+    keycloak?.token || "",
+    props.mtvId,
+    props.mtrId,
+    metricInput,
+  );
+
   useEffect(() => {
     if (metricData) {
       const cleanVal = metricData.value_benchmark.replace(/[^0-9.]/g, "");
@@ -275,6 +284,29 @@ export function MotivationMetricModal(props: MetricModalProps) {
     });
   }
 
+  // handle backend call to create a new version of an existing metric
+  function handleCreateNewVersion() {
+    const promise = mutateCreateVersion
+      .mutateAsync()
+      .catch((err) => {
+        alert.current = {
+          message: "Error: " + err.response.data.message,
+        };
+        throw err;
+      })
+      .then(() => {
+        props.onHide();
+        alert.current = {
+          message: t("page_motivations.toast_create_version_success"),
+        };
+      });
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_create_version_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  }
+
   return (
     <Modal
       show={props.show}
@@ -288,7 +320,15 @@ export function MotivationMetricModal(props: MetricModalProps) {
           className="d-flex align-items-center gap-1"
           id="contained-modal-title-vcenter"
         >
-          {props.mtrId ? (
+          {props.mtrId && props?.isVersioning ? (
+            <>
+              <FaCodeBranch className="me-2" />
+              {t("page_motivations.create_new_metric_version")}:{" "}
+              <small className="ms-2 bg-light badge">
+                <code>{props.mtrId}</code>
+              </small>
+            </>
+          ) : props.mtrId ? (
             <>
               <FaEdit className="me-2" /> {t("page_motivations.edit_metric")}:{" "}
               <small className="ms-2 bg-light badge">
@@ -297,7 +337,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
             </>
           ) : (
             <>
-              <FaFile className="me-2" />{" "}
+              <FaFile className="me-2" />
               {t("page_motivations.create_new_metric")}
             </>
           )}
@@ -332,6 +372,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                     });
                   }}
                   aria-describedby="label-metric-mtr"
+                  disabled={props.mtrId !== "" || props.isVersioning}
                 />
               </InputGroup>
               {showErrors && metricInput.mtr === "" && (
@@ -638,11 +679,19 @@ export function MotivationMetricModal(props: MetricModalProps) {
           className="btn-success"
           onClick={() => {
             if (handleValidate() === true) {
-              props.mtrId ? handleUpdate() : handleCreate();
+              props?.isVersioning
+                ? handleCreateNewVersion()
+                : props.mtrId
+                  ? handleUpdate()
+                  : handleCreate();
             }
           }}
         >
-          {props.mtrId ? t("buttons.update") : t("buttons.create")}
+          {props?.isVersioning
+            ? t("buttons.create_version")
+            : props.mtrId
+              ? t("buttons.update")
+              : t("buttons.create")}
         </Button>
       </Modal.Footer>
     </Modal>

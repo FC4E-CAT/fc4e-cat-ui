@@ -2,17 +2,29 @@ import React from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaBars, FaEdit } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { RegistryTest } from "@/types/tests";
+import { MotivationReference } from "@/types";
 import { MotivationRefList } from "@/components/MotivationRefList";
 
 interface TestVersionRowProps {
-  version: RegistryTest;
-  onView: (testId: string) => void;
-  onEdit: (testId: string) => void;
+  id: string;
+  label: string;
+  description: string;
+  last_touch?: string;
+  type_algorithm_label?: string;
+  version?: string;
+  used_by_motivations?: MotivationReference[];
+  onView?: (testId: string) => void;
+  onEdit?: (testId: string) => void;
 }
 
 const TestVersionRow: React.FC<TestVersionRowProps> = ({
+  id,
   version,
+  label,
+  description,
+  last_touch,
+  type_algorithm_label,
+  used_by_motivations,
   onView,
   onEdit,
 }) => {
@@ -29,42 +41,53 @@ const TestVersionRow: React.FC<TestVersionRowProps> = ({
     <tr className="version-row">
       <td className="align-middle">
         <div className="d-flex flex-column gap-2 ps-4">
-          <span className="w-25 badge bg-secondary px-2 py-1 text-center text-truncate">
-            {version?.version ? `v${version.version}` : "old version"}
+          <span
+            className="badge bg-secondary px-2 py-1 text-center text-truncate"
+            style={{ width: "fit-content" }}
+          >
+            {version ? `v${version}` : "old version"}
           </span>
           <span style={{ fontSize: "0.64rem" }} className="text-muted">
-            {version.id}
+            {id}
           </span>
         </div>
       </td>
-      <td className="align-middle">{version.label}</td>
-      <td className="align-middle">{version.description}</td>
+      <td className="align-middle">{label}</td>
+      <td className="align-middle">{description}</td>
       <td className="align-middle">
-        <small>{version?.last_touch?.split("T")[0]}</small>
+        {last_touch ? (
+          <small>{last_touch?.split("T")[0]}</small>
+        ) : (
+          type_algorithm_label && <span>{type_algorithm_label}</span>
+        )}
       </td>
       <td>
-        {version?.used_by_motivations ? (
-          <MotivationRefList motivations={version.used_by_motivations || []} />
+        {used_by_motivations ? (
+          <MotivationRefList motivations={used_by_motivations || []} />
         ) : null}
       </td>
       <td>
         <div className="d-flex flex-nowrap">
-          <OverlayTrigger placement="top" overlay={tooltipView}>
-            <Button
-              className="btn btn-light btn-sm m-1"
-              onClick={() => onView(version.id)}
-            >
-              <FaBars />
-            </Button>
-          </OverlayTrigger>
-          <OverlayTrigger placement="top" overlay={tooltipEdit}>
-            <Button
-              className="btn btn-light btn-sm m-1"
-              onClick={() => onEdit(version.id)}
-            >
-              <FaEdit />
-            </Button>
-          </OverlayTrigger>
+          {onView && (
+            <OverlayTrigger placement="top" overlay={tooltipView}>
+              <Button
+                className="btn btn-light btn-sm m-1"
+                onClick={() => onView(id)}
+              >
+                <FaBars />
+              </Button>
+            </OverlayTrigger>
+          )}
+          {onEdit && (
+            <OverlayTrigger placement="top" overlay={tooltipEdit}>
+              <Button
+                className="btn btn-light btn-sm m-1"
+                onClick={() => onEdit(id)}
+              >
+                <FaEdit />
+              </Button>
+            </OverlayTrigger>
+          )}
         </div>
       </td>
     </tr>
