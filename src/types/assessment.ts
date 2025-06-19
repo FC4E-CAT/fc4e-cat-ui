@@ -47,9 +47,9 @@ export interface AutoGroupTest {
 }
 
 export interface GroupTestParam {
-  name: "string";
-  assessment_ref?: "string";
-  value?: "string";
+  name: string;
+  assessment_ref?: string;
+  value?: string;
 }
 
 /** Reference with string id */

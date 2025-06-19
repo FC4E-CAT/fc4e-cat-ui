@@ -50,10 +50,13 @@
   "mandatory": "Mandatory",
   "optional": "Optional",
   "unknown": "Unknown",
+  "assessment_ref": "Assessment Reference",
+  "value": "Value",
   "error": "Error",
   "github": "Github",
   "documentation": "Documentation",
   "personal_menu": "My items",
+  "endpoint": "Endpoint",
   "login_alert": "Press login to authenticate",
   "under_motivation": "under motivation",
   "tip_publish_assessment": "Publish Assessment (makes it public)",
@@ -66,6 +69,8 @@
   "toast_assessment_publish_progress": "Publishing Assessment...",
   "toast_assessment_unpublish_success": "Assessment Unpublished!",
   "toast_assessment_unpublish_progress": "Unpublishing Assessment...",
+  "param_type": "Parameter Type",
+  "test_method": "Test Method",
   "total": "Total",
   "buttons": {
     "login": "Login",
@@ -101,7 +106,8 @@
     "publish": "Publish",
     "unpublish": "Unpublish",
     "run_test_group": "Run Test Group",
-    "running_test_group": "Test Group is running..."
+    "running_test_group": "Test Group is running...",
+    "add_group_test": "Add Group Test"
   },
   "fields": {
     "actions": "Actions",
@@ -663,6 +669,8 @@
     "list_principles_subtitle": "Principles related with criteria under motivation",
     "create_principle": "Create Principle",
     "modal_principles_title": "Manage Principles",
+    "tip_test_method": "Please select one test method which identify which assessment tests belong to this group",
+    "select_test_method": "Please select test method",
     "modal_asmt_delete_title": "Delete Assessment Type",
     "modal_asmt_delete_message": "Are you sure you want to delete the following Assessment type ?",
     "asmt_types": "Assessment Types",
@@ -682,7 +690,17 @@
     "metric_details": "Metric details",
     "modal_metric_delete_title": "Delete Metric",
     "modal_metric_delete_message": "Are you sure you want to delete the following Metric ?",
-    "create_new_metric_version": "Create New Metric Version"
+    "create_new_metric_version": "Create New Metric Version",
+    "tip_endpoint": "Please enter a valid endpoint path for the automated group test to call",
+    "select_endpoint": "Enter a valid endpoint path",
+    "group_tests_section": "Group Tests (optional)",
+    "group_test": "Automated Group Test",
+    "info_add_group_tests": "In case you want to have automated groups of tests in this Motivation-Actor please select \"Add Group Test\"",
+    "tip_param_assessment_ref": "A query path in the form of a field or a sequence of nested fields separated by dot (example: organisation.id). These fields should be available in the assessment schema",
+    "tip_param_value": "Enter a specific number or string to be passed as parameter value",
+    "tip_select_param_type": "Please select if the value of the parameter is a reference to value provided by an existing assessment field or a hardcoded value",
+    "select_param_type": "Select the type of the parameter",
+    "tip_param_name": "Please provide a name for this parameter"
   },
   "page_tests": {
     "title": "Tests",
