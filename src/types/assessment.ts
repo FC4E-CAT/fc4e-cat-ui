@@ -152,6 +152,7 @@ export interface TestBinary {
   result: number | null;
   value: boolean | null;
   evidence_url?: EvidenceURL[];
+  last_run?: LastRun;
 }
 
 export interface TestBinaryParam {
@@ -166,6 +167,7 @@ export interface TestBinaryParam {
   params: string;
   evidence_url?: EvidenceURL[];
   tool_tip: string;
+  last_run?: LastRun;
 }
 
 export interface TestValue {
@@ -184,6 +186,7 @@ export interface TestValue {
   benchmark: Benchmark;
   params: string;
   evidence_url?: EvidenceURL[];
+  last_run?: LastRun;
 }
 
 export interface TestValueParam {
@@ -209,6 +212,7 @@ export interface TestValueParam {
   params: string;
   benchmark: Benchmark;
   evidence_url?: EvidenceURL[];
+  last_run?: LastRun;
 }
 
 export interface TestAutoG069 {
@@ -226,6 +230,7 @@ export interface TestAutoG069 {
   params: string;
   evidence_url?: EvidenceURL[];
   tool_tip: string;
+  last_run?: LastRun;
 }
 
 export interface TestAutoError {
@@ -257,7 +262,7 @@ export interface GroupTestRef {
   testId: string;
   testName: string;
   result: number | null;
-  message: string;
+  last_run: LastRun;
 }
 
 export interface TestAutoValidation {
@@ -272,8 +277,7 @@ export interface TestAutoValidation {
   params: string;
   evidence_url?: EvidenceURL[];
   tool_tip: string;
-  message?: string;
-  lastRun?: string;
+  last_run?: LastRun;
 }
 
 export interface TestAutoHttpsCheck {
@@ -288,6 +292,7 @@ export interface TestAutoHttpsCheck {
   params: string;
   evidence_url?: EvidenceURL[];
   tool_tip: string;
+  last_run?: LastRun;
 }
 
 export interface TestAutoMD1 {
@@ -302,6 +307,7 @@ export interface TestAutoMD1 {
   params: string;
   evidence_url?: EvidenceURL[];
   tool_tip: string;
+  last_run?: LastRun;
 }
 
 /** Supported tests: Binary | Value | BinaryParam | ValueParam | TestAutoHttpsCheck **/
@@ -471,4 +477,10 @@ export interface AssessmentStats {
   total_optional: number;
   completed_mandatory: number;
   completed_optional: number;
+}
+
+export interface LastRun {
+  timestamp: string;
+  code: number;
+  message: string;
 }

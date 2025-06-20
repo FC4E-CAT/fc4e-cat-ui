@@ -3,7 +3,15 @@
  */
 
 // import { useState } from "react"
-import { Badge, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+import {
+  Alert,
+  Badge,
+  Button,
+  Col,
+  Form,
+  InputGroup,
+  Row,
+} from "react-bootstrap";
 import { TestToolTip } from "./TestToolTip";
 import {
   AssessmentTest,
@@ -39,7 +47,6 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
   const [localValue, setLocalValue] = useState(props.test.value || "");
 
   const [okStatus, setOkStatus] = useState<TestAutoResponse | null>(null);
-  const [errStatus, setErrStatus] = useState<TestAutoError | null>(null);
   const [runningTest, setRunningTest] = useState(false);
 
   // break parameters
@@ -84,15 +91,28 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
             ...props.test,
             value: localValue,
             result: respResult,
+            last_run: {
+              timestamp: okResp.last_run,
+              message: okResp.test_status.message,
+              code: okResp.test_status.code,
+            },
           };
 
           props.onTestChange(props.principleId, props.criterionId, newTest);
           setOkStatus(okResp);
         } else {
           const errResp = resp.data as TestAutoError;
-          const newTest = { ...props.test, value: localValue, result: -1 };
+          const newTest = {
+            ...props.test,
+            value: localValue,
+            result: -1,
+            last_run: {
+              timestamp: new Date().toISOString(),
+              code: errResp.code,
+              message: errResp.message,
+            },
+          };
           props.onTestChange(props.principleId, props.criterionId, newTest);
-          setErrStatus(errResp);
         }
       })
       .catch((error: AxiosError) => {
@@ -221,8 +241,30 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
               )}
             </>
           )}
-          {!runningTest && setErrStatus !== null && (
-            <div className="text-danger">{errStatus?.message}</div>
+        </div>
+
+        <div className="mt-2">
+          {props.test.last_run && (
+            <Alert
+              variant={props.test.last_run.code == 200 ? "success" : "danger"}
+            >
+              <div>
+                <em>
+                  <small>
+                    <strong>{t("last_run")}:</strong>{" "}
+                    {props.test.last_run.timestamp}
+                  </small>
+                </em>
+              </div>
+              <div>
+                <em>
+                  <small>
+                    <strong>{t("message")}:</strong>{" "}
+                    {props.test.last_run.message}
+                  </small>
+                </em>
+              </div>
+            </Alert>
           )}
         </div>
       </Row>

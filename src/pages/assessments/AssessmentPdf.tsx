@@ -487,6 +487,25 @@ const AssessmentPdf = (props: AssessmentPdfProps) => {
                                   )}
                                 </View>
                               )}
+                              {test.last_run && (
+                                <View style={{ fontSize: "8", marginTop: "2" }}>
+                                  <Text
+                                    style={{ fontFamily: "Helvetica-Bold" }}
+                                  >
+                                    {t("autotest_info")}
+                                  </Text>
+                                  <Text>
+                                    - {t("last_run")}
+                                    {": "}
+                                    {test.last_run.timestamp}
+                                  </Text>
+                                  <Text>
+                                    - {t("message")}
+                                    {": "}
+                                    {test.last_run.message}
+                                  </Text>
+                                </View>
+                              )}
                             </View>
                           );
                         })}
