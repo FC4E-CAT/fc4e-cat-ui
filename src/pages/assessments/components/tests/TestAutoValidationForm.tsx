@@ -3,7 +3,7 @@
  */
 
 // import { useState } from "react"
-import { Button, Col, Row } from "react-bootstrap";
+import { Alert, Button, Col, Row } from "react-bootstrap";
 
 import { AutoGroupTest, TestAutoValidation } from "@/types";
 import { FaPlay } from "react-icons/fa";
@@ -21,8 +21,6 @@ export const TestAutoValidationForm = (props: AssessmentTestProps) => {
 
   // break parameters
   const textParams = props.test.text.split("|");
-
-  console.log(props.test.result, props.test.result === 1);
 
   return (
     <div>
@@ -53,19 +51,14 @@ export const TestAutoValidationForm = (props: AssessmentTestProps) => {
             ) : props.test.result === 1 ? (
               <>
                 <span className="badge badge-sm bg-success">PASS</span>
-                {props.test.message && (
-                  <small className="ms-2">- {props.test.message}</small>
-                )}
               </>
             ) : (
               <>
                 <span className="badge badge-sm bg-danger">FAIL</span>
-                {props.test.message && (
-                  <small className="ms-2">- {props.test.message}</small>
-                )}
               </>
             )}
           </div>
+
           <div className="mt-1 d-flex d-flex justify-content-between border rounded bg-light">
             <div className="p-2">
               <FaGears size="1.2rem" className="me-2 text-muted" />
@@ -86,6 +79,30 @@ export const TestAutoValidationForm = (props: AssessmentTestProps) => {
               {` ${t("buttons.run_test_group")}`}
             </Button>
           </div>
+        </div>
+        <div className="mt-2">
+          {props.test.last_run && (
+            <Alert
+              variant={props.test.last_run.code == 200 ? "success" : "danger"}
+            >
+              <div>
+                <em>
+                  <small>
+                    <strong>{t("last_run")}:</strong>{" "}
+                    {props.test.last_run.timestamp}
+                  </small>
+                </em>
+              </div>
+              <div>
+                <em>
+                  <small>
+                    <strong>{t("message")}:</strong>{" "}
+                    {props.test.last_run.message}
+                  </small>
+                </em>
+              </div>
+            </Alert>
+          )}
         </div>
       </Row>
     </div>

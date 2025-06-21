@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 
 import { useGetAssessment } from "@/api";
 import { DebugJSON } from "./components/DebugJSON";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Alert, Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
 import imgAssessmentBadgePassed from "@/assets/badge-passed.png";
@@ -419,6 +419,52 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                           ))}
                                         </div>
                                       )}
+
+                                    {test.last_run && (
+                                      <div className="ps-4">
+                                        <div>
+                                          <em>
+                                            <small>
+                                              <strong>
+                                                {t("autotest_info")}
+                                              </strong>
+                                            </small>
+                                          </em>
+                                        </div>
+                                        <div className="mt-2">
+                                          {test.last_run && (
+                                            <Alert
+                                              variant={
+                                                test.last_run.code == 200
+                                                  ? "success"
+                                                  : "danger"
+                                              }
+                                            >
+                                              <div>
+                                                <em>
+                                                  <small>
+                                                    <strong>
+                                                      {t("last_run")}:
+                                                    </strong>{" "}
+                                                    {test.last_run.timestamp}
+                                                  </small>
+                                                </em>
+                                              </div>
+                                              <div>
+                                                <em>
+                                                  <small>
+                                                    <strong>
+                                                      {t("message")}:
+                                                    </strong>{" "}
+                                                    {test.last_run.message}
+                                                  </small>
+                                                </em>
+                                              </div>
+                                            </Alert>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
                                 );
                               })}

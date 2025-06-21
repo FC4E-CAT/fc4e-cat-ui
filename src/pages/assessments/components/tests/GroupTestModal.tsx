@@ -12,6 +12,7 @@ import {
   AutoGroupTest,
   GroupTestParam,
   GroupTestRef,
+  LastRun,
   TestAutoError,
   TestAutoResponse,
 } from "@/types";
@@ -71,7 +72,7 @@ function initGroupTests(
             testId: test.id,
             testName: test.name,
             result: test.result,
-            message: "",
+            last_run: { message: "", timestamp: "", code: 0 },
           };
         }
       });
@@ -94,17 +95,28 @@ export function GroupTestModal(props: GroupTestModalProps) {
   const [message, setMessage] = useState<string>("");
   const [execTime, setExecTime] = useState<string>("");
 
-  function handleResults(info: Record<string, AdditionalInfoItem>) {
-    const groupTestsUpdate: Record<string, GroupTestRef> = {};
+  function handleResults(
+    info: Record<string, AdditionalInfoItem> | null,
+    lastRun: LastRun,
+  ) {
+    const groupTestsUpdate: Record<string, GroupTestRef> | null = info
+      ? {}
+      : null;
 
-    Object.keys(info).map((key) => {
-      // update groupTest object that will apply changes to the assessment
-      groupTestsUpdate[key] = {
-        ...groupTests[key],
-        ["result"]: info[key].is_valid ? 1 : 0,
-        ["message"]: info[key].message,
-      };
-    });
+    if (info && groupTestsUpdate) {
+      Object.keys(info).map((key) => {
+        // update groupTest object that will apply changes to the assessment
+        groupTestsUpdate[key] = {
+          ...groupTests[key],
+          ["result"]: info[key].is_valid ? 1 : 0,
+          ["last_run"]: {
+            timestamp: lastRun.timestamp,
+            code: lastRun.code,
+            message: info[key].message,
+          },
+        };
+      });
+    }
 
     // apply result changes to the assessment
     if (props.assessment && props.groupTest) {
@@ -112,6 +124,7 @@ export function GroupTestModal(props: GroupTestModalProps) {
         props.assessment,
         props.groupTest?.test_method,
         groupTestsUpdate,
+        lastRun,
       );
 
       if (assessmentUpdated) {
@@ -136,14 +149,28 @@ export function GroupTestModal(props: GroupTestModalProps) {
         if (resp.status === 200) {
           const okResp = resp.data as TestAutoResponse;
           setMessage(okResp.test_status.message || "");
-          setExecTime(new Date(okResp.last_run).toISOString() || "");
+          setExecTime(new Date().toISOString() || "");
 
+          const lastRunInfo = {
+            code: okResp.test_status.code,
+            timestamp: okResp.last_run,
+            message: okResp.test_status.message,
+          };
           // handle params
-          handleResults(okResp.additional_info);
+          handleResults(okResp.additional_info, lastRunInfo);
         } else {
           const errResp = resp.data as TestAutoError;
+
+          const now = new Date().toISOString();
+          const lastRunInfo = {
+            code: errResp.code,
+            timestamp: now,
+            message: errResp.message,
+          };
           setError(errResp.message || "");
-          setExecTime(new Date().toISOString());
+          setExecTime(now);
+          // params empty - update only last run info on tests and clear
+          handleResults(null, lastRunInfo);
         }
       })
       .catch((error: AxiosError) => {
@@ -224,13 +251,18 @@ export function GroupTestModal(props: GroupTestModalProps) {
                       )}
                     </div>
                   </div>
-                  {item.message && (
-                    <div className="text-secondary">
-                      <em>
-                        <small>{message}</small>
-                      </em>
-                    </div>
-                  )}
+                  {item.last_run &&
+                    item.last_run.message &&
+                    item.last_run.timestamp && (
+                      <div>
+                        <div className="text-light">
+                          <small>Last Run: {item.last_run.timestamp}</small>
+                        </div>
+                        <div className="text-light">
+                          <small>Message: {item.last_run.message}</small>
+                        </div>
+                      </div>
+                    )}
                 </ListGroupItem>
               );
             })}

@@ -3,7 +3,7 @@
  */
 
 // import { useState } from "react"
-import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+import { Alert, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { TestToolTip } from "./TestToolTip";
 import {
@@ -42,7 +42,6 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
   const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
   const validUrl = urlRegex.test(localValue || "");
 
-  const [message, setMessage] = useState("");
   const [runningTest, setRunningTest] = useState(false);
 
   // break parameters
@@ -68,14 +67,25 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
             ...props.test,
             value: localValue,
             result: resp.data.is_valid_https ? 1 : 0,
+            last_run: {
+              timestamp: new Date().toISOString(),
+              message: resp.data.message || "",
+              code: resp.data.code,
+            },
           };
           props.onTestChange(props.principleId, props.criterionId, newTest);
         } else {
-          const newTest = { ...props.test, value: localValue, result: 0 };
+          const newTest = {
+            ...props.test,
+            value: localValue,
+            result: 0,
+            last_run: {
+              timestamp: new Date().toISOString(),
+              message: resp.data.message || "",
+              code: resp.data.code,
+            },
+          };
           props.onTestChange(props.principleId, props.criterionId, newTest);
-        }
-        if (resp.data.message) {
-          setMessage(resp.data.message);
         }
       })
       .catch((error: AxiosError) => {
@@ -121,7 +131,6 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
               id="input-value-control"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setLocalValue(e.target.value);
-                setMessage("");
               }}
             />
             <Button
@@ -165,15 +174,6 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
                 )}
               </div>
             )}
-          {!runningTest && message && (
-            <div>
-              <small
-                className={`${props.test.result !== null && props.test.result > 0 ? "text-success" : "text-danger"}`}
-              >
-                {message}
-              </small>
-            </div>
-          )}
         </div>
 
         {testParams[testParams.length - 1] === "evidence" && (
@@ -194,6 +194,30 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
             />
           </div>
         )}
+        <div className="mt-2">
+          {props.test.last_run && (
+            <Alert
+              variant={props.test.last_run.code == 200 ? "success" : "danger"}
+            >
+              <div>
+                <em>
+                  <small>
+                    <strong>{t("last_run")}:</strong>{" "}
+                    {props.test.last_run.timestamp}
+                  </small>
+                </em>
+              </div>
+              <div>
+                <em>
+                  <small>
+                    <strong>{t("message")}:</strong>{" "}
+                    {props.test.last_run.message}
+                  </small>
+                </em>
+              </div>
+            </Alert>
+          )}
+        </div>
       </Row>
     </div>
   );

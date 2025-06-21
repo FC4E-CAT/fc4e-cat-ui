@@ -3,14 +3,15 @@
  */
 
 // import { useState } from "react"
-import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+import { Alert, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { TestToolTip } from "./TestToolTip";
 import {
   AssessmentTest,
   EvidenceURL,
-  Md1TestResponse,
+  TestAutoError,
   TestAutoMD1,
+  TestAutoResponse,
 } from "@/types";
 import { FaCheckCircle, FaClock, FaPlay, FaTimes } from "react-icons/fa";
 import { APIClient } from "@/api";
@@ -48,7 +49,6 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
   const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
   const validUrl = urlRegex.test(localValue || "");
 
-  const [message, setMessage] = useState("");
   const [runningTest, setRunningTest] = useState(false);
 
   // break parameters
@@ -62,7 +62,7 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
 
     setRunningTest(true);
     APIClient(token)
-      .post<Md1TestResponse>(
+      .post<TestAutoResponse | TestAutoError>(
         `/v1/automated/validate-metadata/${testModeMap[props.test.type]}`,
         `{"metadata_url": "${localValue}"}`,
         {
@@ -70,19 +70,34 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
         },
       )
       .then((resp) => {
-        if (resp.data.code === 200 && resp.data.is_valid !== undefined) {
+        if (resp.status === 200) {
+          const okResp = resp.data as TestAutoResponse;
           const newTest = {
             ...props.test,
             value: localValue,
-            result: resp.data.is_valid ? 1 : 0,
+            result: okResp.test_status.is_valid ? 1 : 0,
+            last_run: {
+              timestamp: new Date().toISOString(),
+              message: okResp.test_status.message || "",
+              code: okResp.test_status.code,
+            },
           };
+
           props.onTestChange(props.principleId, props.criterionId, newTest);
         } else {
-          const newTest = { ...props.test, value: localValue, result: 0 };
+          const errResp = resp.data as TestAutoError;
+          const newTest = {
+            ...props.test,
+            value: localValue,
+            result: 0,
+            last_run: {
+              timestamp: new Date().toISOString(),
+              message: errResp.message,
+              code: errResp.code,
+            },
+          };
+
           props.onTestChange(props.principleId, props.criterionId, newTest);
-        }
-        if (resp.data.message) {
-          setMessage(resp.data.message);
         }
       })
       .catch((error: AxiosError) => {
@@ -128,7 +143,6 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
               id="input-value-control"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setLocalValue(e.target.value);
-                setMessage("");
               }}
             />
             <Button
@@ -172,15 +186,6 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
                 )}
               </div>
             )}
-          {!runningTest && message && (
-            <div>
-              <small
-                className={`${props.test.result !== null && props.test.result > 0 ? "text-success" : "text-danger"}`}
-              >
-                {message}
-              </small>
-            </div>
-          )}
         </div>
 
         {testParams[testParams.length - 1] === "evidence" && (
@@ -201,6 +206,30 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
             />
           </div>
         )}
+        <div className="mt-2">
+          {props.test.last_run && (
+            <Alert
+              variant={props.test.last_run.code == 200 ? "success" : "danger"}
+            >
+              <div>
+                <em>
+                  <small>
+                    <strong>{t("last_run")}:</strong>{" "}
+                    {props.test.last_run.timestamp}
+                  </small>
+                </em>
+              </div>
+              <div>
+                <em>
+                  <small>
+                    <strong>{t("message")}:</strong>{" "}
+                    {props.test.last_run.message}
+                  </small>
+                </em>
+              </div>
+            </Alert>
+          )}
+        </div>
       </Row>
     </div>
   );

@@ -7,6 +7,7 @@ import {
   ResultStats,
   AssessmentTest,
   GroupTestRef,
+  LastRun,
 } from "../types";
 
 /** Evaluates all tests of a metric if the metric is number */
@@ -120,7 +121,8 @@ export function queryValue<T>(obj: T, query: string) {
 export function applyAutoGroupResults(
   assessment: Assessment,
   group: string,
-  groupTests: Record<string, GroupTestRef>,
+  groupTests: Record<string, GroupTestRef> | null,
+  lastRun: LastRun | null,
 ): Assessment | null {
   // create a deep copy of the existing assessment
   if (assessment) {
@@ -137,9 +139,21 @@ export function applyAutoGroupResults(
         // for each criterion check the tests and then calculate the metric
 
         cri.metric.tests.map((test) => {
-          if (test.type === group && test.params in groupTests)
-            test.result = groupTests[test.params].result;
-          test.value = test.result ? "Validated" : "Validation Failed";
+          if (test.type === group) {
+            if (groupTests !== null) {
+              if (test.params in groupTests) {
+                test.result = groupTests[test.params].result;
+                test.last_run = groupTests[test.params].last_run;
+                test.value = test.result ? "Validated" : "Validation Failed";
+              }
+            } else if (lastRun) {
+              // groupTest results are empty this means the whole test failed so clear the results and update
+              // the last run info
+              test.result = null;
+              test.value = null;
+              test.last_run = lastRun;
+            }
+          }
         });
         const { result, value } = evalMetric(cri.metric);
         cri.metric.value = value;
