@@ -59,6 +59,7 @@
   "message": "Message",
   "documentation": "Documentation",
   "personal_menu": "My items",
+  "aai_providers": "AAI Providers (NACO)",
   "endpoint": "Endpoint",
   "login_alert": "Press login to authenticate",
   "under_motivation": "under motivation",
