@@ -30,6 +30,7 @@ import { AuthContext } from "@/auth";
 import { prettyPrintRanking } from "@/utils";
 import { Link } from "react-router-dom";
 import { DeleteModal } from "@/components/DeleteModal";
+import ROUTES from "../../routes";
 
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -518,7 +519,10 @@ function AdminAssessments() {
           )}
           <div className="d-flex justify-content-between pb-4">
             <div>
-              <Link className="btn btn-secondary" to="/assess">
+              <Link
+                className="btn btn-secondary"
+                to={ROUTES.ASSESSMENTS.ASSESS}
+              >
                 {t("buttons.back")}
               </Link>
             </div>

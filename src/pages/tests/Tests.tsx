@@ -12,6 +12,7 @@ import TestSearch from "./components/TestSearch";
 import TestTable from "./components/TestTable";
 import TestPagination from "./components/TestPagination";
 import { useNavigate } from "react-router-dom";
+import ROUTES, { buildRoute } from "../../routes";
 
 type TestsState = {
   sortOrder: string;
@@ -164,10 +165,10 @@ function Tests() {
           })
         }
         onEditTest={(testId: string) =>
-          navigate(`/admin/tests/edit-test/${testId}`)
+          navigate(buildRoute(ROUTES.ADMIN.TESTS.EDIT, { testId }))
         }
         onCreateVersion={(testId: string) =>
-          navigate(`/admin/tests/create-version-test/${testId}`)
+          navigate(buildRoute(ROUTES.ADMIN.TESTS.CREATE_VERSION, { testId }))
         }
         onDeleteTest={(testId, name) =>
           setDeleteModalConfig({

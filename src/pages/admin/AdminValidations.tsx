@@ -25,6 +25,7 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import ROUTES, { buildRoute } from "../../routes";
 
 import BadgeStatus from "@/components/BadgeStatus";
 
@@ -299,7 +300,9 @@ export default function AdminValidations() {
                       <OverlayTrigger placement="top" overlay={tooltipView}>
                         <Link
                           className="btn btn-light btn-sm m-1"
-                          to={`/admin/validations/${item.id}`}
+                          to={buildRoute(ROUTES.ADMIN.VALIDATION_VIEW, {
+                            id: item.id.toString(),
+                          })}
                         >
                           <FaBars />
                         </Link>
@@ -308,7 +311,7 @@ export default function AdminValidations() {
                         <OverlayTrigger placement="top" overlay={tooltipAccept}>
                           <Link
                             className="btn btn-light btn-sm m-1"
-                            to={`/admin/validations/${item.id}/approve#alert-spot`}
+                            to={`${buildRoute(ROUTES.ADMIN.VALIDATION_APPROVE, { id: item.id.toString() })}#alert-spot`}
                           >
                             <FaCheck />
                           </Link>
@@ -318,7 +321,7 @@ export default function AdminValidations() {
                         <OverlayTrigger placement="top" overlay={tooltipReject}>
                           <Link
                             className="btn btn-light btn-sm m-1"
-                            to={`/admin/validations/${item.id}/reject/#alert-spot`}
+                            to={`${buildRoute(ROUTES.ADMIN.VALIDATION_REJECT, { id: item.id.toString() })}#alert-spot`}
                           >
                             <FaTimes />
                           </Link>

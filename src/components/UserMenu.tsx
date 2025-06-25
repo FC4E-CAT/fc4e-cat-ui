@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { FaUsers } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
+import ROUTES from "../routes";
 
 function isSel(path: string, name: string): boolean {
   return path.toLowerCase() === name.toLowerCase();
@@ -18,7 +19,7 @@ export default function UserMenu() {
           <div>
             <li>
               <Link
-                to="/profile"
+                to={ROUTES.PROFILE.ROOT}
                 className={`cat-nav-link-item ${isSel(userPath, "profile") ? "active" : ""}`}
               >
                 <FaUsers /> {t("profile")}
@@ -26,7 +27,7 @@ export default function UserMenu() {
             </li>
             <li>
               <Link
-                to="/validations"
+                to={ROUTES.VALIDATIONS.ROOT}
                 className={`cat-nav-link-item ${isSel(userPath, "validations") ? "active" : ""}`}
               >
                 <FaUsers /> {t("validations")}
@@ -34,7 +35,7 @@ export default function UserMenu() {
             </li>
             <li>
               <Link
-                to="/assessments"
+                to={ROUTES.ASSESSMENTS.ROOT}
                 className={`cat-nav-link-item ${isSel(userPath, "assessments") ? "active" : ""}`}
               >
                 <FaUsers /> {t("assessments")}
@@ -42,7 +43,7 @@ export default function UserMenu() {
             </li>
             <li>
               <Link
-                to="/subjects"
+                to={ROUTES.SUBJECTS}
                 className={`cat-nav-link-item ${isSel(userPath, "subjects") ? "active" : ""}`}
               >
                 <FaUsers /> {t("subjects")}

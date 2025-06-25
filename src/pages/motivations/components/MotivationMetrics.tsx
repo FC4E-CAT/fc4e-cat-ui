@@ -31,6 +31,7 @@ import {
 import { MotivationMetricModal } from "./MotivationMetricModal";
 import { useDeleteMotivationMetric, useGetAllMotivationMetrics } from "@/api";
 import { Link } from "react-router-dom";
+import ROUTES, { buildRoute } from "../../../routes";
 import { useTranslation } from "react-i18next";
 import { MotivationMetricDetailsModal } from "./MotivationMetricDetailsModal";
 import toast from "react-hot-toast";
@@ -419,7 +420,10 @@ export const MotivationMetrics = ({
                       >
                         <Link
                           className="btn btn-light"
-                          to={`/admin/motivations/${mtvId}/metrics-tests/${item.metric_id}`}
+                          to={buildRoute(
+                            ROUTES.ADMIN.MOTIVATIONS.METRICS_TESTS,
+                            { mtvId: mtvId, metricId: item.metric_id },
+                          )}
                         >
                           <FaCog />
                         </Link>
@@ -556,7 +560,10 @@ export const MotivationMetrics = ({
                           >
                             <Link
                               className="btn btn-light"
-                              to={`/admin/motivations/${mtvId}/metrics-tests/${version.metric_id}`}
+                              to={buildRoute(
+                                ROUTES.ADMIN.MOTIVATIONS.METRICS_TESTS,
+                                { mtvId: mtvId, metricId: version.metric_id },
+                              )}
                             >
                               <FaCog />
                             </Link>

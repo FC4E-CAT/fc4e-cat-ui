@@ -7,8 +7,12 @@ import {
   Form,
   Spinner,
   Alert,
+  Button,
 } from "react-bootstrap";
 import { FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import ROUTES from "../routes";
 
 export interface SettingsItem {
   id: string;
@@ -39,6 +43,9 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({
   onToggleItem,
   itemTypeName,
 }) => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <Container fluid className="py-4">
@@ -160,6 +167,15 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({
           </Card>
         </Col>
       </Row>
+      <Button
+        className="mt-4"
+        variant="secondary"
+        onClick={() => {
+          navigate(ROUTES.ADMIN.SETTINGS.ROOT);
+        }}
+      >
+        {t("buttons.back")}
+      </Button>
     </div>
   );
 };

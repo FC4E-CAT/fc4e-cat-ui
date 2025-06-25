@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import TestModalContainer from "./TestModalContainer";
+import ROUTES from "../../../routes";
 
 function CreateTest() {
   const alert = useRef<AlertInfo>({
@@ -237,7 +238,7 @@ function CreateTest() {
         };
         // Navigate back to tests list after successful creation
         setTimeout(() => {
-          navigate("/admin/tests");
+          navigate(ROUTES.ADMIN.TESTS.ROOT);
         }, 1500);
       });
     toast.promise(promise, {
@@ -263,7 +264,7 @@ function CreateTest() {
         };
         // Navigate back to tests list after successful update
         setTimeout(() => {
-          navigate("/admin/tests");
+          navigate(ROUTES.ADMIN.TESTS.ROOT);
         }, 1500);
       });
     toast.promise(promise, {
@@ -289,7 +290,7 @@ function CreateTest() {
         };
         // Navigate back to tests list after successful version creation
         setTimeout(() => {
-          navigate("/admin/tests");
+          navigate(ROUTES.ADMIN.TESTS.ROOT);
         }, 1500);
       });
     toast.promise(promise, {

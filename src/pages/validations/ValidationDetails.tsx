@@ -23,6 +23,7 @@ import { idToColor, trimField } from "@/utils/admin";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useTranslation } from "react-i18next";
+import ROUTES, { buildRoute } from "../../routes";
 
 function ValidationDetails(props: ValidationProps) {
   const { t } = useTranslation();
@@ -119,7 +120,7 @@ function ValidationDetails(props: ValidationProps) {
                     message: t("page_validation_details.toast_reject_success"),
                   };
                 })
-                .finally(() => navigate("/admin/validations"));
+                .finally(() => navigate(ROUTES.ADMIN.VALIDATIONS));
               toast.promise(promise, {
                 loading: t("page_validation_details.toast_reject_progress"),
                 success: () => `${alert.current.message}`,
@@ -131,7 +132,9 @@ function ValidationDetails(props: ValidationProps) {
           </button>
           <button
             onClick={() => {
-              navigate(`/admin/validations/${params.id}`);
+              navigate(
+                buildRoute(ROUTES.ADMIN.VALIDATION_VIEW, { id: params.id! }),
+              );
             }}
             className="btn btn-dark mx-4"
           >
@@ -172,7 +175,7 @@ function ValidationDetails(props: ValidationProps) {
                     message: t("page_validation_details.toast_approve_success"),
                   };
                 })
-                .finally(() => navigate("/admin/validations"));
+                .finally(() => navigate(ROUTES.ADMIN.VALIDATIONS));
               toast.promise(promise, {
                 loading: t("page_validation_details.toast_approve_progress"),
                 success: () => `${alert.current.message}`,
@@ -184,7 +187,9 @@ function ValidationDetails(props: ValidationProps) {
           </button>
           <button
             onClick={() => {
-              navigate(`/admin/validations/${params.id}`);
+              navigate(
+                buildRoute(ROUTES.ADMIN.VALIDATION_VIEW, { id: params.id! }),
+              );
             }}
             className="btn btn-dark mx-4"
           >
@@ -225,13 +230,13 @@ function ValidationDetails(props: ValidationProps) {
                 <span>
                   <Link
                     className="btn btn-light border-black text-success"
-                    to={`/admin/validations/${params.id}/approve#alert-spot`}
+                    to={`${buildRoute(ROUTES.ADMIN.VALIDATION_APPROVE, { id: params.id || "" })}#alert-spot`}
                   >
                     <FaCheck /> {t("buttons.approve")}
                   </Link>
                   <Link
                     className="btn btn-light mx-4 text-danger border-black"
-                    to={`/admin/validations/${params.id}/reject#alert-spot`}
+                    to={`${buildRoute(ROUTES.ADMIN.VALIDATION_REJECT, { id: params.id || "" })}#alert-spot`}
                   >
                     <FaTimes /> {t("buttons.reject")}
                   </Link>
@@ -404,7 +409,9 @@ function ValidationDetails(props: ValidationProps) {
 
         <Link
           className="btn btn-secondary my-4"
-          to={`${isAdmin.current ? "/admin" : ""}/validations`}
+          to={
+            isAdmin.current ? ROUTES.ADMIN.VALIDATIONS : ROUTES.VALIDATIONS.ROOT
+          }
         >
           {t("buttons.back")}
         </Link>

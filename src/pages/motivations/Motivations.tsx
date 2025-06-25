@@ -29,6 +29,7 @@ import {
 } from "@/api/services/motivations";
 import { AlertInfo, Motivation } from "@/types";
 import { Link } from "react-router-dom";
+import ROUTES, { buildRoute } from "../../routes";
 import { MotivationModal } from "./components/MotivationModal";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -292,7 +293,9 @@ export default function Motivations() {
                         >
                           <Link
                             className="btn btn-light btn-sm m-1"
-                            to={`/admin/motivations/${item.id}`}
+                            to={buildRoute(ROUTES.ADMIN.MOTIVATIONS.VIEW, {
+                              mtvId: item.id,
+                            })}
                           >
                             <FaBars />
                           </Link>

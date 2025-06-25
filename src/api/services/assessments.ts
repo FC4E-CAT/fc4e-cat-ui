@@ -21,6 +21,7 @@ import {
 } from "@/types";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
+import ROUTES from "../../routes";
 
 export function useCreateAssessment(token: string) {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export function useCreateAssessment(token: string) {
     },
     // for the time being redirect to assessment list
     onSuccess: () => {
-      navigate("/assessments");
+      navigate(ROUTES.ASSESSMENTS.ROOT);
     },
   });
 }

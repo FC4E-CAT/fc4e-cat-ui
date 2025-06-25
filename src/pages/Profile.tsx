@@ -15,6 +15,7 @@ import { idToColor, trimField } from "@/utils/admin";
 import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useTranslation } from "react-i18next";
+import ROUTES from "@/routes";
 
 function Profile() {
   const { t } = useTranslation();
@@ -115,7 +116,7 @@ function Profile() {
               )}
               <Link
                 id="profile-update-button"
-                to="/profile/update"
+                to={ROUTES.PROFILE.UPDATE}
                 className="btn btn-lt border-black mt-4"
               >
                 {t("buttons.update_details")}
@@ -144,14 +145,14 @@ function Profile() {
                       <div className="mt-4">
                         <Link
                           id="view_validations_button"
-                          to="/validations"
+                          to={ROUTES.VALIDATIONS.ROOT}
                           className="btn btn-light border-black"
                         >
                           {t("buttons.view_list")}
                         </Link>
                         <Link
                           id="create_validation_button"
-                          to="/validations/request"
+                          to={ROUTES.VALIDATIONS.REQUEST}
                           className="btn btn-light border-black mx-3"
                         >
                           <FaPlus /> {t("buttons.create_new")}
@@ -171,14 +172,14 @@ function Profile() {
                       <div className="mt-4">
                         <Link
                           id="view_assessments_button"
-                          to="/assessments"
+                          to={ROUTES.ASSESSMENTS.ROOT}
                           className="btn btn-light border-black"
                         >
                           {t("buttons.view_list")}
                         </Link>
                         <Link
                           id="create_assessment_button"
-                          to="/assessments/create"
+                          to={ROUTES.ASSESSMENTS.CREATE}
                           className="btn btn-light border-black mx-3"
                         >
                           <FaPlus /> {t("buttons.create_new")}
@@ -199,14 +200,14 @@ function Profile() {
                       <div className="mt-4">
                         <Link
                           id="view_subjects_button"
-                          to="/subjects"
+                          to={ROUTES.SUBJECTS}
                           className="btn btn-light border-black"
                         >
                           {t("buttons.view_list")}
                         </Link>
                         <Link
                           id="create_subject_button"
-                          to="/subjects?create"
+                          to={`${ROUTES.SUBJECTS}?create`}
                           className="btn btn-light border-black mx-3"
                         >
                           <FaPlus /> {t("buttons.create_new")}
