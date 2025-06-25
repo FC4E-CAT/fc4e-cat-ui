@@ -73,6 +73,7 @@ export type OrganisationRORSearchResult = {
   id: string;
   name: string;
   website: string;
+  source: string;
   acronym?: string;
 };
 
@@ -88,8 +89,9 @@ export type OrganisationRORSearchResponse = ResponsePage<
   OrganisationRORSearchResult[]
 >;
 
-export type OrganisationRORSearchParams = ApiAuthOptions & {
+export type OrganisationSearchParams = ApiAuthOptions & {
   name: string;
+  source: string;
   page?: number;
 };
 
