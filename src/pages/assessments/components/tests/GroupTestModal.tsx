@@ -30,6 +30,7 @@ import { APIClient } from "@/api";
 import { AxiosError } from "axios";
 import { applyAutoGroupResults, queryValue } from "@/utils";
 import { AuthContext } from "@/auth";
+import { AutoTestDetails } from "./AutoTestDetails";
 
 interface GroupTestModalProps {
   groupTest: AutoGroupTest | null;
@@ -153,7 +154,7 @@ export function GroupTestModal(props: GroupTestModalProps) {
 
           const lastRunInfo = {
             code: okResp.test_status.code,
-            timestamp: okResp.last_run,
+            timestamp: new Date().toISOString(),
             message: okResp.test_status.message,
           };
           // handle params
@@ -216,7 +217,7 @@ export function GroupTestModal(props: GroupTestModalProps) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>This automated test group contains the following tests:</p>
+        <p>{t("test_group_contains")}:</p>
         <ListGroup className="mb-2">
           <div>
             {Object.keys(groupTests).map((key) => {
@@ -230,7 +231,7 @@ export function GroupTestModal(props: GroupTestModalProps) {
                     </small>
                     {item.criterionImperative.toLowerCase() === "must" ? (
                       <small className="ms-2 badge badge-sm bg-light border text-secondary">
-                        required
+                        {t("required")}
                       </small>
                     ) : null}
                   </div>
@@ -240,7 +241,7 @@ export function GroupTestModal(props: GroupTestModalProps) {
                       <strong className="ms-2">{item.testName}</strong>
                     </div>
                     <div>
-                      {item.result ? (
+                      {item.result !== null ? (
                         item.result ? (
                           <FaCheckCircle className="text-success" />
                         ) : (
@@ -254,14 +255,7 @@ export function GroupTestModal(props: GroupTestModalProps) {
                   {item.last_run &&
                     item.last_run.message &&
                     item.last_run.timestamp && (
-                      <div>
-                        <div className="text-light">
-                          <small>Last Run: {item.last_run.timestamp}</small>
-                        </div>
-                        <div className="text-light">
-                          <small>Message: {item.last_run.message}</small>
-                        </div>
-                      </div>
+                      <AutoTestDetails details={item.last_run} />
                     )}
                 </ListGroupItem>
               );
@@ -271,14 +265,14 @@ export function GroupTestModal(props: GroupTestModalProps) {
         {runningTest ? (
           <Alert variant="warning" className="py-1">
             <FaPlayCircle className="me-2" />
-            Test running...
+            {t("running_test_group")}
           </Alert>
         ) : (
           <div>
             {!error && !message && (
               <Alert variant="warning" className="py-1">
                 <FaInfoCircle className="me-2" />
-                To run this test group please press the button below...
+                {t("test_group_run")}
               </Alert>
             )}
             {error && (

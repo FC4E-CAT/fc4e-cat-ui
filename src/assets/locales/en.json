@@ -41,6 +41,7 @@
   "published": "Published",
   "required": "Required",
   "draft": "Draft",
+  "automated_test_details": "Automated test details",
   "compliance_policy": "Compliance Policy",
   "interoperability_guidelines": "Interoperability Guidelines",
   "acceptable_use_policy": "Acceptable Use Policy",
@@ -72,8 +73,11 @@
   "toast_assessment_publish_progress": "Publishing Assessment...",
   "toast_assessment_unpublish_success": "Assessment Unpublished!",
   "toast_assessment_unpublish_progress": "Unpublishing Assessment...",
+  "test_group_contains": "This Automated Test Group contains the following tests",
+  "test_group_run": "To run this test group please press the button below...",
   "param_type": "Parameter Type",
   "test_method": "Test Method",
+  "running_test_group": "Test Group is running...",
   "total": "Total",
   "buttons": {
     "login": "Login",
@@ -109,7 +113,6 @@
     "publish": "Publish",
     "unpublish": "Unpublish",
     "run_test_group": "Run Test Group",
-    "running_test_group": "Test Group is running...",
     "add_group_test": "Add Group Test"
   },
   "fields": {
@@ -173,7 +176,6 @@
     "version": "Version",
     "commit": "Commit"
   },
-
   "page_profile": {
     "title": "User Dashboard",
     "validation_requests_subtitle": "View your current validation requests or create a new one.",
