@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 
 import { useGetAssessment } from "@/api";
 import { DebugJSON } from "./components/DebugJSON";
-import { Alert, Button, Card, Col, Row } from "react-bootstrap";
+import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import imgAssessmentPass from "@/assets/assessment-pass.png";
 import imgAssessmentBadgePassed from "@/assets/badge-passed.png";
@@ -20,6 +20,7 @@ import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import AssessmentPdf from "./AssessmentPdf";
 import { useTranslation } from "react-i18next";
 import { prettyPrintRanking } from "@/utils";
+import { AutoTestDetails } from "./components/tests/AutoTestDetails";
 
 // dig through the assessment and collect the completion statistics
 function gatherStats(assessment: Assessment | undefined): AssessmentStats {
@@ -421,49 +422,10 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                       )}
 
                                     {test.last_run && (
-                                      <div className="ps-4">
-                                        <div>
-                                          <em>
-                                            <small>
-                                              <strong>
-                                                {t("autotest_info")}
-                                              </strong>
-                                            </small>
-                                          </em>
-                                        </div>
-                                        <div className="mt-2">
-                                          {test.last_run && (
-                                            <Alert
-                                              variant={
-                                                test.last_run.code == 200
-                                                  ? "success"
-                                                  : "danger"
-                                              }
-                                            >
-                                              <div>
-                                                <em>
-                                                  <small>
-                                                    <strong>
-                                                      {t("last_run")}:
-                                                    </strong>{" "}
-                                                    {test.last_run.timestamp}
-                                                  </small>
-                                                </em>
-                                              </div>
-                                              <div>
-                                                <em>
-                                                  <small>
-                                                    <strong>
-                                                      {t("message")}:
-                                                    </strong>{" "}
-                                                    {test.last_run.message}
-                                                  </small>
-                                                </em>
-                                              </div>
-                                            </Alert>
-                                          )}
-                                        </div>
-                                      </div>
+                                      <AutoTestDetails
+                                        details={test.last_run}
+                                        variant="white"
+                                      />
                                     )}
                                   </div>
                                 );

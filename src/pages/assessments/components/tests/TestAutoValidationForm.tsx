@@ -3,12 +3,13 @@
  */
 
 // import { useState } from "react"
-import { Alert, Button, Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 
 import { AutoGroupTest, TestAutoValidation } from "@/types";
 import { FaPlay } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { FaGears } from "react-icons/fa6";
+import { AutoTestDetails } from "./AutoTestDetails";
 
 interface AssessmentTestProps {
   autogroup: AutoGroupTest | undefined;
@@ -82,26 +83,7 @@ export const TestAutoValidationForm = (props: AssessmentTestProps) => {
         </div>
         <div className="mt-2">
           {props.test.last_run && (
-            <Alert
-              variant={props.test.last_run.code == 200 ? "success" : "danger"}
-            >
-              <div>
-                <em>
-                  <small>
-                    <strong>{t("last_run")}:</strong>{" "}
-                    {props.test.last_run.timestamp}
-                  </small>
-                </em>
-              </div>
-              <div>
-                <em>
-                  <small>
-                    <strong>{t("message")}:</strong>{" "}
-                    {props.test.last_run.message}
-                  </small>
-                </em>
-              </div>
-            </Alert>
+            <AutoTestDetails details={props.test.last_run} />
           )}
         </div>
       </Row>

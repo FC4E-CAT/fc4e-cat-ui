@@ -3,15 +3,7 @@
  */
 
 // import { useState } from "react"
-import {
-  Alert,
-  Badge,
-  Button,
-  Col,
-  Form,
-  InputGroup,
-  Row,
-} from "react-bootstrap";
+import { Badge, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { TestToolTip } from "./TestToolTip";
 import {
   AssessmentTest,
@@ -26,6 +18,7 @@ import { AuthContext } from "@/auth";
 import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
 import { g069Providers } from "@/config";
+import { AutoTestDetails } from "./AutoTestDetails";
 
 interface AssessmentTestProps {
   g069param: string;
@@ -92,7 +85,7 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
             value: localValue,
             result: respResult,
             last_run: {
-              timestamp: okResp.last_run,
+              timestamp: new Date().toISOString(),
               message: okResp.test_status.message,
               code: okResp.test_status.code,
             },
@@ -193,11 +186,11 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
               okStatus.additional_info[props.g069param] ? (
                 <div>
                   <span>
-                    Validation:{" "}
+                    {t("validation")}:{" "}
                     {okStatus.additional_info[props.g069param].is_valid ? (
-                      <Badge bg="success">PASS</Badge>
+                      <Badge bg="success">{t("pass")}</Badge>
                     ) : (
-                      <Badge bg="danger">FAIL</Badge>
+                      <Badge bg="danger">{t("fail")}</Badge>
                     )}
                   </span>
                   <div>
@@ -213,11 +206,11 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
               ) : (
                 <div>
                   <div>{okStatus?.test_status.message}</div>
-                  Validation:{" "}
+                  {t("validation")}:{" "}
                   {okStatus?.test_status.is_valid ? (
-                    <Badge bg="success">PASS</Badge>
+                    <Badge bg="success">{t("pass")}</Badge>
                   ) : (
-                    <Badge bg="danger">FAIL</Badge>
+                    <Badge bg="danger">{t("fail")}</Badge>
                   )}
                   <div className="m-2">
                     <ul>
@@ -245,26 +238,7 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
 
         <div className="mt-2">
           {props.test.last_run && (
-            <Alert
-              variant={props.test.last_run.code == 200 ? "success" : "danger"}
-            >
-              <div>
-                <em>
-                  <small>
-                    <strong>{t("last_run")}:</strong>{" "}
-                    {props.test.last_run.timestamp}
-                  </small>
-                </em>
-              </div>
-              <div>
-                <em>
-                  <small>
-                    <strong>{t("message")}:</strong>{" "}
-                    {props.test.last_run.message}
-                  </small>
-                </em>
-              </div>
-            </Alert>
+            <AutoTestDetails details={props.test.last_run} />
           )}
         </div>
       </Row>

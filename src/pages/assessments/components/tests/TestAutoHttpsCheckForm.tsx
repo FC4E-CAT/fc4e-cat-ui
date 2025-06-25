@@ -3,7 +3,7 @@
  */
 
 // import { useState } from "react"
-import { Alert, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { TestToolTip } from "./TestToolTip";
 import {
@@ -18,6 +18,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "@/auth";
 import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
+import { AutoTestDetails } from "./AutoTestDetails";
 
 interface AssessmentTestProps {
   test: TestAutoHttpsCheck;
@@ -196,26 +197,7 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
         )}
         <div className="mt-2">
           {props.test.last_run && (
-            <Alert
-              variant={props.test.last_run.code == 200 ? "success" : "danger"}
-            >
-              <div>
-                <em>
-                  <small>
-                    <strong>{t("last_run")}:</strong>{" "}
-                    {props.test.last_run.timestamp}
-                  </small>
-                </em>
-              </div>
-              <div>
-                <em>
-                  <small>
-                    <strong>{t("message")}:</strong>{" "}
-                    {props.test.last_run.message}
-                  </small>
-                </em>
-              </div>
-            </Alert>
+            <AutoTestDetails details={props.test.last_run} />
           )}
         </div>
       </Row>
