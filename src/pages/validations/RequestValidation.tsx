@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { FaInfoCircle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import Select, { SingleValue } from "react-select";
+import ROUTES from "../../routes";
 
 function RequestValidation() {
   const navigate = useNavigate();
@@ -144,7 +145,7 @@ function RequestValidation() {
           message: "Validation request succesfully submitted.",
         };
       })
-      .then(() => navigate("/validations"));
+      .then(() => navigate(ROUTES.VALIDATIONS.ROOT));
     toast.promise(promise, {
       loading: "Submitting",
       success: () => `${alert.current.message}`,
@@ -491,7 +492,10 @@ function RequestValidation() {
           >
             {t("buttons.submit")}
           </button>
-          <Link to="/validations" className="my-2 btn btn-secondary mx-3">
+          <Link
+            to={ROUTES.VALIDATIONS.ROOT}
+            className="my-2 btn btn-secondary mx-3"
+          >
             <span>{t("buttons.cancel")}</span>
           </Link>
         </div>

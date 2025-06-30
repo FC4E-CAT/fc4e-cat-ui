@@ -59,6 +59,7 @@ import FormCheckInput from "react-bootstrap/esm/FormCheckInput";
 import { useTranslation } from "react-i18next";
 import { GroupTestModal } from "./components/tests/GroupTestModal";
 import { FaGears } from "react-icons/fa6";
+import ROUTES from "../../routes";
 
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
@@ -318,7 +319,7 @@ const AssessmentEdit = ({
             message: t("page_assessment_edit.toast_update_success"),
           };
           if (exit) {
-            navigate("/assessments");
+            navigate(ROUTES.ASSESSMENTS.ROOT);
           }
         });
       toast.promise(promise, {
@@ -819,7 +820,7 @@ const AssessmentEdit = ({
                         <small>
                           <FaHandPointRight />{" "}
                           {` ${t("page_assessment_edit.imp5")} `}
-                          <Link to="/assessments">
+                          <Link to={ROUTES.ASSESSMENTS.ROOT}>
                             {t("page_assessment_edit.imp6")}
                           </Link>
                           {` ${t("page_assessment_edit.imp7")} `}

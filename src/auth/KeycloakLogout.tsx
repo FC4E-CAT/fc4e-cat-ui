@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "@/auth";
+import ROUTES from "../routes";
 
 export const KeycloakLogout = () => {
   const { keycloak } = useContext(AuthContext)!;
@@ -16,5 +17,5 @@ export const KeycloakLogout = () => {
     logout();
   }, [keycloak]);
 
-  return <Navigate to="/" replace={true} />;
+  return <Navigate to={ROUTES.HOME} replace={true} />;
 };

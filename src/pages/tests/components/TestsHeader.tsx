@@ -1,6 +1,7 @@
 import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import ROUTES from "@/routes";
 
 const TestsHeader = () => {
   const { t } = useTranslation();
@@ -14,7 +15,7 @@ const TestsHeader = () => {
         </h2>
       </div>
       <div className="col-md-auto cat-heading-right">
-        <Button href="/admin/tests/create-test" variant="warning">
+        <Button href={ROUTES.ADMIN.TESTS.CREATE} variant="warning">
           <FaPlus /> {t("buttons.create_new")}
         </Button>
       </div>

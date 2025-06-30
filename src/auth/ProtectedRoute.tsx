@@ -4,6 +4,7 @@ import { AuthContext } from "@/auth";
 import Keycloak from "keycloak-js";
 import KeycloakConfig from "@/keycloak.json";
 import { useUserRegister, useGetProfile } from "@/api";
+import ROUTES from "@/routes";
 
 import UserMenu from "@/components/UserMenu";
 import AdminMenu from "@/components/AdminMenu";
@@ -100,7 +101,8 @@ export function ProtectedRoute() {
   // check if a non-admin user tries to access an admin view
   useEffect(() => {
     if (authenticated && adminRoute && profileData) {
-      if (profileData.user_type.toLowerCase() !== "admin") navigate("/profile");
+      if (profileData.user_type.toLowerCase() !== "admin")
+        navigate(ROUTES.PROFILE.ROOT);
     }
   }, [authenticated, adminRoute, profileData, navigate]);
 

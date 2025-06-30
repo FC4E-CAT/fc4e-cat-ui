@@ -54,6 +54,7 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { MotivationMetrics } from "./components/MotivationMetrics";
 import { useTranslation } from "react-i18next";
 import { SearchBox } from "@/components/SearchBox";
+import ROUTES, { buildRoute } from "../../routes";
 
 const actorImages: { [key: string]: string } = {
   "PID Service Provider (Role)": serviceImg,
@@ -595,7 +596,13 @@ export default function MotivationDetails() {
                                   >
                                     <Link
                                       className="btn btn-light btn-sm m-1"
-                                      to={`/admin/motivations/${params.id}/templates/actors/${item.id}`}
+                                      to={buildRoute(
+                                        ROUTES.ADMIN.MOTIVATIONS.TEMPLATES,
+                                        {
+                                          mtvId: params.id || "",
+                                          actId: item.id,
+                                        },
+                                      )}
                                     >
                                       <FaBars />
                                     </Link>
@@ -612,7 +619,14 @@ export default function MotivationDetails() {
                                       <>
                                         <Link
                                           className="btn btn-light btn-sm m-1"
-                                          to={`/admin/motivations/${params.id}/actors/${item.id}`}
+                                          to={buildRoute(
+                                            ROUTES.ADMIN.MOTIVATIONS
+                                              .ACTOR_CRITERIA,
+                                            {
+                                              mtvId: params.id || "",
+                                              actId: item.id,
+                                            },
+                                          )}
                                         >
                                           <FaAward />
                                         </Link>
@@ -762,7 +776,7 @@ export default function MotivationDetails() {
         <Button
           variant="secondary"
           onClick={() => {
-            navigate(`/admin/motivations`);
+            navigate(ROUTES.ADMIN.MOTIVATIONS.ROOT);
           }}
         >
           {t("buttons.back")}

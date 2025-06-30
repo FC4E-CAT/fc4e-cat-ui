@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import serviceImg from "@/assets/thumb_service.png";
 import manageImg from "@/assets/thumb_manage.png";
 import ownersImg from "@/assets/thumb_user.png";
+import ROUTES from "../routes";
 
 function Home() {
   const { data } = useGetStatistics();
@@ -22,7 +23,10 @@ function Home() {
             {t("page_home.description")}
             <br />
             <span className="float-right">
-              <Link to="/assess" className="btn btn-light mt-4 ">
+              <Link
+                to={ROUTES.ASSESSMENTS.ASSESS}
+                className="btn btn-light mt-4 "
+              >
                 <FaInfoCircle className="me-2 text-muted" />{" "}
                 {t("buttons.about")}...
               </Link>

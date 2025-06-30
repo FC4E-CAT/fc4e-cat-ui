@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { FaClipboardQuestion, FaFileCircleCheck } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
+import ROUTES from "../routes";
 
 function isSel(path: string, name: string): boolean {
   return path.toLowerCase() === name.toLowerCase();
@@ -28,7 +29,7 @@ export default function AdminMenu() {
           <div>
             <li>
               <Link
-                to="/profile"
+                to={ROUTES.PROFILE.ROOT}
                 className={`cat-nav-link-item ${isSel(userPath, "profile") ? "active" : ""}`}
               >
                 <FaUsers /> {t("profile")}
@@ -36,7 +37,7 @@ export default function AdminMenu() {
             </li>
             <li>
               <Link
-                to="/validations"
+                to={ROUTES.VALIDATIONS.ROOT}
                 className={`cat-nav-link-item ${isSel(userPath, "validations") ? "active" : ""}`}
               >
                 <FaUsers /> {t("validations")}
@@ -44,7 +45,7 @@ export default function AdminMenu() {
             </li>
             <li>
               <Link
-                to="/assessments"
+                to={ROUTES.ASSESSMENTS.ROOT}
                 className={`cat-nav-link-item ${isSel(userPath, "assessments") ? "active" : ""}`}
               >
                 <FaUsers /> {t("assessments")}
@@ -52,7 +53,7 @@ export default function AdminMenu() {
             </li>
             <li>
               <Link
-                to="/subjects"
+                to={ROUTES.SUBJECTS}
                 className={`cat-nav-link-item ${isSel(userPath, "subjects") ? "active" : ""}`}
               >
                 <FaUsers /> {t("subjects")}
@@ -66,7 +67,7 @@ export default function AdminMenu() {
           <div>
             <li>
               <Link
-                to="/admin/users"
+                to={ROUTES.ADMIN.USERS}
                 className={`cat-nav-link-item ${isSel(adminPath, "users") ? "active" : ""}`}
               >
                 <FaUsers /> {t("users")}
@@ -74,7 +75,7 @@ export default function AdminMenu() {
             </li>
             <li>
               <Link
-                to="/admin/validations"
+                to={ROUTES.ADMIN.VALIDATIONS}
                 className={`cat-nav-link-item ${isSel(adminPath, "validations") ? "active" : ""}`}
               >
                 <FaCheckCircle /> {t("validations")}
@@ -82,7 +83,7 @@ export default function AdminMenu() {
             </li>
             <li>
               <Link
-                to="/admin/assessments"
+                to={ROUTES.ADMIN.ASSESSMENTS}
                 className={`cat-nav-link-item ${isSel(adminPath, "assessments") ? "active" : ""}`}
               >
                 <FaFileCircleCheck /> {t("assessments")}
@@ -96,7 +97,7 @@ export default function AdminMenu() {
           <div>
             <li>
               <Link
-                to="/admin/motivations"
+                to={ROUTES.ADMIN.MOTIVATIONS.ROOT}
                 className={`cat-nav-link-item ${isSel(adminPath, "motivations") ? "active" : ""}`}
               >
                 <FaFile /> {t("motivations")}
@@ -104,7 +105,7 @@ export default function AdminMenu() {
             </li>
             <li>
               <Link
-                to="/admin/principles"
+                to={ROUTES.ADMIN.PRINCIPLES.ROOT}
                 className={`cat-nav-link-item ${isSel(adminPath, "principles") ? "active" : ""}`}
               >
                 <FaTags /> {t("principles")}
@@ -112,7 +113,7 @@ export default function AdminMenu() {
             </li>
             <li>
               <Link
-                to="/admin/criteria"
+                to={ROUTES.ADMIN.CRITERIA.ROOT}
                 className={`cat-nav-link-item ${isSel(adminPath, "criteria") ? "active" : ""}`}
               >
                 <FaAward /> {t("criteria")}
@@ -120,7 +121,7 @@ export default function AdminMenu() {
             </li>
             <li>
               <Link
-                to="/admin/tests"
+                to={ROUTES.ADMIN.TESTS.ROOT}
                 className={`cat-nav-link-item ${isSel(adminPath, "tests") ? "active" : ""}`}
               >
                 <FaClipboardQuestion /> {t("tests")}
@@ -128,7 +129,7 @@ export default function AdminMenu() {
             </li>
             <li>
               <Link
-                to="/admin/metrics"
+                to={ROUTES.ADMIN.METRICS.ROOT}
                 className={`cat-nav-link-item ${isSel(adminPath, "metrics") ? "active" : ""}`}
               >
                 <FaBorderNone /> {t("metrics")}
@@ -142,7 +143,7 @@ export default function AdminMenu() {
           <div>
             <li>
               <Link
-                to="/admin/settings"
+                to={ROUTES.ADMIN.SETTINGS.ROOT}
                 className={`cat-nav-link-item ${isSel(adminPath, "settings") ? "active" : ""}`}
               >
                 <FaCog /> {t("Settings")}

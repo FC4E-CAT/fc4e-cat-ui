@@ -14,6 +14,7 @@ import {
 import { Alert, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import BadgeStatus from "@/components/BadgeStatus";
+import ROUTES, { buildRoute } from "../../routes";
 
 type ValidationState = {
   sortOrder: string;
@@ -75,7 +76,10 @@ function ValidationList() {
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
-          <Link to="/validations/request" className="btn btn-warning mx-2">
+          <Link
+            to={ROUTES.VALIDATIONS.REQUEST}
+            className="btn btn-warning mx-2"
+          >
             <FaPlus className="m2" /> {t("buttons.create_new")}
           </Link>
         </div>
@@ -129,7 +133,9 @@ function ValidationList() {
                         >
                           <Link
                             className="btn btn-light btn-sm m-1"
-                            to={`/validations/${item.id}`}
+                            to={buildRoute(ROUTES.VALIDATIONS.VIEW, {
+                              id: item.id.toString(),
+                            })}
                           >
                             <FaList />
                           </Link>

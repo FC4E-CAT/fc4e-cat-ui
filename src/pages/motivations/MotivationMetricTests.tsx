@@ -16,6 +16,7 @@ import { RegistryTest } from "@/types/tests";
 import { useGetAllTests } from "@/api/services/registry";
 import { useTranslation } from "react-i18next";
 import { SearchBox } from "@/components/SearchBox";
+import ROUTES, { buildRoute } from "../../routes";
 
 export default function MotivationMetricTests() {
   const navigate = useNavigate();
@@ -138,7 +139,11 @@ export default function MotivationMetricTests() {
           alert.current = {
             message: t("page_motivations.toast_assign_metric_success"),
           };
-          navigate(`/admin/motivations/${params.mtvId}#metrics`);
+          navigate(
+            buildRoute(ROUTES.ADMIN.MOTIVATIONS.VIEW, {
+              mtvId: params.mtvId!,
+            }) + "#metrics",
+          );
         });
       toast.promise(promise, {
         loading: t("page_motivations.toast_assign_metric_progress"),
@@ -197,7 +202,7 @@ export default function MotivationMetricTests() {
             </div>
             <div>
               <Button
-                href="/admin/tests/create-test"
+                href={ROUTES.ADMIN.TESTS.CREATE}
                 size="sm"
                 variant="warning"
               >
@@ -296,7 +301,11 @@ export default function MotivationMetricTests() {
       <div className="d-flex justify-content-between">
         <Link
           className="btn btn-secondary"
-          to={`/admin/motivations/${params.mtvId}#metrics`}
+          to={
+            buildRoute(ROUTES.ADMIN.MOTIVATIONS.VIEW, {
+              mtvId: params.mtvId!,
+            }) + "#metrics"
+          }
         >
           {t("buttons.back")}
         </Link>

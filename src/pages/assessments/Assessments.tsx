@@ -1,5 +1,6 @@
 import { FaFileImport, FaList, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import ROUTES from "../../routes";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
 import serviceImg from "@/assets/thumb_service.png";
@@ -78,7 +79,7 @@ function Assessments() {
           <div className="col-md-auto cat-heading-right">
             <Link
               id="view_assessments_button"
-              to="/assessments"
+              to={ROUTES.ASSESSMENTS.ROOT}
               className="btn btn-light border-black me-3"
             >
               <FaList />{" "}
@@ -89,7 +90,7 @@ function Assessments() {
             </Link>
             <Link
               id="assessment_form_button"
-              to={`/assessments/create`}
+              to={ROUTES.ASSESSMENTS.CREATE}
               className="btn btn-warning me-3"
             >
               <FaPlus />{" "}
@@ -97,7 +98,7 @@ function Assessments() {
             </Link>
             <Link
               id="assessment_form_button"
-              to={`/assessments/import`}
+              to={ROUTES.ASSESSMENTS.IMPORT}
               className="btn btn-info"
             >
               <FaFileImport />{" "}

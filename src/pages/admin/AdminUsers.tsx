@@ -26,6 +26,7 @@ import {
 import toast from "react-hot-toast";
 import { idToColor, trimField } from "@/utils/admin";
 import { Link } from "react-router-dom";
+import ROUTES, { buildRoute } from "../../routes";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 import BadgeUserType from "@/components/BadgeUserType";
@@ -450,7 +451,9 @@ export default function AdminUsers() {
                       >
                         <Link
                           className="btn btn-sm btn-light"
-                          to={`/admin/users/view/${item.id}`}
+                          to={buildRoute(ROUTES.ADMIN.USER_VIEW, {
+                            id: item.id.toString(),
+                          })}
                         >
                           <FaBars />
                         </Link>

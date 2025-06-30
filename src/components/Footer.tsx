@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import packageJson from "@/../package.json";
 import { useTranslation } from "react-i18next";
 import { linksDocs, linksGithub } from "@/config";
+import ROUTES from "../routes";
 
 function Footer() {
   // tag build information on footer
@@ -25,29 +26,29 @@ function Footer() {
             <h6>{t("footer.about_category")}</h6>
             <ul className="list-unstyled">
               <li>
-                <Link to="/about/cat">{t("footer.about_cat")}</Link>
+                <Link to={ROUTES.ABOUT.CAT}>{t("footer.about_cat")}</Link>
               </li>
               <li>
-                <Link to="/about/interoperability">
+                <Link to={ROUTES.ABOUT.INTEROPERABILITY}>
                   {t("interoperability_guidelines")}
                 </Link>
               </li>
               <li>
-                <Link to="/about/acceptable-use">
+                <Link to={ROUTES.ABOUT.ACCEPTABLE_USE}>
                   {t("acceptable_use_policy")}
                 </Link>
               </li>
               <li>
-                <Link to="/about/terms">{t("page_terms.title")}</Link>
+                <Link to={ROUTES.ABOUT.TERMS}>{t("page_terms.title")}</Link>
               </li>
               <li>
-                <Link to="/about/cookies">{t("page_cookies.title")}</Link>
+                <Link to={ROUTES.ABOUT.COOKIES}>{t("page_cookies.title")}</Link>
               </li>
               <li>
-                <Link to="/about/privacy">{t("privacy_statement")}</Link>
+                <Link to={ROUTES.ABOUT.PRIVACY}>{t("privacy_statement")}</Link>
               </li>
               <li>
-                <Link to="/about/disclaimer">{t("disclaimer")}</Link>
+                <Link to={ROUTES.ABOUT.DISCLAIMER}>{t("disclaimer")}</Link>
               </li>
             </ul>
           </Col>
