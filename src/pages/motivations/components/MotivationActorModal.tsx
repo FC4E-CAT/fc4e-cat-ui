@@ -31,6 +31,7 @@ import {
   FaTrashAlt,
   FaUser,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 interface MotivationActorModalProps {
   motivationActors: MotivationActor[];
@@ -54,6 +55,8 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
   const [showErrors, setShowErrors] = useState(false);
   const [autoGroups, setAutoGroups] = useState<AutoGroupTest[]>([]);
   const [testMethods, setTestMethods] = useState<RegistryResource[]>([]);
+
+  const navigate = useNavigate();
 
   const {
     data: testMethodsData,
@@ -144,6 +147,10 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
       })
       .then(() => {
         props.onHide();
+        navigate(
+          `/admin/motivations/${props?.id}/templates/actors/${actorId}/assessment-builder`,
+        );
+        window.scrollTo(0, 0);
         alert.current = {
           message: t("page_motivations.toast_add_actor_success"),
         };

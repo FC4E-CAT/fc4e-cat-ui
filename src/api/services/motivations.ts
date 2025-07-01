@@ -24,6 +24,7 @@ import {
   MotivationMetricResponse,
   MotivationResponse,
   MotivationTypeResponse,
+  PrincipleAssignmentInput,
   PrincipleCriterion,
   PrincipleInput,
   PrincipleResponse,
@@ -340,7 +341,7 @@ export const useGetAllMotivationMetrics = (
     queryKey: ["motivation-metrics", mtvId],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<MotivationMetricResponse>(
-        `/v1/registry/motivations/${mtvId}/metric-definition?size=${size}&page=${pageParam}`,
+        `/v1/registry/motivations/${mtvId}/metrics?size=${size}&page=${pageParam}`,
       );
       return response.data;
     },
@@ -476,7 +477,7 @@ export const useGetMotivationMetricFull = ({
     queryKey: ["motivation-metric-full", mtvId, mtrId],
     queryFn: async () => {
       const response = await APIClient(token).get<MetricFull>(
-        `/v1/registry/motivations/${mtvId}/metric/${mtrId}`,
+        `/v1/registry/metrics/${mtrId}`,
       );
       return response.data;
     },
@@ -603,8 +604,8 @@ export const useUpdateMotivationMetric = (
   const queryClient = useQueryClient();
   return useMutation(
     async () => {
-      const response = await APIClient(token).patch<MetricResponse>(
-        `/v1/registry/motivations/${mtvId}/metric/${mtrId}`,
+      const response = await APIClient(token).put<MetricResponse>(
+        `/v1/registry/metrics/${mtrId}`,
         {
           mtr,
           label,
@@ -761,3 +762,28 @@ export function useCreateMetricVersion(
     },
   });
 }
+
+export const useAssignPrinciplesToMotivation = (
+  token: string,
+  mtvId: string,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (principleAssignments: PrincipleAssignmentInput[]) => {
+      const response = await APIClient(token).post<PrincipleResponse>(
+        `/v1/registry/motivations/${mtvId}/principles`,
+        principleAssignments,
+      );
+      return response.data;
+    },
+
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["motivation-principles", mtvId]);
+      },
+    },
+  );
+};

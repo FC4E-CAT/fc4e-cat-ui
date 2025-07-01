@@ -10,6 +10,8 @@ interface MetricModalProps {
   metric: RegistryMetric | null;
   show: boolean;
   onHide: () => void;
+  onEdit?: (metric: RegistryMetric) => void;
+  onCreateVersion?: (metric: RegistryMetric) => void;
 }
 /**
  * Modal component for viewing details of a metric

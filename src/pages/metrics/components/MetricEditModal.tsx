@@ -1,10 +1,7 @@
 import {
+  useUpdateMetric,
+  useCreateMetric,
   useCreateMetricVersion,
-  useCreateMotivationMetric,
-  useGetMotivationMetricFull,
-  useUpdateMotivationMetric,
-} from "@/api";
-import {
   useGetAllAlgorithms,
   useGetAllBenchmarkTypes,
   useGetAllMetricTypes,
@@ -15,7 +12,12 @@ import {
   defaultMotivationMetricBenchmarkType,
   defaultMotivationMetricType,
 } from "@/config";
-import { AlertInfo, MetricInput, RegistryResource } from "@/types";
+import {
+  AlertInfo,
+  MetricInput,
+  RegistryResource,
+  RegistryMetric,
+} from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -29,19 +31,17 @@ import {
 } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { FaCodeBranch, FaEdit, FaFile, FaInfoCircle } from "react-icons/fa";
+import { FaCodeBranch, FaEdit, FaInfoCircle } from "react-icons/fa";
 
-interface MetricModalProps {
-  mtvId: string;
-  mtrId: string;
+interface MetricEditModalProps {
+  metric: RegistryMetric | null;
   show: boolean;
   onHide: () => void;
   isVersioning?: boolean;
+  isEditing?: boolean;
 }
-/**
- * Modal component for creating/editing a metric
- */
-export function MotivationMetricModal(props: MetricModalProps) {
+
+export function MetricEditModal(props: MetricEditModalProps) {
   const alert = useRef<AlertInfo>({
     message: "",
   });
@@ -65,21 +65,14 @@ export function MotivationMetricModal(props: MetricModalProps) {
     value_benchmark: 0,
   });
 
-  const { data: metricData } = useGetMotivationMetricFull({
-    mtvId: props.mtvId,
-    mtrId: props.mtrId,
-    token: keycloak?.token || "",
-  });
-
   const {
     data: algoData,
     fetchNextPage: algoFetchNextPage,
     hasNextPage: algoHasNextPage,
   } = useGetAllAlgorithms({
-    size: 5,
+    size: 50,
     token: keycloak?.token || "",
     isRegistered: registered,
-    enabled: true,
   });
 
   const {
@@ -87,10 +80,9 @@ export function MotivationMetricModal(props: MetricModalProps) {
     fetchNextPage: mtFetchNextPage,
     hasNextPage: mtHasNextPage,
   } = useGetAllMetricTypes({
-    size: 5,
+    size: 50,
     token: keycloak?.token || "",
     isRegistered: registered,
-    enabled: true,
   });
 
   const {
@@ -98,61 +90,48 @@ export function MotivationMetricModal(props: MetricModalProps) {
     fetchNextPage: btFetchNextPage,
     hasNextPage: btHasNextPage,
   } = useGetAllBenchmarkTypes({
-    size: 5,
+    size: 50,
     token: keycloak?.token || "",
     isRegistered: registered,
-    enabled: true,
   });
 
   useEffect(() => {
-    // gather all metric types
-    let tmpMt: RegistryResource[] = [];
-
-    // iterate over backend pages and gather all items in the metric types array
     if (mtData?.pages) {
-      mtData.pages.map((page) => {
+      let tmpMt: RegistryResource[] = [];
+      mtData.pages.forEach((page) => {
         tmpMt = [...tmpMt, ...page.content];
       });
+      setMetricTypes(tmpMt);
       if (mtHasNextPage) {
         mtFetchNextPage();
       }
     }
-
-    setMetricTypes(tmpMt);
   }, [mtData, mtHasNextPage, mtFetchNextPage]);
 
   useEffect(() => {
-    // gather all benchmark types
-    let tmpBt: RegistryResource[] = [];
-
-    // iterate over backend pages and gather all items in the benchmark types array
     if (btData?.pages) {
-      btData.pages.map((page) => {
+      let tmpBt: RegistryResource[] = [];
+      btData.pages.forEach((page) => {
         tmpBt = [...tmpBt, ...page.content];
       });
+      setBenchmarkTypes(tmpBt);
       if (btHasNextPage) {
         btFetchNextPage();
       }
     }
-
-    setBenchmarkTypes(tmpBt);
   }, [btData, btHasNextPage, btFetchNextPage]);
 
   useEffect(() => {
-    // gather all algorithms
-    let tmpAlgo: RegistryResource[] = [];
-
-    // iterate over backend pages and gather all items in the algorithms array
     if (algoData?.pages) {
-      algoData.pages.map((page) => {
+      let tmpAlgo: RegistryResource[] = [];
+      algoData.pages.forEach((page) => {
         tmpAlgo = [...tmpAlgo, ...page.content];
       });
+      setAlgorithms(tmpAlgo);
       if (algoHasNextPage) {
         algoFetchNextPage();
       }
     }
-
-    setAlgorithms(tmpAlgo);
   }, [algoData, algoHasNextPage, algoFetchNextPage]);
 
   function handleValidate() {
@@ -168,64 +147,53 @@ export function MotivationMetricModal(props: MetricModalProps) {
     );
   }
 
-  const mutateCreate = useCreateMotivationMetric(
+  const mutateCreate = useCreateMetric(keycloak?.token || "", metricInput);
+
+  const mutateUpdate = useUpdateMetric(
     keycloak?.token || "",
-    props.mtvId,
+    props.metric?.metric_id || "",
     metricInput,
   );
 
-  const mutateUpdate = useUpdateMotivationMetric(
-    keycloak?.token || "",
-    props.mtvId,
-    props.mtrId,
-    metricInput,
-  );
-
-  const mutateCreateVersion = useCreateMetricVersion(
-    keycloak?.token || "",
-    props.mtvId,
-    props.mtrId,
-    metricInput,
-  );
+  const mutateCreateVersion = useCreateMetricVersion({
+    token: keycloak?.token || "",
+    id: props.metric?.metric_id || "",
+    metric: metricInput,
+  });
 
   useEffect(() => {
-    if (metricData) {
-      const cleanVal = metricData.value_benchmark.replace(/[^0-9.]/g, "");
+    if (props.metric && props.show && (props.isEditing || props.isVersioning)) {
+      const cleanVal =
+        props.metric.value_benchmark?.toString().replace(/[^0-9.]/g, "") || "0";
       setBvalue(cleanVal);
       setMetricInput({
-        mtr: metricData.metric_mtr,
-        label: metricData.metric_label,
-        description: metricData.metric_description,
-        type_algorithm_id: metricData.type_algorithm_id,
-        type_benchmark_id: metricData.type_benchmark_id,
-        type_metric_id: metricData.type_metric_id,
+        mtr: props.metric.metric_mtr,
+        label: props.metric.metric_label,
+        description: props.metric.metric_description,
+        type_algorithm_id: props.metric.type_algorithm_id || "",
+        type_benchmark_id: props.metric.type_benchmark_id || "",
+        type_metric_id: props.metric.type_metric_id || "",
         value_benchmark: parseFloat(cleanVal),
         url: "",
       });
     }
-  }, [metricData]);
+  }, [props.metric, props.show, props.isEditing, props.isVersioning]);
 
   useEffect(() => {
-    if (props.show && props.mtrId == "") {
-      // get default algorithm
+    if (props.show && !props.isEditing && !props.isVersioning) {
       const algo =
-        algorithms.filter(
+        algorithms.find(
           (item) => item.label === defaultMotivationMetricAlgorithm,
-        )[0]?.id || "";
-      // get default metric type
+        )?.id || "";
       const mt =
-        metricTypes.filter(
-          (item) => item.label === defaultMotivationMetricType,
-        )[0]?.id || "";
-      // get default benchmark type
-
+        metricTypes.find((item) => item.label === defaultMotivationMetricType)
+          ?.id || "";
       const bt =
-        benchmarkTypes.filter(
+        benchmarkTypes.find(
           (item) => item.label === defaultMotivationMetricBenchmarkType,
-        )[0]?.id || "";
+        )?.id || "";
 
       setBvalue("0");
-
       setMetricInput({
         mtr: "",
         label: "",
@@ -237,74 +205,77 @@ export function MotivationMetricModal(props: MetricModalProps) {
         url: "",
       });
     }
-
     setShowErrors(false);
-  }, [props.show, props.mtrId, metricTypes, algorithms, benchmarkTypes]);
+  }, [
+    props.show,
+    props.isEditing,
+    props.isVersioning,
+    metricTypes,
+    algorithms,
+    benchmarkTypes,
+  ]);
 
-  // handle backend call to add a new metric
   function handleCreate() {
     const promise = mutateCreate
       .mutateAsync()
       .catch((err) => {
         alert.current = {
-          message: "Error: " + err.response.data.message,
+          message: "Error: " + err.response?.data?.message || err.message,
         };
         throw err;
       })
       .then(() => {
         props.onHide();
         alert.current = {
-          message: t("page_motivations.toast_create_metric_success"),
+          message: "Metric created successfully",
         };
       });
     toast.promise(promise, {
-      loading: t("page_motivations.toast_create_metric_progress"),
+      loading: "Creating metric...",
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
   }
 
-  // handle backend call to edit existing metric
   function handleUpdate() {
     const promise = mutateUpdate
       .mutateAsync()
       .catch((err) => {
         alert.current = {
-          message: "Error: " + err.response.data.message,
+          message: "Error: " + err.response?.data?.message || err.message,
         };
         throw err;
       })
       .then(() => {
         props.onHide();
         alert.current = {
-          message: t("page_motivations.toast_metric_update_success"),
+          message: "Metric updated successfully",
         };
       });
     toast.promise(promise, {
-      loading: t("page_motivations.toast_metric_update_progress"),
+      loading: "Updating metric...",
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
   }
 
-  // handle backend call to create a new version of an existing metric
   function handleCreateNewVersion() {
     const promise = mutateCreateVersion
       .mutateAsync()
       .catch((err) => {
         alert.current = {
-          message: "Error: " + err.response.data.message,
+          message: "Error: " + err.response?.data?.message || err.message,
         };
         throw err;
       })
       .then(() => {
         props.onHide();
         alert.current = {
-          message: t("page_motivations.toast_create_version_success"),
+          message: "Metric version created successfully",
         };
       });
     toast.promise(promise, {
-      loading: t("page_motivations.toast_create_version_progress"),
+      loading: "Creating metric version...",
       success: () => `${alert.current.message}`,
       error: () => `${alert.current.message}`,
     });
@@ -323,25 +294,25 @@ export function MotivationMetricModal(props: MetricModalProps) {
           className="d-flex align-items-center gap-1"
           id="contained-modal-title-vcenter"
         >
-          {props.mtrId && props?.isVersioning ? (
+          {props?.isVersioning ? (
             <>
               <FaCodeBranch className="me-2" />
-              {t("page_motivations.create_new_metric_version")}:{" "}
+              Create New Metric Version:{" "}
               <small className="ms-2 bg-light badge">
-                <code>{props.mtrId}</code>
+                <code>{props.metric?.metric_id}</code>
               </small>
             </>
-          ) : props.mtrId ? (
+          ) : props?.isEditing ? (
             <>
-              <FaEdit className="me-2" /> {t("page_motivations.edit_metric")}:{" "}
+              <FaEdit className="me-2" /> Edit Metric:{" "}
               <small className="ms-2 bg-light badge">
-                <code>{props.mtrId}</code>
+                <code>{props.metric?.metric_id}</code>
               </small>
             </>
           ) : (
             <>
-              <FaFile className="me-2" />
-              {t("page_motivations.create_new_metric")}
+              <FaEdit className="me-2" />
+              Create New Metric
             </>
           )}
         </Modal.Title>
@@ -375,7 +346,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                     });
                   }}
                   aria-describedby="label-metric-mtr"
-                  disabled={props.mtrId !== "" || props.isVersioning}
+                  disabled={props.isEditing || props.isVersioning}
                 />
               </InputGroup>
               {showErrors && metricInput.mtr === "" && (
@@ -414,6 +385,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
               )}
             </Col>
           </Row>
+
           <Row className="mt-2">
             <Col className="mt-1">
               <OverlayTrigger
@@ -447,6 +419,8 @@ export function MotivationMetricModal(props: MetricModalProps) {
               )}
             </Col>
           </Row>
+
+          {/* Metric Type Field */}
           <Row>
             <Col>
               <InputGroup className="mt-2">
@@ -467,10 +441,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 <Form.Select
                   id="input-metric-type"
                   aria-describedby="label-metric-type"
-                  placeholder={t("page_motivations.select_mtv_type")}
-                  value={
-                    metricInput.type_metric_id ? metricInput.type_metric_id : ""
-                  }
+                  value={metricInput.type_metric_id || ""}
                   onChange={(e) => {
                     setMetricInput({
                       ...metricInput,
@@ -478,28 +449,26 @@ export function MotivationMetricModal(props: MetricModalProps) {
                     });
                   }}
                 >
-                  <>
-                    <option value="" disabled>
-                      {t("fields.select_metric_type")}
+                  <option value="" disabled>
+                    {t("fields.select_metric_type")}
+                  </option>
+                  {metricTypes.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
                     </option>
-                    {metricTypes.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </>
+                  ))}
                 </Form.Select>
               </InputGroup>
               {showErrors && metricInput.type_metric_id === "" && (
                 <span className="text-danger">{t("required")}</span>
               )}
-              {metricInput.type_metric_id != "" && (
+              {metricInput.type_metric_id !== "" && (
                 <div className="bg-light text-secondary border rounded mt-2 p-3">
                   <small>
                     <em>
                       {
                         metricTypes.find(
-                          (item) => item.id == metricInput.type_metric_id,
+                          (item) => item.id === metricInput.type_metric_id,
                         )?.description
                       }
                     </em>
@@ -508,6 +477,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
               )}
             </Col>
           </Row>
+
           <Row>
             <Col>
               <InputGroup className="mt-2">
@@ -528,12 +498,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 <Form.Select
                   id="input-metric-algorithm"
                   aria-describedby="label-metric-algorithm"
-                  placeholder={t("page_motivations.select_metric_algo")}
-                  value={
-                    metricInput.type_algorithm_id
-                      ? metricInput.type_algorithm_id
-                      : ""
-                  }
+                  value={metricInput.type_algorithm_id || ""}
                   onChange={(e) => {
                     setMetricInput({
                       ...metricInput,
@@ -541,28 +506,26 @@ export function MotivationMetricModal(props: MetricModalProps) {
                     });
                   }}
                 >
-                  <>
-                    <option value="" disabled>
-                      {t("page_motivations.tip_select_metric_algo")}
+                  <option value="" disabled>
+                    {t("page_motivations.tip_select_metric_algo")}
+                  </option>
+                  {algorithms.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
                     </option>
-                    {algorithms.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </>
+                  ))}
                 </Form.Select>
               </InputGroup>
               {showErrors && metricInput.type_algorithm_id === "" && (
                 <span className="text-danger">{t("required")}</span>
               )}
-              {metricInput.type_algorithm_id != "" && (
+              {metricInput.type_algorithm_id !== "" && (
                 <div className="bg-light text-secondary border rounded mt-2 p-3">
                   <small>
                     <em>
                       {
                         algorithms.find(
-                          (item) => item.id == metricInput.type_algorithm_id,
+                          (item) => item.id === metricInput.type_algorithm_id,
                         )?.description
                       }
                     </em>
@@ -571,6 +534,8 @@ export function MotivationMetricModal(props: MetricModalProps) {
               )}
             </Col>
           </Row>
+
+          {/* Benchmark Type Field */}
           <Row>
             <Col>
               <InputGroup className="mt-2">
@@ -591,12 +556,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 <Form.Select
                   id="input-benchmark-type"
                   aria-describedby="label-benchmark-type"
-                  placeholder={t("page_motivations.select_benchmark_type")}
-                  value={
-                    metricInput.type_benchmark_id
-                      ? metricInput.type_benchmark_id
-                      : ""
-                  }
+                  value={metricInput.type_benchmark_id || ""}
                   onChange={(e) => {
                     setMetricInput({
                       ...metricInput,
@@ -604,28 +564,26 @@ export function MotivationMetricModal(props: MetricModalProps) {
                     });
                   }}
                 >
-                  <>
-                    <option value="" disabled>
-                      {t("page_motivations.tip_select_benchmark_type")}
+                  <option value="" disabled>
+                    {t("page_motivations.tip_select_benchmark_type")}
+                  </option>
+                  {benchmarkTypes.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
                     </option>
-                    {benchmarkTypes.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </>
+                  ))}
                 </Form.Select>
               </InputGroup>
               {showErrors && metricInput.type_benchmark_id === "" && (
                 <span className="text-danger">{t("required")}</span>
               )}
-              {metricInput.type_benchmark_id != "" && (
+              {metricInput.type_benchmark_id !== "" && (
                 <div className="bg-light text-secondary border rounded mt-2 p-3">
                   <small>
                     <em>
                       {
                         benchmarkTypes.find(
-                          (item) => item.id == metricInput.type_benchmark_id,
+                          (item) => item.id === metricInput.type_benchmark_id,
                         )?.description
                       }
                     </em>
@@ -634,6 +592,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
               )}
             </Col>
           </Row>
+
           <Row>
             <Col>
               <InputGroup className="mt-2">
@@ -660,7 +619,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
                     setBvalue(cleanVal);
                     setMetricInput({
                       ...metricInput,
-                      value_benchmark: parseFloat(cleanVal),
+                      value_benchmark: parseFloat(cleanVal) || 0,
                     });
                   }}
                 />
@@ -682,17 +641,19 @@ export function MotivationMetricModal(props: MetricModalProps) {
           className="btn-success"
           onClick={() => {
             if (handleValidate() === true) {
-              props?.isVersioning
-                ? handleCreateNewVersion()
-                : props.mtrId
-                  ? handleUpdate()
-                  : handleCreate();
+              if (props?.isVersioning) {
+                handleCreateNewVersion();
+              } else if (props?.isEditing) {
+                handleUpdate();
+              } else {
+                handleCreate();
+              }
             }
           }}
         >
           {props?.isVersioning
             ? t("buttons.create_version")
-            : props.mtrId
+            : props?.isEditing
               ? t("buttons.update")
               : t("buttons.create")}
         </Button>
