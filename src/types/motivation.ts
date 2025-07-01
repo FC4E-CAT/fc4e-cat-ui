@@ -155,3 +155,10 @@ export interface MetricTestInput {
   test_id: string;
   relation: string;
 }
+
+export interface PrincipleAssignmentInput {
+  principle_id: string;
+  relation: string;
+  annotation_text?: string;
+  annotation_url?: string;
+}

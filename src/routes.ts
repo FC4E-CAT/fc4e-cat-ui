@@ -57,6 +57,8 @@ const ROUTES = {
       METRICS_TESTS: "/admin/motivations/:mtvId/metrics-tests/:metricId",
       ACTOR_CRITERIA: "/admin/motivations/:mtvId/actors/:actId",
       TEMPLATES: "/admin/motivations/:mtvId/templates/actors/:actId",
+      ASSESSMENT_BUILDER:
+        "/admin/motivations/:mtvId/templates/actors/:actId/assessment-builder",
     },
     CRITERIA: {
       ROOT: "/admin/criteria",

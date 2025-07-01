@@ -24,6 +24,7 @@ import {
   MotivationMetricResponse,
   MotivationResponse,
   MotivationTypeResponse,
+  PrincipleAssignmentInput,
   PrincipleCriterion,
   PrincipleInput,
   PrincipleResponse,
@@ -761,3 +762,28 @@ export function useCreateMetricVersion(
     },
   });
 }
+
+export const useAssignPrinciplesToMotivation = (
+  token: string,
+  mtvId: string,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (principleAssignments: PrincipleAssignmentInput[]) => {
+      const response = await APIClient(token).post<PrincipleResponse>(
+        `/v1/registry/motivations/${mtvId}/principles`,
+        principleAssignments,
+      );
+      return response.data;
+    },
+
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["motivation-principles", mtvId]);
+      },
+    },
+  );
+};

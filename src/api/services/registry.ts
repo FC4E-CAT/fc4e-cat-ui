@@ -4,6 +4,9 @@ import {
   RegistryMetricResponse,
   RegistryResourceResponse,
   Statistics,
+  PrincipleResponse,
+  Principle,
+  PrincipleInput,
 } from "@/types";
 import {
   useInfiniteQuery,
@@ -20,12 +23,13 @@ export const useGetAllAlgorithms = ({
   token,
   isRegistered,
   size,
+  enabled,
 }: ApiOptions) =>
   useInfiniteQuery({
     queryKey: ["all-algorithms"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<RegistryResourceResponse>(
-        `/v1/registry/type-algorithm?size=${size}&page=${pageParam}`,
+        `/v1/registry/type-algorithm?size=${size}&page=${pageParam}${enabled ? `&enabled=true` : ""}`,
       );
       return response.data;
     },
@@ -54,7 +58,7 @@ export const useGetAllTestMethods = ({
     queryKey: ["all-test-methods", search],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<RegistryResourceResponse>(
-        `/v1/registry/tests/test-method?size=${size}&page=${pageParam}&search=${search}${enabled ? `&enabled=${enabled}` : ""}`,
+        `/v1/registry/tests/test-method?size=${size}&page=${pageParam}&search=${search}${enabled ? `&enabled=true` : ""}`,
       );
       return response.data;
     },
@@ -91,12 +95,13 @@ export const useGetAllMetricTypes = ({
   token,
   isRegistered,
   size,
+  enabled,
 }: ApiOptions) =>
   useInfiniteQuery({
     queryKey: ["all-metric-types"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<RegistryResourceResponse>(
-        `/v1/registry/type-metric?size=${size}&page=${pageParam}`,
+        `/v1/registry/type-metric?size=${size}&page=${pageParam}${enabled ? `&enabled=true` : ""}`,
       );
       return response.data;
     },
@@ -118,12 +123,13 @@ export const useGetAllBenchmarkTypes = ({
   token,
   isRegistered,
   size,
+  enabled,
 }: ApiOptions) =>
   useInfiniteQuery({
     queryKey: ["all-benchmark-types"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await APIClient(token).get<RegistryResourceResponse>(
-        `/v1/registry/benchmark-types?size=${size}&page=${pageParam}`,
+        `/v1/registry/benchmark-types?size=${size}&page=${pageParam}${enabled ? `&enabled=true` : ""}`,
       );
       return response.data;
     },
@@ -378,3 +384,148 @@ export const useGetRegistryMetrics = ({
     },
     enabled: !!token && isRegistered,
   });
+
+export const useGetAllPrinciples = ({
+  token,
+  isRegistered,
+  size,
+}: ApiOptions) =>
+  useInfiniteQuery({
+    queryKey: ["all-principles"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<PrincipleResponse>(
+        `/v1/registry/principles?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
+export const useGetPrinciples = ({
+  size,
+  page,
+  token,
+  isRegistered,
+  search,
+  sortBy,
+  sortOrder,
+}: ApiOptionsSearch) =>
+  useQuery({
+    queryKey: [
+      "registry-principles",
+      { size, page, sortBy, sortOrder, search },
+    ],
+    queryFn: async () => {
+      let url = `/v1/registry/principles?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
+      search ? (url = `${url}&search=${search}`) : null;
+
+      const response = await APIClient(token).get<PrincipleResponse>(url);
+
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered,
+  });
+
+export const useGetPrinciple = ({
+  id,
+  token,
+  isRegistered,
+}: {
+  id: string;
+  token: string;
+  isRegistered: boolean;
+}) =>
+  useQuery({
+    queryKey: ["registry-principle", id],
+    queryFn: async () => {
+      const response = await APIClient(token).get<Principle>(
+        `/v1/registry/principles/${id}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled: !!token && isRegistered && id !== "" && id !== undefined,
+  });
+
+export const useCreatePrinciple = (
+  token: string,
+  principle: PrincipleInput,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await APIClient(token).post<PrincipleInput>(
+        `/v1/registry/principles`,
+        principle,
+      );
+      return response.data;
+    },
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["registry-principles"]);
+        queryClient.invalidateQueries(["all-principles"]);
+      },
+    },
+  );
+};
+
+export const useUpdatePrinciple = (
+  token: string,
+  id: string,
+  principle: PrincipleInput,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await APIClient(token).patch<PrincipleInput>(
+        `/v1/registry/principles/${id}`,
+        principle,
+      );
+      return response.data;
+    },
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["registry-principles"]);
+        queryClient.invalidateQueries(["all-principles"]);
+      },
+    },
+  );
+};
+
+export const useDeletePrinciple = (token: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (principleId: string) => {
+      return APIClient(token).delete(`/v1/registry/principles/${principleId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["registry-principles"]);
+      queryClient.invalidateQueries(["all-principles"]);
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+};

@@ -12,6 +12,7 @@ import {
   // Users,
   ProfileUpdate,
   ValidationDetails,
+  AssessmentBuilder,
 } from "@/pages";
 
 import "@/App.css";
@@ -284,6 +285,12 @@ function App() {
                   element={<ProtectedRoute />}
                 >
                   <Route index element={<MotivationAssessmentEditor />} />
+                </Route>
+                <Route
+                  path={ROUTES.ADMIN.MOTIVATIONS.ASSESSMENT_BUILDER}
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<AssessmentBuilder />} />
                 </Route>
                 <Route
                   path={ROUTES.ADMIN.PRINCIPLES.ROOT}
