@@ -79,6 +79,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
+    enabled: true,
   });
 
   const {
@@ -89,6 +90,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
+    enabled: true,
   });
 
   const {
@@ -99,6 +101,7 @@ export function MotivationMetricModal(props: MetricModalProps) {
     size: 5,
     token: keycloak?.token || "",
     isRegistered: registered,
+    enabled: true,
   });
 
   useEffect(() => {
