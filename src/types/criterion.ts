@@ -53,7 +53,7 @@ export interface CriterionInput {
   label: string;
   description: string;
   imperative: string;
-  type_criterion_id: string;
+  type_criterion_id?: string;
 }
 
 export interface CriterionMetric {
@@ -64,6 +64,17 @@ export interface CriterionMetric {
   label_algorithm_type: string;
   label_type_metric: string;
   tests: AssessmentTest[];
+}
+
+export interface CriterionAssessmentTemplate {
+  id: string;
+  cri?: string;
+  pri?: string;
+  description: string;
+  name: string;
+  used_by_motivations?: MotivationReference[];
+  principle_id?: string;
+  criteria?: CriterionAssessmentTemplate[];
 }
 
 export type CriterionMetricResponse = {

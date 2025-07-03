@@ -560,6 +560,7 @@
     "toast_unpublish_progress": "Unpublishing motivation...",
     "toast_unpublish_fail": "Error during motivation unpublishing!",
     "toast_asmt_publish_success": "Assessment Type succesfully published!",
+    "toast_asmt_publish_fail": "Error during Assessment Type publishing!",
     "toast_asmt_publish_progress": "Publishing Assessment Type...",
     "toast_asmt_upublish_fail": "Error during Assessment Type publishing!",
     "toast_asmt_unpublish_success": "Assessment Type succesfully unpublished!",

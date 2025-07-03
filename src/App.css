@@ -982,3 +982,12 @@ a.plain:hover {
   background-color: #007bff;
   border-color: #007bff;
 }
+
+.no-display {
+  display: none;
+}
+
+.no-pointer {
+  pointer-events: none;
+  cursor: default;
+}

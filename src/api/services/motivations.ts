@@ -32,6 +32,7 @@ import {
 } from "@/types";
 import { CriterionMetricResponse, CriterionResponse } from "@/types/criterion";
 import { relMtvPrincipleId } from "@/config";
+import { CriterionInput } from "../../types/criterion";
 
 export const useGetMotivations = ({
   size,
@@ -384,6 +385,28 @@ export const useGetMotivationCriteria = (
     retry: false,
     enabled: isRegistered,
   });
+
+export const useGetMotivationCriteriaMutation = (token: string) => {
+  return useMutation({
+    mutationFn: async ({
+      mtvId,
+      size = 100,
+      page = 1,
+    }: {
+      mtvId: string;
+      size?: number;
+      page?: number;
+    }) => {
+      const response = await APIClient(token).get<CriterionResponse>(
+        `/v1/registry/motivations/${mtvId}/criteria?size=${size}&page=${page}`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+};
 
 export const useGetMotivationMetricTests = (
   mtvId: string,
@@ -776,13 +799,48 @@ export const useAssignPrinciplesToMotivation = (
       );
       return response.data;
     },
-
     {
       onError: (error: AxiosError) => {
         return handleBackendError(error);
       },
       onSuccess: () => {
-        queryClient.invalidateQueries(["motivation-principles", mtvId]);
+        queryClient.invalidateQueries(["motivation-principles"]);
+        queryClient.invalidateQueries(["all-principles"]);
+      },
+    },
+  );
+};
+
+export const useCreateMotivationCriterion = (
+  token: string,
+  mtvId: string,
+  { cri, label, description }: CriterionInput,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await APIClient(token).post<CriterionResponse>(
+        `/v1/registry/motivations/${mtvId}/criterion`,
+        {
+          criterion_request: {
+            cri,
+            label,
+            description,
+            imperative: "must", // Default imperative
+            type_criterion_id: "1", // Default type - you may want to make this configurable
+          },
+          relation: "maintainedBy", // Default relation
+        },
+      );
+      return response.data;
+    },
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["motivation-criteria"]);
+        queryClient.invalidateQueries(["all-criteria"]);
       },
     },
   );

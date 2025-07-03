@@ -615,12 +615,18 @@ export default function MotivationDetails() {
                                     placement="top"
                                     overlay={tooltipEditAssessment}
                                   >
-                                    <Link
-                                      className="btn btn-light btn-sm m-1"
-                                      to={`/admin/motivations/${params.mtvId}/templates/actors/${item.id}/assessment-builder`}
-                                    >
-                                      <FaEdit />
-                                    </Link>
+                                    {item.published ? (
+                                      <span className="btn btn-light btn-sm m-1 disabled">
+                                        <FaEdit />
+                                      </span>
+                                    ) : (
+                                      <Link
+                                        className="btn btn-light btn-sm m-1"
+                                        to={`/admin/motivations/${params.mtvId}/templates/actors/${item.id}/assessment-builder`}
+                                      >
+                                        <FaEdit />
+                                      </Link>
+                                    )}
                                   </OverlayTrigger>
                                   <OverlayTrigger
                                     placement="top"

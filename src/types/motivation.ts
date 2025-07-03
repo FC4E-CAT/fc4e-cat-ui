@@ -162,3 +162,28 @@ export interface PrincipleAssignmentInput {
   annotation_text?: string;
   annotation_url?: string;
 }
+
+export interface CriterionAssignmentInput {
+  criterion_id: string;
+  relation: string;
+  annotation_text?: string;
+  annotation_url?: string;
+}
+
+export interface CriterionBuilderInput {
+  cri: string;
+  label: string;
+  description: string;
+  imperative?: string;
+  principleTag?: string;
+}
+
+export type FormMode = "none" | "select" | "new" | "edit";
+export type EntityMode = "none" | "principle" | "criterion";
+export interface AssessmentBuilderState {
+  formMode: FormMode;
+  entityMode: EntityMode;
+  selectedId?: string;
+  selectedPrincipleIndex?: number;
+  selectedCriterionIndex?: number;
+}
