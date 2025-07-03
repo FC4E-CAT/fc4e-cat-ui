@@ -95,7 +95,9 @@ const TestTable: React.FC<TestTableProps> = ({
           <th>
             <span>{t("motivations")}</span>
           </th>
-          <th></th>
+          <th>
+            <span>{t("fields.actions")}</span>
+          </th>
         </tr>
       </thead>
       {tests.length > 0 && (

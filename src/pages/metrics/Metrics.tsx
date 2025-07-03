@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -19,15 +19,25 @@ import {
   FaBorderNone,
   FaChevronDown,
   FaChevronRight,
+  FaEdit,
+  FaCodeBranch,
+  FaTrash,
+  FaPlus,
 } from "react-icons/fa";
 
-import { RegistryMetric } from "@/types";
+import { AlertInfo, RegistryMetric } from "@/types";
 import { useTranslation } from "react-i18next";
 import { idToColor } from "@/utils/admin";
-import { useGetRegistryMetrics } from "@/api/services/registry";
+import {
+  useGetRegistryMetrics,
+  useDeleteMetric,
+} from "@/api/services/registry";
 import { MetricModal } from "./components/MetricModal";
+import { MetricEditModal } from "./components/MetricEditModal";
 import { MotivationRefList } from "@/components/MotivationRefList";
 import TestVersionRow from "../tests/components/TestVersionRow";
+import toast from "react-hot-toast";
+import { DeleteModal } from "@/components/DeleteModal";
 
 type MetricState = {
   sortOrder: string;
@@ -42,11 +52,23 @@ type MetricModalConfig = {
   show: boolean;
 };
 
+interface DeleteModalConfig {
+  show: boolean;
+  title: string;
+  message: string;
+  itemId: string;
+  itemName: string;
+}
+
 // the main component that lists the metrics in a table
 export default function Metrics() {
   const [expandedTests, setExpandedTests] = useState<{
     [key: string]: boolean;
   }>({});
+
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
 
   const { t } = useTranslation();
   const tooltipView = (
@@ -55,10 +77,64 @@ export default function Metrics() {
 
   const { keycloak, registered } = useContext(AuthContext)!;
 
+  const mutationDelete = useDeleteMetric(keycloak?.token || "");
+
+  const handleDeleteConfirmed = () => {
+    if (deleteModalConfig.itemId) {
+      const promise = mutationDelete
+        .mutateAsync(deleteModalConfig.itemId)
+        .catch((err) => {
+          alert.current = {
+            message: `${t("error")}: ` + err.response.data.message,
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: t("page_tests.toast_delete_success"),
+          };
+          setDeleteModalConfig({
+            ...deleteModalConfig,
+            show: false,
+            itemId: "",
+            itemName: "",
+          });
+        });
+      toast.promise(promise, {
+        loading: "Deleting Metric...",
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
+      });
+    }
+  };
+
   const [modalConfig, setModalConfig] = useState<MetricModalConfig>({
     metric: null,
     show: false,
   });
+
+  const [editModalConfig, setEditModalConfig] = useState<{
+    metric: RegistryMetric | null;
+    show: boolean;
+    isVersioning: boolean;
+    isEditing: boolean;
+  }>({
+    metric: null,
+    show: false,
+    isVersioning: false,
+    isEditing: false,
+  });
+
+  const [deleteModalConfig, setDeleteModalConfig] = useState<DeleteModalConfig>(
+    {
+      show: false,
+      title: "Delete Metric",
+      message: "Are you sure you want to delete the following metric?",
+      itemId: "",
+      itemName: "",
+    },
+  );
+
   const [opts, setOpts] = useState<MetricState>({
     sortBy: "MTR",
     sortOrder: "ASC",
@@ -74,14 +150,12 @@ export default function Metrics() {
 
   // handler for clicking to sort
   const handleSortClick = (field: string) => {
-    if (field === opts.sortBy) {
-      if (opts.sortOrder === "ASC") {
-        setOpts({ ...opts, sortOrder: "DESC" });
-      } else {
-        setOpts({ ...opts, sortOrder: "ASC" });
-      }
+    const sortField = field?.toUpperCase() || "MTR";
+
+    if (opts.sortOrder === "ASC") {
+      setOpts({ ...opts, sortOrder: "DESC", sortBy: sortField });
     } else {
-      setOpts({ ...opts, sortOrder: "ASC", sortBy: field });
+      setOpts({ ...opts, sortOrder: "ASC", sortBy: sortField });
     }
   };
 
@@ -111,16 +185,33 @@ export default function Metrics() {
     }
     return <FaArrowsAltV className="text-secondary opacity-50" />;
   };
+
   return (
     <>
       <div className="cat-view-heading-block row border-bottom">
         <div className="col">
-          <h2 className="text-muted cat-view-heading ">
+          <h2 className="text-muted cat-view-heading">
             {t("page_metrics.title")}
             <p className="lead cat-view-lead">{t("page_metrics.subtitle")}</p>
           </h2>
         </div>
+        <div className="col-md-auto cat-heading-right">
+          <Button
+            onClick={() => {
+              setEditModalConfig({
+                metric: null,
+                show: true,
+                isVersioning: false,
+                isEditing: false,
+              });
+            }}
+            variant="warning"
+          >
+            <FaPlus /> {t("buttons.create_new")}
+          </Button>
+        </div>
       </div>
+
       <div>
         <Form className="mb-3">
           <div className="row cat-view-search-block border-bottom">
@@ -290,13 +381,7 @@ export default function Metrics() {
                           motivations={item.used_by_motivations || []}
                         />
                       </td>
-                      <td
-                        className={
-                          isExpanded
-                            ? "align-middle opened-table-row"
-                            : "align-middle"
-                        }
-                      >
+                      <td className={isExpanded ? "opened-table-row" : ""}>
                         <div className="d-flex flex-nowrap">
                           <OverlayTrigger placement="top" overlay={tooltipView}>
                             <Button
@@ -309,6 +394,68 @@ export default function Metrics() {
                               }}
                             >
                               <FaBars />
+                            </Button>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-edit">Edit Metric</Tooltip>
+                            }
+                          >
+                            <Button
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() => {
+                                setEditModalConfig({
+                                  metric: item,
+                                  show: true,
+                                  isVersioning: false,
+                                  isEditing: true,
+                                });
+                              }}
+                            >
+                              <FaEdit />
+                            </Button>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-version">
+                                Create New Version
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() => {
+                                setEditModalConfig({
+                                  metric: item,
+                                  show: true,
+                                  isVersioning: true,
+                                  isEditing: false,
+                                });
+                              }}
+                            >
+                              <FaCodeBranch />
+                            </Button>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-delete">Delete Metric</Tooltip>
+                            }
+                          >
+                            <Button
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() =>
+                                setDeleteModalConfig({
+                                  ...deleteModalConfig,
+                                  show: true,
+                                  itemId: item.metric_id,
+                                  itemName: item.metric_label,
+                                })
+                              }
+                            >
+                              <FaTrash />
                             </Button>
                           </OverlayTrigger>
                         </div>
@@ -329,6 +476,14 @@ export default function Metrics() {
                             setModalConfig({
                               metric: version,
                               show: true,
+                            });
+                          }}
+                          onEdit={() => {
+                            setEditModalConfig({
+                              metric: version,
+                              show: true,
+                              isVersioning: false,
+                              isEditing: true,
                             });
                           }}
                         />
@@ -408,6 +563,31 @@ export default function Metrics() {
             show: false,
           });
         }}
+      />
+      <MetricEditModal
+        metric={editModalConfig.metric}
+        show={editModalConfig.show}
+        isVersioning={editModalConfig.isVersioning}
+        isEditing={editModalConfig.isEditing}
+        onHide={() => {
+          setEditModalConfig({
+            metric: null,
+            show: false,
+            isVersioning: false,
+            isEditing: false,
+          });
+        }}
+      />
+      <DeleteModal
+        show={deleteModalConfig.show}
+        title={deleteModalConfig.title}
+        message={deleteModalConfig.message}
+        itemId={deleteModalConfig.itemId}
+        itemName={deleteModalConfig.itemName}
+        onHide={() => {
+          setDeleteModalConfig({ ...deleteModalConfig, show: false });
+        }}
+        handleDelete={handleDeleteConfirmed}
       />
     </>
   );

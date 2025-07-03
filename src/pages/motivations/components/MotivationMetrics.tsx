@@ -23,7 +23,6 @@ import {
   FaCodeBranch,
   FaCog,
   FaEdit,
-  FaPlus,
   FaTrash,
   FaChevronDown,
   FaChevronRight,
@@ -270,8 +269,8 @@ export const MotivationMetrics = ({
         <div>
           {published ? (
             <span className="btn btn-warning disabled">
-              <FaPlus className="me-2" />
-              {t("page_motivations.create_metric")}
+              <FaEdit className="me-2" />
+              {t("page_motivations.manage_metrics")}
             </span>
           ) : (
             <Button
@@ -285,8 +284,8 @@ export const MotivationMetrics = ({
               }}
               disabled={published}
             >
-              <FaPlus className="me-2" />
-              {t("page_motivations.create_metric")}
+              <FaEdit className="me-2" />
+              {t("page_motivations.manage_metrics")}
             </Button>
           )}
         </div>

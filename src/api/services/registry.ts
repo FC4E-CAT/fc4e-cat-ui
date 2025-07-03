@@ -1,6 +1,7 @@
 import {
   ApiOptions,
   ApiOptionsSearch,
+  MetricInput,
   RegistryMetricResponse,
   RegistryResourceResponse,
   Statistics,
@@ -372,7 +373,7 @@ export const useGetRegistryMetrics = ({
   useQuery({
     queryKey: ["registry-metrics", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
-      let url = `/v1/registry/metrics?size=${size}&page=${page}&sort=metric.MTR&order=${sortOrder}`;
+      let url = `/v1/registry/metrics?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
       search ? (url = `${url}&search=${search}`) : null;
 
       const response = await APIClient(token).get<RegistryMetricResponse>(url);
@@ -384,6 +385,93 @@ export const useGetRegistryMetrics = ({
     },
     enabled: !!token && isRegistered,
   });
+
+export const useUpdateMetric = (
+  token: string,
+  id: string,
+  metric: MetricInput,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await APIClient(token).put(
+        `/v1/registry/metrics/${id}`,
+        metric,
+      );
+      return response.data;
+    },
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["registry-metrics"]);
+      },
+    },
+  );
+};
+
+export const useCreateMetricVersion = ({
+  token,
+  id,
+  metric,
+}: {
+  token: string;
+  id: string;
+  metric: MetricInput;
+}) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      return APIClient(token).post(
+        `/v1/registry/metrics/${id}/version-metric`,
+        metric,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["registry-metrics"]);
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+};
+
+export function useDeleteMetric(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (metricId: string) => {
+      return APIClient(token).delete(`/v1/registry/metrics/${metricId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["registry-metrics"]);
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+}
+
+export const useCreateMetric = (token: string, metric: MetricInput) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await APIClient(token).post(
+        `/v1/registry/metrics`,
+        metric,
+      );
+      return response.data;
+    },
+    {
+      onError: (error: AxiosError) => {
+        return handleBackendError(error);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(["registry-metrics"]);
+      },
+    },
+  );
+};
 
 export const useGetAllPrinciples = ({
   token,
