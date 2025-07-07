@@ -95,15 +95,18 @@ export interface AssessmentPrinciple {
   name: string;
   criteria: AssessmentCriterion[];
   description: string;
+  imperative?: string;
+  principle_id?: string;
 }
 
 /** Each principle contains a list of criteria */
 export interface AssessmentCriterion {
   id: string;
   name: string;
-  imperative: AssessmentCriterionImperative;
+  imperative: AssessmentCriterionImperative | string;
   metric: Metric;
   description?: string;
+  principle_id?: string;
 }
 
 /** Each criterion can be either mandatory (must) or optional (should) */
@@ -258,7 +261,7 @@ export interface TestAutoResponse {
 export interface GroupTestRef {
   criterionId: string;
   criterionName: string;
-  criterionImperative: AssessmentCriterionImperative;
+  criterionImperative: AssessmentCriterionImperative | string;
   testId: string;
   testName: string;
   result: number | null;

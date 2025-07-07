@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
 import {
+  ApiOptions,
   ApiOptionsSearch,
   CriterionInput,
   CriterionResponse,
@@ -66,11 +67,7 @@ export const useGetCriterion = ({
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
   });
 
-export const useGetAllCriteria = ({
-  token,
-  isRegistered,
-  size,
-}: ApiOptionsSearch) =>
+export const useGetAllCriteria = ({ token, isRegistered, size }: ApiOptions) =>
   useInfiniteQuery({
     queryKey: ["all-criteria"],
     queryFn: async ({ pageParam = 1 }) => {
@@ -182,7 +179,7 @@ export const useGetAllCriterionTypes = ({
 export const useUpdateCriterion = (
   token: string,
   id: string,
-  { cri, label, description }: CriterionInput,
+  { cri, label, description, imperative }: CriterionInput,
 ) => {
   const queryClient = useQueryClient();
   return useMutation(
@@ -193,6 +190,7 @@ export const useUpdateCriterion = (
           cri,
           label,
           description,
+          imperative,
         },
       );
       return response.data;

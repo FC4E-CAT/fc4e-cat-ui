@@ -107,7 +107,7 @@ export default function MotivationCriteriaPrinciples() {
     fetchNextPage: selCriFetchNextPage,
     hasNextPage: selCriHasNextPage,
   } = useGetMotivationCriteria(params.mtvId || "", {
-    size: 5,
+    size: 100,
     token: keycloak?.token || "",
     isRegistered: registered,
   });

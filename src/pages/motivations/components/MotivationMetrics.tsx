@@ -78,8 +78,6 @@ export const MotivationMetrics = ({
     message: "",
   });
 
-  console.log("MotivationMetrics rendered with mtvId:", mtvId);
-
   const {
     data: mtrData,
     fetchNextPage: mtrFetchNextPage,

@@ -73,6 +73,7 @@ export function MetricEditModal(props: MetricEditModalProps) {
     size: 50,
     token: keycloak?.token || "",
     isRegistered: registered,
+    enabled: true,
   });
 
   const {
@@ -83,6 +84,7 @@ export function MetricEditModal(props: MetricEditModalProps) {
     size: 50,
     token: keycloak?.token || "",
     isRegistered: registered,
+    enabled: true,
   });
 
   const {
@@ -93,6 +95,7 @@ export function MetricEditModal(props: MetricEditModalProps) {
     size: 50,
     token: keycloak?.token || "",
     isRegistered: registered,
+    enabled: true,
   });
 
   useEffect(() => {
