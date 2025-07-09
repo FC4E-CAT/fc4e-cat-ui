@@ -1,16 +1,14 @@
 import { Modal, Button, Alert } from "react-bootstrap";
-import { AlertInfo, MotivationMetric } from "@/types";
+import { AlertInfo, RegistryMetric } from "@/types";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FaBorderNone, FaInfoCircle } from "react-icons/fa";
-import {
-  useGetAllMotivationMetrics,
-  useUpdateMotivationAssignMetric,
-} from "@/api";
+import { useUpdateMotivationAssignMetric } from "@/api";
 import { AuthContext } from "@/auth";
 import { relMtvPrincpleCriterion } from "@/config";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { SearchBox } from "@/components/SearchBox";
+import { useGetAllMetrics } from "@/api/services/registry";
 
 interface MotivationMetricAssignProps {
   mtvId: string;
@@ -26,7 +24,9 @@ export function MotivationMetricAssignModal(
 ) {
   const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
-  const [mtvMetrics, setMtvMetrics] = useState<MotivationMetric[]>([]);
+  const [availableMetrics, setAvailableMetrics] = useState<RegistryMetric[]>(
+    [],
+  );
   const [selMetricId, setSelMetricId] = useState("");
 
   const [searchInput, setSearchInput] = useState("");
@@ -79,17 +79,17 @@ export function MotivationMetricAssignModal(
     data: mtrData,
     fetchNextPage: mtrFetchNextPage,
     hasNextPage: mtrHasNextPage,
-  } = useGetAllMotivationMetrics(props.mtvId, {
+  } = useGetAllMetrics({
     size: 20,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
 
   useEffect(() => {
-    // gather all mtv metrics in one array
-    let tmpMtr: MotivationMetric[] = [];
+    // gather all registry metrics in one array
+    let tmpMtr: RegistryMetric[] = [];
 
-    // iterate over backend pages and gather all items in the motivation metrics array
+    // iterate over backend pages and gather all items in the metrics array
     if (mtrData?.pages) {
       mtrData.pages.map((page) => {
         tmpMtr = [...tmpMtr, ...page.content];
@@ -98,22 +98,23 @@ export function MotivationMetricAssignModal(
         mtrFetchNextPage();
       }
     }
-    setMtvMetrics(tmpMtr);
-  }, [mtrData, mtrHasNextPage, mtrFetchNextPage]);
+
+    setAvailableMetrics(tmpMtr);
+  }, [mtrData, mtrHasNextPage, mtrFetchNextPage, props.mtvId]);
 
   useEffect(() => {
     setSelMetricId("");
   }, [props.show]);
 
   const filteredMetrics = useMemo(() => {
-    return mtvMetrics.filter((item) => {
+    return availableMetrics.filter((item) => {
       const query = searchInput.toLowerCase();
       return (
         item.metric_label.toLowerCase().includes(query) ||
         item.metric_description.toLowerCase().includes(query)
       );
     });
-  }, [searchInput, mtvMetrics]);
+  }, [searchInput, availableMetrics]);
 
   return (
     <Modal
@@ -137,7 +138,7 @@ export function MotivationMetricAssignModal(
             {t("page_motivations.available_metrics")}
           </strong>
           <span className="ms-1 badge bg-primary rounded-pill fs-6">
-            {mtvMetrics.length}
+            {availableMetrics.length}
           </span>
         </div>
 
@@ -181,8 +182,9 @@ export function MotivationMetricAssignModal(
               <FaBorderNone className="me-2" />
               <strong>
                 {
-                  mtvMetrics.filter((item) => item.metric_id === selMetricId)[0]
-                    .metric_label
+                  availableMetrics?.filter(
+                    (item) => item.metric_id === selMetricId,
+                  )[0].metric_label
                 }
               </strong>
               <small className="ms-2 text-muted">{selMetricId}</small>

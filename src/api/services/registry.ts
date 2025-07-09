@@ -361,6 +361,29 @@ export function useCreateTestVersion({
   });
 }
 
+export const useGetAllMetrics = ({ token, isRegistered, size }: ApiOptions) =>
+  useInfiniteQuery({
+    queryKey: ["all-metrics"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<RegistryMetricResponse>(
+        `/v1/registry/metrics?size=${size}&page=${pageParam}`,
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.number_of_page < lastPage.total_pages) {
+        return lastPage.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    retry: false,
+    enabled: isRegistered,
+  });
+
 export const useGetRegistryMetrics = ({
   size,
   page,

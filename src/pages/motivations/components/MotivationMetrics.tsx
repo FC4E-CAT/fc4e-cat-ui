@@ -20,15 +20,14 @@ import {
 import notavailImg from "@/assets/thumb_notavail.png";
 import {
   FaBars,
-  FaCodeBranch,
   FaCog,
   FaEdit,
-  FaTrash,
   FaChevronDown,
   FaChevronRight,
+  FaPlus,
 } from "react-icons/fa";
 import { MotivationMetricModal } from "./MotivationMetricModal";
-import { useDeleteMotivationMetric, useGetAllMotivationMetrics } from "@/api";
+import { useDeleteMotivationMetric } from "@/api";
 import { Link } from "react-router-dom";
 import ROUTES, { buildRoute } from "../../../routes";
 import { useTranslation } from "react-i18next";
@@ -36,6 +35,7 @@ import { MotivationMetricDetailsModal } from "./MotivationMetricDetailsModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { SearchBox } from "@/components/SearchBox";
+import { useGetAllMetrics } from "@/api/services/registry";
 
 interface MetricModalConfig {
   show: boolean;
@@ -82,11 +82,35 @@ export const MotivationMetrics = ({
     data: mtrData,
     fetchNextPage: mtrFetchNextPage,
     hasNextPage: mtrHasNextPage,
-  } = useGetAllMotivationMetrics(mtvId, {
+  } = useGetAllMetrics({
     size: 20,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
+
+  useEffect(() => {
+    // gather all registry metrics in one array
+    let tmpMtr: RegistryMetric[] = [];
+
+    // iterate over backend pages and gather all items in the metrics array
+    if (mtrData?.pages) {
+      mtrData.pages.map((page) => {
+        tmpMtr = [...tmpMtr, ...page.content];
+      });
+      if (mtrHasNextPage) {
+        mtrFetchNextPage();
+      }
+    }
+
+    const availableMetricsForMotivation = tmpMtr.filter((metric) => {
+      if (!metric.motivation_id || metric.motivation_id === "") {
+        return true;
+      }
+      return metric.motivation_id === mtvId;
+    });
+
+    setMtvMetrics(availableMetricsForMotivation);
+  }, [mtrData, mtrHasNextPage, mtrFetchNextPage, mtvId]);
 
   const mutationDelete = useDeleteMotivationMetric(keycloak?.token || "");
 
@@ -130,24 +154,6 @@ export const MotivationMetrics = ({
     }
   };
 
-  useEffect(() => {
-    let result: RegistryMetric[] = [];
-
-    // iterate over backend pages and gather all items in the motivation metrics array
-    if (mtrData?.pages) {
-      mtrData.pages.forEach((page) => {
-        const contentDetails = page.content as RegistryMetric[];
-        result = [...result, ...contentDetails];
-      });
-
-      if (mtrHasNextPage) {
-        mtrFetchNextPage();
-      }
-    }
-
-    setMtvMetrics(result);
-  }, [mtrData, mtrHasNextPage, mtrFetchNextPage]);
-
   const [searchInput, setSearchInput] = useState("");
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,6 +189,9 @@ export const MotivationMetrics = ({
       }),
     [searchInput, mtvMetrics],
   );
+
+  console.log("mtvMetrics - Metric Tab", mtvMetrics);
+  console.log("filteredMetrics", filteredMetrics);
 
   const handleMetricMetadata = () => {
     // Find the metric that matches the current modal itemId
@@ -267,8 +276,8 @@ export const MotivationMetrics = ({
         <div>
           {published ? (
             <span className="btn btn-warning disabled">
-              <FaEdit className="me-2" />
-              {t("page_motivations.manage_metrics")}
+              <FaPlus className="me-2" />
+              {t("page_motivations.create_metric")}
             </span>
           ) : (
             <Button
@@ -282,8 +291,8 @@ export const MotivationMetrics = ({
               }}
               disabled={published}
             >
-              <FaEdit className="me-2" />
-              {t("page_motivations.manage_metrics")}
+              <FaPlus className="me-2" />
+              {t("page_motivations.create_metric")}
             </Button>
           )}
         </div>
@@ -372,27 +381,6 @@ export const MotivationMetrics = ({
                         placement="top"
                         overlay={
                           <Tooltip>
-                            {t("page_motivations.tip_edit_metric")}
-                          </Tooltip>
-                        }
-                      >
-                        <Button
-                          variant="light"
-                          onClick={() => {
-                            setModalCreateEdit({
-                              itemId: item.metric_id,
-                              show: true,
-                              isVersioning: false,
-                            });
-                          }}
-                        >
-                          <FaEdit />
-                        </Button>
-                      </OverlayTrigger>
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip>
                             {t("page_motivations.tip_view_metric_tests")}
                           </Tooltip>
                         }
@@ -421,50 +409,11 @@ export const MotivationMetrics = ({
                           className="btn btn-light"
                           to={buildRoute(
                             ROUTES.ADMIN.MOTIVATIONS.METRICS_TESTS,
-                            { mtvId: mtvId, metricId: item.metric_id },
+                            { mtvId: mtvId, mtrId: item.metric_id },
                           )}
                         >
                           <FaCog />
                         </Link>
-                      </OverlayTrigger>
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={<Tooltip>Create New Version</Tooltip>}
-                      >
-                        <Button
-                          className="btn btn-light"
-                          onClick={() => {
-                            setModalCreateEdit({
-                              itemId: item.metric_id,
-                              show: true,
-                              isVersioning: true,
-                            });
-                          }}
-                        >
-                          <FaCodeBranch />
-                        </Button>
-                      </OverlayTrigger>
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id="tip-delete">
-                            {t("page_motivations.tip_delete_metric")}
-                          </Tooltip>
-                        }
-                      >
-                        <Button
-                          className="btn btn-light btn-sm m-1"
-                          onClick={() => {
-                            setDeleteMetricModalConfig({
-                              ...deleteMetricModalConfig,
-                              show: true,
-                              itemId: item.metric_id,
-                              itemName: item.metric_label,
-                            });
-                          }}
-                        >
-                          <FaTrash />
-                        </Button>
                       </OverlayTrigger>
                     </Col>
                   </Row>
@@ -561,7 +510,7 @@ export const MotivationMetrics = ({
                               className="btn btn-light"
                               to={buildRoute(
                                 ROUTES.ADMIN.MOTIVATIONS.METRICS_TESTS,
-                                { mtvId: mtvId, metricId: version.metric_id },
+                                { mtvId: mtvId, mtrId: version.metric_id },
                               )}
                             >
                               <FaCog />
