@@ -4,5 +4,13 @@
     "./node_modules/**/*.css",
     "./dist/**/*.css",
     "./coverage/**/*.css"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.module.css"],
+      "rules": {
+        "selector-class-pattern": null
+      }
+    }
   ]
 }

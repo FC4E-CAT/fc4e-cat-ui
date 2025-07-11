@@ -1,6 +1,5 @@
 import {
   useCreateMotivationPrinciple,
-  useGetMotivationCriteriaMutation,
   useUpdateMotivationPrinciplesCriteria,
 } from "@/api";
 import {
@@ -16,7 +15,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { FaTags } from "react-icons/fa";
 import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
-import "./AssessmentBuilder.css";
+import styles from "./AssessmentBuilder.module.css";
 import { useTranslation } from "react-i18next";
 import {
   assessmentPrincipleToForm,
@@ -41,8 +40,8 @@ function AssessmentBuilderPrinciples({
   allCriteria,
   formMode,
   builderState,
-  setBuilderState,
   refetchPrinciples,
+  motivationCriteriaMutation,
 }: {
   mtvId?: string;
   principleId?: string;
@@ -52,8 +51,10 @@ function AssessmentBuilderPrinciples({
   allCriteria: Criterion[];
   formMode: FormMode;
   builderState: AssessmentBuilderState;
-  setBuilderState: (builderState: AssessmentBuilderState) => void;
   refetchPrinciples?: () => void;
+  motivationCriteriaMutation: {
+    mutateAsync: (data: { mtvId: string }) => Promise<{ content: Criterion[] }>;
+  };
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const alert = useRef<AlertInfo>({
@@ -126,10 +127,6 @@ function AssessmentBuilderPrinciples({
     mtvId || "",
   );
 
-  const getMotivationCriteriaMutation = useGetMotivationCriteriaMutation(
-    keycloak?.token || "",
-  );
-
   const createPrincipleToMotivation = () => {
     const promise = mutateCreateMotivationPrinciple
       .mutateAsync()
@@ -183,12 +180,12 @@ function AssessmentBuilderPrinciples({
         createPrincipleToMotivation();
       }
     } else if (formMode === "select") {
-      const allMotivationCriteriaContent =
-        await getMotivationCriteriaMutation.mutateAsync({
+      const allMotivationCriteriaData =
+        await motivationCriteriaMutation.mutateAsync({
           mtvId: mtvId || "",
         });
 
-      const allMotivationCriteria = allMotivationCriteriaContent?.content || [];
+      const allMotivationCriteria = allMotivationCriteriaData?.content || [];
 
       const formattedPriCri = formatDataToAssignPrincipleToCriterion({
         principleId: selectedRegistryPrincipleId || "",
@@ -255,17 +252,8 @@ function AssessmentBuilderPrinciples({
     //   ) {
     //   }
     // }
-  };
 
-  const handleCancel = () => {
-    setPrincipleForm({ pri: "", label: "", description: "" });
-    setBuilderState({
-      formMode: "none",
-      entityMode: "none",
-      selectedId: "",
-      selectedPrincipleIndex: -1,
-      selectedCriterionIndex: -1,
-    });
+    setSelectedRegistryPrincipleId(null);
   };
 
   const handlePrincipleInputChange = (
@@ -282,11 +270,11 @@ function AssessmentBuilderPrinciples({
   return (
     <>
       {formMode === "select" ? (
-        <div className="principles-list-container">
-          <div className="principles-list">
-            <div className="principles-list-actions">
+        <div className={styles.principlesListContainer}>
+          <div className={styles.principlesList}>
+            <div className={styles.principlesListActions}>
               <button
-                className="select-principle-btn"
+                className={styles.selectPrincipleBtn}
                 onClick={handleSubmit}
                 disabled={
                   !selectedRegistryPrincipleId ||
@@ -297,10 +285,10 @@ function AssessmentBuilderPrinciples({
               </button>
             </div>
 
-            <div className="form-group">
+            <div className={styles.formGroup}>
               <input
                 type="text"
-                className="form-control mb-1"
+                className={`${styles.formControl} mb-1`}
                 style={{ width: "98%", margin: "0 auto" }}
                 placeholder="Search principles by ID, label or description..."
                 value={searchTerm}
@@ -309,7 +297,7 @@ function AssessmentBuilderPrinciples({
             </div>
 
             {filteredPrinciples.length === 0 ? (
-              <p className="no-principles">
+              <p className={styles.noPrinciples}>
                 {searchTerm
                   ? "No principles found matching your search"
                   : allPrinciples.length === 0
@@ -317,23 +305,23 @@ function AssessmentBuilderPrinciples({
                     : "All available principles have been added"}
               </p>
             ) : (
-              <div className="principles-grid">
+              <div className={styles.principlesGrid}>
                 {filteredPrinciples?.map((principle) => (
                   <div
                     key={principle.id}
-                    className={`principle-card ${selectedRegistryPrincipleId === principle.id ? "selected" : ""}`}
+                    className={`${styles.principleCard} ${selectedRegistryPrincipleId === principle.id ? styles.selected : ""}`}
                     onClick={() => setSelectedRegistryPrincipleId(principle.id)}
                   >
-                    <div className="principle-card-compact-header">
-                      <FaTags className="principle-card-icon" />
-                      <span className="principle-card-compact-title">
-                        <span className="principle-card-pri">
+                    <div className={styles.principleCardCompactHeader}>
+                      <FaTags className={styles.principleCardIcon} />
+                      <span className={styles.principleCardCompactTitle}>
+                        <span className={styles.principleCardPri}>
                           {principle.pri}
                         </span>{" "}
                         - {principle.label}
                       </span>
                     </div>
-                    <p className="principle-card-description">
+                    <p className={styles.principleCardDescription}>
                       {principle.description}
                     </p>
                   </div>
@@ -344,14 +332,14 @@ function AssessmentBuilderPrinciples({
         </div>
       ) : (
         formMode === "new" && (
-          <div className="principle-form">
+          <div className={styles.principleForm}>
             <h4>Add New Principle</h4>
-            <div className="form-group">
+            <div className={styles.formGroup}>
               <label htmlFor="principle-pri">Pri (*):</label>
               <input
                 id="principle-pri"
                 type="text"
-                className="form-control"
+                className={styles.formControl}
                 value={principleForm?.pri}
                 onChange={(e) =>
                   handlePrincipleInputChange("pri", e.target.value)
@@ -363,12 +351,12 @@ function AssessmentBuilderPrinciples({
               )}
             </div>
 
-            <div className="form-group">
+            <div className={styles.formGroup}>
               <label htmlFor="principle-label">Label (*):</label>
               <input
                 id="principle-label"
                 type="text"
-                className="form-control"
+                className={styles.formControl}
                 value={principleForm?.label}
                 onChange={(e) =>
                   handlePrincipleInputChange("label", e.target.value)
@@ -380,11 +368,11 @@ function AssessmentBuilderPrinciples({
               )}
             </div>
 
-            <div className="form-group">
+            <div className={styles.formGroup}>
               <label htmlFor="principle-description">Description (*):</label>
               <textarea
                 id="principle-description"
-                className="form-control"
+                className={styles.formControl}
                 rows={3}
                 value={principleForm?.description}
                 onChange={(e) =>
@@ -397,11 +385,8 @@ function AssessmentBuilderPrinciples({
               )}
             </div>
 
-            <div className="form-actions">
-              <button className="btn-secondary" onClick={handleCancel}>
-                Cancel
-              </button>
-              <button className="btn-primary" onClick={handleSubmit}>
+            <div className={styles.formActions}>
+              <button className={styles.btnPrimary} onClick={handleSubmit}>
                 Create Principle
               </button>
             </div>

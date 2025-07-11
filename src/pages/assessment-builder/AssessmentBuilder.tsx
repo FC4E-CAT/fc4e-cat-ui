@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState, useContext, useEffect, useRef } from "react";
-import { FaInfoCircle } from "react-icons/fa";
-import { OverlayTrigger, Tooltip, Button } from "react-bootstrap";
+import toast from "react-hot-toast";
+import { Button } from "react-bootstrap";
 import { AuthContext } from "@/auth";
 import { useGetAllPrinciples } from "@/api";
 import { useGetMotivationAssessmentType } from "@/api/services/templates";
@@ -10,19 +10,15 @@ import {
   usePublishMotivationActor,
   useUnpublishMotivationActor,
   useGetMotivation,
+  useGetMotivationCriteriaMutation,
 } from "@/api/services/motivations";
-import {
-  Principle,
-  AssessmentBuilderState,
-  AssessmentCriterionImperative,
-  AlertInfo,
-} from "@/types";
-import AssessmentBuilderPrinciples from "./AssessmentBuilderPrinciples";
-import "./AssessmentBuilder.css";
-import AssessmentBuilderStructure from "./AssessmentBuilderStructure";
-import AssessmentBuilderCriteria from "./AssessmentBuilderCriteria";
+import { Principle, AssessmentBuilderState, AlertInfo } from "@/types";
 import { useGetAllCriteria } from "../../api/services/criteria";
-import toast from "react-hot-toast";
+import AssessmentBuilderStructure from "./AssessmentBuilderStructure";
+import AssessmentBuilderPreview from "./AssessmentBuilderPreview";
+import AssessmentBuilderCriteria from "./AssessmentBuilderCriteria";
+import AssessmentBuilderPrinciples from "./AssessmentBuilderPrinciples";
+import styles from "./AssessmentBuilder.module.css";
 
 function AssessmentBuilder() {
   const { mtvId, actId } = useParams<{
@@ -30,12 +26,20 @@ function AssessmentBuilder() {
     actId?: string;
   }>();
 
-  const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
   const navigate = useNavigate();
 
   const alert = useRef<AlertInfo>({
     message: "",
+  });
+  const { t } = useTranslation();
+
+  const [builderState, setBuilderState] = useState<AssessmentBuilderState>({
+    formMode: "none",
+    entityMode: "none",
+    selectedId: "",
+    selectedPrincipleIndex: -1,
+    selectedCriterionIndex: -1,
   });
 
   const { data: assessmentData, refetch: refetchAssessmentData } =
@@ -45,6 +49,9 @@ function AssessmentBuilder() {
       keycloak?.token || "",
       registered,
     );
+  const [assessment, setAssessment] = useState(
+    assessmentData?.principles || [],
+  );
 
   const { data: motivationData } = useGetMotivation({
     id: mtvId || "",
@@ -109,16 +116,9 @@ function AssessmentBuilder() {
     });
   };
 
-  const [assessment, setAssessment] = useState(
-    assessmentData?.principles || [],
-  );
-  const [builderState, setBuilderState] = useState<AssessmentBuilderState>({
-    formMode: "none",
-    entityMode: "none",
-    selectedId: "",
-    selectedPrincipleIndex: -1,
-    selectedCriterionIndex: -1,
-  });
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (assessmentData) {
@@ -144,10 +144,14 @@ function AssessmentBuilder() {
   const allCriteria =
     criteriaData?.pages?.flatMap((page) => page.content) || [];
 
+  const motivationCriteriaMutation = useGetMotivationCriteriaMutation(
+    keycloak?.token || "",
+  );
+
   const handleAddCriterion = () => {
     setBuilderState((prevState) => ({
       ...prevState,
-      formMode: "select",
+      formMode: "new",
       entityMode: "criterion",
       selectedId: "",
       selectedPrincipleIndex: -1,
@@ -155,23 +159,25 @@ function AssessmentBuilder() {
     }));
   };
 
+  console.log("builderState:", builderState);
+
   return (
     <>
-      <div className="assessment-builder mb-3">
-        <div className="assessment-builder-header">
-          <div className="header-content">
-            <h1 className="builder-title">Assessment Builder</h1>
-            <div className="header-actions">
-              <button className="btn-secondary">Preview</button>
+      <div className={`${styles.assessmentBuilder} mb-3`}>
+        <div className={styles.assessmentBuilderHeader}>
+          <div className={styles.headerContent}>
+            <h1 className={styles.builderTitle}>Assessment Builder</h1>
+            <div className={styles.headerActions}>
+              <button className={styles.btnSecondary}>Preview</button>
               {isPublished ? (
                 <button
-                  className="btn-outline-primary"
+                  className={styles.btnOutlinePrimary}
                   onClick={handleUnpublish}
                 >
                   Unpublish
                 </button>
               ) : (
-                <button className="btn-primary" onClick={handlePublish}>
+                <button className={styles.btnPrimary} onClick={handlePublish}>
                   Publish
                 </button>
               )}
@@ -180,162 +186,56 @@ function AssessmentBuilder() {
         </div>
 
         {/* Main Layout - Three Columns */}
-        <div className="builder-layout">
+        <div className={styles.builderLayout}>
           {/* Left Column - Assessment Structure */}
-          <div className="builder-column structure-column">
-            <div className="column-header">
+          <div className={`${styles.builderColumn} ${styles.structureColumn}`}>
+            <div className={styles.columnHeader}>
               <h3>Structure</h3>
               <button
-                className="add-principle-btn"
+                className={styles.addPrincipleBtn}
                 onClick={handleAddCriterion}
               >
                 + Add Criterion
               </button>
             </div>
-            <div className="column-content">
+            <div className={styles.columnContent}>
               <AssessmentBuilderStructure
+                mtvId={mtvId || ""}
                 assessment={assessment}
+                setAssessment={setAssessment}
                 setBuilderState={setBuilderState}
                 selectedId={builderState.selectedId || ""}
+                motivationCriteriaMutation={motivationCriteriaMutation}
+                allCriteria={allCriteria}
               />
             </div>
           </div>
 
           {/* Center Column - Preview */}
-          <div className="builder-column preview-column">
-            <div className="column-header">
+          <div className={`${styles.builderColumn} ${styles.previewColumn}`}>
+            <div className={styles.columnHeader}>
               <div>
                 <h3>Preview</h3>
-                <p className="column-description">
+                <p className={styles.columnDescription}>
                   Preview how users will see this assessment
                 </p>
               </div>
             </div>
-            <div className="column-content">
-              {assessment?.length > 0 ? (
-                <div className="builder-preview">
-                  {builderState.selectedPrincipleIndex != null &&
-                  builderState.selectedPrincipleIndex > -1 ? (
-                    <div
-                      className="principle-wrapper"
-                      onClick={() =>
-                        setBuilderState((prevState) => ({
-                          ...prevState,
-                          entityMode: "principle",
-                          formMode: "select",
-                        }))
-                      }
-                    >
-                      <span className="h5 align-middle">
-                        Part of Principle{" "}
-                        {assessment[builderState.selectedPrincipleIndex]?.id}:{" "}
-                        {assessment[builderState.selectedPrincipleIndex]?.name}
-                      </span>
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip
-                            id={`tip-pri-${
-                              builderState.selectedPrincipleIndex &&
-                              builderState.selectedPrincipleIndex > -1 &&
-                              assessment[builderState.selectedPrincipleIndex]
-                                ?.id
-                            }`}
-                          >
-                            {
-                              assessment[builderState.selectedPrincipleIndex]
-                                ?.description
-                            }
-                          </Tooltip>
-                        }
-                      >
-                        <span className="ms-2 mb-2">
-                          <FaInfoCircle className="text-secondary opacity-50 align-middle" />
-                        </span>
-                      </OverlayTrigger>
-                    </div>
-                  ) : builderState.selectedCriterionIndex == null ||
-                    builderState.selectedCriterionIndex < 0 ? (
-                    <div className="empty-preview">
-                      <p className="text-muted">
-                        Please select a criterion from the structure list to see
-                        its details here.
-                      </p>
-                    </div>
-                  ) : null}
-
-                  {builderState.selectedCriterionIndex != null &&
-                  builderState.selectedCriterionIndex > -1 ? (
-                    <div>
-                      <span className="h5 align-middle">
-                        {
-                          assessment[builderState.selectedPrincipleIndex || 0]
-                            ?.criteria[builderState.selectedCriterionIndex]?.id
-                        }
-                        :{" "}
-                        {
-                          assessment[builderState.selectedPrincipleIndex || 0]
-                            ?.criteria[builderState.selectedCriterionIndex]
-                            ?.name
-                        }
-                      </span>
-
-                      {assessment[builderState.selectedPrincipleIndex || 0]
-                        ?.criteria[builderState.selectedCriterionIndex]
-                        ?.imperative === AssessmentCriterionImperative.MUST ? (
-                        <span className="badge bg-success bg-small ms-4 align-middle">
-                          {t("required")}
-                        </span>
-                      ) : (
-                        <span className="badge bg-warning bg-small ms-4 align-middle">
-                          {t("optional")}
-                        </span>
-                      )}
-                      <p className="text-muted lh-sm mt-2 mb-2">
-                        {
-                          assessment[builderState.selectedPrincipleIndex || 0]
-                            ?.criteria[builderState.selectedCriterionIndex]
-                            ?.description
-                        }
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
-              ) : (
-                <div className="empty-preview">
-                  <p className="text-muted">
-                    No assessment structure defined yet. Please add or select a
-                    criterion to start building your assessment.
-                  </p>
-                </div>
-              )}
-            </div>
+            <AssessmentBuilderPreview
+              assessment={assessment}
+              builderState={builderState}
+              setBuilderState={setBuilderState}
+            />
           </div>
 
           {/* Right Column - Builder */}
-          <div className="builder-column editor-column">
-            <div className="column-header">
-              <div className="builder-header-content">
+          <div className={`${styles.builderColumn} ${styles.editorColumn}`}>
+            <div className={styles.columnHeader}>
+              <div className={styles.builderHeaderContent}>
                 <h3>Builder</h3>
-                <div className="principle-tabs">
+                <div className={styles.principleTabs}>
                   <button
-                    className={`tab-btn ${builderState.formMode === "select" ? "active" : ""} ${builderState.formMode === "none" ? "disabled" : ""}`}
-                    onClick={() => {
-                      setBuilderState((prevState) => ({
-                        ...prevState,
-                        formMode: "select",
-                      }));
-                    }}
-                    disabled={
-                      builderState.formMode === "none" ||
-                      builderState.formMode === "edit"
-                    }
-                  >
-                    Select
-                  </button>
-                  <div className="tab-divider" />
-                  <button
-                    className={`tab-btn ${builderState.formMode === "new" ? "active" : ""} ${builderState.formMode === "none" ? "disabled" : ""}`}
+                    className={`${styles.tabBtn} ${builderState.formMode === "new" ? styles.active : ""} ${builderState.formMode === "none" ? styles.disabled : ""}`}
                     onClick={() => {
                       setBuilderState((prevState) => ({
                         ...prevState,
@@ -349,12 +249,28 @@ function AssessmentBuilder() {
                   >
                     New
                   </button>
+                  <div className={styles.tabDivider} />
+                  <button
+                    className={`${styles.tabBtn} ${builderState.formMode === "select" ? styles.active : ""} ${builderState.formMode === "none" ? styles.disabled : ""}`}
+                    onClick={() => {
+                      setBuilderState((prevState) => ({
+                        ...prevState,
+                        formMode: "select",
+                      }));
+                    }}
+                    disabled={
+                      builderState.formMode === "none" ||
+                      builderState.formMode === "edit"
+                    }
+                  >
+                    Select
+                  </button>
                   {(builderState.entityMode === "criterion" ||
                     builderState.entityMode === "none") && (
                     <>
-                      <div className="tab-divider" />
+                      <div className={styles.tabDivider} />
                       <button
-                        className={`tab-btn ${builderState.formMode === "edit" ? "active" : ""} ${builderState.formMode === "select" || builderState.formMode === "new" ? "disabled" : ""}`}
+                        className={`${styles.tabBtn} ${builderState.formMode === "edit" ? styles.active : ""} ${builderState.formMode === "select" || builderState.formMode === "new" ? styles.disabled : ""}`}
                         onClick={() => {
                           setBuilderState((prevState) => ({
                             ...prevState,
@@ -374,7 +290,7 @@ function AssessmentBuilder() {
                 </div>
               </div>
             </div>
-            <div className="column-content">
+            <div className={styles.columnContent}>
               {builderState.entityMode === "criterion" && (
                 <AssessmentBuilderCriteria
                   mtvId={mtvId || ""}
@@ -394,7 +310,7 @@ function AssessmentBuilder() {
                           )?.id
                       : ""
                   }
-                  setBuilderState={setBuilderState}
+                  motivationCriteriaMutation={motivationCriteriaMutation}
                 />
               )}
               {builderState.entityMode === "principle" && (
@@ -416,8 +332,8 @@ function AssessmentBuilder() {
                       : ""
                   }
                   builderState={builderState}
-                  setBuilderState={setBuilderState}
                   refetchPrinciples={refetchPrinciples}
+                  motivationCriteriaMutation={motivationCriteriaMutation}
                 />
               )}
             </div>
@@ -425,7 +341,7 @@ function AssessmentBuilder() {
         </div>
       </div>
       <Button
-        className="mt-5 ms-1"
+        className="mt-4 ms-1"
         variant="secondary"
         onClick={() => {
           navigate(`/admin/motivations/${mtvId || ""}`);

@@ -1,23 +1,24 @@
-.assessment-builder {
+.assessmentBuilder {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 90vh;
   background-color: #f8f9fa;
 }
 
-.assessment-builder-header {
-  padding: 1rem 1.5rem;
+.assessmentBuilderHeader {
+  padding: 0.5rem;
+  padding-top: 1rem;
   background: white;
 }
 
-.header-content {
+.headerContent {
   display: flex;
   align-items: center;
   justify-content: space-between;
   max-width: 100%;
 }
 
-.builder-title {
+.builderTitle {
   margin: 0;
   margin-bottom: 0.5rem;
   font-size: 1.8rem;
@@ -25,12 +26,12 @@
   color: #2c3e50;
 }
 
-.header-actions {
+.headerActions {
   display: flex;
   gap: 0.75rem;
 }
 
-.builder-layout {
+.builderLayout {
   display: flex;
   flex: 1;
   gap: 1px;
@@ -41,91 +42,95 @@
 }
 
 /* Columns */
-.builder-column {
+.builderColumn {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background: white;
 }
 
-.structure-column {
+.structureColumn {
   flex: 0 0 340px;
   min-width: 280px;
 }
 
-.preview-column {
+.previewColumn {
   flex: 1;
   min-width: 400px;
 }
 
-.editor-column {
+.editorColumn {
   flex: 0 0 380px;
   min-width: 330px;
 }
 
+.noDisplay {
+  display: none;
+}
+
 /* Column Headers */
-.column-header {
+.columnHeader {
   display: flex;
   min-height: 80px;
   padding: 1rem;
   border-bottom: 1px solid #e9ecef;
 }
 
-.structure-column .column-header {
+.structureColumn .columnHeader {
   flex-direction: column;
   gap: 0.5rem;
   align-items: flex-start;
 }
 
-.editor-column .column-header {
+.editorColumn .columnHeader {
   flex-direction: column;
   align-items: stretch;
   min-height: auto;
   padding: 0;
 }
 
-.builder-header-content {
+.builderHeaderContent {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.builder-header-content h3 {
+.builderHeaderContent h3 {
   padding: 1rem 1rem 0;
   margin: 0;
 }
 
-.column-header h3 {
+.columnHeader h3 {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 600;
   color: #374151;
 }
 
-.column-description {
+.columnDescription {
   margin: 0.25rem 0 0;
   font-size: 0.875rem;
   font-weight: normal;
   color: #6b7280;
 }
 
-.column-content {
+.columnContent {
   flex: 1;
   padding: 1rem 0.5rem;
   overflow-y: auto;
 }
 
-.preview-column .column-content {
+.previewColumn .columnContent {
   background: #f8f9fa;
 }
 
-.principle-form {
+.principleForm {
   display: flex;
   flex-direction: column;
 }
 
-.principle-form h4 {
-  padding-bottom: 0.5rem;
+.principleForm h4 {
+  padding-bottom: 0.3rem;
   margin-bottom: 0.7rem;
   font-size: 1rem;
   font-weight: 600;
@@ -133,7 +138,7 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.btn-primary {
+.btnPrimary {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
@@ -149,19 +154,19 @@
   transition: all 0.2s;
 }
 
-.btn-primary:hover {
+.btnPrimary:hover {
   background: #2563eb;
   box-shadow: 0 4px 8px rgb(59 130 246 / 30%);
 }
 
-.btn-primary:disabled {
+.btnPrimary:disabled {
   pointer-events: none;
   cursor: default;
   background: #9ca3af;
   box-shadow: none;
 }
 
-.btn-secondary {
+.btnSecondary {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
@@ -177,57 +182,55 @@
   transition: all 0.2s;
 }
 
-.btn-secondary:hover {
+.btnSecondary:hover {
   background: #e5e7eb;
   border-color: #9ca3af;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
-.form-actions {
+.formActions {
   display: flex;
   gap: 0.75rem;
-  padding-top: 0.5rem;
-  margin-top: 0.8rem;
-  border-top: 1px solid #e5e7eb;
+  margin-top: 1rem;
 }
 
-.form-actions .btn-secondary,
-.form-actions .btn-primary {
+.formActions .btnSecondary,
+.formActions .btnPrimary {
   flex: 1;
 }
 
-.header-actions .btn-secondary,
-.header-actions .btn-primary {
+.headerActions .btnSecondary,
+.headerActions .btnPrimary {
   padding: 0.5rem 1rem;
   font-weight: 500;
   border-radius: 0.375rem;
   transition: all 0.2s;
 }
 
-.header-actions .btn-secondary {
+.headerActions .btnSecondary {
   color: #374151;
   background: #f8f9fa;
   border: 1px solid #d1d5db;
 }
 
-.header-actions .btn-secondary:hover {
+.headerActions .btnSecondary:hover {
   background: #e5e7eb;
   border-color: #9ca3af;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
-.header-actions .btn-primary {
+.headerActions .btnPrimary {
   color: white;
   background: #3b82f6;
   border: none;
 }
 
-.header-actions .btn-primary:hover {
+.headerActions .btnPrimary:hover {
   background: #2563eb;
   box-shadow: 0 4px 8px rgb(59 130 246 / 30%);
 }
 
-.btn-outline-primary {
+.btnOutlinePrimary {
   padding: 0.375rem 0.75rem;
   font-size: 1rem;
   font-weight: 400;
@@ -242,14 +245,14 @@
   border-radius: 0.375rem;
 }
 
-.btn-outline-primary:hover {
+.btnOutlinePrimary:hover {
   color: #fff;
   background-color: #0d6efd;
   border-color: #0d6efd;
 }
 
 /* Structure Column Specific */
-.add-principle-btn {
+.addPrincipleBtn {
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -264,17 +267,17 @@
   transition: background-color 0.2s;
 }
 
-.add-principle-btn:hover {
+.addPrincipleBtn:hover {
   background: #2563eb;
 }
 
-.structure-tree {
+.structureTree {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.tree-item {
+.treeItem {
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -284,23 +287,23 @@
   transition: background-color 0.2s;
 }
 
-.tree-item:hover {
+.treeItem:hover {
   background: #f3f4f6;
 }
 
-.tree-item.clickable {
+.treeItem.clickable {
   cursor: pointer;
 }
 
-.tree-item.clickable:hover {
+.treeItem.clickable:hover {
   background: #f3f4f6;
 }
 
-.tree-item.principle-item.clickable:hover {
+.treeItem.principleItem.clickable:hover {
   background: #bfdbfe;
 }
 
-.tree-item.principle-item {
+.treeItem.principleItem {
   padding: 0.75rem;
   margin-bottom: 0.25rem;
   background: #f0f9ff;
@@ -309,106 +312,110 @@
   opacity: 0.8;
 }
 
-.tree-item.principle-item.selected {
+.treeItem.principleItem.selected {
   background: #e0f2fe;
   border: 2px solid #0369a1;
   opacity: 1;
 }
 
-.tree-item.principle-item:hover {
+.treeItem.principleItem:hover {
   background: #e0f2fe;
 }
 
-.principle-display {
+.principleDisplay {
   font-size: 0.875rem;
   font-weight: 500;
   color: #0369a1;
 }
 
-.tree-icon {
+.treeIcon {
   font-size: 0.875rem;
   color: #0369a1;
 }
 
 /* Untagged criteria header styling */
-.tree-item.principle-item.untagged {
+.treeItem.principleItem.untagged {
   color: #6b7280;
   background: #f3f4f6;
   border: 1px solid #d1d5db;
 }
 
-.tree-item.principle-item.untagged .tree-icon {
+.treeItem.principleItem.untagged .treeIcon {
   color: #6b7280;
 }
 
-.tree-item.principle-item.untagged .principle-display {
+.treeItem.principleItem.untagged .principleDisplay {
   font-style: italic;
   color: #6b7280;
 }
 
-.tree-item.principle-item.untagged:hover {
+.treeItem.principleItem.untagged:hover {
   background: #e5e7eb;
 }
 
 /* Principle headers when acting as group headers (assigned principles) */
-.tree-item.principle-item:not(.nested, .untagged) {
+.treeItem.principleItem:not(.nested, .untagged) {
   background: #f0fdf4;
   border: 1px solid lightgrey;
 }
 
-.tree-item.principle-item:not(.nested, .untagged):hover {
+.treeItem.principleItem:not(.nested, .untagged):hover {
   background: #dcfce7;
 }
 
-.tree-item.principle-item:not(.nested, .untagged) .principle-display {
+.treeItem.principleItem:not(.nested, .untagged) .principleDisplay {
   font-weight: 600;
   color: #166534;
 }
 
-.tree-item.principle-item:not(.nested, .untagged) .tree-icon {
+.treeItem.principleItem:not(.nested, .untagged) .treeIcon {
   color: #166534;
 }
 
-.form-group {
-  margin-bottom: 1rem;
+.formGroup {
+  margin-bottom: 0.5rem;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
+.formGroup label {
+  margin-bottom: 0.2rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: #555;
 }
 
-.form-control {
+.formControl {
   width: 100%;
   padding: 0.5rem;
   font-size: 0.875rem;
   resize: vertical;
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
-  transition: border-color 0.2s;
 }
 
-.form-control:focus {
+.formControl:focus {
   border-color: #3b82f6;
   outline: none;
   box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
+.formControl:disabled {
+  cursor: not-allowed !important;
+  background-color: transparent !important;
+  opacity: 0.6 !important;
+}
+
 /* Form validation styles */
-.form-control.is-invalid {
+.formControl.isInvalid {
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgb(220 53 69 / 25%);
 }
 
-.form-control.is-invalid:focus {
+.formControl.isInvalid:focus {
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgb(220 53 69 / 25%);
 }
 
-.invalid-feedback {
+.invalidFeedback {
   display: block;
   width: 100%;
   margin-top: 0.25rem;
@@ -416,18 +423,18 @@
   color: #dc3545;
 }
 
-.header-actions .btn-primary:disabled {
+.headerActions .btnPrimary:disabled {
   cursor: not-allowed;
   background: #9ca3af;
   box-shadow: none;
 }
 
-.header-actions .btn-primary:disabled:hover {
+.headerActions .btnPrimary:disabled:hover {
   background: #9ca3af;
   box-shadow: none;
 }
 
-.column-content .builder-preview {
+.columnContent .builderPreview {
   padding: 1.5rem;
   margin: 0.5rem;
   background: #fff;
@@ -435,7 +442,7 @@
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 }
 
-.column-content .principle-wrapper {
+.columnContent .principleWrapper {
   display: flex;
   align-items: center;
   width: fit-content;
@@ -444,35 +451,35 @@
   cursor: pointer;
 }
 
-.column-content .principle-wrapper:hover {
+.columnContent .principleWrapper:hover {
   background: #f3f4f6;
 }
 
-.preview-placeholder {
-  padding: 3rem 1rem;
+.previewPlaceholder {
+  padding: 1rem;
   color: #9ca3af;
   text-align: center;
 }
 
-.preview-placeholder p {
+.previewPlaceholder p {
   margin: 0;
   font-style: italic;
 }
 
-.column-content .principles-list-container {
+.columnContent .principlesListContainer {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.principles-list {
+.principlesList {
   display: flex;
   flex: 1;
   flex-direction: column;
   overflow: hidden;
 }
 
-.principles-list h4 {
+.principlesList h4 {
   flex-shrink: 0;
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
@@ -482,19 +489,19 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.no-principles {
+.noPrinciples {
   padding: 2rem;
   font-style: italic;
   color: #9ca3af;
   text-align: center;
 }
 
-.principles-list-actions {
+.principlesListActions {
   flex-shrink: 0;
   margin-bottom: 1rem;
 }
 
-.select-principle-btn {
+.selectPrincipleBtn {
   width: 100%;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
@@ -507,64 +514,55 @@
   transition: all 0.2s;
 }
 
-.select-principle-btn:hover {
+.selectPrincipleBtn:hover {
   background: #2563eb;
   box-shadow: 0 4px 8px rgb(59 130 246 / 30%);
 }
 
-.select-principle-btn:disabled {
+.selectPrincipleBtn:disabled {
   cursor: not-allowed;
   background: #9ca3af;
   box-shadow: none;
 }
 
-.select-principle-btn:disabled:hover {
+.selectPrincipleBtn:disabled:hover {
   background: #9ca3af;
   box-shadow: none;
 }
 
-.principles-grid {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow-y: auto;
-}
-
-.principle-card {
+.principleCard {
   padding: 0.75rem;
   cursor: pointer;
   background: #f8f9fa;
   border: 1px solid #e5e7eb;
   border-radius: 0.375rem;
-  transition: all 0.2s;
 }
 
-.principle-card:hover {
+.principleCard:hover {
   border-color: #3b82f6;
   box-shadow: 0 2px 8px rgb(59 130 246 / 10%);
 }
 
-.principle-card.selected {
+.principleCard.selected {
   background-color: #eff6ff;
   border: 2px solid #3b82f6;
   box-shadow: 0 2px 8px rgb(59 130 246 / 20%);
 }
 
-.principle-card-compact-header {
+.principleCardCompactHeader {
   display: flex;
   gap: 0.5rem;
   align-items: center;
   margin-bottom: 0.5rem;
 }
 
-.principle-card-icon {
+.principleCardIcon {
   flex-shrink: 0;
   font-size: 0.875rem;
   color: #3b82f6;
 }
 
-.principle-card-compact-title {
+.principleCardCompactTitle {
   flex: 1;
   margin: 0;
   font-size: 0.875rem;
@@ -573,12 +571,12 @@
   color: #374151;
 }
 
-.principle-card-pri {
+.principleCardPri {
   font-weight: 600;
   color: #3b82f6;
 }
 
-.principle-card-description {
+.principleCardDescription {
   margin: 0;
   overflow: hidden;
   font-size: 0.8rem;
@@ -586,13 +584,13 @@
   color: #6b7280;
 }
 
-.principle-tabs {
+.principleTabs {
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-.tab-btn {
+.tabBtn {
   position: relative;
   flex: 1;
   padding: 0.6rem 1rem;
@@ -608,71 +606,236 @@
   transition: all 0.2s ease;
 }
 
-.tab-divider {
+.tabDivider {
   flex: 0 1 1px;
   height: 95%;
   background: #d1d5db;
 }
 
-.tab-btn.active {
+.tabBtn.active {
   color: #3b82f6;
   border-bottom-color: #3b82f6;
 }
 
-.tab-btn.disabled,
-.tab-btn:disabled {
+.tabBtn.disabled,
+.tabBtn:disabled {
   color: #9ca3af;
   cursor: not-allowed;
   background: transparent;
   opacity: 0.6;
 }
 
-.tab-btn.disabled:hover,
-.tab-btn:disabled:hover {
+.tabBtn.disabled:hover,
+.tabBtn:disabled:hover {
   border-bottom-color: transparent;
 }
 
-.tab-btn:hover:not(:disabled, .disabled) {
+.tabBtn:hover:not(:disabled, .disabled) {
   background: #f8f9fa;
 }
 
-/* Ensure nested criteria have proper spacing */
-.tree-item.principle-item.nested {
+.treeItem.principleItem.nested {
   margin-bottom: 0.25rem;
   margin-left: 1.5rem;
 }
 
 /* Horizontal separator after each principle section */
-.principle-section-separator {
+.principleSectionSeparator {
   height: 1px;
   margin: 1rem 0 0.5rem;
   background: #e5e7eb;
   border: none;
 }
 
+/* Criterion Tooltip Styles */
+.principlesGrid {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+}
+
+.motivationsTooltip {
+  position: fixed;
+  z-index: 9999;
+  width: 260px;
+  padding: 0.75rem;
+  padding-bottom: 0;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  transform: translateY(-50%);
+}
+
+.tooltipHeader {
+  margin-bottom: 0.5rem;
+}
+
+.tooltipHeader h6 {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.tooltipHeader p {
+  margin: 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.tooltipHeader ul {
+  padding-left: 1rem;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.tooltipHeader ul li {
+  margin-bottom: 0.25rem;
+  color: #374151;
+}
+
+.tooltipTitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.tooltipContent {
+  font-size: 0.8rem;
+}
+
+/* Criterion Edit Warning */
+.criterionEditWarning {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: #664d03;
+  background-color: #fff3cd;
+  border: 1px solid #ffd60a;
+  border-radius: 0.375rem;
+}
+
+.warningIcon {
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.warningText {
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Delete Modal Styles */
+.deleteModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(0 0 0 / 50%);
+}
+
+.deleteModalContent {
+  width: 90%;
+  max-width: 400px;
+  padding: 24px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 15%);
+}
+
+.deleteModalTitle {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+  color: #374151;
+}
+
+.deleteModalMessage {
+  margin: 0 0 24px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.deleteModalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.deleteModalCancelBtn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.deleteModalCancelBtn:hover {
+  background-color: #f9fafb;
+}
+
+.deleteModalRemoveBtn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  background-color: #dc3545;
+  border: none;
+  border-radius: 6px;
+}
+
+.deleteModalRemoveBtn:hover {
+  background-color: #c82333;
+}
+
+/* Responsive adjustments for tooltip */
+@media (width <= 768px) {
+  .motivationsTooltip {
+    position: fixed;
+    inset: auto auto 8px 8px;
+    max-width: calc(100vw - 16px);
+    margin-right: 0;
+    transform: none;
+  }
+}
+
 @media (width <= 1200px) {
-  .editor-column {
+  .editorColumn {
     flex: 0 0 300px;
   }
 }
 
 @media (width <= 768px) {
-  .builder-layout {
+  .builderLayout {
     flex-direction: column;
   }
 
-  .assessment-builder {
+  .assessmentBuilder {
     height: auto;
   }
 
-  .structure-column,
-  .preview-column,
-  .editor-column {
+  .structureColumn,
+  .previewColumn,
+  .editorColumn {
     flex: none;
     min-height: 300px;
   }
 
-  .header-content {
+  .headerContent {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
