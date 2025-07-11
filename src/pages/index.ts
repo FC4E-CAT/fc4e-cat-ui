@@ -4,7 +4,7 @@ import ProfileUpdate from "./ProfileUpdate";
 import RequestValidation from "./validations/RequestValidation";
 import ValidationDetails from "./validations/ValidationDetails";
 import ValidationList from "./validations/ValidationList";
-import AssessmentBuilder from "./assessments/AssessmentBuilder";
+import AssessmentBuilder from "./assessment-builder/AssessmentBuilder";
 
 export {
   Home,

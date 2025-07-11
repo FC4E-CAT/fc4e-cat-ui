@@ -125,6 +125,7 @@ export interface MotivationReference {
   id: string;
   mtv: string;
   label: string;
+  lodMTV?: string;
 }
 
 export interface MotivationPrincipleInput {
