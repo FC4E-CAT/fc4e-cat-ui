@@ -7,7 +7,7 @@ import logoGwdg from "@/assets/logo-gwdg.svg";
 import { Link } from "react-router-dom";
 import packageJson from "@/../package.json";
 import { useTranslation } from "react-i18next";
-import { linksDocs, linksGithub } from "@/config";
+import { linksDocs, linksGithub, themeFooterDisplay } from "@/config";
 import ROUTES from "../routes";
 
 function Footer() {
@@ -21,74 +21,96 @@ function Footer() {
   return (
     <footer className="border-top">
       <Container className="text-left">
-        <Row className="mt-4">
-          <Col sm>
-            <h6>{t("footer.about_category")}</h6>
-            <ul className="list-unstyled">
-              <li>
-                <Link to={ROUTES.ABOUT.CAT}>{t("footer.about_cat")}</Link>
-              </li>
-              <li>
-                <Link to={ROUTES.ABOUT.INTEROPERABILITY}>
-                  {t("interoperability_guidelines")}
-                </Link>
-              </li>
-              <li>
-                <Link to={ROUTES.ABOUT.ACCEPTABLE_USE}>
-                  {t("acceptable_use_policy")}
-                </Link>
-              </li>
-              <li>
-                <Link to={ROUTES.ABOUT.TERMS}>{t("page_terms.title")}</Link>
-              </li>
-              <li>
-                <Link to={ROUTES.ABOUT.COOKIES}>{t("page_cookies.title")}</Link>
-              </li>
-              <li>
-                <Link to={ROUTES.ABOUT.PRIVACY}>{t("privacy_statement")}</Link>
-              </li>
-              <li>
-                <Link to={ROUTES.ABOUT.DISCLAIMER}>{t("disclaimer")}</Link>
-              </li>
-            </ul>
-          </Col>
-          <Col sm>
-            <h6>{t("footer.development_category")}</h6>
-            <ul className="list-unstyled">
-              {linksGithub && (
+        {themeFooterDisplay && (
+          <Row className="mt-4">
+            <Col sm>
+              <h6>{t("footer.about_category")}</h6>
+              <ul className="list-unstyled">
                 <li>
-                  <FaGithub color="grey" className="me-2" />
-                  <a href={linksGithub} target="_blank" rel="noreferrer">
-                    {t("github")}
-                  </a>
+                  <Link to={ROUTES.ABOUT.CAT}>{t("footer.about_cat")}</Link>
                 </li>
-              )}
-              {linksDocs && (
                 <li>
-                  <FaBook color="grey" className="me-2" />
-                  <a href={linksDocs} target="_blank" rel="noreferrer">
-                    {t("documentation")}
-                  </a>
+                  <Link to={ROUTES.ABOUT.INTEROPERABILITY}>
+                    {t("interoperability_guidelines")}
+                  </Link>
                 </li>
-              )}
-            </ul>
-          </Col>
-          <Col sm>
-            <h6>{t("footer.partners_category")}</h6>
-            <a href="https://dans.knaw.nl/en" target="_blank" rel="noreferrer">
-              <img className="cat-logo-sm" src={logoDans} alt="DANS" />
-            </a>
-            <a href="https://www.grnet.gr/en" target="_blank" rel="noreferrer">
-              <img className="cat-logo-sm" src={logoGrnet} alt="GRNET" />
-            </a>
-            <a href="https://www.datacite.org" target="_blank" rel="noreferrer">
-              <img className="cat-logo-sm" src={logoDatacite} alt="DATACITE" />
-            </a>
-            <a href="https://www.gwdg.de/" target="_blank" rel="noreferrer">
-              <img className="cat-logo-sm" src={logoGwdg} alt="GWDG" />
-            </a>
-          </Col>
-        </Row>
+                <li>
+                  <Link to={ROUTES.ABOUT.ACCEPTABLE_USE}>
+                    {t("acceptable_use_policy")}
+                  </Link>
+                </li>
+                <li>
+                  <Link to={ROUTES.ABOUT.TERMS}>{t("page_terms.title")}</Link>
+                </li>
+                <li>
+                  <Link to={ROUTES.ABOUT.COOKIES}>
+                    {t("page_cookies.title")}
+                  </Link>
+                </li>
+                <li>
+                  <Link to={ROUTES.ABOUT.PRIVACY}>
+                    {t("privacy_statement")}
+                  </Link>
+                </li>
+                <li>
+                  <Link to={ROUTES.ABOUT.DISCLAIMER}>{t("disclaimer")}</Link>
+                </li>
+              </ul>
+            </Col>
+            <Col sm>
+              <h6>{t("footer.development_category")}</h6>
+              <ul className="list-unstyled">
+                {linksGithub && (
+                  <li>
+                    <FaGithub color="grey" className="me-2" />
+                    <a href={linksGithub} target="_blank" rel="noreferrer">
+                      {t("github")}
+                    </a>
+                  </li>
+                )}
+                {linksDocs && (
+                  <li>
+                    <FaBook color="grey" className="me-2" />
+                    <a href={linksDocs} target="_blank" rel="noreferrer">
+                      {t("documentation")}
+                    </a>
+                  </li>
+                )}
+              </ul>
+            </Col>
+            <Col sm>
+              <h6>{t("footer.partners_category")}</h6>
+              <a
+                href="https://dans.knaw.nl/en"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <img className="cat-logo-sm" src={logoDans} alt="DANS" />
+              </a>
+              <a
+                href="https://www.grnet.gr/en"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <img className="cat-logo-sm" src={logoGrnet} alt="GRNET" />
+              </a>
+              <a
+                href="https://www.datacite.org"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <img
+                  className="cat-logo-sm"
+                  src={logoDatacite}
+                  alt="DATACITE"
+                />
+              </a>
+              <a href="https://www.gwdg.de/" target="_blank" rel="noreferrer">
+                <img className="cat-logo-sm" src={logoGwdg} alt="GWDG" />
+              </a>
+            </Col>
+          </Row>
+        )}
         <div className="text-left">
           <small className="text-muted">
             <span>

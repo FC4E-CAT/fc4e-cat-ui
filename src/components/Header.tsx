@@ -9,6 +9,7 @@ import { FaUser, FaShieldAlt } from "react-icons/fa";
 import { UserProfile } from "@/types";
 import { useTranslation } from "react-i18next";
 import ROUTES from "../routes";
+import { pidSelectionView, themeAppTitle } from "@/config";
 
 function Header() {
   const { authenticated, keycloak, registered } = useContext(AuthContext)!;
@@ -37,7 +38,7 @@ function Header() {
                 src={logo}
                 height="46"
                 className="d-inline-block align-top"
-                alt="FAIRCORE4EOSC CAT"
+                alt={themeAppTitle}
               />
             </Link>
           </Navbar.Brand>
@@ -62,11 +63,13 @@ function Header() {
                   {t("assessments").toUpperCase()}
                 </Link>
               </NavItem>
-              <NavItem>
-                <Link to={ROUTES.PID_SELECTION} className="cat-nav-link">
-                  {t("pid_selection").toUpperCase()}
-                </Link>
-              </NavItem>
+              {pidSelectionView && (
+                <NavItem>
+                  <Link to={ROUTES.PID_SELECTION} className="cat-nav-link">
+                    {t("pid_selection").toUpperCase()}
+                  </Link>
+                </NavItem>
+              )}
             </Nav>
 
             <Nav>
