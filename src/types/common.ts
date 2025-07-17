@@ -2,11 +2,6 @@
 
 import { MotivationMetric } from "./motivation";
 
-export type ApiT = {
-  base_url: string;
-  version: string;
-};
-
 export interface ResponsePage<T> {
   size_of_page: number;
   number_of_page: number;

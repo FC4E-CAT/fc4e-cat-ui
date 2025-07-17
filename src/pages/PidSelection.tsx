@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import config from "@/config.json";
+import { pidSelectionView } from "@/config";
 
 function PidSelection() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -7,7 +7,7 @@ function PidSelection() {
 
   useEffect(() => {
     const handleResize = (event: MessageEvent) => {
-      if (event.origin === config?.embedded_views?.pid_selection_view) {
+      if (event.origin === pidSelectionView) {
         // Replace with the actual domain of pageB
         console.log("received size from child:", event.data);
         if (iframeRef.current)
@@ -26,7 +26,7 @@ function PidSelection() {
   return (
     <div>
       <iframe
-        src={config?.embedded_views?.pid_selection_view}
+        src={pidSelectionView}
         style={{ width: "100%", height: "800px" }}
         ref={iframeRef}
       ></iframe>

@@ -52,6 +52,7 @@ import TestMethodsSettings from "./pages/admin/settings/TestMethodsSettings";
 import MetricTypesSettings from "./pages/admin/settings/MetricTypesSettings";
 import AlgorithmsSettings from "./pages/admin/settings/AlgorithmsSettings";
 import BenchmarkTypesSettings from "./pages/admin/settings/BenchmarkTypesSettings";
+import { pidSelectionView, themeAbout } from "./config";
 
 const queryClient = new QueryClient();
 
@@ -92,23 +93,33 @@ function App() {
             <main className="cat-main-view">
               <Routes>
                 <Route path={ROUTES.HOME} element={<Home />} />
-                <Route path={ROUTES.ABOUT.CAT} element={<AboutCat />} />
-                <Route
-                  path={ROUTES.ABOUT.INTEROPERABILITY}
-                  element={<Interoperability />}
-                />
-                <Route
-                  path={ROUTES.ABOUT.ACCEPTABLE_USE}
-                  element={<AcceptableUse />}
-                />
-                <Route path={ROUTES.ABOUT.PRIVACY} element={<Privacy />} />
-                <Route
-                  path={ROUTES.ABOUT.DISCLAIMER}
-                  element={<Disclaimer />}
-                />
-                <Route path={ROUTES.PID_SELECTION} element={<PidSelection />} />
-                <Route path={ROUTES.ABOUT.COOKIES} element={<Cookies />} />
-                <Route path={ROUTES.ABOUT.TERMS} element={<Terms />} />
+                {themeAbout && (
+                  <>
+                    <Route path={ROUTES.ABOUT.CAT} element={<AboutCat />} />
+                    <Route
+                      path={ROUTES.ABOUT.INTEROPERABILITY}
+                      element={<Interoperability />}
+                    />
+                    <Route
+                      path={ROUTES.ABOUT.ACCEPTABLE_USE}
+                      element={<AcceptableUse />}
+                    />
+                    <Route path={ROUTES.ABOUT.PRIVACY} element={<Privacy />} />
+                    <Route
+                      path={ROUTES.ABOUT.DISCLAIMER}
+                      element={<Disclaimer />}
+                    />
+
+                    <Route path={ROUTES.ABOUT.COOKIES} element={<Cookies />} />
+                    <Route path={ROUTES.ABOUT.TERMS} element={<Terms />} />
+                  </>
+                )}
+                {pidSelectionView && (
+                  <Route
+                    path={ROUTES.PID_SELECTION}
+                    element={<PidSelection />}
+                  />
+                )}
                 <Route
                   path={ROUTES.ASSESSMENTS.CREATE_WITH_VALIDATION}
                   element={<ProtectedRoute />}
