@@ -1,24 +1,24 @@
-.assessmentBuilder {
+.assessment-builder {
   display: flex;
   flex-direction: column;
   height: 90vh;
   background-color: #f8f9fa;
 }
 
-.assessmentBuilderHeader {
+.assessment-builder-header {
   padding: 0.5rem;
   padding-top: 1rem;
   background: white;
 }
 
-.headerContent {
+.header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
   max-width: 100%;
 }
 
-.builderTitle {
+.builder-title {
   margin: 0;
   margin-bottom: 0.5rem;
   font-size: 1.8rem;
@@ -26,12 +26,12 @@
   color: #2c3e50;
 }
 
-.headerActions {
+.header-actions {
   display: flex;
   gap: 0.75rem;
 }
 
-.builderLayout {
+.builder-layout {
   display: flex;
   flex: 1;
   gap: 1px;
@@ -42,94 +42,94 @@
 }
 
 /* Columns */
-.builderColumn {
+.builder-column {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background: white;
 }
 
-.structureColumn {
+.structure-column {
   flex: 0 0 340px;
   min-width: 280px;
 }
 
-.previewColumn {
+.preview-column {
   flex: 1;
   min-width: 400px;
 }
 
-.editorColumn {
+.editor-column {
   flex: 0 0 380px;
   min-width: 330px;
 }
 
-.noDisplay {
+.no-display {
   display: none;
 }
 
 /* Column Headers */
-.columnHeader {
+.column-header {
   display: flex;
   min-height: 80px;
   padding: 1rem;
   border-bottom: 1px solid #e9ecef;
 }
 
-.structureColumn .columnHeader {
+.structure-column .column-header {
   flex-direction: column;
   gap: 0.5rem;
   align-items: flex-start;
 }
 
-.editorColumn .columnHeader {
+.editor-column .column-header {
   flex-direction: column;
   align-items: stretch;
   min-height: auto;
   padding: 0;
 }
 
-.builderHeaderContent {
+.builder-header-content {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.builderHeaderContent h3 {
+.builder-header-content h3 {
   padding: 1rem 1rem 0;
   margin: 0;
 }
 
-.columnHeader h3 {
+.column-header h3 {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 600;
   color: #374151;
 }
 
-.columnDescription {
+.column-description {
   margin: 0.25rem 0 0;
   font-size: 0.875rem;
   font-weight: normal;
   color: #6b7280;
 }
 
-.columnContent {
+.column-content {
   flex: 1;
   padding: 1rem 0.5rem;
   overflow-y: auto;
 }
 
-.previewColumn .columnContent {
+.preview-column .column-content {
   background: #f8f9fa;
 }
 
-.principleForm {
+.principle-form {
   display: flex;
   flex-direction: column;
 }
 
-.principleForm h4 {
+.principle-form h4 {
   padding-bottom: 0.3rem;
   margin-bottom: 0.7rem;
   font-size: 1rem;
@@ -138,7 +138,7 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.btnPrimary {
+.btn-primary {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
@@ -154,19 +154,19 @@
   transition: all 0.2s;
 }
 
-.btnPrimary:hover {
+.btn-primary:hover {
   background: #2563eb;
   box-shadow: 0 4px 8px rgb(59 130 246 / 30%);
 }
 
-.btnPrimary:disabled {
+.btn-primary:disabled {
   pointer-events: none;
   cursor: default;
   background: #9ca3af;
   box-shadow: none;
 }
 
-.btnSecondary {
+.btn-secondary {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
@@ -182,55 +182,55 @@
   transition: all 0.2s;
 }
 
-.btnSecondary:hover {
+.btn-secondary:hover {
   background: #e5e7eb;
   border-color: #9ca3af;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
-.formActions {
+.form-actions {
   display: flex;
   gap: 0.75rem;
   margin-top: 1rem;
 }
 
-.formActions .btnSecondary,
-.formActions .btnPrimary {
+.form-actions .btn-secondary,
+.form-actions .btn-primary {
   flex: 1;
 }
 
-.headerActions .btnSecondary,
-.headerActions .btnPrimary {
+.header-actions .btn-secondary,
+.header-actions .btn-primary {
   padding: 0.5rem 1rem;
   font-weight: 500;
   border-radius: 0.375rem;
   transition: all 0.2s;
 }
 
-.headerActions .btnSecondary {
+.header-actions .btn-secondary {
   color: #374151;
   background: #f8f9fa;
   border: 1px solid #d1d5db;
 }
 
-.headerActions .btnSecondary:hover {
+.header-actions .btn-secondary:hover {
   background: #e5e7eb;
   border-color: #9ca3af;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
-.headerActions .btnPrimary {
+.header-actions .btn-primary {
   color: white;
   background: #3b82f6;
   border: none;
 }
 
-.headerActions .btnPrimary:hover {
+.header-actions .btn-primary:hover {
   background: #2563eb;
   box-shadow: 0 4px 8px rgb(59 130 246 / 30%);
 }
 
-.btnOutlinePrimary {
+.btn-outline-primary {
   padding: 0.375rem 0.75rem;
   font-size: 1rem;
   font-weight: 400;
@@ -245,14 +245,14 @@
   border-radius: 0.375rem;
 }
 
-.btnOutlinePrimary:hover {
+.btn-outline-primary:hover {
   color: #fff;
   background-color: #0d6efd;
   border-color: #0d6efd;
 }
 
 /* Structure Column Specific */
-.addPrincipleBtn {
+.add-principle-btn {
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -267,17 +267,17 @@
   transition: background-color 0.2s;
 }
 
-.addPrincipleBtn:hover {
+.add-principle-btn:hover {
   background: #2563eb;
 }
 
-.structureTree {
+.structure-tree {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.treeItem {
+.tree-item {
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -287,23 +287,23 @@
   transition: background-color 0.2s;
 }
 
-.treeItem:hover {
+.tree-item:hover {
   background: #f3f4f6;
 }
 
-.treeItem.clickable {
+.tree-item.clickable {
   cursor: pointer;
 }
 
-.treeItem.clickable:hover {
+.tree-item.clickable:hover {
   background: #f3f4f6;
 }
 
-.treeItem.principleItem.clickable:hover {
+.tree-item.principle-item.clickable:hover {
   background: #bfdbfe;
 }
 
-.treeItem.principleItem {
+.tree-item.principle-item {
   padding: 0.75rem;
   margin-bottom: 0.25rem;
   background: #f0f9ff;
@@ -312,78 +312,78 @@
   opacity: 0.8;
 }
 
-.treeItem.principleItem.selected {
+.tree-item.principle-item.selected {
   background: #e0f2fe;
   border: 2px solid #0369a1;
   opacity: 1;
 }
 
-.treeItem.principleItem:hover {
+.tree-item.principle-item:hover {
   background: #e0f2fe;
 }
 
-.principleDisplay {
+.principle-display {
   font-size: 0.875rem;
   font-weight: 500;
   color: #0369a1;
 }
 
-.treeIcon {
+.tree-icon {
   font-size: 0.875rem;
   color: #0369a1;
 }
 
 /* Untagged criteria header styling */
-.treeItem.principleItem.untagged {
+.tree-item.principle-item.untagged {
   color: #6b7280;
   background: #f3f4f6;
   border: 1px solid #d1d5db;
 }
 
-.treeItem.principleItem.untagged .treeIcon {
+.tree-item.principle-item.untagged .tree-icon {
   color: #6b7280;
 }
 
-.treeItem.principleItem.untagged .principleDisplay {
+.tree-item.principle-item.untagged .principle-display {
   font-style: italic;
   color: #6b7280;
 }
 
-.treeItem.principleItem.untagged:hover {
+.tree-item.principle-item.untagged:hover {
   background: #e5e7eb;
 }
 
 /* Principle headers when acting as group headers (assigned principles) */
-.treeItem.principleItem:not(.nested, .untagged) {
+.tree-item.principle-item:not(.nested, .untagged) {
   background: #f0fdf4;
   border: 1px solid lightgrey;
 }
 
-.treeItem.principleItem:not(.nested, .untagged):hover {
+.tree-item.principle-item:not(.nested, .untagged):hover {
   background: #dcfce7;
 }
 
-.treeItem.principleItem:not(.nested, .untagged) .principleDisplay {
+.tree-item.principle-item:not(.nested, .untagged) .principle-display {
   font-weight: 600;
   color: #166534;
 }
 
-.treeItem.principleItem:not(.nested, .untagged) .treeIcon {
+.tree-item.principle-item:not(.nested, .untagged) .tree-icon {
   color: #166534;
 }
 
-.formGroup {
+.form-group {
   margin-bottom: 0.5rem;
 }
 
-.formGroup label {
+.form-group label {
   margin-bottom: 0.2rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: #555;
 }
 
-.formControl {
+.form-control {
   width: 100%;
   padding: 0.5rem;
   font-size: 0.875rem;
@@ -392,30 +392,30 @@
   border-radius: 0.375rem;
 }
 
-.formControl:focus {
+.form-control:focus {
   border-color: #3b82f6;
   outline: none;
   box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
-.formControl:disabled {
+.form-control:disabled {
   cursor: not-allowed !important;
   background-color: transparent !important;
   opacity: 0.6 !important;
 }
 
 /* Form validation styles */
-.formControl.isInvalid {
+.form-control.is-invalid {
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgb(220 53 69 / 25%);
 }
 
-.formControl.isInvalid:focus {
+.form-control.is-invalid:focus {
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgb(220 53 69 / 25%);
 }
 
-.invalidFeedback {
+.invalid-feedback {
   display: block;
   width: 100%;
   margin-top: 0.25rem;
@@ -423,18 +423,18 @@
   color: #dc3545;
 }
 
-.headerActions .btnPrimary:disabled {
+.header-actions .btn-primary:disabled {
   cursor: not-allowed;
   background: #9ca3af;
   box-shadow: none;
 }
 
-.headerActions .btnPrimary:disabled:hover {
+.header-actions .btn-primary:disabled:hover {
   background: #9ca3af;
   box-shadow: none;
 }
 
-.columnContent .builderPreview {
+.column-content .builder-preview {
   padding: 1.5rem;
   margin: 0.5rem;
   background: #fff;
@@ -442,7 +442,7 @@
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 }
 
-.columnContent .principleWrapper {
+.column-content .principle-wrapper {
   display: flex;
   align-items: center;
   width: fit-content;
@@ -451,35 +451,35 @@
   cursor: pointer;
 }
 
-.columnContent .principleWrapper:hover {
+.column-content .principle-wrapper:hover {
   background: #f3f4f6;
 }
 
-.previewPlaceholder {
+.preview-placeholder {
   padding: 1rem;
   color: #9ca3af;
   text-align: center;
 }
 
-.previewPlaceholder p {
+.preview-placeholder p {
   margin: 0;
   font-style: italic;
 }
 
-.columnContent .principlesListContainer {
+.column-content .principles-list-container {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.principlesList {
+.principles-list {
   display: flex;
   flex: 1;
   flex-direction: column;
   overflow: hidden;
 }
 
-.principlesList h4 {
+.principles-list h4 {
   flex-shrink: 0;
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
@@ -489,19 +489,19 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.noPrinciples {
+.no-principles {
   padding: 2rem;
   font-style: italic;
   color: #9ca3af;
   text-align: center;
 }
 
-.principlesListActions {
+.principles-list-actions {
   flex-shrink: 0;
   margin-bottom: 1rem;
 }
 
-.selectPrincipleBtn {
+.select-principle-btn {
   width: 100%;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
@@ -514,23 +514,23 @@
   transition: all 0.2s;
 }
 
-.selectPrincipleBtn:hover {
+.select-principle-btn:hover {
   background: #2563eb;
   box-shadow: 0 4px 8px rgb(59 130 246 / 30%);
 }
 
-.selectPrincipleBtn:disabled {
+.select-principle-btn:disabled {
   cursor: not-allowed;
   background: #9ca3af;
   box-shadow: none;
 }
 
-.selectPrincipleBtn:disabled:hover {
+.select-principle-btn:disabled:hover {
   background: #9ca3af;
   box-shadow: none;
 }
 
-.principleCard {
+.principle-card {
   padding: 0.75rem;
   cursor: pointer;
   background: #f8f9fa;
@@ -538,31 +538,31 @@
   border-radius: 0.375rem;
 }
 
-.principleCard:hover {
+.principle-card:hover {
   border-color: #3b82f6;
   box-shadow: 0 2px 8px rgb(59 130 246 / 10%);
 }
 
-.principleCard.selected {
+.principle-card.selected {
   background-color: #eff6ff;
   border: 2px solid #3b82f6;
   box-shadow: 0 2px 8px rgb(59 130 246 / 20%);
 }
 
-.principleCardCompactHeader {
+.principle-card-compact-header {
   display: flex;
   gap: 0.5rem;
   align-items: center;
   margin-bottom: 0.5rem;
 }
 
-.principleCardIcon {
+.principle-card-icon {
   flex-shrink: 0;
   font-size: 0.875rem;
   color: #3b82f6;
 }
 
-.principleCardCompactTitle {
+.principle-card-compact-title {
   flex: 1;
   margin: 0;
   font-size: 0.875rem;
@@ -571,12 +571,12 @@
   color: #374151;
 }
 
-.principleCardPri {
+.principle-card-pri {
   font-weight: 600;
   color: #3b82f6;
 }
 
-.principleCardDescription {
+.principle-card-description {
   margin: 0;
   overflow: hidden;
   font-size: 0.8rem;
@@ -584,13 +584,13 @@
   color: #6b7280;
 }
 
-.principleTabs {
+.principle-tabs {
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-.tabBtn {
+.tab-btn {
   position: relative;
   flex: 1;
   padding: 0.6rem 1rem;
@@ -606,41 +606,41 @@
   transition: all 0.2s ease;
 }
 
-.tabDivider {
+.tab-divider {
   flex: 0 1 1px;
   height: 95%;
   background: #d1d5db;
 }
 
-.tabBtn.active {
+.tab-btn.active {
   color: #3b82f6;
   border-bottom-color: #3b82f6;
 }
 
-.tabBtn.disabled,
-.tabBtn:disabled {
+.tab-btn.disabled,
+.tab-btn:disabled {
   color: #9ca3af;
   cursor: not-allowed;
   background: transparent;
   opacity: 0.6;
 }
 
-.tabBtn.disabled:hover,
-.tabBtn:disabled:hover {
+.tab-btn.disabled:hover,
+.tab-btn:disabled:hover {
   border-bottom-color: transparent;
 }
 
-.tabBtn:hover:not(:disabled, .disabled) {
+.tab-btn:hover:not(:disabled, .disabled) {
   background: #f8f9fa;
 }
 
-.treeItem.principleItem.nested {
+.tree-item.principle-item.nested {
   margin-bottom: 0.25rem;
   margin-left: 1.5rem;
 }
 
 /* Horizontal separator after each principle section */
-.principleSectionSeparator {
+.principle-section-separator {
   height: 1px;
   margin: 1rem 0 0.5rem;
   background: #e5e7eb;
@@ -648,7 +648,7 @@
 }
 
 /* Criterion Tooltip Styles */
-.principlesGrid {
+.principles-grid {
   position: relative;
   display: flex;
   flex: 1;
@@ -657,7 +657,7 @@
   overflow-y: auto;
 }
 
-.motivationsTooltip {
+.motivations-tooltip {
   position: fixed;
   z-index: 9999;
   width: 260px;
@@ -670,48 +670,48 @@
   transform: translateY(-50%);
 }
 
-.tooltipHeader {
+.tooltip-header {
   margin-bottom: 0.5rem;
 }
 
-.tooltipHeader h6 {
+.tooltip-header h6 {
   margin: 0 0 0.5rem;
   font-size: 0.875rem;
   font-weight: 600;
   color: #374151;
 }
 
-.tooltipHeader p {
+.tooltip-header p {
   margin: 0;
   font-size: 0.8rem;
   font-style: italic;
   color: #6b7280;
 }
 
-.tooltipHeader ul {
+.tooltip-header ul {
   padding-left: 1rem;
   margin: 0;
   font-size: 0.8rem;
 }
 
-.tooltipHeader ul li {
+.tooltip-header ul li {
   margin-bottom: 0.25rem;
   color: #374151;
 }
 
-.tooltipTitle {
+.tooltip-title {
   margin: 0;
   font-size: 0.875rem;
   font-weight: 600;
   color: #374151;
 }
 
-.tooltipContent {
+.tooltip-content {
   font-size: 0.8rem;
 }
 
 /* Criterion Edit Warning */
-.criterionEditWarning {
+.criterion-edit-warning {
   display: flex;
   gap: 0.4rem;
   align-items: center;
@@ -724,18 +724,18 @@
   border-radius: 0.375rem;
 }
 
-.warningIcon {
+.warning-icon {
   flex-shrink: 0;
   font-size: 1rem;
 }
 
-.warningText {
+.warning-text {
   font-weight: 500;
   line-height: 1.3;
 }
 
 /* Delete Modal Styles */
-.deleteModalOverlay {
+.delete-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 10000;
@@ -745,7 +745,7 @@
   background-color: rgb(0 0 0 / 50%);
 }
 
-.deleteModalContent {
+.delete-modal-content {
   width: 90%;
   max-width: 400px;
   padding: 24px;
@@ -754,25 +754,25 @@
   box-shadow: 0 4px 20px rgb(0 0 0 / 15%);
 }
 
-.deleteModalTitle {
+.delete-modal-title {
   margin: 0 0 16px;
   font-size: 1.5rem;
   color: #374151;
 }
 
-.deleteModalMessage {
+.delete-modal-message {
   margin: 0 0 24px;
   line-height: 1.5;
   color: #6b7280;
 }
 
-.deleteModalActions {
+.delete-modal-actions {
   display: flex;
   gap: 12px;
   justify-content: space-between;
 }
 
-.deleteModalCancelBtn {
+.delete-modal-cancel-btn {
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
@@ -783,11 +783,11 @@
   border-radius: 6px;
 }
 
-.deleteModalCancelBtn:hover {
+.delete-modal-cancel-btn:hover {
   background-color: #f9fafb;
 }
 
-.deleteModalRemoveBtn {
+.delete-modal-remove-btn {
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
@@ -798,13 +798,13 @@
   border-radius: 6px;
 }
 
-.deleteModalRemoveBtn:hover {
+.delete-modal-remove-btn:hover {
   background-color: #c82333;
 }
 
 /* Responsive adjustments for tooltip */
 @media (width <= 768px) {
-  .motivationsTooltip {
+  .motivations-tooltip {
     position: fixed;
     inset: auto auto 8px 8px;
     max-width: calc(100vw - 16px);
@@ -814,28 +814,28 @@
 }
 
 @media (width <= 1200px) {
-  .editorColumn {
+  .editor-column {
     flex: 0 0 300px;
   }
 }
 
 @media (width <= 768px) {
-  .builderLayout {
+  .builder-layout {
     flex-direction: column;
   }
 
-  .assessmentBuilder {
+  .assessment-builder {
     height: auto;
   }
 
-  .structureColumn,
-  .previewColumn,
-  .editorColumn {
+  .structure-column,
+  .preview-column,
+  .editor-column {
     flex: none;
     min-height: 300px;
   }
 
-  .headerContent {
+  .header-content {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
