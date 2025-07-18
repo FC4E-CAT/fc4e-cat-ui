@@ -150,7 +150,6 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
         navigate(
           `/admin/motivations/${props?.id}/templates/actors/${actorId}/assessment-builder`,
         );
-        window.scrollTo(0, 0);
         alert.current = {
           message: t("page_motivations.toast_add_actor_success"),
         };

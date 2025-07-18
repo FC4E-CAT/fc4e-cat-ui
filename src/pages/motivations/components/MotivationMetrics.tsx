@@ -26,6 +26,7 @@ import {
   FaTrash,
   FaChevronDown,
   FaChevronRight,
+  FaPlus,
 } from "react-icons/fa";
 import { MotivationMetricModal } from "./MotivationMetricModal";
 import { useDeleteMotivationMetric, useGetAllMotivationMetrics } from "@/api";
@@ -267,8 +268,8 @@ export const MotivationMetrics = ({
         <div>
           {published ? (
             <span className="btn btn-warning disabled">
-              <FaEdit className="me-2" />
-              {t("page_motivations.manage_metrics")}
+              <FaPlus className="me-2" />
+              {t("page_motivations.create_metric")}
             </span>
           ) : (
             <Button
@@ -282,8 +283,8 @@ export const MotivationMetrics = ({
               }}
               disabled={published}
             >
-              <FaEdit className="me-2" />
-              {t("page_motivations.manage_metrics")}
+              <FaPlus className="me-2" />
+              {t("page_motivations.create_metric")}
             </Button>
           )}
         </div>
@@ -421,7 +422,7 @@ export const MotivationMetrics = ({
                           className="btn btn-light"
                           to={buildRoute(
                             ROUTES.ADMIN.MOTIVATIONS.METRICS_TESTS,
-                            { mtvId: mtvId, metricId: item.metric_id },
+                            { mtvId: mtvId, mtrId: item.metric_id },
                           )}
                         >
                           <FaCog />
@@ -561,7 +562,7 @@ export const MotivationMetrics = ({
                               className="btn btn-light"
                               to={buildRoute(
                                 ROUTES.ADMIN.MOTIVATIONS.METRICS_TESTS,
-                                { mtvId: mtvId, metricId: version.metric_id },
+                                { mtvId: mtvId, mtrId: version.metric_id },
                               )}
                             >
                               <FaCog />

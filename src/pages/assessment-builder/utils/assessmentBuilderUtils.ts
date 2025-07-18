@@ -564,7 +564,7 @@ export const formatDataToAssignPrincipleToCriterion = ({
   principleId,
 }: {
   allMotivationCriteria: MotivationCriterion[] | undefined;
-  criterionId: string;
+  criterionId?: string;
   principleId?: string;
 }): PrincipleCriterionRelation[] => {
   let priCri =
@@ -582,6 +582,10 @@ export const formatDataToAssignPrincipleToCriterion = ({
   const existingCriterionInPriCri = priCri.find(
     (item) => item.criterion_id === criterionId,
   );
+
+  if (!(criterionId && principleId)) {
+    return priCri;
+  }
 
   if (existingCriterionInPriCri) {
     priCri = priCri.map((item) => {

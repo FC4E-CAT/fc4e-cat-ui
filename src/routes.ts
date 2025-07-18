@@ -54,7 +54,7 @@ const ROUTES = {
       ROOT: "/admin/motivations",
       VIEW: "/admin/motivations/:mtvId",
       MANAGE_CRITERIA: "/admin/motivations/:mtvId/manage-criteria-principles",
-      METRICS_TESTS: "/admin/motivations/:mtvId/metrics-tests/:metricId",
+      METRICS_TESTS: "/admin/motivations/:mtvId/metrics-tests/:mtrId",
       ACTOR_CRITERIA: "/admin/motivations/:mtvId/actors/:actId",
       TEMPLATES: "/admin/motivations/:mtvId/templates/actors/:actId",
       ASSESSMENT_BUILDER:
