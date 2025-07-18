@@ -129,7 +129,7 @@ export const useGetAllBenchmarkTypes = ({
   useInfiniteQuery({
     queryKey: ["all-benchmark-types"],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await APIClient(token).get<RegistryResourceResponse>(
+      const response = await APIClient(token).get(
         `/v1/registry/benchmark-types?size=${size}&page=${pageParam}${enabled ? `&enabled=true` : ""}`,
       );
       return response.data;

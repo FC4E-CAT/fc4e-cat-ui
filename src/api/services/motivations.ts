@@ -10,6 +10,7 @@ import { handleBackendError } from "@/utils";
 import {
   ApiOptions,
   ApiOptionsSearch,
+  Assessment,
   AutoGroupTest,
   CriImp,
   MetricAssignment,
@@ -668,12 +669,13 @@ export const useCreateMotivationMetric = (
     type_benchmark_id,
     url,
     value_benchmark,
+    criterion_id,
   }: MetricInput,
 ) => {
   const queryClient = useQueryClient();
   return useMutation(
     async () => {
-      const response = await APIClient(token).post<MetricResponse>(
+      const response = await APIClient(token).post(
         `/v1/registry/motivations/${mtvId}/metric`,
         {
           mtr,
@@ -684,6 +686,7 @@ export const useCreateMotivationMetric = (
           type_benchmark_id,
           url,
           value_benchmark,
+          criterion_id,
         },
       );
       return response.data;
@@ -845,3 +848,25 @@ export const useCreateMotivationCriterion = (
     },
   );
 };
+
+export const useGetMotivationAssessmentTypeTemplate = (
+  mtvId: string,
+  actId: string,
+  token: string,
+  isRegistered: boolean,
+) =>
+  useQuery({
+    queryKey: ["assessment-type-template", mtvId, actId],
+    queryFn: async () => {
+      const response = await APIClient(token).get<Assessment>(
+        `/v1/registry/motivations/${mtvId}/by-actor/${actId}/assessment-type-template`,
+      );
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+    enabled:
+      !!token && isRegistered && mtvId !== undefined && actId !== undefined,
+    refetchOnWindowFocus: false,
+  });

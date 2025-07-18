@@ -5,14 +5,20 @@ import toast from "react-hot-toast";
 import { Button } from "react-bootstrap";
 import { AuthContext } from "@/auth";
 import { useGetAllPrinciples } from "@/api";
-import { useGetMotivationAssessmentType } from "@/api/services/templates";
+import { useGetMotivationAssessmentTypeTemplate } from "@/api/services/motivations";
 import {
   usePublishMotivationActor,
   useUnpublishMotivationActor,
   useGetMotivation,
   useGetMotivationCriteriaMutation,
+  useGetAllMotivationMetrics,
 } from "@/api/services/motivations";
-import { Principle, AssessmentBuilderState, AlertInfo } from "@/types";
+import {
+  Principle,
+  AssessmentBuilderState,
+  AlertInfo,
+  RegistryMetric,
+} from "@/types";
 import { useGetAllCriteria } from "../../api/services/criteria";
 import AssessmentBuilderStructure from "./AssessmentBuilderStructure";
 import AssessmentBuilderPreview from "./AssessmentBuilderPreview";
@@ -43,7 +49,7 @@ function AssessmentBuilder() {
   });
 
   const { data: assessmentData, refetch: refetchAssessmentData } =
-    useGetMotivationAssessmentType(
+    useGetMotivationAssessmentTypeTemplate(
       mtvId || "",
       actId || "",
       keycloak?.token || "",
@@ -52,6 +58,32 @@ function AssessmentBuilder() {
   const [assessment, setAssessment] = useState(
     assessmentData?.principles || [],
   );
+  const [motivationMetrics, setMotivationMetrics] = useState<RegistryMetric[]>(
+    [],
+  );
+
+  useEffect(() => {
+    if (
+      assessmentData &&
+      builderState.formMode === "none" &&
+      builderState.entityMode === "none"
+    ) {
+      if (assessmentData?.principles?.[0]?.criteria?.length > 0) {
+        setBuilderState({
+          formMode: "edit",
+          entityMode: "criterion",
+          selectedId:
+            assessmentData?.principles?.[0]?.criteria?.length > 0
+              ? assessmentData?.principles?.[0]?.criteria?.[0]?.id
+              : "",
+          selectedPrincipleIndex:
+            assessmentData?.principles?.length > 0 ? 0 : -1,
+          selectedCriterionIndex:
+            assessmentData?.principles?.[0]?.criteria?.length > 0 ? 0 : -1,
+        });
+      }
+    }
+  }, [assessmentData, builderState.formMode, builderState.entityMode]);
 
   const { data: motivationData } = useGetMotivation({
     id: mtvId || "",
@@ -148,6 +180,34 @@ function AssessmentBuilder() {
     keycloak?.token || "",
   );
 
+  const {
+    data: metricData,
+    fetchNextPage: mtrFetchNextPage,
+    hasNextPage: mtrHasNextPage,
+  } = useGetAllMotivationMetrics(mtvId || "", {
+    size: 20,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    let result: RegistryMetric[] = [];
+
+    // iterate over backend pages and gather all items in the motivation metrics array
+    if (metricData?.pages) {
+      metricData.pages.forEach((page) => {
+        const contentDetails = page.content as RegistryMetric[];
+        result = [...result, ...contentDetails];
+      });
+
+      if (mtrHasNextPage) {
+        mtrFetchNextPage();
+      }
+    }
+
+    setMotivationMetrics(result);
+  }, [metricData, mtrHasNextPage, mtrFetchNextPage]);
+
   const handleAddCriterion = () => {
     setBuilderState((prevState) => ({
       ...prevState,
@@ -229,9 +289,19 @@ function AssessmentBuilder() {
               </div>
             </div>
             <AssessmentBuilderPreview
+              mtvId={mtvId || ""}
+              criterionPidGraph={
+                allCriteria?.find(
+                  (criterion) =>
+                    criterion?.cri?.toLowerCase() ===
+                    builderState.selectedId?.toLowerCase(),
+                )?.id
+              }
               assessment={assessment}
               builderState={builderState}
               setBuilderState={setBuilderState}
+              motivationMetrics={motivationMetrics}
+              refetchAssessmentData={refetchAssessmentData}
             />
           </div>
 

@@ -83,14 +83,14 @@ function AssessmentBuilderPrinciples({
     }
   }, [formMode, principleId, assessment, builderState.selectedId]);
 
-  function handleValidate() {
+  const handleValidate = () => {
     setShowErrors(true);
     return (
       principleForm?.pri !== "" &&
       principleForm?.label !== "" &&
       principleForm?.description !== ""
     );
-  }
+  };
 
   const filteredPrinciples = allPrinciples.filter((principle) => {
     if (!searchTerm) return true;
@@ -130,12 +130,6 @@ function AssessmentBuilderPrinciples({
   const createPrincipleToMotivation = () => {
     const promise = mutateCreateMotivationPrinciple
       .mutateAsync()
-      .catch((err) => {
-        alert.current = {
-          message: "Error: " + (err.response?.data?.message || err.message),
-        };
-        throw err;
-      })
       .then(() => {
         alert.current = {
           message: "Principle added to motivation successfully",
@@ -149,12 +143,18 @@ function AssessmentBuilderPrinciples({
         if (refetchPrinciples) {
           refetchPrinciples();
         }
+      })
+      .catch((err) => {
+        alert.current = {
+          message: "Error: " + (err.response?.data?.message || err.message),
+        };
+        throw err;
       });
 
     toast.promise(promise, {
       loading: "Adding principle to motivation...",
-      success: () => `${alert.current.message}`,
-      error: () => `${alert.current.message}`,
+      success: () => alert.current.message,
+      error: () => alert.current.message,
     });
   };
 

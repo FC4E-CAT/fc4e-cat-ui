@@ -35,6 +35,7 @@ export interface MetricInput {
   type_algorithm_id: string;
   type_benchmark_id: string;
   value_benchmark: number;
+  criterion_id?: string;
 }
 
 export interface MotivationMetric {
