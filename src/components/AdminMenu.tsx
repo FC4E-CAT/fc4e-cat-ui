@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FaAward,
   FaBorderNone,
@@ -24,11 +24,23 @@ export default function AdminMenu() {
   const userPath = useLocation().pathname.split("/")[1] ?? "";
   const currentPath = useLocation().pathname;
   const { t } = useTranslation();
-
-  const isAssessmentBuilderPage = currentPath.includes("/assessment-builder");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
-  if (isAssessmentBuilderPage) {
+  const isAssessmentBuilderPage = currentPath?.includes("/assessment-builder");
+
+  const shouldShowBurgerMenu = isSmallScreen || isAssessmentBuilderPage;
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 1400);
+    };
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  if (shouldShowBurgerMenu) {
     return (
       <>
         <div style={{ width: "60px", flexShrink: 0 }}>
