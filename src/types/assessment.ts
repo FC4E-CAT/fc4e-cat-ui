@@ -119,6 +119,7 @@ export enum AssessmentCriterionImperative {
 
 /** Each criterion includes a SINGLE metric */
 export interface Metric {
+  id: string;
   type: string;
   label_algorithm_type: string;
   label_type_metric: string;

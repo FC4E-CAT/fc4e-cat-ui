@@ -624,8 +624,8 @@ function AssessmentBuilderCriteria({
           : formMode === "edit"
             ? "Updating criterion..."
             : "Selecting criterion...",
-      success: () => `${alert.current.message}`,
-      error: () => `${alert.current.message}`,
+      success: () => alert.current.message,
+      error: () => alert.current.message,
     });
   };
 

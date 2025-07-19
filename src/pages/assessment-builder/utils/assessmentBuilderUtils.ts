@@ -283,6 +283,38 @@ export const findCriterionWithPrinciple = (
   return null;
 };
 
+// Checks if a criterion is completed with all required entities (principle, metric, tests)
+export const isCriterionCompleted = (
+  criterionId: string,
+  assessment: AssessmentPrinciple[],
+): boolean => {
+  const criterionInfo = findCriterionWithPrinciple(criterionId, assessment);
+
+  if (!criterionInfo) {
+    return false;
+  }
+
+  console.log("criterionInfo:", criterionInfo);
+
+  const { criterion, principle } = criterionInfo;
+  const hasPrinciple = principle.id && principle.id !== "untagged";
+
+  const hasMetric =
+    criterion?.metric &&
+    criterion?.metric.id &&
+    criterion?.metric.id.trim() !== "";
+
+  const hasTests =
+    criterion?.metric?.tests &&
+    Array.isArray(criterion?.metric?.tests) &&
+    criterion?.metric?.tests?.length > 0;
+
+  if (hasPrinciple && hasMetric && hasTests) {
+    return true;
+  }
+  return false;
+};
+
 export const handleEditCriterion = (
   criterionCri: string,
   updatedCriterion: CriterionInput,

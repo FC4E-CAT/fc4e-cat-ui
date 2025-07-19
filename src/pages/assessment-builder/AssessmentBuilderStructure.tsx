@@ -16,6 +16,7 @@ import { formatDataToAssignPrincipleToCriterion } from "./utils";
 import { useUpdateMotivationPrinciplesCriteria } from "@/api";
 import { AuthContext } from "@/auth";
 import styles from "./AssessmentBuilder.module.css";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function AssessmentBuilderStructure({
   mtvId,
@@ -281,12 +282,31 @@ function AssessmentBuilderStructure({
                       })
                     }
                   >
-                    <span className={styles["tree-icon"]}>
-                      <FaFileAlt />
-                    </span>
-                    <span className={styles["principle-display"]}>
-                      {criterion.id} - {criterion.name}
-                    </span>
+                    <div className="d-flex align-items-center gap-1">
+                      <span className={styles["tree-icon"]}>
+                        <FaFileAlt />
+                      </span>
+                      <span>
+                        <span className={styles["principle-display"]}>
+                          {criterion.id} - {criterion.name}
+                        </span>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="criterion-tooltip">
+                              This criterion has missing information. Please
+                              select and complete it.
+                            </Tooltip>
+                          }
+                        >
+                          <span
+                            className={`${styles["config-btn-warning"]} ms-2`}
+                          >
+                            ⚠️
+                          </span>
+                        </OverlayTrigger>
+                      </span>
+                    </div>
                     <span
                       onClick={(e) => {
                         e.stopPropagation();
@@ -378,7 +398,7 @@ function AssessmentBuilderStructure({
                     return (
                       <div
                         key={untaggedCriteriaIndex}
-                        className={`${styles["tree-item"]} ${styles["principle-item"]} ${styles["clickable"]} ${styles["nested"]} ${
+                        className={`${styles["tree-item"]} ${styles["principle-item"]} ${styles["clickable"]} ${styles["nested"]}  ${
                           selectedId === criterion.id ? styles["selected"] : ""
                         }`}
                         onClick={() =>
@@ -397,6 +417,21 @@ function AssessmentBuilderStructure({
                         <span className={styles["principle-display"]}>
                           {criterion.id} - {criterion.name}
                         </span>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="untagged-criterion-tooltip">
+                              This criterion has missing information. Please
+                              select and complete it.
+                            </Tooltip>
+                          }
+                        >
+                          <span
+                            className={`${styles["config-btn-warning"]} ms-1`}
+                          >
+                            ⚠️
+                          </span>
+                        </OverlayTrigger>
                         <span
                           onClick={(e) => {
                             e.stopPropagation();
