@@ -74,11 +74,6 @@ function AssessmentBuilderPreview({
     message: "",
   });
 
-  console.log("motivationMetrics:", motivationMetrics);
-  console.log("assessment:", assessment);
-  console.log("criterionPidGraph1:", criterionPidGraph);
-  console.log("metricConfig:", metricConfig);
-
   useEffect(() => {
     setIsConfiguring(false);
     setIsPrincipleSelected(false);
@@ -109,16 +104,11 @@ function AssessmentBuilderPreview({
     ) {
       const assessmentMetric = currentCriterion.metric;
 
-      console.log("assessmentMetric:", assessmentMetric);
-
       if (assessmentMetric?.id) {
         // find selected metric in motivationMetrics compares assessmentMetric.id with motivationMetrics field "mtr"
         const matchingMotivationMetric = motivationMetrics.find(
           (metric) => metric.metric_mtr === assessmentMetric.id,
         );
-
-        console.log("matchingMotivationMetric:", matchingMotivationMetric);
-        console.log("criterionPidGraph:", criterionPidGraph);
 
         if (matchingMotivationMetric) {
           const existingMetricConfig = {
@@ -132,7 +122,6 @@ function AssessmentBuilderPreview({
               Number(assessmentMetric.benchmark_value) ||
               0,
           };
-          console.log("existingMetricConfig:", existingMetricConfig);
           setMetricConfig(existingMetricConfig);
           return;
         }
@@ -235,8 +224,6 @@ function AssessmentBuilderPreview({
       setIsLoading(false);
     }
   };
-
-  console.log("metricConfig:", metricConfig);
 
   return (
     <div className={styles["column-content"]}>

@@ -1,5 +1,7 @@
 import {
   useCreateMotivationPrinciple,
+  useGetMotivationActorCriteria,
+  useUpdateMotivationActorCriteria,
   useUpdateMotivationPrinciplesCriteria,
 } from "@/api";
 import {
@@ -33,6 +35,7 @@ const getPrincipleFromAssessment = (
 
 function AssessmentBuilderPrinciples({
   mtvId,
+  actId,
   principleId,
   assessment,
   setAssessment,
@@ -44,6 +47,7 @@ function AssessmentBuilderPrinciples({
   motivationCriteriaMutation,
 }: {
   mtvId?: string;
+  actId?: string;
   principleId?: string;
   assessment: AssessmentPrinciple[];
   setAssessment: (assessment: AssessmentPrinciple[]) => void;
@@ -68,9 +72,38 @@ function AssessmentBuilderPrinciples({
       description: "",
     },
   );
-
+  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
   const [showErrors, setShowErrors] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const assignCriteriaToActorMutation = useUpdateMotivationActorCriteria(
+    keycloak?.token || "",
+    mtvId || "",
+    actId || "",
+  );
+
+  const {
+    data: motivationCriteria,
+    fetchNextPage: selCriFetchNextPage,
+    hasNextPage: selCriHasNextPage,
+  } = useGetMotivationActorCriteria(mtvId || "", actId || "", {
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    let tmpSelCri: Criterion[] = [];
+    if (motivationCriteria?.pages) {
+      motivationCriteria.pages.map((page) => {
+        tmpSelCri = [...tmpSelCri, ...page.content];
+      });
+      if (selCriHasNextPage) {
+        selCriFetchNextPage();
+      }
+    }
+    setSelectedCriteria(tmpSelCri);
+  }, [motivationCriteria, selCriHasNextPage, selCriFetchNextPage]);
 
   useEffect(() => {
     if (formMode !== "edit") {
@@ -213,6 +246,32 @@ function AssessmentBuilderPrinciples({
           alert.current = {
             message: t("page_motivations.toast_manage_cri_success"),
           };
+
+          if (!principleId || principleId === "untagged") {
+            const criImp = selectedCriteria?.map((item) => ({
+              criterion_id: item.id,
+              imperative_id: item.imperative.id,
+            }));
+
+            const imperative_id = allCriteria?.find(
+              (criterion) => criterion?.id === selectedCriterionPidGraph,
+            )?.imperative;
+
+            criImp.push({
+              criterion_id: selectedCriterionPidGraph || "",
+              imperative_id:
+                typeof imperative_id === "string"
+                  ? imperative_id
+                  : imperative_id?.id || "",
+            });
+
+            try {
+              assignCriteriaToActorMutation.mutateAsync(criImp);
+            } catch (error) {
+              console.error("Assign criteria to actor failed:", error);
+              throw error;
+            }
+          }
 
           const selectedCriterion = allCriteria?.find(
             (criterion) =>
