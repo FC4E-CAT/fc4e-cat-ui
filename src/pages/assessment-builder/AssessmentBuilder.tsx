@@ -219,8 +219,6 @@ function AssessmentBuilder() {
     }));
   };
 
-  console.log("builderState:", builderState);
-
   return (
     <>
       <div className={`${styles["assessment-builder"]} mb-3`}>
@@ -395,6 +393,7 @@ function AssessmentBuilder() {
               {builderState.entityMode === "principle" && (
                 <AssessmentBuilderPrinciples
                   mtvId={mtvId || ""}
+                  actId={actId || ""}
                   formMode={builderState.formMode}
                   setAssessment={setAssessment}
                   assessment={assessment}

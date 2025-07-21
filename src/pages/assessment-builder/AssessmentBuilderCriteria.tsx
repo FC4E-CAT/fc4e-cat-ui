@@ -61,6 +61,7 @@ function AssessmentBuilderCriteria({
 
   const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
   const [principleTag, setPrincipleTag] = useState<string | null>(null);
+  const [imperatives, setImperatives] = useState<Imperative[]>([]);
 
   const [criterionForm, setCriterionForm] = useState<CriterionInput | null>(
     assessmentCriterionToForm(criterionId || "", assessment, formMode),
@@ -229,8 +230,6 @@ function AssessmentBuilderCriteria({
     actId || "",
   );
 
-  const [imperatives, setImperatives] = useState<Imperative[]>([]);
-
   const [selectedRegistryCriterionId, setSelectedRegistryCriterionId] =
     useState<string | null>(criterionId || null);
 
@@ -250,7 +249,7 @@ function AssessmentBuilderCriteria({
   });
 
   const {
-    data: selCriData,
+    data: motivationCriteria,
     fetchNextPage: selCriFetchNextPage,
     hasNextPage: selCriHasNextPage,
   } = useGetMotivationActorCriteria(mtvId || "", actId || "", {
@@ -274,12 +273,9 @@ function AssessmentBuilderCriteria({
   }, [impData, impHasNextPage, impFetchNextPage]);
 
   useEffect(() => {
-    // gather all motivation actor criteria in one array
     let tmpSelCri: Criterion[] = [];
-
-    // iterate over backend pages and gather all items in the mtv array
-    if (selCriData?.pages) {
-      selCriData.pages.map((page) => {
+    if (motivationCriteria?.pages) {
+      motivationCriteria.pages.map((page) => {
         tmpSelCri = [...tmpSelCri, ...page.content];
       });
       if (selCriHasNextPage) {
@@ -287,7 +283,7 @@ function AssessmentBuilderCriteria({
       }
     }
     setSelectedCriteria(tmpSelCri);
-  }, [selCriData, selCriHasNextPage, selCriFetchNextPage]);
+  }, [motivationCriteria, selCriHasNextPage, selCriFetchNextPage]);
 
   // Handle scroll events to update tooltip position
   useEffect(() => {
@@ -328,8 +324,6 @@ function AssessmentBuilderCriteria({
     const criterion = allCriteria.find(
       (c) => c.id === selectedCriterionPidGraph,
     );
-
-    console.log("canEditCriterion - criterion", criterion);
     if (criterion?.used_by_motivations?.length === 0) return true;
 
     const usedByMotivations = criterion?.used_by_motivations;
