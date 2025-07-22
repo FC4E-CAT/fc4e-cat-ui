@@ -27,6 +27,5 @@ export const useOrganisationSearch = ({
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
-    enabled: name.length > 2,
     staleTime: 10 * 1000,
   });
