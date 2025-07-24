@@ -220,7 +220,7 @@ function TestModalContainer(props: TestModalUIProps) {
               </h6>
               <small className="test-header-description">
                 {test?.test_method_id
-                  ? "Configure test parameters and preview below"
+                  ? "Configure test parameters and preview your test"
                   : "Select a test method from the left sidebar to get started"}
               </small>
             </div>

@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState, useContext, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
-import { Button } from "react-bootstrap";
+import { Button, Container, Spinner } from "react-bootstrap";
 import { AuthContext } from "@/auth";
 import { useGetAllPrinciples } from "@/api";
 import { useGetMotivationAssessmentTypeTemplate } from "@/api/services/motivations";
@@ -24,6 +24,7 @@ import AssessmentBuilderStructure from "./AssessmentBuilderStructure";
 import AssessmentBuilderPreview from "./AssessmentBuilderPreview";
 import AssessmentBuilderCriteria from "./AssessmentBuilderCriteria";
 import AssessmentBuilderPrinciples from "./AssessmentBuilderPrinciples";
+import AssessmentBuilderTests from "./AssessmentBuilderTests";
 import styles from "./AssessmentBuilder.module.css";
 
 function AssessmentBuilder() {
@@ -47,14 +48,19 @@ function AssessmentBuilder() {
     selectedPrincipleIndex: -1,
     selectedCriterionIndex: -1,
   });
+  const [isPrincipleSelected, setIsPrincipleSelected] = useState(false);
+  const [isTestSelected, setIsTestSelected] = useState(false);
 
-  const { data: assessmentData, refetch: refetchAssessmentData } =
-    useGetMotivationAssessmentTypeTemplate(
-      mtvId || "",
-      actId || "",
-      keycloak?.token || "",
-      registered,
-    );
+  const {
+    data: assessmentData,
+    refetch: refetchAssessmentData,
+    isLoading,
+  } = useGetMotivationAssessmentTypeTemplate(
+    mtvId || "",
+    actId || "",
+    keycloak?.token || "",
+    registered,
+  );
   const [assessment, setAssessment] = useState(
     assessmentData?.principles || [],
   );
@@ -149,13 +155,47 @@ function AssessmentBuilder() {
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo(0, 70);
   }, []);
 
   useEffect(() => {
     if (assessmentData) {
-      setAssessment(assessmentData?.principles || []);
+      const untaggedCriteria = assessment.find(
+        (principle) => principle.id === "untagged",
+      );
+
+      if (untaggedCriteria?.criteria && untaggedCriteria.criteria.length > 0) {
+        const criteriaNotUsedInCurrentMotivation =
+          untaggedCriteria?.criteria?.filter(
+            (untaggedCriterion) =>
+              !assessmentData.principles?.some((principle) =>
+                principle.criteria?.some(
+                  (criterion) =>
+                    criterion.id?.toLowerCase() ===
+                    untaggedCriterion.id?.toLowerCase(),
+                ),
+              ),
+          ) || [];
+
+        if (criteriaNotUsedInCurrentMotivation?.length > 0) {
+          const missingCriteria = {
+            id: "untagged",
+            name: "",
+            description: "",
+            criteria: criteriaNotUsedInCurrentMotivation,
+          };
+          setAssessment([
+            ...(assessmentData.principles || []),
+            missingCriteria,
+          ]);
+        } else {
+          setAssessment(assessmentData.principles || []);
+        }
+      } else {
+        setAssessment(assessmentData.principles || []);
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentData]);
 
   const { data: principlesData, refetch: refetchPrinciples } =
@@ -219,12 +259,35 @@ function AssessmentBuilder() {
     }));
   };
 
+  if (isLoading) {
+    return (
+      <Container fluid className="py-4">
+        <div className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <p className="mt-2">Loading Assessment Builder...</p>
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <>
       <div className={`${styles["assessment-builder"]} mb-3`}>
         <div className={styles["assessment-builder-header"]}>
           <div className={styles["header-content"]}>
-            <h1 className={styles["builder-title"]}>Assessment Builder</h1>
+            <div className="d-flex flex-column">
+              <h1 className={styles["builder-title"]}>Assessment Builder</h1>
+              {assessmentData && (
+                <p className="lead m-0">
+                  {t("page_preview.motivation")}:{" "}
+                  <strong>{assessmentData?.assessment_type.name}</strong>{" "}
+                  {t("page_preview.actor")}:{" "}
+                  <strong>{assessmentData?.actor.name}</strong>
+                </p>
+              )}
+            </div>
             <div className={styles["header-actions"]}>
               <button className={styles["btn-secondary"]}>Preview</button>
               {isPublished ? (
@@ -296,10 +359,15 @@ function AssessmentBuilder() {
                 )?.id
               }
               assessment={assessment}
+              setAssessment={setAssessment}
               builderState={builderState}
               setBuilderState={setBuilderState}
               motivationMetrics={motivationMetrics}
               refetchAssessmentData={refetchAssessmentData}
+              isPrincipleSelected={isPrincipleSelected}
+              setIsPrincipleSelected={setIsPrincipleSelected}
+              isTestSelected={isTestSelected}
+              setIsTestSelected={setIsTestSelected}
             />
           </div>
 
@@ -388,6 +456,7 @@ function AssessmentBuilder() {
                       : ""
                   }
                   motivationCriteriaMutation={motivationCriteriaMutation}
+                  refetchAssessmentData={refetchAssessmentData}
                 />
               )}
               {builderState.entityMode === "principle" && (
@@ -412,6 +481,30 @@ function AssessmentBuilder() {
                   builderState={builderState}
                   refetchPrinciples={refetchPrinciples}
                   motivationCriteriaMutation={motivationCriteriaMutation}
+                  setIsPrincipleSelected={setIsPrincipleSelected}
+                />
+              )}
+              {builderState.entityMode === "tests" && (
+                <AssessmentBuilderTests
+                  assessment={assessment}
+                  builderState={builderState}
+                  setBuilderState={setBuilderState}
+                  setIsTestSelected={setIsTestSelected}
+                  refetchAssessmentData={refetchAssessmentData}
+                  mtvId={mtvId || ""}
+                  mtrId={(() => {
+                    const metricId =
+                      assessment
+                        ?.flatMap((principle) => principle.criteria || [])
+                        ?.find(
+                          (criterion) =>
+                            criterion.id === builderState.selectedId,
+                        )?.metric?.id || "";
+                    const matchingMetric = motivationMetrics?.find(
+                      (metric) => metric?.metric_mtr === metricId,
+                    );
+                    return matchingMetric?.metric_id || "";
+                  })()}
                 />
               )}
             </div>

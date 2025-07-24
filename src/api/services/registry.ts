@@ -220,10 +220,7 @@ export const useCreateTest = (token: string, test: TestInput) => {
   const queryClient = useQueryClient();
   return useMutation(
     async () => {
-      const response = await APIClient(token).post<TestInput>(
-        `/v1/registry/tests`,
-        test,
-      );
+      const response = await APIClient(token).post(`/v1/registry/tests`, test);
       return response.data;
     },
 

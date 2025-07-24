@@ -10,9 +10,13 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaTrash,
+  FaExclamationCircle,
 } from "react-icons/fa";
 import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
-import { formatDataToAssignPrincipleToCriterion } from "./utils";
+import {
+  formatDataToAssignPrincipleToCriterion,
+  isCriterionCompleted,
+} from "./utils";
 import { useUpdateMotivationPrinciplesCriteria } from "@/api";
 import { AuthContext } from "@/auth";
 import styles from "./AssessmentBuilder.module.css";
@@ -28,7 +32,7 @@ function AssessmentBuilderStructure({
   allCriteria,
 }: {
   mtvId?: string;
-  setBuilderState: (state: AssessmentBuilderState) => void;
+  setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
   assessment: AssessmentPrinciple[];
   setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
   selectedId?: string;
@@ -290,21 +294,28 @@ function AssessmentBuilderStructure({
                         <span className={styles["principle-display"]}>
                           {criterion.id} - {criterion.name}
                         </span>
-                        <OverlayTrigger
-                          placement="top"
-                          overlay={
-                            <Tooltip id="criterion-tooltip">
-                              This criterion has missing information. Please
-                              select and complete it.
-                            </Tooltip>
-                          }
-                        >
-                          <span
-                            className={`${styles["config-btn-warning"]} ms-2`}
+                        {!isCriterionCompleted(
+                          assessment[principleIndex || 0]?.criteria[
+                            criterionIndex || 0
+                          ]?.id || "",
+                          assessment,
+                        ) && (
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="criterion-tooltip">
+                                This criterion has missing information. Please
+                                select and complete it.
+                              </Tooltip>
+                            }
                           >
-                            ⚠️
-                          </span>
-                        </OverlayTrigger>
+                            <span
+                              className={`${styles["config-btn-warning"]} ms-2`}
+                            >
+                              <FaExclamationCircle size="18px" />
+                            </span>
+                          </OverlayTrigger>
+                        )}
                       </span>
                     </div>
                     <span
@@ -426,10 +437,8 @@ function AssessmentBuilderStructure({
                             </Tooltip>
                           }
                         >
-                          <span
-                            className={`${styles["config-btn-warning"]} ms-1`}
-                          >
-                            ⚠️
+                          <span className={`${styles["config-btn-warning"]}`}>
+                            <FaExclamationCircle size="18px" />
                           </span>
                         </OverlayTrigger>
                         <span

@@ -40,6 +40,7 @@ function AssessmentBuilderCriteria({
   allPrinciples,
   criterionId,
   motivationCriteriaMutation,
+  refetchAssessmentData,
 }: {
   assessment: AssessmentPrinciple[];
   setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
@@ -52,6 +53,7 @@ function AssessmentBuilderCriteria({
   motivationCriteriaMutation: {
     mutateAsync: (data: { mtvId: string }) => Promise<{ content: Criterion[] }>;
   };
+  refetchAssessmentData: () => void;
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const alert = useRef<AlertInfo>({
@@ -607,6 +609,7 @@ function AssessmentBuilderCriteria({
           });
           setPrincipleTag("");
         }
+        refetchAssessmentData();
       });
 
     setSelectedRegistryCriterionId(null);
@@ -687,7 +690,9 @@ function AssessmentBuilderCriteria({
               disabled={formMode === "edit" || Boolean(isEditingDisabled)}
             />
             {showErrors && !criterionForm?.cri && (
-              <span className="text-danger">{t("required")}</span>
+              <span className={styles["invalid-feedback"]}>
+                {t("required")}
+              </span>
             )}
           </div>
           <div className={styles["form-group"]}>
@@ -704,7 +709,9 @@ function AssessmentBuilderCriteria({
               disabled={Boolean(isEditingDisabled)}
             />
             {showErrors && !criterionForm?.label && (
-              <span className="text-danger">{t("required")}</span>
+              <span className={styles["invalid-feedback"]}>
+                {t("required")}
+              </span>
             )}
           </div>
           <div className={`${styles["form-group"]} m-0`}>
@@ -721,7 +728,9 @@ function AssessmentBuilderCriteria({
               disabled={Boolean(isEditingDisabled)}
             />
             {showErrors && !criterionForm?.description && (
-              <span className="text-danger">{t("required")}</span>
+              <span className={styles["invalid-feedback"]}>
+                {t("required")}
+              </span>
             )}
           </div>
           <div className={styles["form-group"]}>
@@ -794,7 +803,9 @@ function AssessmentBuilderCriteria({
               )}
             </div>
             {showErrors && !criterionForm?.imperative && (
-              <span className="text-danger">{t("required")}</span>
+              <span className={styles["invalid-feedback"]}>
+                {t("required")}
+              </span>
             )}
           </div>
 
@@ -1001,7 +1012,7 @@ function AssessmentBuilderCriteria({
                     }}
                   >
                     <div className={styles["tooltip-header"]}>
-                      <h6>🎯 Used in Motivations:</h6>
+                      <h6>Used in Motivations:</h6>
                     </div>
                     <div className={styles["tooltip-content"]}>
                       {!hoveredCriterionData.used_by_motivations ||
@@ -1015,9 +1026,7 @@ function AssessmentBuilderCriteria({
                               index: number,
                             ) => (
                               <li key={motivation.id || index}>
-                                <strong>
-                                  {motivation.mtv} - {motivation.label}
-                                </strong>
+                                {motivation.mtv} - {motivation.label}
                               </li>
                             ),
                           )}

@@ -866,6 +866,13 @@ export const useGetMotivationAssessmentTypeTemplate = (
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
+    retry: (failureCount: number, error: unknown) => {
+      if ((error as AxiosError)?.response?.status === 404) {
+        return false;
+      }
+      // Retry up to 2 times for other errors
+      return failureCount < 2;
+    },
     enabled:
       !!token && isRegistered && mtvId !== undefined && actId !== undefined,
     refetchOnWindowFocus: false,

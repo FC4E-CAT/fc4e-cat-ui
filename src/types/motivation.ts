@@ -181,7 +181,7 @@ export interface CriterionBuilderInput {
 }
 
 export type FormMode = "none" | "select" | "new" | "edit";
-export type EntityMode = "none" | "principle" | "criterion";
+export type EntityMode = "none" | "principle" | "criterion" | "tests";
 export interface AssessmentBuilderState {
   formMode: FormMode;
   entityMode: EntityMode;
