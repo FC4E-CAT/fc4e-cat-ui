@@ -40,6 +40,10 @@ export default function AdminMenu() {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [currentPath]);
+
   if (shouldShowBurgerMenu) {
     return (
       <>

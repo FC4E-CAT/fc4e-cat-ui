@@ -1,5 +1,3 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
 import { TestInput, TestParam } from "@/types/tests";
 import { EvidenceURLS, TestToolTip } from "@/pages/assessments/components";
 import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParam";
@@ -23,14 +21,12 @@ interface TestPreviewProps {
   hasEvidenceParam?: boolean;
 }
 
-const TestPreviewModal: React.FC<TestPreviewProps> = ({
+const TestPreviewModal = ({
   test,
   params,
   testMethodName,
   hasEvidenceParam,
-}) => {
-  const { t } = useTranslation();
-
+}: TestPreviewProps) => {
   const testParams: JSX.Element[] = [];
 
   if (
@@ -42,7 +38,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
       id: test.tes || "",
       name: test.label || "",
       description: test.description || "",
-      type: testMethodName || "Binary-Manual",
+      type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
       value: "",
       result: "",
@@ -70,7 +66,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
     const adaptedTest = {
       id: test.tes || "",
       name: test.label || "",
-      type: testMethodName || "Number-Manual",
+      type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
       value: "",
       result: "",
@@ -96,7 +92,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
     const adaptedTest = {
       id: test.tes || "",
       name: test.label || "",
-      type: testMethodName || "Auto-Check-String-Binary",
+      type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
       value: "",
       result: "",
@@ -119,7 +115,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
     const adaptedTest = {
       id: test.tes || "",
       name: test.label || "",
-      type: testMethodName || "Auto-Check-AARC-G069-User-Info",
+      type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
       value: "",
       result: "",
@@ -142,7 +138,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
     const adaptedTest = {
       id: test.tes || "",
       name: test.label || "",
-      type: testMethodName || "Auto-Check-AARC-G069-Token-Introspection",
+      type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
       value: "",
       result: "",
@@ -165,7 +161,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
     const adaptedTest = {
       id: test.tes || "",
       name: test.label || "",
-      type: testMethodName || "Auto-Check-Url-Binary",
+      type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
       value: "",
       result: "",
@@ -191,7 +187,7 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
     const adaptedTest = {
       id: test.tes || "",
       name: test.label || "",
-      type: testMethodName || "Auto-Check-Xml-MD1a",
+      type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
       value: "",
       result: "",
@@ -212,29 +208,30 @@ const TestPreviewModal: React.FC<TestPreviewProps> = ({
   }
 
   return (
-    <div className="border rounded cat-test-div">
+    <>
       {testParams?.length > 0 ? (
-        testParams
-      ) : (
-        <h5 className="text-muted">{t("No parameters defined yet")}</h5>
-      )}
-      {hasEvidenceParam && (
-        <div className="mt-4 mb-2">
-          <span className="fw-light-500 text-sm text-secondary">
-            <strong>
-              Can you provide public evidence of such a declaration?
-            </strong>
-            <span className="ms-2">
-              <TestToolTip
-                tipId="evidence-id"
-                tipText="A document, web page, or publication describing the intention"
-              />
-            </span>
-          </span>
-          <EvidenceURLS urls={[]} onListChange={() => {}} noTitle={true} />
+        <div className="border rounded cat-test-div">
+          {testParams}
+
+          {hasEvidenceParam && (
+            <div className="mt-4 mb-2">
+              <span className="fw-light-500 text-sm text-secondary">
+                <strong>
+                  Can you provide public evidence of such a declaration?
+                </strong>
+                <span className="ms-2">
+                  <TestToolTip
+                    tipId="evidence-id"
+                    tipText="A document, web page, or publication describing the intention"
+                  />
+                </span>
+              </span>
+              <EvidenceURLS urls={[]} onListChange={() => {}} noTitle={true} />
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      ) : null}
+    </>
   );
 };
 

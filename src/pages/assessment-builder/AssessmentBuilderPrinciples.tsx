@@ -45,6 +45,7 @@ function AssessmentBuilderPrinciples({
   builderState,
   refetchPrinciples,
   motivationCriteriaMutation,
+  setIsPrincipleSelected,
 }: {
   mtvId?: string;
   actId?: string;
@@ -59,6 +60,7 @@ function AssessmentBuilderPrinciples({
   motivationCriteriaMutation: {
     mutateAsync: (data: { mtvId: string }) => Promise<{ content: Criterion[] }>;
   };
+  setIsPrincipleSelected: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const alert = useRef<AlertInfo>({
@@ -311,7 +313,7 @@ function AssessmentBuilderPrinciples({
     //   ) {
     //   }
     // }
-
+    setIsPrincipleSelected(false);
     setSelectedRegistryPrincipleId(null);
   };
 
@@ -406,7 +408,9 @@ function AssessmentBuilderPrinciples({
                 placeholder="Enter principle identifier"
               />
               {showErrors && !principleForm?.pri && (
-                <span className="text-danger">{t("required")}</span>
+                <span className={styles["invalid-feedback"]}>
+                  {t("required")}
+                </span>
               )}
             </div>
 
@@ -423,7 +427,9 @@ function AssessmentBuilderPrinciples({
                 placeholder="Enter principle label"
               />
               {showErrors && !principleForm?.label && (
-                <span className="text-danger">{t("required")}</span>
+                <span className={styles["invalid-feedback"]}>
+                  {t("required")}
+                </span>
               )}
             </div>
 
@@ -440,7 +446,9 @@ function AssessmentBuilderPrinciples({
                 placeholder="Enter principle description"
               />
               {showErrors && !principleForm?.description && (
-                <span className="text-danger">{t("required")}</span>
+                <span className={styles["invalid-feedback"]}>
+                  {t("required")}
+                </span>
               )}
             </div>
 
