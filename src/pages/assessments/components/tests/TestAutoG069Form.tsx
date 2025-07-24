@@ -124,15 +124,20 @@ export const TestAutoG069Form = (props: AssessmentTestProps) => {
             <h6>
               <small
                 className="text-muted badge badge-pill border bg-light"
-                style={{ textWrap: "wrap", textAlign: "start" }}
+                style={{
+                  textWrap: "wrap",
+                  textAlign: "start",
+                  wordBreak: "break-all",
+                }}
               >
-                <span className="me-3">{props.test.id}</span>
+                <span>{props.test.id}</span>
+                {" - "}
                 {props.test.name}
               </small>
             </h6>
           )}
         </Col>
-        <Col xs={3} className="text-start"></Col>
+        <Col xs={1} className="text-start"></Col>
       </Row>
 
       <Row>

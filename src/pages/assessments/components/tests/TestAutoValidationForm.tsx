@@ -12,7 +12,7 @@ import { FaGears } from "react-icons/fa6";
 import { AutoTestDetails } from "./AutoTestDetails";
 
 interface AssessmentTestProps {
-  autogroup: AutoGroupTest | undefined;
+  autogroup?: AutoGroupTest;
   test: TestAutoValidation;
   onAutoGroupTestCall(autogroup: AutoGroupTest): void;
 }
@@ -28,13 +28,21 @@ export const TestAutoValidationForm = (props: AssessmentTestProps) => {
       <Row>
         <Col>
           <h6>
-            <small className="text-muted badge badge-pill border bg-light">
-              <span className="me-4">{props.test.id}</span>
+            <small
+              className="text-muted badge badge-pill border bg-light"
+              style={{
+                textWrap: "wrap",
+                textAlign: "start",
+                wordBreak: "break-word",
+              }}
+            >
+              <span>{props.test.id}</span>
+              {" - "}
               {props.test.name}
             </small>
           </h6>
         </Col>
-        <Col xs={3} className="text-start"></Col>
+        <Col xs={1} className="text-start"></Col>
       </Row>
 
       <Row>

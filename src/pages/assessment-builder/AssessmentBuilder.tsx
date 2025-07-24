@@ -30,7 +30,7 @@ import styles from "./AssessmentBuilder.module.css";
 function AssessmentBuilder() {
   const { mtvId, actId } = useParams<{
     mtvId: string;
-    actId?: string;
+    actId: string;
   }>();
 
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -327,11 +327,11 @@ function AssessmentBuilder() {
             <div className={styles["column-content"]}>
               <AssessmentBuilderStructure
                 mtvId={mtvId || ""}
+                actId={actId || ""}
                 assessment={assessment}
                 setAssessment={setAssessment}
                 setBuilderState={setBuilderState}
                 selectedId={builderState.selectedId || ""}
-                motivationCriteriaMutation={motivationCriteriaMutation}
                 allCriteria={allCriteria}
               />
             </div>
@@ -351,6 +351,18 @@ function AssessmentBuilder() {
             </div>
             <AssessmentBuilderPreview
               mtvId={mtvId || ""}
+              mtrId={(() => {
+                const metricId =
+                  assessment
+                    ?.flatMap((principle) => principle.criteria || [])
+                    ?.find(
+                      (criterion) => criterion.id === builderState.selectedId,
+                    )?.metric?.id || "";
+                const matchingMetric = motivationMetrics?.find(
+                  (metric) => metric?.metric_mtr === metricId,
+                );
+                return matchingMetric?.metric_id || "";
+              })()}
               criterionPidGraph={
                 allCriteria?.find(
                   (criterion) =>
@@ -445,6 +457,7 @@ function AssessmentBuilder() {
                   assessment={assessment}
                   allCriteria={allCriteria || []}
                   allPrinciples={allPrinciples}
+                  setBuilderState={setBuilderState}
                   criterionId={
                     builderState.selectedId
                       ? assessment

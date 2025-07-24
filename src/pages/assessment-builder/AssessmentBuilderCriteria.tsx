@@ -9,6 +9,7 @@ import {
 import { AuthContext } from "@/auth";
 import {
   AlertInfo,
+  AssessmentBuilderState,
   AssessmentPrinciple,
   Criterion,
   CriterionInput,
@@ -41,12 +42,13 @@ function AssessmentBuilderCriteria({
   criterionId,
   motivationCriteriaMutation,
   refetchAssessmentData,
+  setBuilderState,
 }: {
   assessment: AssessmentPrinciple[];
   setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
   formMode: "none" | "select" | "new" | "edit";
-  mtvId?: string;
-  actId?: string;
+  mtvId: string;
+  actId: string;
   allCriteria: Criterion[];
   allPrinciples?: (PrincipleInput & { id: string })[];
   criterionId?: string;
@@ -54,6 +56,7 @@ function AssessmentBuilderCriteria({
     mutateAsync: (data: { mtvId: string }) => Promise<{ content: Criterion[] }>;
   };
   refetchAssessmentData: () => void;
+  setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const alert = useRef<AlertInfo>({
@@ -599,6 +602,13 @@ function AssessmentBuilderCriteria({
           return prevAssessment;
         });
 
+        setBuilderState((prevState) => ({
+          ...prevState,
+          entityMode: "criterion",
+          formMode: "edit",
+          selectedId: criterionForm?.cri || selectedRegistryCriterionId || "",
+        }));
+
         if (formMode === "new" || formMode === "edit") {
           setShowErrors(false);
           setCriterionForm({
@@ -624,6 +634,15 @@ function AssessmentBuilderCriteria({
       success: () => alert.current.message,
       error: () => alert.current.message,
     });
+
+    if (formMode === "select") {
+      setBuilderState((prevState) => ({
+        ...prevState,
+        entityMode: "criterion",
+        formMode: "edit",
+        selectedId: criterionForm?.cri || selectedRegistryCriterionId || "",
+      }));
+    }
   };
 
   const handleCriterionHover = (

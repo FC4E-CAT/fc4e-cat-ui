@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
@@ -6,11 +6,22 @@ import {
   AssessmentPrinciple,
   AssessmentCriterionImperative,
   MetricFull,
+  MetricTest,
+  AlertInfo,
 } from "@/types";
-import styles from "./AssessmentBuilder.module.css";
 import { FaExclamationCircle, FaInfoCircle } from "react-icons/fa";
 import TestPreviewModal from "../tests/components/TestPreviewModal";
 import AssessmentBuilderMetric from "./AssessmentBuilderMetric";
+import {
+  useGetMotivationMetricTests,
+  useUpdateMotivationMetricTests,
+} from "@/api";
+import { AuthContext } from "@/auth";
+import { RegistryTest } from "@/types/tests";
+import { relMtvMetricTest } from "@/config";
+import toast from "react-hot-toast";
+import styles from "./AssessmentBuilder.module.css";
+import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
 
 interface AssessmentBuilderPreviewProps {
   assessment: AssessmentPrinciple[];
@@ -18,6 +29,7 @@ interface AssessmentBuilderPreviewProps {
   setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
   setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
   mtvId?: string;
+  mtrId?: string;
   criterionPidGraph?: string;
   motivationMetrics?: MetricFull[];
   refetchAssessmentData: () => void;
@@ -29,6 +41,7 @@ interface AssessmentBuilderPreviewProps {
 
 function AssessmentBuilderPreview({
   mtvId,
+  mtrId,
   criterionPidGraph,
   assessment,
   builderState,
@@ -41,9 +54,119 @@ function AssessmentBuilderPreview({
   isTestSelected,
   setIsTestSelected,
 }: AssessmentBuilderPreviewProps) {
+  const { keycloak, registered } = useContext(AuthContext)!;
   const [isConfiguring, setIsConfiguring] = useState(false);
   const [isAlgorithmConfigured, setIsAlgorithmConfigured] = useState(false);
+  const [selectedTests, setSelectedTests] = useState<RegistryTest[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState({
+    testId: "",
+    testLabel: "",
+  });
   const { t } = useTranslation();
+
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
+
+  useEffect(() => {
+    if (builderState.selectedId) {
+      setIsPrincipleSelected(false);
+      setIsTestSelected(false);
+      setIsConfiguring(false);
+    }
+  }, [
+    builderState.selectedId,
+    setIsPrincipleSelected,
+    setIsTestSelected,
+    setIsConfiguring,
+  ]);
+
+  const mutationUpdateMetricTests = useUpdateMotivationMetricTests(
+    keycloak?.token || "",
+    mtvId || "",
+    mtrId || "",
+  );
+
+  const {
+    data: selTestData,
+    fetchNextPage: selTestFetchNextPage,
+    hasNextPage: selTestHasNextPage,
+  } = useGetMotivationMetricTests(mtvId || "", mtrId || "", {
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    let tmpSelTests: MetricTest[] = [];
+
+    if (selTestData?.pages) {
+      selTestData.pages.map((page) => {
+        if (page.metric) tmpSelTests = [...tmpSelTests, ...page.metric.tests];
+      });
+      if (selTestHasNextPage) {
+        selTestFetchNextPage();
+      }
+    }
+    setSelectedTests(
+      tmpSelTests.map((item) => {
+        return {
+          id: item.db_id,
+          tes: item.id,
+          label: item.name,
+          description: item.description,
+        };
+      }),
+    );
+  }, [selTestData, selTestHasNextPage, selTestFetchNextPage]);
+
+  const handleTestDelete = (testId: string) => {
+    if (selectedTests.length === 0) return;
+
+    const filteredTests = selectedTests.filter(
+      (test) => test.tes?.toLowerCase() !== testId?.toLowerCase(),
+    );
+
+    const metricAssignment =
+      filteredTests?.map((test) => ({
+        test_id: test.id,
+        relation: relMtvMetricTest,
+      })) || [];
+
+    setSelectedTests(filteredTests);
+
+    const assignTestsToMetricPromise = mutationUpdateMetricTests
+      .mutateAsync(metricAssignment)
+      .catch((err) => {
+        alert.current = {
+          message: t("page_motivations.toast_assign_metric_fail"),
+        };
+        throw err;
+      })
+      .then(() => {
+        refetchAssessmentData();
+        alert.current = {
+          message: t("page_motivations.toast_assign_metric_success"),
+        };
+      });
+
+    toast.promise(assignTestsToMetricPromise, {
+      loading: t("toast_assign_metric_progress"),
+      success: () => alert.current.message,
+      error: () => alert.current.message,
+    });
+  };
+
+  const confirmDeleteTest = () => {
+    if (showDeleteModal.testId) {
+      handleTestDelete(showDeleteModal.testId);
+    }
+    setShowDeleteModal({ testId: "", testLabel: "" });
+  };
+
+  const cancelDeleteTest = () => {
+    setShowDeleteModal({ testId: "", testLabel: "" });
+  };
 
   return (
     <div className={styles["column-content"]}>
@@ -347,6 +470,12 @@ function AssessmentBuilderPreview({
                               );
                             })()}
                             testMethodName={test.type}
+                            onTestDelete={() =>
+                              setShowDeleteModal({
+                                testId: test.id,
+                                testLabel: test.name,
+                              })
+                            }
                           />
                         </div>
                       ))}
@@ -367,6 +496,13 @@ function AssessmentBuilderPreview({
           )}
         </div>
       ) : null}
+      <AssessmentBuilderDeleteModal
+        isOpen={Boolean(showDeleteModal?.testId)}
+        itemName={showDeleteModal?.testLabel || ""}
+        itemType="test"
+        onConfirm={confirmDeleteTest}
+        onCancel={cancelDeleteTest}
+      />
     </div>
   );
 }

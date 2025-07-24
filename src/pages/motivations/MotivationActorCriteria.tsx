@@ -147,31 +147,29 @@ export default function MotivationActorCriteria() {
   }
 
   function handleUpdate() {
-    if (selectedCriteria.length > 0) {
-      const criImp = selectedCriteria.map((item) => ({
-        criterion_id: item.id,
-        imperative_id: item.imperative.id,
-      }));
-      const promise = mutationUpdate
-        .mutateAsync(criImp)
-        .catch((err) => {
-          alert.current = {
-            message: t("page_motivations.toast_assign_cri_act_fail"),
-          };
-          throw err;
-        })
-        .then(() => {
-          alert.current = {
-            message: t("page_motivations.toast_assign_cri_act_success"),
-          };
-          navigate(-1);
-        });
-      toast.promise(promise, {
-        loading: t("page_motivations.toast_assign_cri_act_progress"),
-        success: () => `${alert.current.message}`,
-        error: () => `${alert.current.message}`,
+    const criImp = selectedCriteria?.map((item) => ({
+      criterion_id: item.id,
+      imperative_id: item.imperative.id,
+    }));
+    const promise = mutationUpdate
+      .mutateAsync(criImp)
+      .catch((err) => {
+        alert.current = {
+          message: t("page_motivations.toast_assign_cri_act_fail"),
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: t("page_motivations.toast_assign_cri_act_success"),
+        };
+        navigate(-1);
       });
-    }
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_assign_cri_act_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
   }
 
   return (

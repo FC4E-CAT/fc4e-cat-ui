@@ -80,7 +80,7 @@ function AssessmentBuilderTests({
   };
 
   const mutateCreateTest = useCreateTest(keycloak?.token || "", test);
-  const mutationUpdate = useUpdateMotivationMetricTests(
+  const mutationUpdateMetricTests = useUpdateMotivationMetricTests(
     keycloak?.token || "",
     mtvId || "",
     mtrId || "",
@@ -246,8 +246,8 @@ function AssessmentBuilderTests({
   };
 
   const handleCancel = () => {
-    setBuilderState((prev) => ({
-      ...prev,
+    setBuilderState((prevState) => ({
+      ...prevState,
       entityMode: "none",
       formMode: "none",
     }));
@@ -299,58 +299,82 @@ function AssessmentBuilderTests({
         relation: relMtvMetricTest,
       });
     }
-    alert.current = {
-      message:
-        formMode === "new"
-          ? "Test created successfully"
-          : formMode === "edit"
-            ? "Test updated successfully"
-            : "Test selected successfully",
-    };
 
     if (formMode === "new") {
       updateParamTestDef();
 
-      await mutateCreateTest
+      const createTestPromise = mutateCreateTest
         .mutateAsync()
-        .catch((err) => {
-          alert.current = {
-            message: "Error: " + err.response.data.message,
-          };
-          throw err;
-        })
         .then((newTest) => {
           alert.current = {
             message: t("page_tests.toast_create_success"),
           };
 
+          // Add the newly created test to the metric assignment
           metricAssignment.push({
             test_id: newTest.id,
             relation: relMtvMetricTest,
           });
+
+          // Now execute the assignment to metric after successful test creation
+          const assignTestsToMetricPromise = mutationUpdateMetricTests
+            .mutateAsync(metricAssignment)
+            .catch((err) => {
+              alert.current = {
+                message: t("page_motivations.toast_assign_metric_fail"),
+              };
+              throw err;
+            })
+            .then(() => {
+              refetchAssessmentData();
+              alert.current = {
+                message: t("page_motivations.toast_assign_metric_success"),
+              };
+            });
+
+          toast.promise(assignTestsToMetricPromise, {
+            loading: t("toast_assign_metric_progress"),
+            success: () => alert.current.message,
+            error: () => alert.current.message,
+          });
+
+          return newTest;
+        })
+        .catch((err) => {
+          alert.current = {
+            message: "Error: " + err.response.data.message,
+          };
+          throw err;
         });
-    }
 
-    const promise = mutationUpdate
-      .mutateAsync(metricAssignment)
-      .catch((err) => {
-        alert.current = {
-          message: t("page_motivations.toast_assign_metric_fail"),
-        };
-        throw err;
-      })
-      .then(() => {
-        refetchAssessmentData();
-        alert.current = {
-          message: t("page_motivations.toast_assign_metric_success"),
-        };
+      toast.promise(createTestPromise, {
+        loading: t("page_tests.toast_create_progress"),
+        success: () => alert.current.message,
+        error: () => alert.current.message,
       });
+    } else if (formMode === "select") {
+      // For select mode, execute assignment directly
+      const assignTestsToMetricPromise = mutationUpdateMetricTests
+        .mutateAsync(metricAssignment)
+        .catch((err) => {
+          alert.current = {
+            message: t("page_motivations.toast_assign_metric_fail"),
+          };
+          throw err;
+        })
+        .then(() => {
+          refetchAssessmentData();
+          alert.current = {
+            message: t("page_motivations.toast_assign_metric_success"),
+          };
+        });
 
-    toast.promise(promise, {
-      loading: t("page_tests.toast_create_progress"),
-      success: () => `${alert.current.message}`,
-      error: () => `${alert.current.message}`,
-    });
+      toast.promise(assignTestsToMetricPromise, {
+        loading: t("toast_assign_metric_progress"),
+        success: () => alert.current.message,
+        error: () => alert.current.message,
+      });
+    }
 
     setIsTestSelected(false);
   };
