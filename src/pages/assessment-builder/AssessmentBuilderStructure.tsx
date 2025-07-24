@@ -13,35 +13,33 @@ import {
   FaExclamationCircle,
 } from "react-icons/fa";
 import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
-import {
-  formatDataToAssignPrincipleToCriterion,
-  isCriterionCompleted,
-} from "./utils";
-import { useUpdateMotivationPrinciplesCriteria } from "@/api";
+import { isCriterionCompleted } from "./utils";
 import { AuthContext } from "@/auth";
 import styles from "./AssessmentBuilder.module.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import {
+  useGetMotivationActorCriteria,
+  useUpdateMotivationActorCriteria,
+} from "@/api";
 
 function AssessmentBuilderStructure({
   mtvId,
+  actId,
   setBuilderState,
   assessment,
   setAssessment,
   selectedId,
-  motivationCriteriaMutation,
   allCriteria,
 }: {
-  mtvId?: string;
+  mtvId: string;
+  actId: string;
   setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
   assessment: AssessmentPrinciple[];
   setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
   selectedId?: string;
-  motivationCriteriaMutation: {
-    mutateAsync: (data: { mtvId: string }) => Promise<{ content: Criterion[] }>;
-  };
   allCriteria: Criterion[];
 }) {
-  const { keycloak } = useContext(AuthContext)!;
+  const { keycloak, registered } = useContext(AuthContext)!;
   const [collapsedPrinciples, setCollapsedPrinciples] = useState<Set<string>>(
     new Set(),
   );
@@ -53,10 +51,36 @@ function AssessmentBuilderStructure({
     criterionName: string;
   } | null>(null);
 
-  const assignPrincipleToCriterion = useUpdateMotivationPrinciplesCriteria(
+  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
+
+  const assignCriteriaToActorMutation = useUpdateMotivationActorCriteria(
     keycloak?.token || "",
     mtvId || "",
+    actId || "",
   );
+
+  const {
+    data: motivationCriteria,
+    fetchNextPage: selCriFetchNextPage,
+    hasNextPage: selCriHasNextPage,
+  } = useGetMotivationActorCriteria(mtvId || "", actId || "", {
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    let tmpSelCri: Criterion[] = [];
+    if (motivationCriteria?.pages) {
+      motivationCriteria.pages.map((page) => {
+        tmpSelCri = [...tmpSelCri, ...page.content];
+      });
+      if (selCriHasNextPage) {
+        selCriFetchNextPage();
+      }
+    }
+    setSelectedCriteria(tmpSelCri);
+  }, [motivationCriteria, selCriHasNextPage, selCriFetchNextPage]);
 
   // Ensure untagged principle is always at the last position
   useEffect(() => {
@@ -89,7 +113,7 @@ function AssessmentBuilderStructure({
           criterionIndex,
           criterion,
         ] of principle.criteria.entries()) {
-          if (criterion.id === selectedId) {
+          if (criterion.id?.toLowerCase() === selectedId?.toLowerCase()) {
             // Update the builder state with correct indices
             setBuilderState({
               entityMode: "criterion",
@@ -103,14 +127,6 @@ function AssessmentBuilderStructure({
         }
       }
     }
-    // If selectedId is not found, reset indices
-    setBuilderState({
-      entityMode: "none",
-      formMode: "none",
-      selectedId: "",
-      selectedPrincipleIndex: -1,
-      selectedCriterionIndex: -1,
-    });
   }, [assessment, selectedId, setBuilderState]);
 
   const togglePrinciple = (principleId: string) => {
@@ -128,26 +144,9 @@ function AssessmentBuilderStructure({
     criterionIndex: number,
     criterionId: string,
   ) => {
-    const allMotivationCriteriaData =
-      await motivationCriteriaMutation.mutateAsync({
-        mtvId: mtvId || "",
-      });
-
-    const allMotivationCriteria = allMotivationCriteriaData?.content || [];
-
-    let formattedPriCri = formatDataToAssignPrincipleToCriterion({
-      allMotivationCriteria: allMotivationCriteria,
-      principleId: "",
-      criterionId: "",
-    });
-
     const selectedCriterionPidGraph = allCriteria?.find(
       (criterion) => criterion.cri === criterionId,
     )?.id;
-
-    formattedPriCri = formattedPriCri.filter(
-      (item) => item.criterion_id !== selectedCriterionPidGraph,
-    );
 
     let response;
     try {
@@ -155,8 +154,17 @@ function AssessmentBuilderStructure({
         assessment[principleIndex]?.id &&
         assessment[principleIndex].id !== "untagged"
       ) {
+        const criImp = selectedCriteria?.map((item) => ({
+          criterion_id: item.id,
+          imperative_id: item.imperative.id,
+        }));
+
+        const filteredCriImp = criImp?.filter(
+          (item) => item.criterion_id !== selectedCriterionPidGraph,
+        );
+
         response =
-          await assignPrincipleToCriterion.mutateAsync(formattedPriCri);
+          await assignCriteriaToActorMutation.mutateAsync(filteredCriImp);
       }
 
       if (
@@ -331,21 +339,9 @@ function AssessmentBuilderStructure({
                       style={{
                         marginLeft: "auto",
                         marginRight: "8px",
-                        cursor: "pointer",
-                        color: "#6c757d",
-                        fontSize: "0.8rem",
-                        transition: "all 0.2s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = "#dc3545";
-                        e.currentTarget.style.transform = "scale(1.1)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = "#6c757d";
-                        e.currentTarget.style.transform = "scale(1)";
                       }}
                     >
-                      <FaTrash />
+                      <FaTrash className={`${styles["delete-icon"]}`} />
                     </span>
                   </div>
                 );
