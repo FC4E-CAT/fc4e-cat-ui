@@ -27,12 +27,14 @@ import { FaClipboardQuestion } from "react-icons/fa6";
 import { useUpdateMotivationMetricTests } from "@/api";
 import { relMtvMetricTest } from "@/config";
 import toast from "react-hot-toast";
+import { addTestToUntaggedCriterion } from "./utils/assessmentBuilderUtils";
 
 interface AssessmentBuilderTestsProps {
   mtvId: string;
   mtrId: string;
   assessment: AssessmentPrinciple[];
   builderState: AssessmentBuilderState;
+  setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
   setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
   refetchAssessmentData: () => void;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
@@ -44,6 +46,7 @@ function AssessmentBuilderTests({
   assessment,
   builderState,
   refetchAssessmentData,
+  setAssessment,
   setBuilderState,
   setIsTestSelected,
 }: AssessmentBuilderTestsProps) {
@@ -327,6 +330,14 @@ function AssessmentBuilderTests({
             })
             .then(() => {
               refetchAssessmentData();
+              // Add test to untagged criterion if needed
+              addTestToUntaggedCriterion({
+                testData: newTest,
+                selectedCriterionId: builderState.selectedId || "",
+                assessment,
+                testMethods,
+                setAssessment,
+              });
               alert.current = {
                 message: t("page_motivations.toast_assign_metric_success"),
               };
@@ -364,6 +375,19 @@ function AssessmentBuilderTests({
         })
         .then(() => {
           refetchAssessmentData();
+          // Add test to untagged criterion if needed
+          const selectedTest = allTests.find(
+            (test) => test.id === selectedTestId,
+          );
+          if (selectedTest) {
+            addTestToUntaggedCriterion({
+              testData: selectedTest,
+              selectedCriterionId: builderState.selectedId || "",
+              assessment,
+              testMethods,
+              setAssessment,
+            });
+          }
           alert.current = {
             message: t("page_motivations.toast_assign_metric_success"),
           };

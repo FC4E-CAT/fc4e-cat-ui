@@ -8,6 +8,7 @@ import {
   Metric,
   FormMode,
   Imperative,
+  RegistryResource,
 } from "@/types";
 
 // Finds a principle in the assessment by its ID
@@ -293,8 +294,6 @@ export const isCriterionCompleted = (
   if (!criterionInfo) {
     return false;
   }
-
-  console.log("criterionInfo:", criterionInfo);
 
   const { criterion, principle } = criterionInfo;
   const hasPrinciple = principle.id && principle.id !== "untagged";
@@ -643,4 +642,139 @@ export const formatDataToAssignPrincipleToCriterion = ({
   }
 
   return priCri;
+};
+
+interface AddTestToUntaggedCriterionParams {
+  testData: {
+    tes?: string;
+    id?: string;
+    label?: string;
+    name?: string;
+    description?: string;
+    test_method_id?: string;
+    test_params?: string;
+    test_question?: string;
+    tool_tip?: string;
+  };
+  selectedCriterionId: string;
+  assessment: AssessmentPrinciple[];
+  testMethods: RegistryResource[];
+  setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
+}
+
+export const addTestToUntaggedCriterion = ({
+  testData,
+  selectedCriterionId,
+  assessment,
+  testMethods,
+  setAssessment,
+}: AddTestToUntaggedCriterionParams) => {
+  const selectedPrinciple = assessment.find((principle) =>
+    principle.criteria?.some(
+      (criterion) => criterion.id === selectedCriterionId,
+    ),
+  );
+
+  if (selectedPrinciple?.id === "untagged") {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    setAssessment((prevAssessment) => {
+      const updatedAssessment =
+        prevAssessment?.length > 0
+          ? prevAssessment.map((principle) => {
+              if (principle.id === "untagged") {
+                const updatedCriteria =
+                  principle.criteria?.map((criterion) => {
+                    if (criterion.id === selectedCriterionId) {
+                      const newTest = {
+                        id: testData.tes || testData.id || "",
+                        name: testData.label || testData.name || "",
+                        description: testData.description || "",
+                        type:
+                          testMethods.find(
+                            (m) => m.id === testData.test_method_id,
+                          )?.label || "",
+                        params: testData.test_params || "",
+                        text: testData.test_question || "",
+                        tool_tip: testData.tool_tip || "",
+                      };
+
+                      return {
+                        ...criterion,
+                        metric: {
+                          ...criterion.metric,
+                          tests: [...(criterion.metric?.tests || []), newTest],
+                        },
+                      };
+                    }
+                    return criterion;
+                  }) || [];
+
+                return {
+                  ...principle,
+                  criteria: updatedCriteria,
+                };
+              }
+              return principle;
+            })
+          : [];
+
+      return updatedAssessment;
+    });
+  }
+};
+
+interface RemoveTestFromUntaggedCriterionParams {
+  testId: string;
+  selectedCriterionId: string;
+  assessment: AssessmentPrinciple[];
+  setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
+}
+
+export const removeTestFromUntaggedCriterion = ({
+  testId,
+  selectedCriterionId,
+  assessment,
+  setAssessment,
+}: RemoveTestFromUntaggedCriterionParams) => {
+  const selectedPrinciple = assessment.find((principle) =>
+    principle.criteria?.some(
+      (criterion) => criterion.id === selectedCriterionId,
+    ),
+  );
+
+  if (selectedPrinciple?.id === "untagged") {
+    setAssessment((prevAssessment) => {
+      const updatedAssessment = prevAssessment.map((principle) => {
+        if (principle.id === "untagged") {
+          const updatedCriteria =
+            principle.criteria?.map((criterion) => {
+              if (criterion.id === selectedCriterionId) {
+                const updatedTests =
+                  criterion.metric?.tests?.filter(
+                    (test) => test.id?.toLowerCase() !== testId?.toLowerCase(),
+                  ) || [];
+
+                return {
+                  ...criterion,
+                  metric: {
+                    ...criterion.metric,
+                    tests: updatedTests,
+                  },
+                };
+              }
+              return criterion;
+            }) || [];
+
+          return {
+            ...principle,
+            criteria: updatedCriteria,
+          };
+        }
+        return principle;
+      });
+
+      return updatedAssessment;
+    });
+  }
 };

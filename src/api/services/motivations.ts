@@ -429,7 +429,7 @@ export const useGetMotivationMetricTests = (
       return handleBackendError(error);
     },
     retry: false,
-    enabled: isRegistered,
+    enabled: isRegistered && !!mtvId && !!mtrId,
   });
 
 export const useGetMotivationActorCriteria = (

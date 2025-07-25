@@ -6,7 +6,6 @@ import {
   AssessmentPrinciple,
   AssessmentCriterionImperative,
   MetricFull,
-  MetricTest,
   AlertInfo,
 } from "@/types";
 import { FaExclamationCircle, FaInfoCircle } from "react-icons/fa";
@@ -22,6 +21,7 @@ import { relMtvMetricTest } from "@/config";
 import toast from "react-hot-toast";
 import styles from "./AssessmentBuilder.module.css";
 import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
+import { removeTestFromUntaggedCriterion } from "./utils/assessmentBuilderUtils";
 
 interface AssessmentBuilderPreviewProps {
   assessment: AssessmentPrinciple[];
@@ -87,38 +87,27 @@ function AssessmentBuilderPreview({
     mtrId || "",
   );
 
-  const {
-    data: selTestData,
-    fetchNextPage: selTestFetchNextPage,
-    hasNextPage: selTestHasNextPage,
-  } = useGetMotivationMetricTests(mtvId || "", mtrId || "", {
-    size: 5,
-    token: keycloak?.token || "",
-    isRegistered: registered,
-  });
+  const { data: metricTestsData } = useGetMotivationMetricTests(
+    mtvId || "",
+    mtrId || "",
+    {
+      token: keycloak?.token || "",
+      isRegistered: showDeleteModal?.testId && registered ? registered : false,
+    },
+  );
 
   useEffect(() => {
-    let tmpSelTests: MetricTest[] = [];
-
-    if (selTestData?.pages) {
-      selTestData.pages.map((page) => {
-        if (page.metric) tmpSelTests = [...tmpSelTests, ...page.metric.tests];
-      });
-      if (selTestHasNextPage) {
-        selTestFetchNextPage();
-      }
-    }
     setSelectedTests(
-      tmpSelTests.map((item) => {
-        return {
+      metricTestsData?.pages
+        .flatMap((page) => page?.metric.tests || [])
+        .map((item) => ({
           id: item.db_id,
           tes: item.id,
           label: item.name,
           description: item.description,
-        };
-      }),
+        })) || [],
     );
-  }, [selTestData, selTestHasNextPage, selTestFetchNextPage]);
+  }, [metricTestsData]);
 
   const handleTestDelete = (testId: string) => {
     if (selectedTests.length === 0) return;
@@ -145,6 +134,14 @@ function AssessmentBuilderPreview({
       })
       .then(() => {
         refetchAssessmentData();
+
+        removeTestFromUntaggedCriterion({
+          testId,
+          selectedCriterionId: builderState.selectedId || "",
+          assessment,
+          setAssessment,
+        });
+
         alert.current = {
           message: t("page_motivations.toast_assign_metric_success"),
         };

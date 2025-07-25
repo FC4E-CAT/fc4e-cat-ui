@@ -13,7 +13,7 @@ import {
   Principle,
   PrincipleInput,
 } from "@/types";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FaTags } from "react-icons/fa";
 import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
@@ -38,7 +38,6 @@ function AssessmentBuilderPrinciples({
   actId,
   principleId,
   assessment,
-  setAssessment,
   allPrinciples,
   allCriteria,
   formMode,
@@ -46,12 +45,13 @@ function AssessmentBuilderPrinciples({
   refetchPrinciples,
   motivationCriteriaMutation,
   setIsPrincipleSelected,
+  setAssessment,
+  setBuilderState,
 }: {
   mtvId?: string;
   actId?: string;
   principleId?: string;
   assessment: AssessmentPrinciple[];
-  setAssessment: (assessment: AssessmentPrinciple[]) => void;
   allPrinciples: Principle[];
   allCriteria: Criterion[];
   formMode: FormMode;
@@ -61,6 +61,8 @@ function AssessmentBuilderPrinciples({
     mutateAsync: (data: { mtvId: string }) => Promise<{ content: Criterion[] }>;
   };
   setIsPrincipleSelected: React.Dispatch<React.SetStateAction<boolean>>;
+  setAssessment: (assessment: AssessmentPrinciple[]) => void;
+  setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const alert = useRef<AlertInfo>({
@@ -127,7 +129,26 @@ function AssessmentBuilderPrinciples({
     );
   };
 
+  const currentPrincipleOfCriterion = useMemo(
+    () =>
+      assessment.find((assessmentPrinciple) =>
+        assessmentPrinciple.criteria?.some(
+          (criterion) => criterion.id === builderState.selectedId,
+        ),
+      ),
+    [assessment, builderState.selectedId],
+  );
+
   const filteredPrinciples = allPrinciples.filter((principle) => {
+    // Exclude the current principle if it exists and is not "untagged"
+    if (
+      currentPrincipleOfCriterion &&
+      currentPrincipleOfCriterion.id !== "untagged" &&
+      principle.pri === currentPrincipleOfCriterion.id
+    ) {
+      return false;
+    }
+
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
@@ -206,6 +227,8 @@ function AssessmentBuilderPrinciples({
       return;
     }
 
+    let selectedCriterion: Criterion | undefined;
+
     if (formMode === "new") {
       if (
         principleForm?.pri &&
@@ -213,6 +236,12 @@ function AssessmentBuilderPrinciples({
         principleForm.description
       ) {
         createPrincipleToMotivation();
+        setBuilderState((prevState) => ({
+          ...prevState,
+          entityMode: "criterion",
+          formMode: "edit",
+          selectedId: selectedCriterion?.cri || builderState.selectedId || "",
+        }));
       }
     } else if (formMode === "select") {
       const allMotivationCriteriaData =
@@ -275,7 +304,7 @@ function AssessmentBuilderPrinciples({
             }
           }
 
-          const selectedCriterion = allCriteria?.find(
+          selectedCriterion = allCriteria?.find(
             (criterion) =>
               criterion?.cri?.toLowerCase() ===
               builderState?.selectedId?.toLowerCase(),
@@ -297,6 +326,13 @@ function AssessmentBuilderPrinciples({
           if (updatedAssessment.length > 0) {
             setAssessment(updatedAssessment);
           }
+
+          setBuilderState((prevState) => ({
+            ...prevState,
+            entityMode: "criterion",
+            formMode: "edit",
+            selectedId: selectedCriterion?.cri || builderState.selectedId || "",
+          }));
         });
 
       toast.promise(promise, {
@@ -305,14 +341,7 @@ function AssessmentBuilderPrinciples({
         error: () => `${alert.current.message}`,
       });
     }
-    // else if (formMode === "edit") {
-    //   if (
-    //     principleForm?.pri &&
-    //     principleForm?.label &&
-    //     principleForm?.description
-    //   ) {
-    //   }
-    // }
+
     setIsPrincipleSelected(false);
     setSelectedRegistryPrincipleId(null);
   };
