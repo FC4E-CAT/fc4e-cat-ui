@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
 import { Button, Container, Spinner } from "react-bootstrap";
 import { AuthContext } from "@/auth";
@@ -259,6 +259,18 @@ function AssessmentBuilder() {
     }));
   };
 
+  const getMetricId = useCallback(() => {
+    const metricId =
+      assessment
+        ?.flatMap((principle) => principle.criteria || [])
+        ?.find((criterion) => criterion.id === builderState.selectedId)?.metric
+        ?.id || "";
+    const matchingMetric = motivationMetrics?.find(
+      (metric) => metric?.metric_mtr === metricId,
+    );
+    return matchingMetric?.metric_id || "";
+  }, [assessment, builderState.selectedId, motivationMetrics]);
+
   if (isLoading) {
     return (
       <Container fluid className="py-4">
@@ -351,18 +363,7 @@ function AssessmentBuilder() {
             </div>
             <AssessmentBuilderPreview
               mtvId={mtvId || ""}
-              mtrId={(() => {
-                const metricId =
-                  assessment
-                    ?.flatMap((principle) => principle.criteria || [])
-                    ?.find(
-                      (criterion) => criterion.id === builderState.selectedId,
-                    )?.metric?.id || "";
-                const matchingMetric = motivationMetrics?.find(
-                  (metric) => metric?.metric_mtr === metricId,
-                );
-                return matchingMetric?.metric_id || "";
-              })()}
+              mtrId={getMetricId()}
               criterionPidGraph={
                 allCriteria?.find(
                   (criterion) =>
@@ -495,29 +496,19 @@ function AssessmentBuilder() {
                   refetchPrinciples={refetchPrinciples}
                   motivationCriteriaMutation={motivationCriteriaMutation}
                   setIsPrincipleSelected={setIsPrincipleSelected}
+                  setBuilderState={setBuilderState}
                 />
               )}
               {builderState.entityMode === "tests" && (
                 <AssessmentBuilderTests
                   assessment={assessment}
                   builderState={builderState}
+                  setAssessment={setAssessment}
                   setBuilderState={setBuilderState}
                   setIsTestSelected={setIsTestSelected}
                   refetchAssessmentData={refetchAssessmentData}
                   mtvId={mtvId || ""}
-                  mtrId={(() => {
-                    const metricId =
-                      assessment
-                        ?.flatMap((principle) => principle.criteria || [])
-                        ?.find(
-                          (criterion) =>
-                            criterion.id === builderState.selectedId,
-                        )?.metric?.id || "";
-                    const matchingMetric = motivationMetrics?.find(
-                      (metric) => metric?.metric_mtr === metricId,
-                    );
-                    return matchingMetric?.metric_id || "";
-                  })()}
+                  mtrId={getMetricId()}
                 />
               )}
             </div>

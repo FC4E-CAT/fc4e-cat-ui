@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { AlertInfo, MetricTest } from "@/types";
+import { AlertInfo } from "@/types";
 import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
@@ -87,40 +87,27 @@ export default function MotivationMetricTests() {
     params.mtrId || "",
   );
 
-  const {
-    data: selTestData,
-    fetchNextPage: selTestFetchNextPage,
-    hasNextPage: selTestHasNextPage,
-  } = useGetMotivationMetricTests(params.mtvId || "", params.mtrId || "", {
-    size: 5,
-    token: keycloak?.token || "",
-    isRegistered: registered,
-  });
+  const { data: metricTestsData } = useGetMotivationMetricTests(
+    params.mtvId || "",
+    params.mtrId || "",
+    {
+      token: keycloak?.token || "",
+      isRegistered: registered,
+    },
+  );
 
   useEffect(() => {
-    // gather all motivation metric tests in one array
-    let tmpSelTests: MetricTest[] = [];
-
-    // iterate over backend pages and gather all items in the mtv array
-    if (selTestData?.pages) {
-      selTestData.pages.map((page) => {
-        if (page.metric) tmpSelTests = [...tmpSelTests, ...page.metric.tests];
-      });
-      if (selTestHasNextPage) {
-        selTestFetchNextPage();
-      }
-    }
     setSelectedTests(
-      tmpSelTests.map((item) => {
-        return {
+      metricTestsData?.pages
+        .flatMap((page) => page?.metric.tests || [])
+        .map((item) => ({
           id: item.db_id,
           tes: item.id,
           label: item.name,
           description: item.description,
-        };
-      }),
+        })) || [],
     );
-  }, [selTestData, selTestHasNextPage, selTestFetchNextPage]);
+  }, [metricTestsData]);
 
   function handleUpdate() {
     if (selectedTests) {

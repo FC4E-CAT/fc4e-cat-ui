@@ -637,7 +637,7 @@
 /* Horizontal separator after each principle section */
 .principle-section-separator {
   height: 1px;
-  margin: 0.7rem 0 0.2rem;
+  margin-top: 0.5rem;
   background: #e5e7eb;
 }
 
@@ -787,6 +787,12 @@
     max-width: calc(100vw - 16px);
     margin-right: 0;
     transform: none;
+  }
+
+  .form-actions-tests {
+    position: static;
+    width: 100%;
+    margin-top: 0.5rem;
   }
 }
 
