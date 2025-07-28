@@ -4,7 +4,7 @@ import { defaultG069tokenIntrospection, defaultG069userInfo } from "@/config";
 import { TestAutoG069Form } from "@/pages/assessments/components/tests/TestAutoG069Form";
 import { TestAutoHttpsCheckForm } from "@/pages/assessments/components/tests/TestAutoHttpsCheckForm";
 import { TestAutoMd1Form } from "@/pages/assessments/components/tests/TestAutoMd1Form";
-import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParam";
+import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParamForm";
 import { TestValueFormParam } from "@/pages/assessments/components/tests/TestValueFormParam";
 import {
   TestAutoG069,
