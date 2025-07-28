@@ -42,7 +42,7 @@ import {
 import { FaCheckCircle, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { CriterionProgress } from "./CriterionProgress";
-import { TestBinaryParamForm } from "./tests/TestBinaryParam";
+import { TestBinaryParamForm } from "./tests/TestBinaryParamForm";
 import { TestValueFormParam } from "./tests/TestValueFormParam";
 import { TestAutoHttpsCheckForm } from "./tests/TestAutoHttpsCheckForm";
 import { useTranslation } from "react-i18next";
@@ -50,6 +50,9 @@ import { TestAutoMd1Form } from "./tests/TestAutoMd1Form";
 import { TestAutoG069Form } from "./tests/TestAutoG069Form";
 import { defaultG069tokenIntrospection, defaultG069userInfo } from "@/config";
 import { TestAutoValidationForm } from "./tests/TestAutoValidationForm";
+import { TestTRLForm } from "./tests/TestTRLForm";
+import { TestRatioForm } from "./tests/TestRatioForm";
+import { TestPercentForm } from "./tests/TestPercentForm";
 
 type CriteriaTabsProps = {
   autogroups: AutoGroupTest[] | undefined;
@@ -245,15 +248,51 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
           } else if (
             test.type === "Number-Manual" ||
             test.type === "Number-Auto" ||
-            test.type === "Ratio-Manual" ||
-            test.type === "Percent-Manual" ||
-            test.type === "TRL-Manual" ||
             test.type === "Years-Manual"
           ) {
             testList.push(
               <div className="border rounded mt-4" key={test.id}>
                 <div className="cat-test-div">
                   <TestValueFormParam
+                    test={test as TestValueParam}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (test.type === "TRL-Manual") {
+            testList.push(
+              <div className="border rounded mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestTRLForm
+                    test={test as TestValueParam}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (test.type === "Percent-Manual") {
+            testList.push(
+              <div className="border rounded mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestPercentForm
+                    test={test as TestValueParam}
+                    onTestChange={props.onTestChange}
+                    criterionId={criterion.id}
+                    principleId={principle.id}
+                  />
+                </div>
+              </div>,
+            );
+          } else if (test.type === "Ratio-Manual") {
+            testList.push(
+              <div className="border rounded mt-4" key={test.id}>
+                <div className="cat-test-div">
+                  <TestRatioForm
                     test={test as TestValueParam}
                     onTestChange={props.onTestChange}
                     criterionId={criterion.id}

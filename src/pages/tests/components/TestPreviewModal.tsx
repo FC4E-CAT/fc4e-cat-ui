@@ -1,6 +1,6 @@
 import { TestInput, TestParam } from "@/types/tests";
 import { EvidenceURLS, TestToolTip } from "@/pages/assessments/components";
-import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParam";
+import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParamForm";
 import { FaTrash } from "react-icons/fa";
 import {
   TestAutoG069,
