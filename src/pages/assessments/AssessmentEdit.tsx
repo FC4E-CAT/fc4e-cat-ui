@@ -201,6 +201,13 @@ const AssessmentEdit = ({
     }
   }, [extraTab]);
 
+  useEffect(() => {
+    if (mode === AssessmentEditMode.Edit) {
+      setActiveTab(3);
+      setResetCriterionTab(true);
+    }
+  }, [mode, extraTab]);
+
   // TODO: Get all available pages in an infinite scroll not all sequentially.
   useEffect(() => {
     // gather all actor/org/type mappings in one array
@@ -284,6 +291,11 @@ const AssessmentEdit = ({
   }
 
   function handleNextTab() {
+    // in case we are creating a new assessment don't move over second tab
+    if (mode === AssessmentEditMode.Create && activeTab > 1) {
+      return;
+    }
+
     if (
       (mode === AssessmentEditMode.Import && activeTab < 4) ||
       activeTab < 3
@@ -618,7 +630,9 @@ const AssessmentEdit = ({
       ? importDone
         ? activeTab === 1 || (wizardTabActive && activeTab <= 3)
         : false
-      : wizardTabActive && activeTab < 3;
+      : mode === AssessmentEditMode.Create
+        ? wizardTabActive && activeTab < 2
+        : wizardTabActive && activeTab < 3;
 
   // check if assessment has automated test groups
   const hasAutoGroups =
@@ -783,21 +797,23 @@ const AssessmentEdit = ({
                   )}
                 </Nav.Link>
               </Nav.Item>
-              <Nav.Item
-                className={`bg-light border rounded me-2 ${
-                  !wizardTabActive ? "opacity-25" : ""
-                }`}
-              >
-                <Nav.Link
-                  eventKey={`step-${3 + extraTab}`}
-                  disabled={!wizardTabActive}
+              {mode !== AssessmentEditMode.Create && (
+                <Nav.Item
+                  className={`bg-light border rounded me-2 ${
+                    !wizardTabActive ? "opacity-25" : ""
+                  }`}
                 >
-                  <span className="badge text-black bg-light me-2">
-                    {`${t("page_assessment_edit.step")} ${3 + extraTab}.`}
-                  </span>{" "}
-                  {t("assessment")}
-                </Nav.Link>
-              </Nav.Item>
+                  <Nav.Link
+                    eventKey={`step-${3 + extraTab}`}
+                    disabled={!wizardTabActive}
+                  >
+                    <span className="badge text-black bg-light me-2">
+                      {`${t("page_assessment_edit.step")} ${3 + extraTab}.`}
+                    </span>{" "}
+                    {t("assessment")}
+                  </Nav.Link>
+                </Nav.Item>
+              )}
             </Nav>
           </Card.Header>
           <Card.Body>

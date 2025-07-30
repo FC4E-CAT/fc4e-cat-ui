@@ -30,8 +30,14 @@ export function useCreateAssessment(token: string) {
       return APIClient(token).post("/v2/assessments", postData);
     },
     // for the time being redirect to assessment list
-    onSuccess: () => {
-      navigate(ROUTES.ASSESSMENTS.ROOT);
+    onSuccess: (resp) => {
+      const respData = resp as { data: { id?: string } };
+      if (respData.data.id) {
+        navigate(`${ROUTES.ASSESSMENTS.ROOT}/${respData.data.id}#assessment`);
+      } else {
+        // fallback if ID isn't returned for some reason
+        navigate(ROUTES.ASSESSMENTS.ROOT);
+      }
     },
   });
 }
