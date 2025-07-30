@@ -22,10 +22,9 @@ interface AssessmentTestProps {
 export const TestBinaryParamForm = (props: AssessmentTestProps) => {
   const { t } = useTranslation();
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.checked);
     let result: 0 | 1 = 0;
     let value: boolean = false;
-    if (event.target.checked) {
+    if (event.target.value === "1") {
       value = true;
       result = 1;
     }
@@ -84,15 +83,24 @@ export const TestBinaryParamForm = (props: AssessmentTestProps) => {
             <Form className="form-binary-test" onSubmit={() => false}>
               <Form.Check
                 inline
-                label={
-                  props.test.value === true ? t("fields.yes") : t("fields.no")
-                }
-                value={props.test.value === true ? "1" : "0"}
+                label={t("fields.yes")}
+                value="1"
                 name="test-input-group"
-                type="switch"
-                id="test-check"
+                type="radio"
+                id="test-check-yes"
                 className="fs-6 fw-bold  text-secondary"
                 checked={props.test.value === true}
+                onChange={handleValueChange}
+              />
+              <Form.Check
+                inline
+                label={t("fields.no")}
+                value="0"
+                name="test-input-group"
+                type="radio"
+                className="fs-6 fw-bold  text-secondary"
+                id="test-check-no"
+                checked={props.test.value === false}
                 onChange={handleValueChange}
               />
               {/* here ends the binary test */}
