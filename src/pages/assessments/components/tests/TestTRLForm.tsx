@@ -7,7 +7,12 @@ import { EvidenceURLS } from "./EvidenceURLS";
 import { AssessmentTest, EvidenceURL, TestValueParam } from "@/types";
 import { useState } from "react";
 import { TestToolTip } from "./TestToolTip";
-import { FaCogs } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaCogs,
+  FaHandPointer,
+} from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 interface AssessmentTestProps {
@@ -37,11 +42,14 @@ export const TestTRLForm = (props: AssessmentTestProps) => {
 
   const handleValueChange = (
     eventType: TestValueEventType,
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement> | null,
   ) => {
     const newTest = { ...props.test };
     // keep only a single digit number as input
-    const trlOnlyVal = event.target.value.replace(/[^1-9]/g, "").slice(0, 1);
+    const trlOnlyVal =
+      event !== null
+        ? event.target.value.replace(/[^1-9]/g, "").slice(0, 1)
+        : "5";
 
     if (eventType === TestValueEventType.Value) {
       setLocalValue(trlOnlyVal);
@@ -147,54 +155,43 @@ export const TestTRLForm = (props: AssessmentTestProps) => {
             )}
             <Row>
               <Col>
-                <InputGroup className="mt-1">
-                  <InputGroup.Text id="label-first-value">
-                    {tipParams[0] && (
-                      <TestToolTip
-                        tipId={"params-1-" + props.test.id}
-                        tipText={tipParams[0]}
-                      />
-                    )}
-                    {testParams[0] && (
-                      <span className="ms-2">{testParams[0]}</span>
-                    )}
-                    :
-                  </InputGroup.Text>
-                  <Form.Control
-                    value={automated ? "" : localValue || ""}
-                    type="text"
-                    id="input-value-control"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      // use this input only if the test is not automated
-                      if (!automated) {
-                        handleValueChange(TestValueEventType.Value, e);
-                      }
+                {localValue === "" ? (
+                  <Alert
+                    variant="primary"
+                    className="text-center"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      handleValueChange(TestValueEventType.Value, null);
                     }}
-                    disabled={automated}
-                    min={1}
-                    max={9}
-                    step={1}
-                  />
-                </InputGroup>
-              </Col>
-              <Col>
-                <div className="d-flex justify-content-between px-1">
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                    <small key={num}>{num}</small>
-                  ))}
-                </div>
-                <Form.Range
-                  min={1}
-                  max={9}
-                  step={1}
-                  value={localValue}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    // use this input only if the test is not automated
-                    if (!automated) {
-                      handleValueChange(TestValueEventType.Value, e);
-                    }
-                  }}
-                />
+                  >
+                    <span className="me-2">
+                      Click here to specify a TRL value
+                    </span>
+                    <FaArrowLeft />
+                    <FaHandPointer />
+                    <FaArrowRight />
+                  </Alert>
+                ) : (
+                  <div className="mt-1">
+                    <div className="d-flex justify-content-between px-1">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                        <small key={num}>{num}</small>
+                      ))}
+                    </div>
+                    <Form.Range
+                      min={1}
+                      max={9}
+                      step={1}
+                      value={localValue}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        // use this input only if the test is not automated
+                        if (!automated) {
+                          handleValueChange(TestValueEventType.Value, e);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
               </Col>
             </Row>
             {testParams.length > 1 && testParams[1] !== "evidence" && (
@@ -226,38 +223,6 @@ export const TestTRLForm = (props: AssessmentTestProps) => {
                 </Row>
               </>
             )}
-            {automated &&
-              testParams.length > 2 &&
-              testParams[2] !== "evidence" && (
-                <>
-                  <Row className="mt-1">
-                    <InputGroup className="mt-2">
-                      <InputGroup.Text id="label-second-value">
-                        {tipParams[2] && (
-                          <TestToolTip
-                            tipId={"params-3-" + props.test.id}
-                            tipText={tipParams[2]}
-                          />
-                        )}
-                        {testParams[2] && (
-                          <span className="ms-2">{testParams[2]}</span>
-                        )}
-                        :
-                      </InputGroup.Text>
-                      <Form.Control
-                        value={localValue || ""}
-                        type="text"
-                        id="input-value-community"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          if (automated) {
-                            handleValueChange(TestValueEventType.Value, e);
-                          }
-                        }}
-                      />
-                    </InputGroup>
-                  </Row>
-                </>
-              )}
           </div>
 
           {testParams[testParams.length - 1] === "evidence" && (
