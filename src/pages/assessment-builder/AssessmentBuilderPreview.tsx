@@ -8,7 +8,7 @@ import {
   MetricFull,
   AlertInfo,
 } from "@/types";
-import { FaExclamationCircle, FaInfoCircle } from "react-icons/fa";
+import { FaExclamationCircle, FaInfoCircle, FaSlidersH } from "react-icons/fa";
 import TestPreviewModal from "../tests/components/TestPreviewModal";
 import AssessmentBuilderMetric from "./AssessmentBuilderMetric";
 import {
@@ -56,7 +56,7 @@ function AssessmentBuilderPreview({
 }: AssessmentBuilderPreviewProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [isConfiguring, setIsConfiguring] = useState(false);
-  const [isAlgorithmConfigured, setIsAlgorithmConfigured] = useState(false);
+  const [isPrincipleAssigned, setIsPrincipleAssigned] = useState(false);
   const [selectedTests, setSelectedTests] = useState<RegistryTest[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState({
     testId: "",
@@ -67,6 +67,34 @@ function AssessmentBuilderPreview({
   const alert = useRef<AlertInfo>({
     message: "",
   });
+
+  useEffect(() => {
+    if (
+      assessment.length > 0 &&
+      builderState.selectedPrincipleIndex !== null &&
+      builderState.selectedCriterionIndex !== null
+    ) {
+      const selectedPrinciple =
+        assessment[builderState.selectedPrincipleIndex || 0];
+
+      // Check if the principle exists and is not the "untagged" principle
+      setIsPrincipleAssigned(
+        Boolean(
+          selectedPrinciple &&
+            selectedPrinciple.id &&
+            selectedPrinciple.id !== "untagged" &&
+            selectedPrinciple.name &&
+            selectedPrinciple.name.trim() !== "",
+        ),
+      );
+    } else {
+      setIsPrincipleAssigned(false);
+    }
+  }, [
+    assessment,
+    builderState.selectedPrincipleIndex,
+    builderState.selectedCriterionIndex,
+  ]);
 
   useEffect(() => {
     if (builderState.selectedId) {
@@ -172,28 +200,66 @@ function AssessmentBuilderPreview({
           {builderState.selectedCriterionIndex != null &&
           builderState.selectedCriterionIndex > -1 ? (
             <div>
-              <span className="h5 align-middle">
-                {
-                  assessment[builderState.selectedPrincipleIndex || 0]
-                    ?.criteria[builderState.selectedCriterionIndex]?.id
-                }
-                :{" "}
-                {
-                  assessment[builderState.selectedPrincipleIndex || 0]
-                    ?.criteria[builderState.selectedCriterionIndex]?.name
-                }
-              </span>
-              {assessment[builderState.selectedPrincipleIndex || 0]?.criteria[
-                builderState.selectedCriterionIndex
-              ]?.imperative === AssessmentCriterionImperative.MUST ? (
-                <span className="badge bg-success bg-small ms-4 align-middle">
-                  {t("required")}
-                </span>
-              ) : (
-                <span className="badge bg-warning bg-small ms-4 align-middle">
-                  {t("optional")}
-                </span>
-              )}
+              {/* Criterion Title with Advanced Settings Button */}
+              <div className={styles["criterion-header"]}>
+                <div className={styles["criterion-title-section"]}>
+                  <span className="h5 align-middle">
+                    {
+                      assessment[builderState.selectedPrincipleIndex || 0]
+                        ?.criteria[builderState.selectedCriterionIndex]?.id
+                    }
+                    :{" "}
+                    {
+                      assessment[builderState.selectedPrincipleIndex || 0]
+                        ?.criteria[builderState.selectedCriterionIndex]?.name
+                    }
+                  </span>
+                  {assessment[builderState.selectedPrincipleIndex || 0]
+                    ?.criteria[builderState.selectedCriterionIndex]
+                    ?.imperative === AssessmentCriterionImperative.MUST ? (
+                    <span className="badge bg-success bg-small ms-2 align-middle">
+                      {t("required")}
+                    </span>
+                  ) : (
+                    <span className="badge bg-warning bg-small ms-2 align-middle">
+                      {t("optional")}
+                    </span>
+                  )}
+                </div>
+                <div className={styles["advanced-settings-container"]}>
+                  <button
+                    className={styles["advanced-settings-btn"]}
+                    onClick={() => setIsConfiguring((prev) => !prev)}
+                    disabled={isConfiguring}
+                  >
+                    <FaSlidersH /> Advanced Settings
+                  </button>
+
+                  {/* Advanced Settings Modal positioned relative to button */}
+                  {isConfiguring && (
+                    <div className={styles["advanced-settings-modal"]}>
+                      <div
+                        className={styles["modal-backdrop"]}
+                        onClick={() => setIsConfiguring(false)}
+                      />
+                      <div className={styles["modal-content"]}>
+                        <AssessmentBuilderMetric
+                          assessment={assessment}
+                          builderState={builderState}
+                          mtvId={mtvId}
+                          mtrId={mtrId}
+                          criterionPidGraph={criterionPidGraph}
+                          motivationMetrics={motivationMetrics}
+                          refetchAssessmentData={refetchAssessmentData}
+                          setIsConfiguring={setIsConfiguring}
+                          onClose={() => setIsConfiguring(false)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <p className="text-muted lh-sm mt-2 mb-2">
                 {
                   assessment[builderState.selectedPrincipleIndex || 0]
@@ -308,41 +374,24 @@ function AssessmentBuilderPreview({
                 )}
               </div>
 
-              {/* Algorithm Configuration Section */}
-              <AssessmentBuilderMetric
-                assessment={assessment}
-                builderState={builderState}
-                setBuilderState={setBuilderState}
-                setAssessment={setAssessment}
-                mtvId={mtvId}
-                criterionPidGraph={criterionPidGraph}
-                motivationMetrics={motivationMetrics}
-                refetchAssessmentData={refetchAssessmentData}
-                isConfiguring={isConfiguring}
-                setIsConfiguring={setIsConfiguring}
-                setIsPrincipleSelected={setIsPrincipleSelected}
-                setIsTestSelected={setIsTestSelected}
-                setIsAlgorithmConfigured={setIsAlgorithmConfigured}
-              />
-
               {/* Tests Configuration Section */}
               <div>
                 <OverlayTrigger
-                  placement="top"
+                  placement="bottom"
                   overlay={
                     <Tooltip id="test-section-disabled-tooltip">
-                      {!isAlgorithmConfigured
-                        ? "You must configure the algorithm first in order to add tests to this criterion"
+                      {!isPrincipleAssigned
+                        ? "You must add a principle first in order to add tests to this criterion"
                         : "Click to add a test to this criterion"}
                     </Tooltip>
                   }
                 >
                   <div
                     className={`${styles["config-header"]} my-3 
-                    ${!isAlgorithmConfigured && styles["disabled"]}
+                    ${!isPrincipleAssigned && styles["disabled"]}
                     ${isTestSelected && styles["selected"]}`}
                     onClick={() => {
-                      if (!isAlgorithmConfigured) return;
+                      if (!isPrincipleAssigned) return;
 
                       setIsTestSelected((prev) => {
                         if (!prev) {
@@ -361,7 +410,7 @@ function AssessmentBuilderPreview({
                       } else {
                         setBuilderState((prevState) => ({
                           ...prevState,
-                          entityMode: "tests",
+                          entityMode: "test",
                           formMode: "new",
                         }));
                       }
@@ -374,7 +423,7 @@ function AssessmentBuilderPreview({
                       >
                         (+) Add a Test
                       </span>
-                      {(!isAlgorithmConfigured ||
+                      {(!isPrincipleAssigned ||
                         !assessment[builderState.selectedPrincipleIndex || 0]
                           ?.criteria[builderState.selectedCriterionIndex]
                           ?.metric?.tests?.length) && (
@@ -382,8 +431,8 @@ function AssessmentBuilderPreview({
                           placement="top"
                           overlay={
                             <Tooltip id="tests-config-tooltip">
-                              {!isAlgorithmConfigured
-                                ? "You must configure the algorithm first in order to add tests to this criterion"
+                              {!isPrincipleAssigned
+                                ? "You must add a principle first in order to add tests to this criterion"
                                 : "Tests assignment is required. Please add at least a test to complete your criterion setup."}
                             </Tooltip>
                           }
@@ -397,7 +446,7 @@ function AssessmentBuilderPreview({
                     <div className={styles["config-header-right"]}>
                       <button
                         className={`${styles["config-edit-btn"]} ${isTestSelected ? styles["selected"] : ""}`}
-                        disabled={!isAlgorithmConfigured}
+                        disabled={!isPrincipleAssigned}
                       >
                         {isTestSelected ? "Editing" : "Edit"}
                       </button>
@@ -492,7 +541,14 @@ function AssessmentBuilderPreview({
             ))
           )}
         </div>
-      ) : null}
+      ) : (
+        <div className="mt-2">
+          <p className="text-muted text-center">
+            Please select a criterion from the structure list or add a new
+            criterion to see its details here
+          </p>
+        </div>
+      )}
       <AssessmentBuilderDeleteModal
         isOpen={Boolean(showDeleteModal?.testId)}
         itemName={showDeleteModal?.testLabel || ""}

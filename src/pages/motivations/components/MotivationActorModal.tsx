@@ -2,6 +2,7 @@ import { useMotivationAddActor } from "@/api/services/motivations";
 import { useGetAllTestMethods } from "@/api/services/registry";
 import { AuthContext } from "@/auth";
 import { relMtvActorId } from "@/config";
+import ROUTES, { buildRoute } from "@/routes";
 import {
   AlertInfo,
   AutoGroupTest,
@@ -35,7 +36,6 @@ import { useNavigate } from "react-router-dom";
 
 interface MotivationActorModalProps {
   motivationActors: MotivationActor[];
-
   id: string;
   show: boolean;
   onHide: () => void;
@@ -148,7 +148,10 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
       .then(() => {
         props.onHide();
         navigate(
-          `/admin/motivations/${props?.id}/templates/actors/${actorId}/assessment-builder`,
+          buildRoute(ROUTES.ADMIN.MOTIVATIONS.ASSESSMENT_BUILDER, {
+            mtvId: props?.id || "",
+            actId: actorId || "",
+          }),
         );
         alert.current = {
           message: t("page_motivations.toast_add_actor_success"),

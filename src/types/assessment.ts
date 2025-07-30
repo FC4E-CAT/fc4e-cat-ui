@@ -97,6 +97,7 @@ export interface AssessmentPrinciple {
   description: string;
   imperative?: string;
   principle_id?: string;
+  db_id?: string;
 }
 
 /** Each principle contains a list of criteria */
@@ -107,6 +108,7 @@ export interface AssessmentCriterion {
   metric: Metric;
   description?: string;
   principle_id?: string;
+  db_id?: string;
 }
 
 /** Each criterion can be either mandatory (must) or optional (should) */
@@ -127,6 +129,7 @@ export interface Metric {
   value: number | null;
   result: number | null;
   tests: AssessmentTest[];
+  db_id?: string;
 }
 
 /** Each metric has a type. For now, we only deal with type: number  */
@@ -157,6 +160,7 @@ export interface TestBinary {
   value: boolean | null;
   evidence_url?: EvidenceURL[];
   last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestBinaryParam {
@@ -172,6 +176,7 @@ export interface TestBinaryParam {
   evidence_url?: EvidenceURL[];
   tool_tip: string;
   last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestValue {
@@ -191,6 +196,7 @@ export interface TestValue {
   params: string;
   evidence_url?: EvidenceURL[];
   last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestValueParam {
@@ -217,6 +223,7 @@ export interface TestValueParam {
   benchmark: Benchmark;
   evidence_url?: EvidenceURL[];
   last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestAutoG069 {
@@ -235,6 +242,7 @@ export interface TestAutoG069 {
   evidence_url?: EvidenceURL[];
   tool_tip: string;
   last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestAutoError {
@@ -282,6 +290,7 @@ export interface TestAutoValidation {
   evidence_url?: EvidenceURL[];
   tool_tip: string;
   last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestAutoHttpsCheck {
@@ -297,6 +306,7 @@ export interface TestAutoHttpsCheck {
   evidence_url?: EvidenceURL[];
   tool_tip: string;
   last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestAutoMD1 {
@@ -312,6 +322,7 @@ export interface TestAutoMD1 {
   evidence_url?: EvidenceURL[];
   tool_tip: string;
   last_run?: LastRun;
+  db_id?: string;
 }
 
 /** Supported tests: Binary | Value | BinaryParam | ValueParam | TestAutoHttpsCheck **/

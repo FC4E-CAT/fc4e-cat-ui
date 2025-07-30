@@ -531,6 +531,26 @@ export function useUpdateMotivationActorCriteria(
   });
 }
 
+export function useUpdateActorCriteriaWithDefaultMetric(
+  token: string,
+  mtvId: string,
+  actId: string,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (putData: CriImp[]) => {
+      return APIClient(token).put(
+        `/v1/registry/motivations/${mtvId}/actors/${actId}/criteria/auto-metric`,
+        putData,
+      );
+    },
+    // on change refresh motivation-actor-criteria list
+    onSuccess: () => {
+      queryClient.invalidateQueries(["motivation-actor-criteria"]);
+    },
+  });
+}
+
 export function useUpdateMotivationPrinciplesCriteria(
   token: string,
   mtvId: string,
@@ -744,6 +764,43 @@ export function useUpdateMotivationMetricTests(
     // on change refresh motivation-metric-test
     onSuccess: () => {
       queryClient.invalidateQueries(["motivation-metric-tests", mtvId, mtrId]);
+    },
+  });
+}
+
+export function useUpdateMotivationAlgorithmSettings(
+  token: string,
+  mtvId: string,
+  mtrId: string,
+  {
+    type_algorithm_id,
+    type_benchmark_id,
+    value_benchmark,
+  }: {
+    type_algorithm_id: string;
+    type_benchmark_id: string;
+    value_benchmark: number;
+  },
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      return APIClient(token).put(
+        `/v1/registry/motivations/${mtvId}/metric/${mtrId}`,
+        {
+          type_algorithm_id: type_algorithm_id,
+          type_benchmark_id: type_benchmark_id,
+          value_benchmark: value_benchmark,
+        },
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["motivation-metrics"]);
+      queryClient.invalidateQueries(["all-metrics"]);
+      queryClient.invalidateQueries(["motivation-metric-full", mtvId, mtrId]);
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
   });
 }

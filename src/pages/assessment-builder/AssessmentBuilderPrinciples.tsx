@@ -1,7 +1,7 @@
 import {
   useCreateMotivationPrinciple,
   useGetMotivationActorCriteria,
-  useUpdateMotivationActorCriteria,
+  useUpdateActorCriteriaWithDefaultMetric,
   useUpdateMotivationPrinciplesCriteria,
 } from "@/api";
 import {
@@ -22,9 +22,9 @@ import { useTranslation } from "react-i18next";
 import {
   assessmentPrincipleToForm,
   formatDataToAssignPrincipleToCriterion,
-  handleEditCriterion,
 } from "./utils";
 import { relMtvPrincpleCriterion } from "@/config";
+import { AxiosError } from "axios";
 
 const getPrincipleFromAssessment = (
   principleId: string,
@@ -43,10 +43,9 @@ function AssessmentBuilderPrinciples({
   formMode,
   builderState,
   refetchPrinciples,
+  refetchAssessmentData,
   motivationCriteriaMutation,
   setIsPrincipleSelected,
-  setAssessment,
-  setBuilderState,
 }: {
   mtvId?: string;
   actId?: string;
@@ -57,12 +56,11 @@ function AssessmentBuilderPrinciples({
   formMode: FormMode;
   builderState: AssessmentBuilderState;
   refetchPrinciples?: () => void;
+  refetchAssessmentData: () => void;
   motivationCriteriaMutation: {
     mutateAsync: (data: { mtvId: string }) => Promise<{ content: Criterion[] }>;
   };
   setIsPrincipleSelected: React.Dispatch<React.SetStateAction<boolean>>;
-  setAssessment: (assessment: AssessmentPrinciple[]) => void;
-  setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const alert = useRef<AlertInfo>({
@@ -80,7 +78,7 @@ function AssessmentBuilderPrinciples({
   const [showErrors, setShowErrors] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const assignCriteriaToActorMutation = useUpdateMotivationActorCriteria(
+  const assignCriteriaToActorMutation = useUpdateActorCriteriaWithDefaultMetric(
     keycloak?.token || "",
     mtvId || "",
     actId || "",
@@ -183,35 +181,34 @@ function AssessmentBuilderPrinciples({
     mtvId || "",
   );
 
-  const createPrincipleToMotivation = () => {
-    const promise = mutateCreateMotivationPrinciple
-      .mutateAsync()
-      .then(() => {
-        alert.current = {
-          message: "Principle added to motivation successfully",
-        };
-        setShowErrors(false);
-        setPrincipleForm({
-          pri: "",
-          label: "",
-          description: "",
-        });
-        if (refetchPrinciples) {
-          refetchPrinciples();
-        }
-      })
-      .catch((err) => {
-        alert.current = {
-          message: "Error: " + (err.response?.data?.message || err.message),
-        };
-        throw err;
-      });
+  const createPrincipleToMotivation = async () => {
+    try {
+      const response = await mutateCreateMotivationPrinciple.mutateAsync();
 
-    toast.promise(promise, {
-      loading: "Adding principle to motivation...",
-      success: () => alert.current.message,
-      error: () => alert.current.message,
-    });
+      // Extract id from response object
+      const newPrincipleId = (response as { id?: string }).id || "";
+
+      alert.current = {
+        message: "Principle added to motivation successfully",
+      };
+      setShowErrors(false);
+      setPrincipleForm({
+        pri: "",
+        label: "",
+        description: "",
+      });
+      if (refetchPrinciples) {
+        refetchPrinciples();
+      }
+
+      return newPrincipleId;
+    } catch (error) {
+      const err = error as AxiosError;
+      alert.current = {
+        message: "Error: " + (err?.message || err?.response?.statusText || ""),
+      };
+      throw err;
+    }
   };
 
   const handleSubmit = async () => {
@@ -227,120 +224,99 @@ function AssessmentBuilderPrinciples({
       return;
     }
 
-    let selectedCriterion: Criterion | undefined;
+    let newPrincipleId: string | undefined;
 
+    // Handle principle creation first if needed
     if (formMode === "new") {
       if (
         principleForm?.pri &&
         principleForm.label &&
         principleForm.description
       ) {
-        createPrincipleToMotivation();
-        setBuilderState((prevState) => ({
-          ...prevState,
-          entityMode: "criterion",
-          formMode: "edit",
-          selectedId: selectedCriterion?.cri || builderState.selectedId || "",
-        }));
+        const createPrinciplePromise = createPrincipleToMotivation();
+
+        await toast.promise(createPrinciplePromise, {
+          loading: "Adding principle to motivation...",
+          success: () => alert.current.message,
+          error: () => alert.current.message,
+        });
+
+        newPrincipleId = await createPrinciplePromise;
       }
-    } else if (formMode === "select") {
-      const allMotivationCriteriaData =
-        await motivationCriteriaMutation.mutateAsync({
-          mtvId: mtvId || "",
-        });
-
-      const allMotivationCriteria = allMotivationCriteriaData?.content || [];
-
-      const formattedPriCri = formatDataToAssignPrincipleToCriterion({
-        principleId: selectedRegistryPrincipleId || "",
-        criterionId: selectedCriterionPidGraph || "",
-        allMotivationCriteria: allMotivationCriteria,
-      }) || [
-        {
-          principleId: "",
-          criterionId: "",
-          relation: relMtvPrincpleCriterion,
-          annotation_text: "",
-          annotation_url: "",
-        },
-      ];
-
-      const promise = assignPrincipleToCriterion
-        .mutateAsync(formattedPriCri)
-        .catch((err) => {
-          alert.current = {
-            message: t("page_motivations.toast_manage_cri_fail"),
-          };
-          throw err;
-        })
-        .then(() => {
-          alert.current = {
-            message: t("page_motivations.toast_manage_cri_success"),
-          };
-
-          if (!principleId || principleId === "untagged") {
-            const criImp = selectedCriteria?.map((item) => ({
-              criterion_id: item.id,
-              imperative_id: item.imperative.id,
-            }));
-
-            const imperative_id = allCriteria?.find(
-              (criterion) => criterion?.id === selectedCriterionPidGraph,
-            )?.imperative;
-
-            criImp.push({
-              criterion_id: selectedCriterionPidGraph || "",
-              imperative_id:
-                typeof imperative_id === "string"
-                  ? imperative_id
-                  : imperative_id?.id || "",
-            });
-
-            try {
-              assignCriteriaToActorMutation.mutateAsync(criImp);
-            } catch (error) {
-              console.error("Assign criteria to actor failed:", error);
-              throw error;
-            }
-          }
-
-          selectedCriterion = allCriteria?.find(
-            (criterion) =>
-              criterion?.cri?.toLowerCase() ===
-              builderState?.selectedId?.toLowerCase(),
-          );
-
-          const updatedAssessment = handleEditCriterion(
-            builderState?.selectedId || "",
-            {
-              cri: selectedCriterion?.cri || "",
-              label: selectedCriterion?.label || "",
-              description: selectedCriterion?.description || "",
-              imperative: String(selectedCriterion?.imperative || ""),
-            },
-            selectedRegistryPrincipleId,
-            allPrinciples,
-            assessment,
-          );
-
-          if (updatedAssessment.length > 0) {
-            setAssessment(updatedAssessment);
-          }
-
-          setBuilderState((prevState) => ({
-            ...prevState,
-            entityMode: "criterion",
-            formMode: "edit",
-            selectedId: selectedCriterion?.cri || builderState.selectedId || "",
-          }));
-        });
-
-      toast.promise(promise, {
-        loading: t("page_motivations.toast_manage_cri_progress"),
-        success: () => `${alert.current.message}`,
-        error: () => `${alert.current.message}`,
-      });
     }
+    const allMotivationCriteriaData =
+      await motivationCriteriaMutation.mutateAsync({
+        mtvId: mtvId || "",
+      });
+
+    const allMotivationCriteria = allMotivationCriteriaData?.content || [];
+
+    const formattedPriCri = formatDataToAssignPrincipleToCriterion({
+      principleId: newPrincipleId || selectedRegistryPrincipleId || "",
+      criterionId: selectedCriterionPidGraph || "",
+      allMotivationCriteria: allMotivationCriteria,
+    }) || [
+      {
+        principleId: "",
+        criterionId: "",
+        relation: relMtvPrincpleCriterion,
+        annotation_text: "",
+        annotation_url: "",
+      },
+    ];
+
+    const promise = assignPrincipleToCriterion
+      .mutateAsync(formattedPriCri)
+      .catch((err) => {
+        alert.current = {
+          message: t("page_motivations.toast_manage_cri_fail"),
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message: t("page_motivations.toast_manage_cri_success"),
+        };
+
+        if (!principleId || principleId === "untagged") {
+          const criImp = selectedCriteria?.map((item) => ({
+            criterion_id: item.id,
+            imperative_id: item.imperative.id,
+          }));
+
+          const imperative_id = allCriteria?.find(
+            (criterion) => criterion?.id === selectedCriterionPidGraph,
+          )?.imperative;
+
+          criImp.push({
+            criterion_id: selectedCriterionPidGraph || "",
+            imperative_id:
+              typeof imperative_id === "string"
+                ? imperative_id
+                : imperative_id?.id || "",
+          });
+
+          try {
+            assignCriteriaToActorMutation.mutateAsync(criImp).then(() => {
+              refetchAssessmentData();
+            });
+          } catch (error) {
+            console.error("Assign criteria to actor failed:", error);
+            throw error;
+          }
+        }
+      })
+      .finally(() => {
+        if (principleId && principleId !== "untagged") {
+          refetchAssessmentData();
+        }
+      });
+
+    toast.promise(promise, {
+      loading: t("page_motivations.toast_manage_cri_progress"),
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
 
     setIsPrincipleSelected(false);
     setSelectedRegistryPrincipleId(null);

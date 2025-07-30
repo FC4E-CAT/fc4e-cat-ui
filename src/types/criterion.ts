@@ -54,6 +54,7 @@ export interface CriterionInput {
   description: string;
   imperative: string;
   type_criterion_id?: string;
+  motivation_id?: string;
 }
 
 export interface CriterionMetric {
