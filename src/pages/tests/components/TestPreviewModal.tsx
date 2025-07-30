@@ -17,6 +17,9 @@ import { TestAutoHttpsCheckForm } from "@/pages/assessments/components/tests/Tes
 import { TestAutoMd1Form } from "@/pages/assessments/components/tests/TestAutoMd1Form";
 import { TestAutoValidationForm } from "@/pages/assessments/components/tests/TestAutoValidationForm";
 import styles from "@/pages/assessment-builder/AssessmentBuilder.module.css";
+import { TestTRLForm } from "@/pages/assessments/components/tests/TestTRLForm";
+import { TestPercentForm } from "@/pages/assessments/components/tests/TestPercentForm";
+import { TestRatioForm } from "@/pages/assessments/components/tests/TestRatioForm";
 
 interface TestPreviewProps {
   test: TestInput;
@@ -57,16 +60,13 @@ const TestPreviewModal = ({
       <TestBinaryParamForm
         test={adaptedTest}
         onTestChange={() => {}}
-        criterionId={""}
-        principleId={""}
+        criterionId=""
+        principleId=""
       />,
     );
   } else if (
     testMethodName === "Number-Manual" ||
     testMethodName === "Number-Auto" ||
-    testMethodName === "Ratio-Manual" ||
-    testMethodName === "Percent-Manual" ||
-    testMethodName === "TRL-Manual" ||
     testMethodName === "Years-Manual"
   ) {
     const adaptedTest = {
@@ -90,8 +90,68 @@ const TestPreviewModal = ({
       <TestValueFormParam
         test={adaptedTest}
         onTestChange={() => {}}
-        criterionId={""}
-        principleId={""}
+        criterionId=""
+        principleId=""
+      />,
+    );
+  } else if (testMethodName === "TRL-Manual") {
+    const adaptedTest = {
+      id: test.tes || "",
+      name: test.label || "",
+      description: test.description || "",
+      type: testMethodName,
+      text: params?.map((p) => p.text).join("|") || "",
+      params: params?.map((p) => p.name).join("|") || "",
+      evidence_url: [],
+      tool_tip: params?.map((p) => p.tooltip).join("|") || "",
+    } as unknown as TestValueParam;
+
+    testParams.push(
+      <TestTRLForm
+        test={adaptedTest}
+        onTestChange={() => {}}
+        criterionId=""
+        principleId=""
+      />,
+    );
+  } else if (testMethodName === "Percent-Manual") {
+    const adaptedTest = {
+      id: test.tes || "",
+      name: test.label || "",
+      description: test.description || "",
+      type: testMethodName,
+      text: params?.map((p) => p.text).join("|") || "",
+      params: params?.map((p) => p.name).join("|") || "",
+      evidence_url: [],
+      tool_tip: params?.map((p) => p.tooltip).join("|") || "",
+    } as unknown as TestValueParam;
+
+    testParams.push(
+      <TestPercentForm
+        test={adaptedTest}
+        onTestChange={() => {}}
+        criterionId=""
+        principleId=""
+      />,
+    );
+  } else if (testMethodName === "Ratio-Manual") {
+    const adaptedTest = {
+      id: test.tes || "",
+      name: test.label || "",
+      description: test.description || "",
+      type: testMethodName,
+      text: params?.map((p) => p.text).join("|") || "",
+      params: params?.map((p) => p.name).join("|") || "",
+      evidence_url: [],
+      tool_tip: params?.map((p) => p.tooltip).join("|") || "",
+    } as unknown as TestValueParam;
+
+    testParams.push(
+      <TestRatioForm
+        test={adaptedTest}
+        onTestChange={() => {}}
+        criterionId=""
+        principleId=""
       />,
     );
   } else if (testMethodName === "Auto-Check-String-Binary") {
@@ -113,8 +173,8 @@ const TestPreviewModal = ({
         g069param=""
         test={adaptedTest}
         onTestChange={() => {}}
-        criterionId={""}
-        principleId={""}
+        criterionId=""
+        principleId=""
       />,
     );
   } else if (testMethodName === "Fully-Automated-Validation") {
@@ -155,8 +215,8 @@ const TestPreviewModal = ({
         g069param={defaultG069userInfo}
         test={adaptedTest}
         onTestChange={() => {}}
-        criterionId={""}
-        principleId={""}
+        criterionId=""
+        principleId=""
       />,
     );
   } else if (testMethodName === "Auto-Check-AARC-G069-Token-Introspection") {
@@ -178,8 +238,8 @@ const TestPreviewModal = ({
         g069param={defaultG069tokenIntrospection}
         test={adaptedTest}
         onTestChange={() => {}}
-        criterionId={""}
-        principleId={""}
+        criterionId=""
+        principleId=""
       />,
     );
   } else if (testMethodName === "Auto-Check-Url-Binary") {
@@ -200,8 +260,8 @@ const TestPreviewModal = ({
       <TestAutoHttpsCheckForm
         test={adaptedTest}
         onTestChange={() => {}}
-        criterionId={""}
-        principleId={""}
+        criterionId=""
+        principleId=""
       />,
     );
   } else if (
@@ -226,8 +286,8 @@ const TestPreviewModal = ({
       <TestAutoMd1Form
         test={adaptedTest}
         onTestChange={() => {}}
-        criterionId={""}
-        principleId={""}
+        criterionId=""
+        principleId=""
       />,
     );
   }

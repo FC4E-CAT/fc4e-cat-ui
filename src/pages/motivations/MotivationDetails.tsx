@@ -171,7 +171,7 @@ export default function MotivationDetails() {
         })
         .then(() => {
           alert.current = {
-            message: t("page_motivations.toast_asmt_delete_sucess"),
+            message: t("page_motivations.toast_asmt_delete_success"),
           };
           setDeleteActorModalConfig({
             ...deleteActorModalConfig,
@@ -622,7 +622,14 @@ export default function MotivationDetails() {
                                     ) : (
                                       <Link
                                         className="btn btn-light btn-sm m-1"
-                                        to={`/admin/motivations/${params.mtvId}/templates/actors/${item.id}/assessment-builder`}
+                                        to={buildRoute(
+                                          ROUTES.ADMIN.MOTIVATIONS
+                                            .ASSESSMENT_BUILDER,
+                                          {
+                                            mtvId: params.mtvId || "",
+                                            actId: item.id,
+                                          },
+                                        )}
                                       >
                                         <FaEdit />
                                       </Link>

@@ -4,7 +4,7 @@ import {
   useGetAllImperatives,
   useGetMotivationActorCriteria,
   useUpdateCriterion,
-  useUpdateMotivationActorCriteria,
+  useUpdateActorCriteriaWithDefaultMetric,
 } from "@/api";
 import { AuthContext } from "@/auth";
 import {
@@ -81,6 +81,18 @@ function AssessmentBuilderCriteria({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const imperativesDropdownRef = useRef<HTMLDivElement>(null);
   const scrollableContainerRef = useRef<HTMLDivElement>(null);
+
+  // useEffect(() => {
+  //   if (assessment?.length === 0) {
+  //     setPrincipleTag(null);
+  //     setCriterionForm({
+  //       cri: "",
+  //       label: "",
+  //       description: "",
+  //       imperative: "",
+  //     });
+  //   }
+  // }, [assessment, setBuilderState]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -196,6 +208,7 @@ function AssessmentBuilderCriteria({
     description: criterionForm?.description || "",
     imperative: criterionForm?.imperative || "",
     type_criterion_id: "pid_graph:4A47BB1A",
+    motivation_id: mtvId || "",
   });
 
   const selectedCriterionPidGraph = allCriteria?.find(
@@ -229,7 +242,7 @@ function AssessmentBuilderCriteria({
     mtvId || "",
   );
 
-  const assignCriteriaToActorMutation = useUpdateMotivationActorCriteria(
+  const assignCriteriaToActorMutation = useUpdateActorCriteriaWithDefaultMetric(
     keycloak?.token || "",
     mtvId || "",
     actId || "",
@@ -527,7 +540,7 @@ function AssessmentBuilderCriteria({
       }
     }
 
-    if (formMode !== "edit") {
+    if (formMode !== "edit" || (formMode === "edit" && principleTag)) {
       try {
         await assignCriteriaToActorMutation.mutateAsync(criImp);
       } catch (error) {

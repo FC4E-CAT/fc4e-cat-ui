@@ -88,6 +88,22 @@ function AssessmentBuilder() {
             assessmentData?.principles?.[0]?.criteria?.length > 0 ? 0 : -1,
         });
       }
+    } else if (
+      ((builderState.formMode !== "none" &&
+        builderState.entityMode !== "none" &&
+        builderState.entityMode !== "criterion") ||
+        (builderState.formMode === "edit" &&
+          builderState.entityMode === "criterion")) &&
+      assessmentData &&
+      assessmentData?.principles?.length === 0
+    ) {
+      setBuilderState({
+        formMode: "none",
+        entityMode: "none",
+        selectedId: "",
+        selectedPrincipleIndex: -1,
+        selectedCriterionIndex: -1,
+      });
     }
   }, [assessmentData, builderState.formMode, builderState.entityMode]);
 
@@ -248,28 +264,43 @@ function AssessmentBuilder() {
     setMotivationMetrics(result);
   }, [metricData, mtrHasNextPage, mtrFetchNextPage]);
 
+  useEffect(() => {
+    return () => {
+      setAssessment([]);
+      setMotivationMetrics([]);
+      setBuilderState({
+        formMode: "none",
+        entityMode: "none",
+        selectedId: "",
+        selectedPrincipleIndex: -1,
+        selectedCriterionIndex: -1,
+      });
+      setIsPrincipleSelected(false);
+      setIsTestSelected(false);
+    };
+  }, []);
+
   const handleAddCriterion = () => {
-    setBuilderState((prevState) => ({
-      ...prevState,
+    setBuilderState({
       formMode: "new",
       entityMode: "criterion",
       selectedId: "",
       selectedPrincipleIndex: -1,
       selectedCriterionIndex: -1,
-    }));
+    });
   };
 
   const getMetricId = useCallback(() => {
-    const metricId =
+    return (
       assessment
         ?.flatMap((principle) => principle.criteria || [])
-        ?.find((criterion) => criterion.id === builderState.selectedId)?.metric
-        ?.id || "";
-    const matchingMetric = motivationMetrics?.find(
-      (metric) => metric?.metric_mtr === metricId,
+        ?.find(
+          (criterion) =>
+            criterion?.id?.toLowerCase() ===
+            builderState.selectedId?.toLowerCase(),
+        )?.metric?.db_id || ""
     );
-    return matchingMetric?.metric_id || "";
-  }, [assessment, builderState.selectedId, motivationMetrics]);
+  }, [assessment, builderState.selectedId]);
 
   if (isLoading) {
     return (
@@ -301,7 +332,6 @@ function AssessmentBuilder() {
               )}
             </div>
             <div className={styles["header-actions"]}>
-              <button className={styles["btn-secondary"]}>Preview</button>
               {isPublished ? (
                 <button
                   className={styles["btn-outline-primary"]}
@@ -390,7 +420,10 @@ function AssessmentBuilder() {
           >
             <div className={styles["column-header"]}>
               <div className={styles["builder-header-content"]}>
-                <h3>Builder</h3>
+                <h3>
+                  Builder (
+                  {builderState.entityMode ? builderState.entityMode : null})
+                </h3>
                 <div className={styles["principle-tabs"]}>
                   <button
                     className={`${styles["tab-btn"]} ${builderState.formMode === "new" ? styles["active"] : ""} ${builderState.formMode === "none" ? styles["disabled"] : ""}`}
@@ -478,7 +511,6 @@ function AssessmentBuilder() {
                   mtvId={mtvId || ""}
                   actId={actId || ""}
                   formMode={builderState.formMode}
-                  setAssessment={setAssessment}
                   assessment={assessment}
                   allPrinciples={allPrinciples}
                   allCriteria={allCriteria}
@@ -494,12 +526,12 @@ function AssessmentBuilder() {
                   }
                   builderState={builderState}
                   refetchPrinciples={refetchPrinciples}
+                  refetchAssessmentData={refetchAssessmentData}
                   motivationCriteriaMutation={motivationCriteriaMutation}
                   setIsPrincipleSelected={setIsPrincipleSelected}
-                  setBuilderState={setBuilderState}
                 />
               )}
-              {builderState.entityMode === "tests" && (
+              {builderState.entityMode === "test" && (
                 <AssessmentBuilderTests
                   assessment={assessment}
                   builderState={builderState}

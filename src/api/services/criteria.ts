@@ -119,7 +119,14 @@ export const useGetAllImperatives = ({
 
 export const useCreateCriterion = (
   token: string,
-  { cri, label, description, imperative, type_criterion_id }: CriterionInput,
+  {
+    cri,
+    label,
+    description,
+    imperative,
+    type_criterion_id,
+    motivation_id,
+  }: CriterionInput,
 ) => {
   const queryClient = useQueryClient();
   return useMutation(
@@ -132,6 +139,7 @@ export const useCreateCriterion = (
           description,
           imperative,
           type_criterion_id,
+          motivation_id,
         },
       );
       return response.data;

@@ -19,7 +19,7 @@ import styles from "./AssessmentBuilder.module.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import {
   useGetMotivationActorCriteria,
-  useUpdateMotivationActorCriteria,
+  useUpdateActorCriteriaWithDefaultMetric,
 } from "@/api";
 
 function AssessmentBuilderStructure({
@@ -53,7 +53,7 @@ function AssessmentBuilderStructure({
 
   const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
 
-  const assignCriteriaToActorMutation = useUpdateMotivationActorCriteria(
+  const assignCriteriaToActorMutation = useUpdateActorCriteriaWithDefaultMetric(
     keycloak?.token || "",
     mtvId || "",
     actId || "",
@@ -282,7 +282,9 @@ function AssessmentBuilderStructure({
                   <div
                     key={criterionIndex}
                     className={`${styles["tree-item"]} ${styles["principle-item"]} ${styles["clickable"]} ${styles["nested"]}  ${
-                      selectedId === criterion.id ? styles["selected"] : ""
+                      selectedId?.toLowerCase() === criterion.id?.toLowerCase()
+                        ? styles["selected"]
+                        : ""
                     }`}
                     onClick={() =>
                       setBuilderState({
@@ -354,7 +356,7 @@ function AssessmentBuilderStructure({
         );
       })}
 
-      {/* Untagged Criteria */}
+      {/* Criteria with no Principles */}
       {(() => {
         const untaggedCriteria = assessment
           ?.filter((principle) => {
@@ -379,7 +381,7 @@ function AssessmentBuilderStructure({
                   <FaFolder />
                 </span>
                 <span className={styles["principle-display"]}>
-                  Untagged Criteria
+                  Criteria with no Principles
                 </span>
                 <span style={{ marginLeft: "auto", marginRight: "8px" }}>
                   {collapsedPrinciples.has("untagged") ? (
