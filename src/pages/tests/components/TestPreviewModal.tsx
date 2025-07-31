@@ -16,10 +16,10 @@ import { TestAutoG069Form } from "@/pages/assessments/components/tests/TestAutoG
 import { TestAutoHttpsCheckForm } from "@/pages/assessments/components/tests/TestAutoHttpsCheckForm";
 import { TestAutoMd1Form } from "@/pages/assessments/components/tests/TestAutoMd1Form";
 import { TestAutoValidationForm } from "@/pages/assessments/components/tests/TestAutoValidationForm";
-import styles from "@/pages/assessment-builder/AssessmentBuilder.module.css";
 import { TestTRLForm } from "@/pages/assessments/components/tests/TestTRLForm";
 import { TestPercentForm } from "@/pages/assessments/components/tests/TestPercentForm";
 import { TestRatioForm } from "@/pages/assessments/components/tests/TestRatioForm";
+import styles from "@/pages/assessment-builder/AssessmentBuilder.module.css";
 
 interface TestPreviewProps {
   test: TestInput;
@@ -27,6 +27,8 @@ interface TestPreviewProps {
   testMethodName?: string;
   hasEvidenceParam?: boolean;
   onTestDelete?: () => void;
+  onTestCancel?: () => void;
+  onTestSave?: () => void;
 }
 
 const TestPreviewModal = ({
@@ -35,6 +37,8 @@ const TestPreviewModal = ({
   testMethodName,
   hasEvidenceParam,
   onTestDelete,
+  onTestCancel,
+  onTestSave,
 }: TestPreviewProps) => {
   const testParams: JSX.Element[] = [];
 
@@ -295,7 +299,9 @@ const TestPreviewModal = ({
   return (
     <>
       {testParams?.length > 0 ? (
-        <div className="border rounded cat-test-div position-relative">
+        <div
+          className={`border rounded cat-test-div position-relative ${onTestSave ? styles["test-preview-modal"] : ""}`}
+        >
           {onTestDelete && (
             <span
               onClick={(e) => {
@@ -307,15 +313,32 @@ const TestPreviewModal = ({
                 top: "12px",
                 right: "12px",
                 cursor: "pointer",
+                zIndex: 1001,
               }}
             >
               <FaTrash className={styles["delete-icon"]} size="16px" />
             </span>
           )}
-          {testParams}
+          <div className={styles["test-preview-container"]}>
+            {test?.tes ||
+            test?.label ||
+            test?.description ||
+            params?.[0]?.name ||
+            params?.[0]?.text ||
+            params?.[0]?.tooltip ? (
+              testParams
+            ) : (
+              <div className="p-3 text-center">
+                <span className="text-secondary">
+                  Complete the form fields in the Builder to see the preview of
+                  the test.
+                </span>
+              </div>
+            )}
+          </div>
 
           {hasEvidenceParam && (
-            <div className="mt-4 mb-2">
+            <div className="mb-2">
               <span className="fw-light-500 text-sm text-secondary">
                 <strong>
                   Can you provide public evidence of such a declaration?
@@ -330,6 +353,25 @@ const TestPreviewModal = ({
               <EvidenceURLS urls={[]} onListChange={() => {}} noTitle={true} />
             </div>
           )}
+          {typeof onTestSave === "function" &&
+            typeof onTestCancel === "function" && (
+              <div className={styles["form-actions-tests"]}>
+                <button
+                  type="button"
+                  className={styles["btn-secondary"]}
+                  onClick={onTestCancel}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className={styles["btn-primary"]}
+                  onClick={onTestSave}
+                >
+                  Create Test
+                </button>
+              </div>
+            )}
         </div>
       ) : null}
     </>

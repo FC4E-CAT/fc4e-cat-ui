@@ -54,6 +54,10 @@ function AssessmentBuilderMetric({
   onClose,
 }: AssessmentBuilderMetricProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
+  const { t } = useTranslation();
+  const alert = useRef<AlertInfo>({
+    message: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
 
@@ -76,14 +80,12 @@ function AssessmentBuilderMetric({
 
   const [metricConfig, setMetricConfig] =
     useState<MetricConfiguration>(defaultConfig);
-  const { t } = useTranslation();
-  const alert = useRef<AlertInfo>({
-    message: "",
-  });
+
+  const [initialAdvancedSettigns, setInitialAdvancedSettigs] =
+    useState<MetricConfiguration>(defaultConfig);
 
   useEffect(() => {
     setShowErrors(false);
-
     // Find the current criterion in the assessment data
     const currentCriterion = assessment
       ?.flatMap((principle) => principle.criteria)
@@ -116,6 +118,7 @@ function AssessmentBuilderMetric({
               0,
           };
           setMetricConfig(existingMetricConfig);
+          setInitialAdvancedSettigs(existingMetricConfig);
           return;
         }
       }
@@ -123,6 +126,7 @@ function AssessmentBuilderMetric({
 
     // If no existing configuration found, use default config
     setMetricConfig(defaultConfig);
+    setInitialAdvancedSettigs(defaultConfig);
   }, [
     defaultConfig,
     criterionPidGraph,
@@ -171,8 +175,6 @@ function AssessmentBuilderMetric({
         .find((criterion) => criterion.id === builderState.selectedId)
         ?.metric?.db_id;
 
-      console.log("algorithmDbId:", algorithmDbId);
-
       if (algorithmDbId) {
         const promise = mutateUpdateMotivationAlgorithm
           .mutateAsync()
@@ -205,6 +207,16 @@ function AssessmentBuilderMetric({
       setIsLoading(false);
     }
   };
+
+  const haveAdvancedSettingsChanged = useMemo(() => {
+    return (
+      initialAdvancedSettigns.type_algorithm_id !==
+        metricConfig.type_algorithm_id ||
+      initialAdvancedSettigns.type_benchmark_id !==
+        metricConfig.type_benchmark_id ||
+      initialAdvancedSettigns.value_benchmark !== metricConfig.value_benchmark
+    );
+  }, [metricConfig, initialAdvancedSettigns]);
 
   return (
     <div className={styles["algorithm-config-content"]}>
@@ -524,8 +536,9 @@ function AssessmentBuilderMetric({
           Cancel
         </button>
         <button
-          className={styles["config-save-btn"]}
+          className={styles["btn-primary"]}
           onClick={handleSaveAlgorithmConfiguration}
+          disabled={!haveAdvancedSettingsChanged}
         >
           {isLoading ? "Saving..." : "Save Configuration"}
         </button>

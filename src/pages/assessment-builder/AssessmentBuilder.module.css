@@ -75,7 +75,7 @@
   display: flex;
   min-height: 60px;
   padding: 0.8rem 1rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 2px solid #dbdfe3;
 }
 
 .structure-column .column-header {
@@ -121,12 +121,12 @@
 .column-content {
   position: relative;
   flex: 1;
-  padding: 1rem 0.5rem;
+  padding: 0.8rem 0.5rem;
   overflow-y: auto;
 }
 
 .column-content:has(.builder-preview) {
-  padding: 1rem;
+  padding: 1.5rem;
   overflow: hidden;
   background: #f8f9fa;
 }
@@ -138,7 +138,7 @@
 
 .principle-form h4 {
   padding-bottom: 0.3rem;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.3rem;
   font-size: 1rem;
   font-weight: 600;
   color: #374151;
@@ -207,14 +207,21 @@
 }
 
 .form-actions-tests {
-  position: absolute;
-  bottom: 12px;
-  width: 98%;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.8rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 .form-actions-tests .btn-primary {
-  position: absolute;
-  right: 16px;
+  height: 36px;
+  padding: 0.4rem 0.5rem;
+}
+
+.form-actions-tests .btn-secondary {
+  height: 36px;
+  padding: 0.4rem 0.5rem;
 }
 
 .header-actions .btn-secondary,
@@ -452,7 +459,6 @@
 .column-content .builder-preview {
   height: 100%;
   padding: 2rem;
-  margin: 0.5rem;
   overflow: auto;
   background: #fff;
   border-radius: 0.5rem;
@@ -788,7 +794,6 @@
   }
 
   .form-actions-tests {
-    position: static;
     width: 100%;
     margin-top: 0.5rem;
   }
@@ -823,7 +828,7 @@
   .header-content {
     flex-direction: column;
     gap: 1rem;
-    align-items: flex-start;
+    align-items: flex-end;
   }
 }
 
@@ -961,23 +966,6 @@
 .config-cancel-btn:hover {
   background: #f9fafb;
   border-color: #9ca3af;
-}
-
-.config-save-btn {
-  padding: 0.3rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: white;
-  cursor: pointer;
-  background: #3b82f6;
-  border: none;
-  border-radius: 0.375rem;
-  transition: all 0.2s;
-}
-
-.config-save-btn:hover {
-  background: #2563eb;
-  box-shadow: 0 2px 4px rgb(59 130 246 / 20%);
 }
 
 /* Error Message Styles */
@@ -1363,9 +1351,20 @@
   transform: scale(1.1);
 }
 
+.test-preview-container {
+  position: relative;
+}
+
+.test-preview-modal {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
+}
+
 .test-method-item {
   padding: 0.5rem 0.75rem;
   font-weight: 500;
+  cursor: pointer;
   border-bottom: 1px solid #f3f4f6;
 }
 

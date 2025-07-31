@@ -48,19 +48,17 @@ export const TestBinaryParamForm = (props: AssessmentTestProps) => {
     <div>
       <Row>
         <div style={{ width: "75%" }}>
-          {props.test?.name && (
-            <div className="flex items-center gap-2">
-              <span className="cat-test-title ">
-                <span className="">{props.test.id}</span> / {props.test.name}
-                <span className="mt-2 p-2  fs-6">
-                  <TestToolTip
-                    tipId={"text-" + props.test.id}
-                    tipText={testDescription || ""}
-                  />
-                </span>
+          <div className="flex items-center gap-2">
+            <span className="cat-test-title ">
+              <span className="">{props.test.id}</span> / {props.test?.name}
+              <span className="mt-2 p-2  fs-6">
+                <TestToolTip
+                  tipId={"text-" + props.test.id}
+                  tipText={testDescription || ""}
+                />
               </span>
-            </div>
-          )}
+            </span>
+          </div>
         </div>
       </Row>
       <Row className="d-flex justify-content-between">

@@ -7,6 +7,8 @@ import {
   AssessmentCriterionImperative,
   MetricFull,
   AlertInfo,
+  AssessmentTest,
+  RegistryResource,
 } from "@/types";
 import { FaExclamationCircle, FaInfoCircle, FaSlidersH } from "react-icons/fa";
 import TestPreviewModal from "../tests/components/TestPreviewModal";
@@ -16,12 +18,18 @@ import {
   useUpdateMotivationMetricTests,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import { RegistryTest } from "@/types/tests";
+import { RegistryTest, TestInput, TestParam } from "@/types/tests";
 import { relMtvMetricTest } from "@/config";
 import toast from "react-hot-toast";
 import styles from "./AssessmentBuilder.module.css";
 import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
 import { removeTestFromUntaggedCriterion } from "./utils/assessmentBuilderUtils";
+import { useGetAllTestMethods } from "@/api/services/registry";
+import {
+  CancelFormMotivationTest,
+  CreateFormMotivationTest,
+} from "@/custom-hooks/usePubSub/events/assessmentBuilder";
+import usePublish from "@/custom-hooks/usePubSub/usePublish";
 
 interface AssessmentBuilderPreviewProps {
   assessment: AssessmentPrinciple[];
@@ -37,6 +45,9 @@ interface AssessmentBuilderPreviewProps {
   setIsPrincipleSelected: React.Dispatch<React.SetStateAction<boolean>>;
   isTestSelected: boolean;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
+  test: TestInput;
+  params: TestParam[];
+  hasEvidence: boolean;
 }
 
 function AssessmentBuilderPreview({
@@ -53,6 +64,9 @@ function AssessmentBuilderPreview({
   setIsPrincipleSelected,
   isTestSelected,
   setIsTestSelected,
+  test,
+  params,
+  hasEvidence,
 }: AssessmentBuilderPreviewProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [isConfiguring, setIsConfiguring] = useState(false);
@@ -63,10 +77,16 @@ function AssessmentBuilderPreview({
     testLabel: "",
   });
   const { t } = useTranslation();
-
   const alert = useRef<AlertInfo>({
     message: "",
   });
+
+  const { publish: saveTestCreation } = usePublish<void>(
+    CreateFormMotivationTest.type,
+  );
+  const { publish: cancelTestCreation } = usePublish<void>(
+    CancelFormMotivationTest.type,
+  );
 
   useEffect(() => {
     if (
@@ -123,6 +143,18 @@ function AssessmentBuilderPreview({
       isRegistered: showDeleteModal?.testId && registered ? registered : false,
     },
   );
+
+  const { data: testMethodsData } = useGetAllTestMethods({
+    size: 100,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+    search: "",
+    enabled: true,
+  });
+
+  // Extract test methods from the paginated data structure
+  const testMethods: RegistryResource[] =
+    testMethodsData?.pages?.flatMap((page) => page.content) || [];
 
   useEffect(() => {
     setSelectedTests(
@@ -182,6 +214,39 @@ function AssessmentBuilderPreview({
     });
   };
 
+  const getTestParams = (test: AssessmentTest) => {
+    // Handle single values vs pipe-separated values
+    const names =
+      "params" in test && test.params
+        ? typeof test.params === "string" && test.params.includes("|")
+          ? test.params.split("|")
+          : [test.params]
+        : [];
+
+    const texts =
+      "text" in test && test.text
+        ? typeof test.text === "string" && test.text.includes("|")
+          ? test.text.split("|")
+          : [test.text]
+        : [];
+
+    const tooltips =
+      "tool_tip" in test && test.tool_tip
+        ? typeof test.tool_tip === "string" && test.tool_tip.includes("|")
+          ? test.tool_tip.split("|")
+          : [test.tool_tip]
+        : [];
+
+    const maxLength = Math.max(names.length, texts.length, tooltips.length);
+
+    return Array.from({ length: maxLength }, (_, index) => ({
+      id: index,
+      name: names[index] || "",
+      text: texts[index] || "",
+      tooltip: tooltips[index] || "",
+    }));
+  };
+
   const confirmDeleteTest = () => {
     if (showDeleteModal.testId) {
       handleTestDelete(showDeleteModal.testId);
@@ -227,13 +292,32 @@ function AssessmentBuilderPreview({
                   )}
                 </div>
                 <div className={styles["advanced-settings-container"]}>
-                  <button
-                    className={styles["advanced-settings-btn"]}
-                    onClick={() => setIsConfiguring((prev) => !prev)}
-                    disabled={isConfiguring}
-                  >
-                    <FaSlidersH /> Advanced Settings
-                  </button>
+                  {isConfiguring || !isPrincipleAssigned ? (
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={
+                        <Tooltip id="test-section-disabled-tooltip">
+                          You must add a principle first in order to can change
+                          the advanced settings
+                        </Tooltip>
+                      }
+                    >
+                      <button
+                        className={styles["advanced-settings-btn"]}
+                        onClick={() => setIsConfiguring((prev) => !prev)}
+                        disabled={isConfiguring || !isPrincipleAssigned}
+                      >
+                        <FaSlidersH /> Advanced Settings
+                      </button>
+                    </OverlayTrigger>
+                  ) : (
+                    <button
+                      className={styles["advanced-settings-btn"]}
+                      onClick={() => setIsConfiguring((prev) => !prev)}
+                    >
+                      <FaSlidersH /> Advanced Settings
+                    </button>
+                  )}
 
                   {/* Advanced Settings Modal positioned relative to button */}
                   {isConfiguring && (
@@ -454,6 +538,29 @@ function AssessmentBuilderPreview({
                   </div>
                 </OverlayTrigger>
               </div>
+              {isTestSelected && builderState.formMode === "new" && (
+                <TestPreviewModal
+                  test={{
+                    tes: test.tes || "",
+                    label: test.label || "",
+                    description: test.description || "",
+                  }}
+                  params={params}
+                  testMethodName={
+                    testMethods?.find(
+                      (testMethod) => testMethod?.id === test?.test_method_id,
+                    )?.label || ""
+                  }
+                  hasEvidenceParam={hasEvidence}
+                  onTestCancel={() =>
+                    cancelTestCreation(CancelFormMotivationTest.type, undefined)
+                  }
+                  onTestSave={() =>
+                    saveTestCreation(CreateFormMotivationTest.type, undefined)
+                  }
+                />
+              )}
+
               {(() => {
                 const tests =
                   assessment[builderState.selectedPrincipleIndex || 0]
@@ -475,46 +582,7 @@ function AssessmentBuilderPreview({
                               label: test.name || "",
                               description: test.description || "",
                             }}
-                            params={(() => {
-                              // Handle single values vs pipe-separated values
-                              const names =
-                                "params" in test && test.params
-                                  ? typeof test.params === "string" &&
-                                    test.params.includes("|")
-                                    ? test.params.split("|")
-                                    : [test.params]
-                                  : [];
-                              const texts =
-                                "text" in test && test.text
-                                  ? typeof test.text === "string" &&
-                                    test.text.includes("|")
-                                    ? test.text.split("|")
-                                    : [test.text]
-                                  : [];
-                              const tooltips =
-                                "tool_tip" in test && test.tool_tip
-                                  ? typeof test.tool_tip === "string" &&
-                                    test.tool_tip.includes("|")
-                                    ? test.tool_tip.split("|")
-                                    : [test.tool_tip]
-                                  : [];
-
-                              const maxLength = Math.max(
-                                names.length,
-                                texts.length,
-                                tooltips.length,
-                              );
-
-                              return Array.from(
-                                { length: maxLength },
-                                (_, index) => ({
-                                  id: index,
-                                  name: names[index] || "",
-                                  text: texts[index] || "",
-                                  tooltip: tooltips[index] || "",
-                                }),
-                              );
-                            })()}
+                            params={getTestParams(test)}
                             testMethodName={test.type}
                             onTestDelete={() =>
                               setShowDeleteModal({

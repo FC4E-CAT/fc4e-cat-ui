@@ -26,6 +26,7 @@ import AssessmentBuilderCriteria from "./AssessmentBuilderCriteria";
 import AssessmentBuilderPrinciples from "./AssessmentBuilderPrinciples";
 import AssessmentBuilderTests from "./AssessmentBuilderTests";
 import styles from "./AssessmentBuilder.module.css";
+import { TestInput, TestParam } from "@/types/tests";
 
 function AssessmentBuilder() {
   const { mtvId, actId } = useParams<{
@@ -50,6 +51,16 @@ function AssessmentBuilder() {
   });
   const [isPrincipleSelected, setIsPrincipleSelected] = useState(false);
   const [isTestSelected, setIsTestSelected] = useState(false);
+  const [test, setTest] = useState<TestInput>({
+    tes: "",
+    label: "",
+    description: "",
+    test_method_id: "",
+    label_test_definition: "",
+    param_type: "onscreen",
+  });
+  const [params, setParams] = useState<TestParam[]>([]);
+  const [hasEvidence, setHasEvidence] = useState(false);
 
   const {
     data: assessmentData,
@@ -88,22 +99,6 @@ function AssessmentBuilder() {
             assessmentData?.principles?.[0]?.criteria?.length > 0 ? 0 : -1,
         });
       }
-    } else if (
-      ((builderState.formMode !== "none" &&
-        builderState.entityMode !== "none" &&
-        builderState.entityMode !== "criterion") ||
-        (builderState.formMode === "edit" &&
-          builderState.entityMode === "criterion")) &&
-      assessmentData &&
-      assessmentData?.principles?.length === 0
-    ) {
-      setBuilderState({
-        formMode: "none",
-        entityMode: "none",
-        selectedId: "",
-        selectedPrincipleIndex: -1,
-        selectedCriterionIndex: -1,
-      });
     }
   }, [assessmentData, builderState.formMode, builderState.entityMode]);
 
@@ -265,20 +260,20 @@ function AssessmentBuilder() {
   }, [metricData, mtrHasNextPage, mtrFetchNextPage]);
 
   useEffect(() => {
-    return () => {
-      setAssessment([]);
-      setMotivationMetrics([]);
-      setBuilderState({
-        formMode: "none",
-        entityMode: "none",
-        selectedId: "",
-        selectedPrincipleIndex: -1,
-        selectedCriterionIndex: -1,
-      });
-      setIsPrincipleSelected(false);
-      setIsTestSelected(false);
-    };
-  }, []);
+    setAssessment([]);
+    setMotivationMetrics([]);
+    setBuilderState({
+      formMode: "none",
+      entityMode: "none",
+      selectedId: "",
+      selectedPrincipleIndex: -1,
+      selectedCriterionIndex: -1,
+    });
+    setIsPrincipleSelected(false);
+    setIsTestSelected(false);
+    setHasEvidence(false);
+    setParams([]);
+  }, [mtvId, actId]);
 
   const handleAddCriterion = () => {
     setBuilderState({
@@ -411,6 +406,9 @@ function AssessmentBuilder() {
               setIsPrincipleSelected={setIsPrincipleSelected}
               isTestSelected={isTestSelected}
               setIsTestSelected={setIsTestSelected}
+              test={test}
+              params={params}
+              hasEvidence={hasEvidence}
             />
           </div>
 
@@ -541,6 +539,12 @@ function AssessmentBuilder() {
                   refetchAssessmentData={refetchAssessmentData}
                   mtvId={mtvId || ""}
                   mtrId={getMetricId()}
+                  test={test}
+                  setTest={setTest}
+                  params={params}
+                  setParams={setParams}
+                  hasEvidence={hasEvidence}
+                  setHasEvidence={setHasEvidence}
                 />
               )}
             </div>
