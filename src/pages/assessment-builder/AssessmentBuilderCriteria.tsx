@@ -82,18 +82,6 @@ function AssessmentBuilderCriteria({
   const imperativesDropdownRef = useRef<HTMLDivElement>(null);
   const scrollableContainerRef = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   if (assessment?.length === 0) {
-  //     setPrincipleTag(null);
-  //     setCriterionForm({
-  //       cri: "",
-  //       label: "",
-  //       description: "",
-  //       imperative: "",
-  //     });
-  //   }
-  // }, [assessment, setBuilderState]);
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (

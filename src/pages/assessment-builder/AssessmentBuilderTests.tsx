@@ -28,6 +28,11 @@ import { useUpdateMotivationMetricTests } from "@/api";
 import { relMtvMetricTest } from "@/config";
 import toast from "react-hot-toast";
 import { addTestToUntaggedCriterion } from "./utils/assessmentBuilderUtils";
+import useSubscribe from "@/custom-hooks/usePubSub/useSubscribe";
+import {
+  CancelFormMotivationTest,
+  CreateFormMotivationTest,
+} from "@/custom-hooks/usePubSub/events/assessmentBuilder";
 
 interface AssessmentBuilderTestsProps {
   mtvId: string;
@@ -38,6 +43,12 @@ interface AssessmentBuilderTestsProps {
   setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
   refetchAssessmentData: () => void;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
+  test: TestInput;
+  setTest: React.Dispatch<React.SetStateAction<TestInput>>;
+  params: TestParam[];
+  setParams: React.Dispatch<React.SetStateAction<TestParam[]>>;
+  hasEvidence: boolean;
+  setHasEvidence: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function AssessmentBuilderTests({
@@ -49,6 +60,12 @@ function AssessmentBuilderTests({
   setAssessment,
   setBuilderState,
   setIsTestSelected,
+  test,
+  setTest,
+  params,
+  setParams,
+  hasEvidence,
+  setHasEvidence,
 }: AssessmentBuilderTestsProps) {
   const { t } = useTranslation();
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -56,22 +73,31 @@ function AssessmentBuilderTests({
     message: "",
   });
 
-  const [test, setTest] = useState<TestInput>({
-    tes: "",
-    label: "",
-    description: "",
-    test_method_id: "",
-    label_test_definition: "",
-    param_type: "onscreen",
-  });
-  const [params, setParams] = useState<TestParam[]>([]);
-  const [hasEvidence, setHasEvidence] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
-  const [selectedTestId, setSelectedTestId] = useState<string>("");
+  const [testId, setTestId] = useState<string>("");
 
   const formMode = builderState.formMode;
+
+  const resetTestStates = useCallback(() => {
+    setTest({
+      tes: "",
+      label: "",
+      description: "",
+      test_method_id: "",
+      test_question: "",
+      test_params: "",
+      tool_tip: "",
+      param_type: "onscreen",
+    });
+    setParams([]);
+    setHasEvidence(false);
+    setShowErrors(false);
+    setSearchTerm("");
+    setFilterType("all");
+    setTestId("");
+  }, [setTest, setParams, setHasEvidence]);
 
   const getSearchString = () => {
     if (filterType === "manual") {
@@ -139,8 +165,10 @@ function AssessmentBuilderTests({
   });
 
   // Extract test methods from the paginated data structure
-  const testMethods: RegistryResource[] =
-    testMethodsData?.pages?.flatMap((page) => page.content) || [];
+  const testMethods: RegistryResource[] = useMemo(
+    () => testMethodsData?.pages?.flatMap((page) => page.content) || [],
+    [testMethodsData?.pages],
+  );
 
   const filteredTestMethods = testMethods.filter((method) => {
     const matchesSearch = method.label
@@ -156,25 +184,28 @@ function AssessmentBuilderTests({
     return matchesSearch;
   });
 
-  const addNewParams = useCallback((numberOfParams = 1) => {
-    const tmpParams = Array.from(
-      { length: numberOfParams },
-      (_, i) => i + 1,
-    )?.map((i) => ({
-      id: i,
-      name: "",
-      text: "",
-      tooltip: "",
-    }));
-    setParams(tmpParams);
-  }, []);
+  const addNewParams = useCallback(
+    (numberOfParams = 1) => {
+      const tmpParams = Array.from(
+        { length: numberOfParams },
+        (_, i) => i + 1,
+      )?.map((i) => ({
+        id: i,
+        name: "",
+        text: "",
+        tooltip: "",
+      }));
+      setParams(tmpParams);
+    },
+    [setParams],
+  );
 
-  // Initialize test method to first available method
+  // Initialize test method to "Binary-Manual" if no method is selected
   useEffect(() => {
     if (testMethods?.length > 0 && !test?.test_method_id) {
       setTest((prevTest) => ({
         ...prevTest,
-        test_method_id: testMethods[0]?.id || "",
+        test_method_id: "pid_graph:8D79984F",
       }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -191,6 +222,8 @@ function AssessmentBuilderTests({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [test.test_method_id, JSON.stringify(testMethods)]);
 
+  useEffect(() => () => resetTestStates(), [resetTestStates]);
+
   const updateParam = (id: number, field: keyof TestParam, value: string) => {
     setParams((prev) =>
       prev.map((param) =>
@@ -199,7 +232,7 @@ function AssessmentBuilderTests({
     );
   };
 
-  const updateParamTestDef = () => {
+  const updateParamTestDef = useCallback(() => {
     let names = "";
     let text = "";
     let tips = "";
@@ -229,9 +262,9 @@ function AssessmentBuilderTests({
       test_params: names,
       tool_tip: tips,
     }));
-  };
+  }, [params, hasEvidence, setTest]);
 
-  const handleValidate = (): boolean => {
+  const handleValidate = useCallback((): boolean => {
     const isValid =
       test.tes.trim() !== "" &&
       test.label.trim() !== "" &&
@@ -246,17 +279,19 @@ function AssessmentBuilderTests({
 
     setShowErrors(!isValid);
     return isValid;
-  };
+  }, [test, params]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
+    resetTestStates();
     setBuilderState((prevState) => ({
       ...prevState,
-      entityMode: "none",
-      formMode: "none",
+      entityMode: "criterion",
+      formMode: "edit",
     }));
-  };
+    setIsTestSelected(false);
+  }, [resetTestStates, setBuilderState, setIsTestSelected]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(() => {
     if (formMode === "new") {
       if (!handleValidate()) {
         return;
@@ -292,13 +327,9 @@ function AssessmentBuilderTests({
       relation: relMtvMetricTest,
     }));
 
-    if (
-      formMode === "select" &&
-      selectedTestId &&
-      !existingTestIds.includes(selectedTestId)
-    ) {
+    if (formMode === "select" && testId && !existingTestIds.includes(testId)) {
       metricAssignment.push({
-        test_id: selectedTestId,
+        test_id: testId,
         relation: relMtvMetricTest,
       });
     }
@@ -341,6 +372,7 @@ function AssessmentBuilderTests({
               alert.current = {
                 message: t("page_motivations.toast_assign_metric_success"),
               };
+              resetTestStates();
             });
 
           toast.promise(assignTestsToMetricPromise, {
@@ -376,9 +408,7 @@ function AssessmentBuilderTests({
         .then(() => {
           refetchAssessmentData();
           // Add test to untagged criterion if needed
-          const selectedTest = allTests.find(
-            (test) => test.id === selectedTestId,
-          );
+          const selectedTest = allTests.find((test) => test.id === testId);
           if (selectedTest) {
             addTestToUntaggedCriterion({
               testData: selectedTest,
@@ -391,6 +421,7 @@ function AssessmentBuilderTests({
           alert.current = {
             message: t("page_motivations.toast_assign_metric_success"),
           };
+          resetTestStates();
         });
 
       toast.promise(assignTestsToMetricPromise, {
@@ -401,7 +432,30 @@ function AssessmentBuilderTests({
     }
 
     setIsTestSelected(false);
-  };
+  }, [
+    allTests,
+    assessment,
+    builderState,
+    formMode,
+    mutateCreateTest,
+    mutationUpdateMetricTests,
+    refetchAssessmentData,
+    resetTestStates,
+    setAssessment,
+    setIsTestSelected,
+    t,
+    testId,
+    testMethods,
+    updateParamTestDef,
+    handleValidate,
+  ]);
+
+  useSubscribe<void>(CancelFormMotivationTest.type, handleCancel, [
+    handleCancel,
+  ]);
+  useSubscribe<void>(CreateFormMotivationTest.type, handleSubmit, [
+    handleSubmit,
+  ]);
 
   return (
     <>
@@ -412,7 +466,7 @@ function AssessmentBuilderTests({
               <button
                 className={styles["select-principle-btn"]}
                 onClick={handleSubmit}
-                disabled={!selectedTestId}
+                disabled={!testId}
               >
                 Select Test
               </button>
@@ -421,7 +475,7 @@ function AssessmentBuilderTests({
             <div className={styles["form-group"]}>
               <input
                 type="text"
-                className={`${styles["form-control"]} mb-1`}
+                className={styles["form-control"]}
                 style={{ width: "98%", margin: "0 auto" }}
                 placeholder="Search principles by ID, label or description..."
                 value={searchTerm}
@@ -442,8 +496,8 @@ function AssessmentBuilderTests({
                 {filteredTests?.map((test) => (
                   <div
                     key={test.id}
-                    className={`${styles["principle-card"]} ${selectedTestId === test.id ? styles["selected"] : ""}`}
-                    onClick={() => setSelectedTestId(test.id)}
+                    className={`${styles["principle-card"]} ${testId === test.id ? styles["selected"] : ""}`}
+                    onClick={() => setTestId(test.id)}
                   >
                     <div className={styles["principle-card-compact-header"]}>
                       <FaClipboardQuestion
@@ -468,10 +522,7 @@ function AssessmentBuilderTests({
         </div>
       ) : (
         formMode === "new" && (
-          <div
-            className={styles["builder-column"]}
-            style={{ height: "92%", overflow: "auto" }}
-          >
+          <div className={styles["builder-column"]}>
             <div className={styles["principle-form"]}>
               {/* Test Details Form */}
               <div className="mb-2">
@@ -737,23 +788,6 @@ function AssessmentBuilderTests({
                       <FaInfoCircle />
                     </span>
                   </OverlayTrigger>
-                </div>
-
-                <div className={styles["form-actions-tests"]}>
-                  <button
-                    type="button"
-                    className={styles["btn-secondary"]}
-                    onClick={handleCancel}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className={styles["btn-primary"]}
-                    onClick={handleSubmit}
-                  >
-                    Create Test
-                  </button>
                 </div>
               </div>
             </div>

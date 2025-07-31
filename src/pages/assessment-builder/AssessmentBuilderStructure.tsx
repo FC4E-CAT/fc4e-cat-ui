@@ -381,7 +381,7 @@ function AssessmentBuilderStructure({
                   <FaFolder />
                 </span>
                 <span className={styles["principle-display"]}>
-                  Criteria with no Principles
+                  Criteria without Principle
                 </span>
                 <span style={{ marginLeft: "auto", marginRight: "8px" }}>
                   {collapsedPrinciples.has("untagged") ? (
