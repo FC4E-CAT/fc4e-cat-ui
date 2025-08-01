@@ -32,6 +32,7 @@ export interface Actor {
 export interface RegistryResource {
   id: string;
   label: string;
+  friendly_label?: string;
   description: string;
   num_params?: number;
 }

@@ -1,3 +1,1 @@
-export const CreateFormMotivationTest = new CustomEvent("CreateMotivationTest");
-
-export const CancelFormMotivationTest = new CustomEvent("CancelMotivationTest");
+export const TestMethodId = new CustomEvent("TestMethodId");
