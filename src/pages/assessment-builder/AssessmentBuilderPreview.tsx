@@ -8,7 +8,6 @@ import {
   MetricFull,
   AlertInfo,
   AssessmentTest,
-  RegistryResource,
 } from "@/types";
 import { FaExclamationCircle, FaInfoCircle, FaSlidersH } from "react-icons/fa";
 import TestPreviewModal from "../tests/components/TestPreviewModal";
@@ -18,18 +17,12 @@ import {
   useUpdateMotivationMetricTests,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import { RegistryTest, TestInput, TestParam } from "@/types/tests";
+import { RegistryTest } from "@/types/tests";
 import { relMtvMetricTest } from "@/config";
 import toast from "react-hot-toast";
 import styles from "./AssessmentBuilder.module.css";
 import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
-import { removeTestFromUntaggedCriterion } from "./utils/assessmentBuilderUtils";
-import { useGetAllTestMethods } from "@/api/services/registry";
-import {
-  CancelFormMotivationTest,
-  CreateFormMotivationTest,
-} from "@/custom-hooks/usePubSub/events/assessmentBuilder";
-import usePublish from "@/custom-hooks/usePubSub/usePublish";
+import PreviewTests from "./PreviewTests";
 
 interface AssessmentBuilderPreviewProps {
   assessment: AssessmentPrinciple[];
@@ -45,9 +38,7 @@ interface AssessmentBuilderPreviewProps {
   setIsPrincipleSelected: React.Dispatch<React.SetStateAction<boolean>>;
   isTestSelected: boolean;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
-  test: TestInput;
-  params: TestParam[];
-  hasEvidence: boolean;
+  allTests: RegistryTest[];
 }
 
 function AssessmentBuilderPreview({
@@ -57,19 +48,16 @@ function AssessmentBuilderPreview({
   assessment,
   builderState,
   setBuilderState,
-  setAssessment,
   motivationMetrics,
   refetchAssessmentData,
   isPrincipleSelected,
   setIsPrincipleSelected,
   isTestSelected,
   setIsTestSelected,
-  test,
-  params,
-  hasEvidence,
+  allTests,
 }: AssessmentBuilderPreviewProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
-  const [isConfiguring, setIsConfiguring] = useState(false);
+  const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
   const [isPrincipleAssigned, setIsPrincipleAssigned] = useState(false);
   const [selectedTests, setSelectedTests] = useState<RegistryTest[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState({
@@ -80,13 +68,6 @@ function AssessmentBuilderPreview({
   const alert = useRef<AlertInfo>({
     message: "",
   });
-
-  const { publish: saveTestCreation } = usePublish<void>(
-    CreateFormMotivationTest.type,
-  );
-  const { publish: cancelTestCreation } = usePublish<void>(
-    CancelFormMotivationTest.type,
-  );
 
   useEffect(() => {
     if (
@@ -117,16 +98,17 @@ function AssessmentBuilderPreview({
   ]);
 
   useEffect(() => {
+    // Reset states when the selected principle or test changes
     if (builderState.selectedId) {
       setIsPrincipleSelected(false);
       setIsTestSelected(false);
-      setIsConfiguring(false);
+      setIsAdvancedSettingsOpen(false);
     }
   }, [
     builderState.selectedId,
     setIsPrincipleSelected,
     setIsTestSelected,
-    setIsConfiguring,
+    setIsAdvancedSettingsOpen,
   ]);
 
   const mutationUpdateMetricTests = useUpdateMotivationMetricTests(
@@ -143,18 +125,6 @@ function AssessmentBuilderPreview({
       isRegistered: showDeleteModal?.testId && registered ? registered : false,
     },
   );
-
-  const { data: testMethodsData } = useGetAllTestMethods({
-    size: 100,
-    token: keycloak?.token || "",
-    isRegistered: registered,
-    search: "",
-    enabled: true,
-  });
-
-  // Extract test methods from the paginated data structure
-  const testMethods: RegistryResource[] =
-    testMethodsData?.pages?.flatMap((page) => page.content) || [];
 
   useEffect(() => {
     setSelectedTests(
@@ -194,13 +164,6 @@ function AssessmentBuilderPreview({
       })
       .then(() => {
         refetchAssessmentData();
-
-        removeTestFromUntaggedCriterion({
-          testId,
-          selectedCriterionId: builderState.selectedId || "",
-          assessment,
-          setAssessment,
-        });
 
         alert.current = {
           message: t("page_motivations.toast_assign_metric_success"),
@@ -292,39 +255,22 @@ function AssessmentBuilderPreview({
                   )}
                 </div>
                 <div className={styles["advanced-settings-container"]}>
-                  {isConfiguring || !isPrincipleAssigned ? (
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={
-                        <Tooltip id="test-section-disabled-tooltip">
-                          You must add a principle first in order to can change
-                          the advanced settings
-                        </Tooltip>
-                      }
-                    >
-                      <button
-                        className={styles["advanced-settings-btn"]}
-                        onClick={() => setIsConfiguring((prev) => !prev)}
-                        disabled={isConfiguring || !isPrincipleAssigned}
-                      >
-                        <FaSlidersH /> Advanced Settings
-                      </button>
-                    </OverlayTrigger>
-                  ) : (
+                  {isPrincipleAssigned && (
                     <button
                       className={styles["advanced-settings-btn"]}
-                      onClick={() => setIsConfiguring((prev) => !prev)}
+                      onClick={() => setIsAdvancedSettingsOpen((prev) => !prev)}
+                      disabled={isAdvancedSettingsOpen}
                     >
                       <FaSlidersH /> Advanced Settings
                     </button>
                   )}
 
                   {/* Advanced Settings Modal positioned relative to button */}
-                  {isConfiguring && (
+                  {isAdvancedSettingsOpen && (
                     <div className={styles["advanced-settings-modal"]}>
                       <div
                         className={styles["modal-backdrop"]}
-                        onClick={() => setIsConfiguring(false)}
+                        onClick={() => setIsAdvancedSettingsOpen(false)}
                       />
                       <div className={styles["modal-content"]}>
                         <AssessmentBuilderMetric
@@ -335,8 +281,8 @@ function AssessmentBuilderPreview({
                           criterionPidGraph={criterionPidGraph}
                           motivationMetrics={motivationMetrics}
                           refetchAssessmentData={refetchAssessmentData}
-                          setIsConfiguring={setIsConfiguring}
-                          onClose={() => setIsConfiguring(false)}
+                          setIsConfiguring={setIsAdvancedSettingsOpen}
+                          onClose={() => setIsAdvancedSettingsOpen(false)}
                         />
                       </div>
                     </div>
@@ -359,7 +305,7 @@ function AssessmentBuilderPreview({
                   setIsPrincipleSelected((prev) => {
                     if (!prev) {
                       setIsTestSelected(false);
-                      setIsConfiguring(false);
+                      setIsAdvancedSettingsOpen(false);
                       return true;
                     }
                     return false;
@@ -459,105 +405,80 @@ function AssessmentBuilderPreview({
               </div>
 
               {/* Tests Configuration Section */}
-              <div>
-                <OverlayTrigger
-                  placement="bottom"
-                  overlay={
-                    <Tooltip id="test-section-disabled-tooltip">
-                      {!isPrincipleAssigned
-                        ? "You must add a principle first in order to add tests to this criterion"
-                        : "Click to add a test to this criterion"}
-                    </Tooltip>
-                  }
-                >
-                  <div
-                    className={`${styles["config-header"]} my-3 
-                    ${!isPrincipleAssigned && styles["disabled"]}
+              {isPrincipleAssigned && (
+                <div
+                  className={`${styles["config-header"]} my-3 
                     ${isTestSelected && styles["selected"]}`}
-                    onClick={() => {
-                      if (!isPrincipleAssigned) return;
+                  onClick={() => {
+                    if (!isPrincipleAssigned) return;
 
-                      setIsTestSelected((prev) => {
-                        if (!prev) {
-                          setIsPrincipleSelected(false);
-                          setIsConfiguring(false);
-                          return true;
-                        }
-                        return false;
-                      });
-                      if (isTestSelected) {
-                        setBuilderState((prevState) => ({
-                          ...prevState,
-                          entityMode: "criterion",
-                          formMode: "edit",
-                        }));
-                      } else {
-                        setBuilderState((prevState) => ({
-                          ...prevState,
-                          entityMode: "test",
-                          formMode: "new",
-                        }));
+                    setIsTestSelected(() => {
+                      if (!isTestSelected) {
+                        setIsPrincipleSelected(false);
+                        setIsAdvancedSettingsOpen(false);
+                        return true;
                       }
-                    }}
-                  >
-                    <div className={styles["config-header-left"]}>
-                      <span
-                        className={styles["config-header-title"]}
-                        style={{ color: "grey" }}
-                      >
-                        (+) Add a Test
-                      </span>
-                      {(!isPrincipleAssigned ||
-                        !assessment[builderState.selectedPrincipleIndex || 0]
-                          ?.criteria[builderState.selectedCriterionIndex]
-                          ?.metric?.tests?.length) && (
-                        <OverlayTrigger
-                          placement="top"
-                          overlay={
-                            <Tooltip id="tests-config-tooltip">
-                              {!isPrincipleAssigned
-                                ? "You must add a principle first in order to add tests to this criterion"
-                                : "Tests assignment is required. Please add at least a test to complete your criterion setup."}
-                            </Tooltip>
-                          }
-                        >
-                          <span className={styles["config-btn-warning"]}>
-                            <FaExclamationCircle size="18px" />
-                          </span>
-                        </OverlayTrigger>
-                      )}
-                    </div>
-                    <div className={styles["config-header-right"]}>
-                      <button
-                        className={`${styles["config-edit-btn"]} ${isTestSelected ? styles["selected"] : ""}`}
-                        disabled={!isPrincipleAssigned}
-                      >
-                        {isTestSelected ? "Editing" : "Edit"}
-                      </button>
-                    </div>
-                  </div>
-                </OverlayTrigger>
-              </div>
-              {isTestSelected && builderState.formMode === "new" && (
-                <TestPreviewModal
-                  test={{
-                    tes: test.tes || "",
-                    label: test.label || "",
-                    description: test.description || "",
+                      return false;
+                    });
+                    if (isTestSelected) {
+                      setBuilderState((prevState) => ({
+                        ...prevState,
+                        entityMode: "criterion",
+                        formMode: "edit",
+                      }));
+                    } else {
+                      setBuilderState((prevState) => ({
+                        ...prevState,
+                        entityMode: "test",
+                        formMode: "new",
+                      }));
+                    }
                   }}
-                  params={params}
-                  testMethodName={
-                    testMethods?.find(
-                      (testMethod) => testMethod?.id === test?.test_method_id,
-                    )?.label || ""
-                  }
-                  hasEvidenceParam={hasEvidence}
-                  onTestCancel={() =>
-                    cancelTestCreation(CancelFormMotivationTest.type, undefined)
-                  }
-                  onTestSave={() =>
-                    saveTestCreation(CreateFormMotivationTest.type, undefined)
-                  }
+                >
+                  <div className={styles["config-header-left"]}>
+                    <span
+                      className={styles["config-header-title"]}
+                      style={{ color: "grey" }}
+                    >
+                      (+) Add a Test
+                    </span>
+                    {!assessment[builderState.selectedPrincipleIndex || 0]
+                      ?.criteria[builderState.selectedCriterionIndex]?.metric
+                      ?.tests?.length && (
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip id="tests-config-tooltip">
+                            Tests assignment is required. Please add at least a
+                            test to complete your criterion setup.
+                          </Tooltip>
+                        }
+                      >
+                        <span className={styles["config-btn-warning"]}>
+                          <FaExclamationCircle size="18px" />
+                        </span>
+                      </OverlayTrigger>
+                    )}
+                  </div>
+                  <div className={styles["config-header-right"]}>
+                    <button
+                      className={`${styles["config-edit-btn"]} ${isTestSelected ? styles["selected"] : ""}`}
+                    >
+                      {isTestSelected ? "Editing" : "Edit"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {isTestSelected && builderState.formMode === "new" && (
+                <PreviewTests
+                  mtvId={mtvId || ""}
+                  mtrId={mtrId || ""}
+                  assessment={assessment}
+                  setBuilderState={setBuilderState}
+                  refetchAssessmentData={refetchAssessmentData}
+                  setIsTestSelected={setIsTestSelected}
+                  allTests={allTests}
                 />
               )}
 
@@ -600,7 +521,7 @@ function AssessmentBuilderPreview({
           ) : (
             builderState.selectedCriterionIndex == null ||
             (builderState.selectedCriterionIndex < 0 && (
-              <div className="mt-2">
+              <div className="mt-4">
                 <p className="text-muted text-center">
                   Please select a criterion from the structure list or add a new
                   criterion to see its details here
@@ -610,7 +531,7 @@ function AssessmentBuilderPreview({
           )}
         </div>
       ) : (
-        <div className="mt-2">
+        <div className="mt-4">
           <p className="text-muted text-center">
             Please select a criterion from the structure list or add a new
             criterion to see its details here

@@ -1,6 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState, useContext, useEffect, useRef, useCallback } from "react";
+import {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import toast from "react-hot-toast";
 import { Button, Container, Spinner } from "react-bootstrap";
 import { AuthContext } from "@/auth";
@@ -13,6 +20,7 @@ import {
   useGetMotivationCriteriaMutation,
   useGetAllMotivationMetrics,
 } from "@/api/services/motivations";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Principle,
   AssessmentBuilderState,
@@ -26,7 +34,7 @@ import AssessmentBuilderCriteria from "./AssessmentBuilderCriteria";
 import AssessmentBuilderPrinciples from "./AssessmentBuilderPrinciples";
 import AssessmentBuilderTests from "./AssessmentBuilderTests";
 import styles from "./AssessmentBuilder.module.css";
-import { TestInput, TestParam } from "@/types/tests";
+import { useGetAllTests } from "@/api/services/registry";
 
 function AssessmentBuilder() {
   const { mtvId, actId } = useParams<{
@@ -36,6 +44,7 @@ function AssessmentBuilder() {
 
   const { keycloak, registered } = useContext(AuthContext)!;
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const alert = useRef<AlertInfo>({
     message: "",
@@ -51,16 +60,6 @@ function AssessmentBuilder() {
   });
   const [isPrincipleSelected, setIsPrincipleSelected] = useState(false);
   const [isTestSelected, setIsTestSelected] = useState(false);
-  const [test, setTest] = useState<TestInput>({
-    tes: "",
-    label: "",
-    description: "",
-    test_method_id: "",
-    label_test_definition: "",
-    param_type: "onscreen",
-  });
-  const [params, setParams] = useState<TestParam[]>([]);
-  const [hasEvidence, setHasEvidence] = useState(false);
 
   const {
     data: assessmentData,
@@ -77,6 +76,17 @@ function AssessmentBuilder() {
   );
   const [motivationMetrics, setMotivationMetrics] = useState<RegistryMetric[]>(
     [],
+  );
+
+  const { data: testData } = useGetAllTests({
+    size: 100,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  const allTests = useMemo(
+    () => testData?.pages?.flatMap((page) => page.content) || [],
+    [testData?.pages],
   );
 
   useEffect(() => {
@@ -259,21 +269,23 @@ function AssessmentBuilder() {
     setMotivationMetrics(result);
   }, [metricData, mtrHasNextPage, mtrFetchNextPage]);
 
-  useEffect(() => {
-    setAssessment([]);
-    setMotivationMetrics([]);
-    setBuilderState({
-      formMode: "none",
-      entityMode: "none",
-      selectedId: "",
-      selectedPrincipleIndex: -1,
-      selectedCriterionIndex: -1,
-    });
-    setIsPrincipleSelected(false);
-    setIsTestSelected(false);
-    setHasEvidence(false);
-    setParams([]);
-  }, [mtvId, actId]);
+  useEffect(
+    () => () => {
+      queryClient.removeQueries(["assessment-type-template", mtvId, actId]);
+      setAssessment([]);
+      setMotivationMetrics([]);
+      setBuilderState({
+        formMode: "none",
+        entityMode: "none",
+        selectedId: "",
+        selectedPrincipleIndex: -1,
+        selectedCriterionIndex: -1,
+      });
+      setIsPrincipleSelected(false);
+      setIsTestSelected(false);
+    },
+    [mtvId, actId, queryClient],
+  );
 
   const handleAddCriterion = () => {
     setBuilderState({
@@ -406,9 +418,7 @@ function AssessmentBuilder() {
               setIsPrincipleSelected={setIsPrincipleSelected}
               isTestSelected={isTestSelected}
               setIsTestSelected={setIsTestSelected}
-              test={test}
-              params={params}
-              hasEvidence={hasEvidence}
+              allTests={allTests}
             />
           </div>
 
@@ -419,8 +429,10 @@ function AssessmentBuilder() {
             <div className={styles["column-header"]}>
               <div className={styles["builder-header-content"]}>
                 <h3>
-                  Builder (
-                  {builderState.entityMode ? builderState.entityMode : null})
+                  Builder
+                  {builderState.entityMode !== "none"
+                    ? ` (${builderState.entityMode})`
+                    : null}
                 </h3>
                 <div className={styles["principle-tabs"]}>
                   <button
@@ -533,18 +545,11 @@ function AssessmentBuilder() {
                 <AssessmentBuilderTests
                   assessment={assessment}
                   builderState={builderState}
-                  setAssessment={setAssessment}
-                  setBuilderState={setBuilderState}
                   setIsTestSelected={setIsTestSelected}
                   refetchAssessmentData={refetchAssessmentData}
                   mtvId={mtvId || ""}
                   mtrId={getMetricId()}
-                  test={test}
-                  setTest={setTest}
-                  params={params}
-                  setParams={setParams}
-                  hasEvidence={hasEvidence}
-                  setHasEvidence={setHasEvidence}
+                  allTests={allTests}
                 />
               )}
             </div>

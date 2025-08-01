@@ -27,8 +27,6 @@ interface TestPreviewProps {
   testMethodName?: string;
   hasEvidenceParam?: boolean;
   onTestDelete?: () => void;
-  onTestCancel?: () => void;
-  onTestSave?: () => void;
 }
 
 const TestPreviewModal = ({
@@ -37,8 +35,6 @@ const TestPreviewModal = ({
   testMethodName,
   hasEvidenceParam,
   onTestDelete,
-  onTestCancel,
-  onTestSave,
 }: TestPreviewProps) => {
   const testParams: JSX.Element[] = [];
 
@@ -299,9 +295,7 @@ const TestPreviewModal = ({
   return (
     <>
       {testParams?.length > 0 ? (
-        <div
-          className={`border rounded cat-test-div position-relative ${onTestSave ? styles["test-preview-modal"] : ""}`}
-        >
+        <div className="border rounded cat-test-div position-relative">
           {onTestDelete && (
             <span
               onClick={(e) => {
@@ -329,9 +323,8 @@ const TestPreviewModal = ({
               testParams
             ) : (
               <div className="p-3 text-center">
-                <span className="text-secondary">
-                  Complete the form fields in the Builder to see the preview of
-                  the test.
+                <span className="text-secondary fw-light">
+                  Fill in the form fields to see a preview of the test
                 </span>
               </div>
             )}
@@ -353,25 +346,6 @@ const TestPreviewModal = ({
               <EvidenceURLS urls={[]} onListChange={() => {}} noTitle={true} />
             </div>
           )}
-          {typeof onTestSave === "function" &&
-            typeof onTestCancel === "function" && (
-              <div className={styles["form-actions-tests"]}>
-                <button
-                  type="button"
-                  className={styles["btn-secondary"]}
-                  onClick={onTestCancel}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className={styles["btn-primary"]}
-                  onClick={onTestSave}
-                >
-                  Create Test
-                </button>
-              </div>
-            )}
         </div>
       ) : null}
     </>
