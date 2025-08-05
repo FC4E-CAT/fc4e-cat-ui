@@ -11,7 +11,7 @@ import { FaInfoCircle } from "react-icons/fa";
 import { Form, Tooltip, OverlayTrigger } from "react-bootstrap";
 import styles from "./AssessmentBuilder.module.css";
 import { useTranslation } from "react-i18next";
-import { RegistryTest, TestInput, TestParam } from "@/types/tests";
+import { RegistryTest, TestFull, TestInput, TestParam } from "@/types/tests";
 import toast from "react-hot-toast";
 import { relMtvMetricTest } from "@/config";
 import TestPreviewModal from "../tests/components/TestPreviewModal";
@@ -19,9 +19,14 @@ import {
   AlertInfo,
   AssessmentBuilderState,
   AssessmentPrinciple,
+  FormMode,
   RegistryResource,
 } from "@/types";
-import { useCreateTest, useGetAllTestMethods } from "@/api/services/registry";
+import {
+  useCreateTest,
+  useGetAllTestMethods,
+  useUpdateTest,
+} from "@/api/services/registry";
 import { useUpdateMotivationMetricTests } from "@/api";
 import { TestMethodId } from "@/custom-hooks/usePubSub/events/assessmentBuilder";
 import useSubscribe from "@/custom-hooks/usePubSub/useSubscribe";
@@ -34,6 +39,9 @@ interface AssessmentBuilderTestsProps {
   refetchAssessmentData: () => void;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
   allTests: RegistryTest[];
+  testToEdit?: TestFull | null;
+  setTestToEdit?: React.Dispatch<React.SetStateAction<TestFull | null>>;
+  formMode: FormMode;
 }
 
 function PreviewTests({
@@ -44,27 +52,55 @@ function PreviewTests({
   setIsTestSelected,
   refetchAssessmentData,
   allTests,
+  testToEdit,
+  setTestToEdit,
+  formMode,
 }: AssessmentBuilderTestsProps) {
   const alert = useRef<AlertInfo>({
     message: "",
   });
+
+  console.log("testToEdit:", testToEdit);
+
   const { keycloak, registered } = useContext(AuthContext)!;
   const { t } = useTranslation();
   const [test, setTest] = useState<TestInput>({
-    tes: "",
-    label: "",
-    description: "",
-    test_method_id: "pid_graph:8D79984F",
+    tes: testToEdit?.id || "",
+    label: testToEdit?.name || "",
+    description: testToEdit?.description || "",
+    test_method_id: testToEdit?.type_db_id || "pid_graph:8D79984F",
+    db_id: testToEdit?.db_id || "",
     label_test_definition: "",
     param_type: "onscreen",
   });
 
-  const [params, setParams] = useState<TestParam[]>([]);
-  const [hasEvidence, setHasEvidence] = useState(false);
+  const [params, setParams] = useState<TestParam[]>(
+    testToEdit
+      ? [
+          {
+            id: 1,
+            name: testToEdit.params || "",
+            text: testToEdit.text || "",
+            tooltip: testToEdit.tool_tip || "",
+          },
+        ]
+      : [],
+  );
+  console.log("params", params);
+
+  const [hasEvidence, setHasEvidence] = useState(
+    testToEdit?.params?.includes("evidence") || false,
+  );
 
   const [showErrors, setShowErrors] = useState(false);
 
   const mutateCreateTest = useCreateTest(keycloak?.token || "", test);
+  const mutateUpdateTest = useUpdateTest(
+    keycloak?.token || "",
+    test?.db_id || "",
+    { ...test, tooltip: test.tool_tip },
+  );
+
   const mutationUpdateMetricTests = useUpdateMotivationMetricTests(
     keycloak?.token || "",
     mtvId || "",
@@ -137,16 +173,34 @@ function PreviewTests({
   }, [params, hasEvidence, setTest]);
 
   const addNewParams = useCallback(
-    (numberOfParams = 1) => {
+    (numberOfParams = 1, testToEdit: TestFull | undefined) => {
       const tmpParams = Array.from(
         { length: numberOfParams },
         (_, i) => i + 1,
-      )?.map((i) => ({
-        id: i,
-        name: "",
-        text: "",
-        tooltip: "",
-      }));
+      )?.map((index) => {
+        if (testToEdit && testToEdit?.params) {
+          // Split the string fields by "|" to get individual parameters
+          const paramNames = testToEdit.params.split("|");
+          const paramTexts = testToEdit.text ? testToEdit.text.split("|") : [];
+          const paramTooltips = testToEdit.tool_tip
+            ? testToEdit.tool_tip.split("|")
+            : [];
+
+          return {
+            id: index,
+            name: paramNames[index - 1] || "",
+            text: paramTexts[index - 1] || "",
+            tooltip: paramTooltips[index - 1] || "",
+          };
+        }
+
+        return {
+          id: index,
+          name: "",
+          text: "",
+          tooltip: "",
+        };
+      });
       setParams(tmpParams);
     },
     [setParams],
@@ -157,7 +211,7 @@ function PreviewTests({
     if (testMethods?.length > 0 && test.test_method_id) {
       const method = testMethods.find((m) => m.id === test.test_method_id);
       if (method) {
-        addNewParams(method?.num_params);
+        addNewParams(method?.num_params, testToEdit ? testToEdit : undefined);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,7 +232,8 @@ function PreviewTests({
     setHasEvidence(false);
     setShowErrors(false);
     setIsTestSelected(false);
-  }, [setTest, setParams, setHasEvidence, setIsTestSelected]);
+    setTestToEdit?.(null);
+  }, [setTest, setParams, setHasEvidence, setIsTestSelected, setTestToEdit]);
 
   useSubscribe<string>(
     TestMethodId.type,
@@ -208,6 +263,8 @@ function PreviewTests({
   }, [test, params]);
 
   const updateParam = (id: number, field: keyof TestParam, value: string) => {
+    console.log("Updating param:", id, field, value);
+
     setParams((prev) =>
       prev.map((param) =>
         param.id === id ? { ...param, [field]: value } : param,
@@ -222,83 +279,107 @@ function PreviewTests({
       entityMode: "criterion",
       formMode: "edit",
     }));
-  }, [resetTestStates, setBuilderState]);
+    setTestToEdit?.(null);
+  }, [resetTestStates, setBuilderState, setTestToEdit]);
 
-  const handleCreateTest = async () => {
+  const handleSubmit = async () => {
     if (!handleValidate()) {
       return;
     }
 
-    const metricAssignment = existingTestIds.map((testId) => ({
-      test_id:
-        allTests.find(
-          (test) => test.tes?.toLowerCase() === testId?.toLowerCase(),
-        )?.id || "",
-      relation: relMtvMetricTest,
-    }));
-
     updateParamTestDef();
 
-    const createTestPromise = await mutateCreateTest
-      .mutateAsync()
-      .then((newTest) => {
-        alert.current = {
-          message: t("page_tests.toast_create_success"),
-        };
+    if (formMode === "new") {
+      const metricAssignment = existingTestIds.map((testId) => ({
+        test_id:
+          allTests.find(
+            (test) => test.tes?.toLowerCase() === testId?.toLowerCase(),
+          )?.id || "",
+        relation: relMtvMetricTest,
+      }));
 
-        // Add the newly created test to the metric assignment
-        metricAssignment.push({
-          test_id: newTest.id,
-          relation: relMtvMetricTest,
-        });
+      const createTestPromise = await mutateCreateTest
+        .mutateAsync()
+        .then((newTest) => {
+          alert.current = {
+            message: t("page_tests.toast_create_success"),
+          };
 
-        // Now execute the assignment to metric after successful test creation
-        const assignTestsToMetricPromise = mutationUpdateMetricTests
-          .mutateAsync(metricAssignment)
-          .catch((err) => {
-            alert.current = {
-              message: t("page_motivations.toast_assign_metric_fail"),
-            };
-            throw err;
-          })
-          .then(() => {
-            refetchAssessmentData();
-
-            alert.current = {
-              message: t("page_motivations.toast_assign_metric_success"),
-            };
-            resetTestStates();
+          // Add the newly created test to the metric assignment
+          metricAssignment.push({
+            test_id: newTest.id,
+            relation: relMtvMetricTest,
           });
 
-        toast.promise(assignTestsToMetricPromise, {
-          loading: t("toast_assign_metric_progress"),
-          success: () => alert.current.message,
-          error: () => alert.current.message,
+          // Now execute the assignment to metric after successful test creation
+          const assignTestsToMetricPromise = mutationUpdateMetricTests
+            .mutateAsync(metricAssignment)
+            .catch((err) => {
+              alert.current = {
+                message: t("page_motivations.toast_assign_metric_fail"),
+              };
+              throw err;
+            })
+            .then(() => {
+              alert.current = {
+                message: t("page_motivations.toast_assign_metric_success"),
+              };
+              refetchAssessmentData();
+              resetTestStates();
+            });
+
+          toast.promise(assignTestsToMetricPromise, {
+            loading: t("toast_assign_metric_progress"),
+            success: () => alert.current.message,
+            error: () => alert.current.message,
+          });
+
+          return newTest;
+        })
+        .catch((err) => {
+          alert.current = {
+            message: "Error: " + err.response.data.message,
+          };
+          throw err;
         });
 
-        return newTest;
-      })
-      .catch((err) => {
-        alert.current = {
-          message: "Error: " + err.response.data.message,
-        };
-        throw err;
+      toast.promise(createTestPromise, {
+        loading: t("page_tests.toast_create_progress"),
+        success: () => alert.current.message,
+        error: () => alert.current.message,
       });
 
-    toast.promise(createTestPromise, {
-      loading: t("page_tests.toast_create_progress"),
-      success: () => alert.current.message,
-      error: () => alert.current.message,
-    });
+      setIsTestSelected(false);
+    } else if (formMode === "edit") {
+      const updateTestPromise = mutateUpdateTest
+        .mutateAsync()
+        .then(() => {
+          alert.current = {
+            message: t("page_tests.toast_update_success"),
+          };
+          refetchAssessmentData();
+          resetTestStates();
+        })
+        .catch((err) => {
+          alert.current = {
+            message: "Error: " + err.response.data.message,
+          };
+          throw err;
+        });
 
-    setIsTestSelected(false);
+      toast.promise(updateTestPromise, {
+        loading: t("page_tests.toast_update_progress"),
+        success: () => alert.current.message,
+        error: () => alert.current.message,
+      });
+    }
   };
 
   return (
-    <div className={`${styles["test-preview-modal"]} border rounded px-3 py-2`}>
-      {/* Top Row: Test Metadata and Parameters */}
+    <div
+      className={`${styles["test-preview-modal"]} border rounded px-3 py-2 ${testToEdit && "my-4"}`}
+    >
       <div className={`${styles["form-group-test-preview"]} mb-2`}>
-        {/* Left column: Test metadata (TES, Label, Description) */}
         <div className={styles["test-params-fields-col"]}>
           <label className={styles["form-group-test-preview-label"]}>
             Test Information
@@ -308,6 +389,7 @@ function PreviewTests({
             <label htmlFor="input-test-tes">TES (*):</label>
             <input
               className={styles["form-control"]}
+              disabled={formMode === "edit"}
               type="text"
               id="input-test-tes"
               value={test.tes}
@@ -365,7 +447,6 @@ function PreviewTests({
           </div>
         </div>
 
-        {/* Right column: Test parameters */}
         <div className={styles["test-params-fields-col"]}>
           {params?.length > 0 && (
             <label className={styles["form-group-test-preview-label"]}>
@@ -447,7 +528,6 @@ function PreviewTests({
               </div>
             ))}
 
-          {/* Evidence Parameter Option */}
           <div className={styles["evidence-parameter-option"]}>
             <label className="fw-medium small">Evidence Parameter</label>
             <OverlayTrigger
@@ -477,7 +557,6 @@ function PreviewTests({
         </div>
       </div>
 
-      {/* Bottom Row: Test Preview - Full Width */}
       <div className="mb-3">
         <label
           className={styles["form-group-test-preview-label"]}
@@ -512,9 +591,9 @@ function PreviewTests({
         <button
           type="button"
           className={styles["btn-primary"]}
-          onClick={handleCreateTest}
+          onClick={handleSubmit}
         >
-          Create Test
+          {testToEdit ? "Update Test" : "Create Test"}
         </button>
       </div>
     </div>

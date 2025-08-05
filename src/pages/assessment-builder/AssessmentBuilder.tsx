@@ -35,6 +35,7 @@ import AssessmentBuilderPrinciples from "./AssessmentBuilderPrinciples";
 import AssessmentBuilderTests from "./AssessmentBuilderTests";
 import styles from "./AssessmentBuilder.module.css";
 import { useGetAllTests } from "@/api/services/registry";
+import { canEditCriterion } from "./utils";
 
 function AssessmentBuilder() {
   const { mtvId, actId } = useParams<{
@@ -419,6 +420,15 @@ function AssessmentBuilder() {
               isTestSelected={isTestSelected}
               setIsTestSelected={setIsTestSelected}
               allTests={allTests}
+              canEditCriterion={canEditCriterion({
+                currentCriterion: allCriteria.find(
+                  (criterion) =>
+                    criterion?.cri?.toLowerCase() ===
+                    builderState.selectedId?.toLowerCase(),
+                ),
+                mtvId: mtvId || "",
+                actId: actId || "",
+              })}
             />
           </div>
 
@@ -467,6 +477,7 @@ function AssessmentBuilder() {
                     Select
                   </button>
                   {(builderState.entityMode === "criterion" ||
+                    builderState.entityMode === "test" ||
                     builderState.entityMode === "none") && (
                     <>
                       <div className={styles["tab-divider"]} />

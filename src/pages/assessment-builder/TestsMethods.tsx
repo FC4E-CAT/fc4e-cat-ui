@@ -4,7 +4,11 @@ import { AuthContext } from "@/auth";
 import { useGetAllTestMethods } from "@/api/services/registry";
 import { RegistryResource } from "@/types";
 import usePublish from "@/custom-hooks/usePubSub/usePublish";
-import { TestMethodId } from "@/custom-hooks/usePubSub/events/assessmentBuilder";
+import {
+  LoadTestMethod,
+  TestMethodId,
+} from "@/custom-hooks/usePubSub/events/assessmentBuilder";
+import useSubscribe from "@/custom-hooks/usePubSub/useSubscribe";
 
 function TestsMethods() {
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -35,6 +39,24 @@ function TestsMethods() {
   const testMethods: RegistryResource[] = useMemo(
     () => testMethodsData?.pages?.flatMap((page) => page.content) || [],
     [testMethodsData?.pages],
+  );
+
+  console.log("testMethods:", testMethods);
+
+  useSubscribe<string>(
+    LoadTestMethod.type,
+    (testMethodLabel) => {
+      console.log("testMethodLabel:", testMethodLabel);
+
+      const testMethodId = testMethods.find(
+        (method) =>
+          method.label?.toLowerCase() === testMethodLabel?.toLowerCase(),
+      )?.id;
+      console.log("testMethodId:", testMethodId);
+
+      setSelectedTestMethodId(testMethodId || "pid_graph:8D79984F");
+    },
+    [testMethods, setSelectedTestMethodId],
   );
 
   const filteredTestMethods = testMethods.filter((method) => {

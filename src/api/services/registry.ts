@@ -321,6 +321,7 @@ export const useUpdateTest = (token: string, id: string, test: TestInput) => {
     },
   );
 };
+
 export function useDeleteTest(token: string) {
   const queryClient = useQueryClient();
   return useMutation({

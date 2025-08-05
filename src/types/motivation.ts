@@ -127,6 +127,8 @@ export interface MotivationReference {
   mtv: string;
   label: string;
   lodMTV?: string;
+  first_actor_assignment?: string;
+  first_actor_assignment_label?: string;
 }
 
 export interface MotivationPrincipleInput {
