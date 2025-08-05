@@ -51,7 +51,7 @@ function AssessmentBuilderTests({
 
   const filteredTests = useMemo(() => {
     // First, get all existing tests from the assessment
-    const existingTestIds = assessment
+    const allTestIdsInAssessment = assessment
       ?.flatMap((principle) => principle.criteria || [])
       ?.flatMap((criterion) => criterion?.metric?.tests || [])
       ?.map((test) => test?.id?.toLowerCase())
@@ -60,7 +60,7 @@ function AssessmentBuilderTests({
     // Then filter allTests based on existence and search term
     return allTests?.filter((test) => {
       // Check if test already exists in assessment
-      const existsInAssessment = existingTestIds?.includes(
+      const existsInAssessment = allTestIdsInAssessment?.includes(
         test.tes?.toLowerCase(),
       );
 
@@ -86,7 +86,7 @@ function AssessmentBuilderTests({
 
   const handleSubmit = useCallback(() => {
     const selectedCriterionId = builderState.selectedId;
-    const existingTestIds: string[] = [];
+    let testIdsInCriterion: string[] = [];
 
     if (selectedCriterionId) {
       // Find the selected criterion in the assessment
@@ -94,20 +94,14 @@ function AssessmentBuilderTests({
         ?.flatMap((principle) => principle.criteria || [])
         ?.find((criterion) => criterion.id === selectedCriterionId);
 
-      if (
-        selectedCriterion?.metric?.tests &&
-        selectedCriterion.metric.tests.length > 0
-      ) {
-        // Extract existing test IDs
-        selectedCriterion.metric.tests.forEach((test) => {
-          if (test.id) {
-            existingTestIds.push(test.id);
-          }
-        });
-      }
+      // Get existing test IDs only from the selected criterion
+      testIdsInCriterion =
+        selectedCriterion?.metric?.tests
+          ?.map((test) => test?.id?.toLowerCase())
+          ?.filter(Boolean) || [];
     }
 
-    const metricAssignment = existingTestIds.map((testId) => ({
+    const metricAssignment = testIdsInCriterion.map((testId) => ({
       test_id:
         allTests.find(
           (test) => test.tes?.toLowerCase() === testId?.toLowerCase(),
@@ -115,7 +109,7 @@ function AssessmentBuilderTests({
       relation: relMtvMetricTest,
     }));
 
-    if (testId && !existingTestIds.includes(testId)) {
+    if (testId && !testIdsInCriterion.includes(testId)) {
       metricAssignment.push({
         test_id: testId,
         relation: relMtvMetricTest,
