@@ -489,6 +489,7 @@ function AssessmentBuilderPreview({
                   setIsTestSelected={setIsTestSelected}
                   allTests={allTests}
                   formMode={builderState.formMode}
+                  selectedCriterionId={builderState.selectedId}
                 />
               )}
 

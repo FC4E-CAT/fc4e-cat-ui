@@ -41,19 +41,13 @@ function TestsMethods() {
     [testMethodsData?.pages],
   );
 
-  console.log("testMethods:", testMethods);
-
   useSubscribe<string>(
     LoadTestMethod.type,
     (testMethodLabel) => {
-      console.log("testMethodLabel:", testMethodLabel);
-
       const testMethodId = testMethods.find(
         (method) =>
           method.label?.toLowerCase() === testMethodLabel?.toLowerCase(),
       )?.id;
-      console.log("testMethodId:", testMethodId);
-
       setSelectedTestMethodId(testMethodId || "pid_graph:8D79984F");
     },
     [testMethods, setSelectedTestMethodId],

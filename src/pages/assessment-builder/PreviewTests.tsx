@@ -34,6 +34,7 @@ import useSubscribe from "@/custom-hooks/usePubSub/useSubscribe";
 interface AssessmentBuilderTestsProps {
   mtvId: string;
   mtrId: string;
+  selectedCriterionId?: string;
   assessment: AssessmentPrinciple[];
   setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
   refetchAssessmentData: () => void;
@@ -48,6 +49,7 @@ function PreviewTests({
   assessment,
   mtvId,
   mtrId,
+  selectedCriterionId,
   setBuilderState,
   setIsTestSelected,
   refetchAssessmentData,
@@ -59,8 +61,6 @@ function PreviewTests({
   const alert = useRef<AlertInfo>({
     message: "",
   });
-
-  console.log("testToEdit:", testToEdit);
 
   const { keycloak, registered } = useContext(AuthContext)!;
   const { t } = useTranslation();
@@ -86,7 +86,6 @@ function PreviewTests({
         ]
       : [],
   );
-  console.log("params", params);
 
   const [hasEvidence, setHasEvidence] = useState(
     testToEdit?.params?.includes("evidence") || false,
@@ -121,11 +120,14 @@ function PreviewTests({
     [testMethodsData],
   );
 
-  const existingTestIds = assessment
+  const selectedCriterion = assessment
     ?.flatMap((principle) => principle.criteria || [])
-    ?.flatMap((criterion) => criterion?.metric?.tests || [])
-    ?.map((test) => test?.id?.toLowerCase())
-    ?.filter(Boolean);
+    ?.find((criterion) => criterion.id === selectedCriterionId);
+
+  const testIdsInCriterion =
+    selectedCriterion?.metric?.tests
+      ?.map((test) => test?.id?.toLowerCase())
+      ?.filter(Boolean) || [];
 
   const testMethodName = useMemo(() => {
     const testMethod = testMethods?.find(
@@ -159,10 +161,6 @@ function PreviewTests({
     if (hasEvidence) {
       names = names === "" ? "evidence" : names + "|evidence";
     }
-
-    console.log("text", text);
-    console.log("names", names);
-    console.log("tips", tips);
 
     setTest((test) => ({
       ...test,
@@ -263,8 +261,6 @@ function PreviewTests({
   }, [test, params]);
 
   const updateParam = (id: number, field: keyof TestParam, value: string) => {
-    console.log("Updating param:", id, field, value);
-
     setParams((prev) =>
       prev.map((param) =>
         param.id === id ? { ...param, [field]: value } : param,
@@ -282,7 +278,7 @@ function PreviewTests({
     setTestToEdit?.(null);
   }, [resetTestStates, setBuilderState, setTestToEdit]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!handleValidate()) {
       return;
     }
@@ -290,7 +286,7 @@ function PreviewTests({
     updateParamTestDef();
 
     if (formMode === "new") {
-      const metricAssignment = existingTestIds.map((testId) => ({
+      const metricAssignment = testIdsInCriterion?.map((testId) => ({
         test_id:
           allTests.find(
             (test) => test.tes?.toLowerCase() === testId?.toLowerCase(),
@@ -298,7 +294,7 @@ function PreviewTests({
         relation: relMtvMetricTest,
       }));
 
-      const createTestPromise = await mutateCreateTest
+      const createTestPromise = mutateCreateTest
         .mutateAsync()
         .then((newTest) => {
           alert.current = {
@@ -334,7 +330,7 @@ function PreviewTests({
             error: () => alert.current.message,
           });
 
-          return newTest;
+          setIsTestSelected(false);
         })
         .catch((err) => {
           alert.current = {
@@ -348,8 +344,6 @@ function PreviewTests({
         success: () => alert.current.message,
         error: () => alert.current.message,
       });
-
-      setIsTestSelected(false);
     } else if (formMode === "edit") {
       const updateTestPromise = mutateUpdateTest
         .mutateAsync()
