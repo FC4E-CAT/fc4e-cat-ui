@@ -11,7 +11,14 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 
-import { Alert, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import {
+  Alert,
+  OverlayTrigger,
+  Tooltip,
+  Row,
+  Col,
+  Card,
+} from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import BadgeStatus from "@/components/BadgeStatus";
 import ROUTES, { buildRoute } from "../../routes";
@@ -84,71 +91,79 @@ function ValidationList() {
           </Link>
         </div>
       </div>
+
       <div className="py-2 px-2">
-        <Table hover>
-          <thead>
-            <tr className="table-light">
-              <th>
-                <span>{t("fields.id")}</span>
-              </th>
-              <th>
-                <span>{t("page_validations.org_name")}</span>
-              </th>
-              <th>
-                <span>{t("page_validations.org_role")}</span>
-              </th>
-              <th>
-                <span>{t("page_validations.actor_name")}</span>
-              </th>
-              <th>
-                <span>{t("fields.status")}</span>
-              </th>
-              <th>
-                <span>{t("fields.actions")}</span>
-              </th>
-            </tr>
-          </thead>
-          {validations.length > 0 ? (
-            <tbody>
-              {validations.map((item) => {
-                return (
-                  <tr key={item.id}>
-                    <td className="align-middle">{item.id}</td>
-                    <td className="align-middle">{item.organisation_name}</td>
-                    <td className="align-middle">{item.organisation_role}</td>
-                    <td className="align-middle">{item.registry_actor_name}</td>
-                    <td className="align-middle">
+        {validations.length > 0 ? (
+          <Row className="mt-3">
+            {validations.map((item) => (
+              <Col key={item.id} lg={3} md={6} sm={12} className="mb-2">
+                <Card className="shadow border-0">
+                  <Card.Body className="p-3">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
                       <BadgeStatus status={item.status} />
-                    </td>
-                    <td>
-                      <div className="d-flex flex-nowrap">
-                        <OverlayTrigger
-                          key="view"
-                          placement="top"
-                          overlay={
-                            <Tooltip id={`tooltip-view`}>
-                              {t("page_validations.tip_view")}
-                            </Tooltip>
-                          }
+                      <OverlayTrigger
+                        key="view"
+                        placement="top"
+                        overlay={
+                          <Tooltip id={`tooltip-view`}>
+                            {t("page_validations.tip_view")}
+                          </Tooltip>
+                        }
+                      >
+                        <Link
+                          className="btn btn-light btn-sm"
+                          to={buildRoute(ROUTES.VALIDATIONS.VIEW, {
+                            id: item.id.toString(),
+                          })}
                         >
-                          <Link
-                            className="btn btn-light btn-sm m-1"
-                            to={buildRoute(ROUTES.VALIDATIONS.VIEW, {
-                              id: item.id.toString(),
-                            })}
-                          >
-                            <FaList />
-                          </Link>
-                        </OverlayTrigger>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          ) : null}
-        </Table>
+                          <FaList />
+                        </Link>
+                      </OverlayTrigger>
+                    </div>
+                    <div className="d-flex gap-2 mb-1">
+                      <small
+                        className="text-muted fw-bold"
+                        style={{ textWrap: "nowrap" }}
+                      >
+                        {t("fields.id")}:
+                      </small>
+                      <div className="small">{item.id}</div>
+                    </div>
+                    <div className="d-flex gap-2 mb-1">
+                      <small
+                        className="text-muted fw-bold"
+                        style={{ textWrap: "nowrap" }}
+                      >
+                        {t("page_validations.org_name")}:
+                      </small>
+                      <div className="small">{item.organisation_name}</div>
+                    </div>
+                    <div className="d-flex gap-2 mb-1">
+                      <small
+                        className="text-muted fw-bold"
+                        style={{ textWrap: "nowrap" }}
+                      >
+                        {t("page_validations.org_role")}:
+                      </small>
+                      <div className="small">{item.organisation_role}</div>
+                    </div>
+                    <div className="d-flex gap-2 mb-1">
+                      <small
+                        className="text-muted fw-bold"
+                        style={{ textWrap: "nowrap" }}
+                      >
+                        {t("page_validations.actor_name")}:
+                      </small>
+                      <div className="small">{item.registry_actor_name}</div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : null}
       </div>
+
       {!isLoading && validations.length === 0 && (
         <Alert variant="warning" className="text-center mx-auto">
           <h3>
