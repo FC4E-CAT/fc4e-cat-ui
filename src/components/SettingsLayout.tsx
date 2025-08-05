@@ -13,6 +13,7 @@ import { FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ROUTES from "../routes";
+import { TestIcon } from "./TestIcon";
 
 export interface SettingsItem {
   id: string;
@@ -92,6 +93,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({
                     <div className="test-method-settings-item d-flex justify-content-between gap-5 my-1">
                       <div>
                         <div className="d-flex align-items-center gap-2">
+                          <TestIcon test={item.label} />
                           <h6 className="mb-0">{item.label}</h6>
                           {item.used_by_published_motivations && (
                             <FaLock size="18px" className="text-warning" />
