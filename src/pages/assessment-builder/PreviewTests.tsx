@@ -11,7 +11,7 @@ import { FaInfoCircle } from "react-icons/fa";
 import { Form, Tooltip, OverlayTrigger } from "react-bootstrap";
 import styles from "./AssessmentBuilder.module.css";
 import { useTranslation } from "react-i18next";
-import { RegistryTest, TestFull, TestInput, TestParam } from "@/types/tests";
+import { TestFull, TestInput, TestParam } from "@/types/tests";
 import toast from "react-hot-toast";
 import { relMtvMetricTest } from "@/config";
 import TestPreviewModal from "../tests/components/TestPreviewModal";
@@ -39,7 +39,6 @@ interface AssessmentBuilderTestsProps {
   setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
   refetchAssessmentData: () => void;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
-  allTests: RegistryTest[];
   testToEdit?: TestFull | null;
   setTestToEdit?: React.Dispatch<React.SetStateAction<TestFull | null>>;
   formMode: FormMode;
@@ -53,7 +52,6 @@ function PreviewTests({
   setBuilderState,
   setIsTestSelected,
   refetchAssessmentData,
-  allTests,
   testToEdit,
   setTestToEdit,
   formMode,
@@ -126,7 +124,7 @@ function PreviewTests({
 
   const testIdsInCriterion =
     selectedCriterion?.metric?.tests
-      ?.map((test) => test?.id?.toLowerCase())
+      ?.map((test) => test?.db_id || "")
       ?.filter(Boolean) || [];
 
   const testMethodName = useMemo(() => {
@@ -286,11 +284,8 @@ function PreviewTests({
     updateParamTestDef();
 
     if (formMode === "new") {
-      const metricAssignment = testIdsInCriterion?.map((testId) => ({
-        test_id:
-          allTests.find(
-            (test) => test.tes?.toLowerCase() === testId?.toLowerCase(),
-          )?.id || "",
+      const metricAssignment = testIdsInCriterion?.map((testDbId) => ({
+        test_id: testDbId,
         relation: relMtvMetricTest,
       }));
 

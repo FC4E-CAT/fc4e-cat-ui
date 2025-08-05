@@ -97,19 +97,16 @@ function AssessmentBuilderTests({
       // Get existing test IDs only from the selected criterion
       testIdsInCriterion =
         selectedCriterion?.metric?.tests
-          ?.map((test) => test?.id?.toLowerCase())
+          ?.map((test) => test?.db_id || "")
           ?.filter(Boolean) || [];
     }
 
-    const metricAssignment = testIdsInCriterion.map((testId) => ({
-      test_id:
-        allTests.find(
-          (test) => test.tes?.toLowerCase() === testId?.toLowerCase(),
-        )?.id || "",
+    const metricAssignment = testIdsInCriterion.map((testDbId) => ({
+      test_id: testDbId,
       relation: relMtvMetricTest,
     }));
 
-    if (testId && !testIdsInCriterion.includes(testId)) {
+    if (testId) {
       metricAssignment.push({
         test_id: testId,
         relation: relMtvMetricTest,
@@ -127,10 +124,11 @@ function AssessmentBuilderTests({
       })
       .then(() => {
         refetchAssessmentData();
-
         alert.current = {
           message: t("page_motivations.toast_assign_metric_success"),
         };
+      })
+      .finally(() => {
         resetTestStates();
       });
 
@@ -142,7 +140,6 @@ function AssessmentBuilderTests({
 
     setIsTestSelected(false);
   }, [
-    allTests,
     assessment,
     builderState,
     mutationUpdateMetricTests,
