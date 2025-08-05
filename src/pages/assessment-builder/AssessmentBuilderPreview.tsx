@@ -17,12 +17,14 @@ import {
   useUpdateMotivationMetricTests,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import { RegistryTest } from "@/types/tests";
+import { RegistryTest, TestFull } from "@/types/tests";
 import { relMtvMetricTest } from "@/config";
 import toast from "react-hot-toast";
 import styles from "./AssessmentBuilder.module.css";
 import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
 import PreviewTests from "./PreviewTests";
+import usePublish from "@/custom-hooks/usePubSub/usePublish";
+import { LoadTestMethod } from "@/custom-hooks/usePubSub/events/assessmentBuilder";
 
 interface AssessmentBuilderPreviewProps {
   assessment: AssessmentPrinciple[];
@@ -39,6 +41,7 @@ interface AssessmentBuilderPreviewProps {
   isTestSelected: boolean;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
   allTests: RegistryTest[];
+  canEditCriterion: boolean;
 }
 
 function AssessmentBuilderPreview({
@@ -55,15 +58,20 @@ function AssessmentBuilderPreview({
   isTestSelected,
   setIsTestSelected,
   allTests,
+  canEditCriterion,
 }: AssessmentBuilderPreviewProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
   const [isPrincipleAssigned, setIsPrincipleAssigned] = useState(false);
   const [selectedTests, setSelectedTests] = useState<RegistryTest[]>([]);
+  const [testToEdit, setTestToEdit] = useState<TestFull | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState({
     testId: "",
     testLabel: "",
   });
+
+  const { publish: loadTestMethod } = usePublish(LoadTestMethod.type);
+
   const { t } = useTranslation();
   const alert = useRef<AlertInfo>({
     message: "",
@@ -103,6 +111,7 @@ function AssessmentBuilderPreview({
       setIsPrincipleSelected(false);
       setIsTestSelected(false);
       setIsAdvancedSettingsOpen(false);
+      setTestToEdit(null);
     }
   }, [
     builderState.selectedId,
@@ -255,7 +264,7 @@ function AssessmentBuilderPreview({
                   )}
                 </div>
                 <div className={styles["advanced-settings-container"]}>
-                  {isPrincipleAssigned && (
+                  {isPrincipleAssigned && canEditCriterion && (
                     <button
                       className={styles["advanced-settings-btn"]}
                       onClick={() => setIsAdvancedSettingsOpen((prev) => !prev)}
@@ -479,6 +488,7 @@ function AssessmentBuilderPreview({
                   refetchAssessmentData={refetchAssessmentData}
                   setIsTestSelected={setIsTestSelected}
                   allTests={allTests}
+                  formMode={builderState.formMode}
                 />
               )}
 
@@ -497,21 +507,57 @@ function AssessmentBuilderPreview({
                           key={test.id}
                           className={`${styles["test-item"]} my-3`}
                         >
-                          <TestPreviewModal
-                            test={{
-                              tes: test.id || "",
-                              label: test.name || "",
-                              description: test.description || "",
-                            }}
-                            params={getTestParams(test)}
-                            testMethodName={test.type}
-                            onTestDelete={() =>
-                              setShowDeleteModal({
-                                testId: test.id,
-                                testLabel: test.name,
-                              })
-                            }
-                          />
+                          {testToEdit &&
+                          testToEdit.id === test.id &&
+                          builderState.formMode === "edit" ? (
+                            <PreviewTests
+                              mtvId={mtvId || ""}
+                              mtrId={mtrId || ""}
+                              assessment={assessment}
+                              setBuilderState={setBuilderState}
+                              refetchAssessmentData={refetchAssessmentData}
+                              setIsTestSelected={setIsTestSelected}
+                              allTests={allTests}
+                              formMode={builderState.formMode}
+                              testToEdit={testToEdit}
+                              setTestToEdit={setTestToEdit}
+                            />
+                          ) : (
+                            <TestPreviewModal
+                              test={{
+                                tes: test.id || "",
+                                label: test.name || "",
+                                description: test.description || "",
+                              }}
+                              params={getTestParams(test)}
+                              testMethodName={test.type}
+                              onTestDelete={() =>
+                                setShowDeleteModal({
+                                  testId: test.id,
+                                  testLabel: test.name,
+                                })
+                              }
+                              onTestEdit={
+                                canEditCriterion
+                                  ? () => {
+                                      setBuilderState((prevState) => ({
+                                        ...prevState,
+                                        entityMode: "test",
+                                        formMode: "edit",
+                                      }));
+                                      setTimeout(() => {
+                                        setIsTestSelected(false);
+                                        setTestToEdit(test);
+                                        loadTestMethod(
+                                          LoadTestMethod.type,
+                                          test?.type || "Binary-Manual",
+                                        );
+                                      }, 0);
+                                    }
+                                  : undefined
+                              }
+                            />
+                          )}
                         </div>
                       ))}
                   </div>

@@ -28,6 +28,7 @@ import {
   handleNewCriterion,
   formatDataToAssignPrincipleToCriterion,
   handleEditCriterion,
+  canEditCriterion,
 } from "./utils";
 import styles from "./AssessmentBuilder.module.css";
 
@@ -325,27 +326,6 @@ function AssessmentBuilderCriteria({
     }
   }, [hoveredCriterion]);
 
-  // Check if criterion can be edited based on motivation usage
-  const canEditCriterion = (): boolean => {
-    const criterion = allCriteria.find(
-      (c) => c.id === selectedCriterionPidGraph,
-    );
-    if (criterion?.used_by_motivations?.length === 0) return true;
-
-    const usedByMotivations = criterion?.used_by_motivations;
-
-    if (Number(usedByMotivations?.length) > 1) {
-      return false;
-    }
-    if (usedByMotivations?.length === 1) {
-      const usedMotivation = usedByMotivations[0];
-      if (usedMotivation.id === mtvId || usedMotivation?.lodMTV === mtvId) {
-        return true;
-      } else return false;
-    }
-    return true;
-  };
-
   // Handle edit mode form population
   useEffect(() => {
     // initial form for new or select mode
@@ -416,7 +396,7 @@ function AssessmentBuilderCriteria({
   };
 
   const assignCriteriaToActor = async () => {
-    const criImp = selectedCriteria?.map((item) => ({
+    let criImp = selectedCriteria?.map((item) => ({
       criterion_id: item.id,
       imperative_id: item.imperative.id,
     }));
@@ -517,19 +497,41 @@ function AssessmentBuilderCriteria({
           throw error;
         }
       }
-
-      if (selectedCriterionPidGraph) {
-        criImp.push({
-          criterion_id: selectedCriterionPidGraph,
-          imperative_id:
-            criterionForm?.imperative ||
-            (imperatives.length > 0 ? imperatives[0].id : ""),
-        });
-      }
     }
 
-    if (formMode !== "edit" || (formMode === "edit" && principleTag)) {
+    const currentCriterionInAssessment = assessment
+      .flatMap((principle) => principle.criteria || [])
+      .find(
+        (criterion) =>
+          criterion.id?.toLowerCase() === criterionId?.toLowerCase(),
+      );
+    const oldImperativeLabel = currentCriterionInAssessment?.imperative;
+
+    const matchingImperative = imperatives.find(
+      (imp) => imp.id === criterionForm?.imperative,
+    );
+
+    if (
+      formMode !== "edit" ||
+      (formMode === "edit" &&
+        oldImperativeLabel?.toLowerCase() !==
+          matchingImperative?.label?.toLowerCase())
+    ) {
       try {
+        if (formMode === "edit") {
+          criImp = criImp.map((item) => {
+            if (item.criterion_id === selectedCriterionPidGraph) {
+              return {
+                criterion_id: item.criterion_id,
+                imperative_id: matchingImperative?.id || "",
+              };
+            }
+            return {
+              criterion_id: item.criterion_id,
+              imperative_id: item.imperative_id,
+            };
+          });
+        }
         await assignCriteriaToActorMutation.mutateAsync(criImp);
       } catch (error) {
         console.error("Assign criteria to actor failed:", error);
@@ -677,7 +679,15 @@ function AssessmentBuilderCriteria({
 
   // Check if current criterion can be edited
   const isEditingDisabled =
-    formMode === "edit" && criterionId && !canEditCriterion();
+    formMode === "edit" &&
+    criterionId &&
+    !canEditCriterion({
+      currentCriterion: allCriteria.find(
+        (criterion) => criterion.cri === criterionId,
+      ),
+      mtvId,
+      actId,
+    });
 
   return (
     <>

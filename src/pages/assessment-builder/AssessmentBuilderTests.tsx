@@ -222,7 +222,7 @@ function AssessmentBuilderTests({
           </div>
         </div>
       ) : (
-        formMode === "new" && (
+        (formMode === "new" || formMode === "edit") && (
           <div className={styles["builder-column"]}>
             <div className={styles["principle-form"]}>
               <TestsMethods />

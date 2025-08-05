@@ -642,3 +642,28 @@ export const formatDataToAssignPrincipleToCriterion = ({
 
   return priCri;
 };
+
+export const canEditCriterion = ({
+  currentCriterion,
+  mtvId,
+  actId,
+}: {
+  currentCriterion: Criterion | undefined;
+  mtvId: string;
+  actId: string;
+}): boolean => {
+  const usedByMotivations = currentCriterion?.used_by_motivations;
+
+  if (!usedByMotivations || usedByMotivations.length === 0) {
+    return true;
+  }
+
+  const currentMotivation = usedByMotivations?.find(
+    (motivation) => motivation.id === mtvId,
+  );
+  if (currentMotivation) {
+    return currentMotivation.first_actor_assignment === actId;
+  }
+
+  return true;
+};

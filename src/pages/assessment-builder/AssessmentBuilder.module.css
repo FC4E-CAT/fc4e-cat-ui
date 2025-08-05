@@ -126,7 +126,7 @@
 }
 
 .column-content:has(.builder-preview) {
-  padding: 1.5rem;
+  padding: 2.6rem 2rem;
   overflow: hidden;
   background: #f8f9fa;
 }
@@ -210,6 +210,7 @@
   display: flex;
   justify-content: space-between;
   padding-top: 0.8rem;
+  padding-bottom: 0.4rem;
   margin-top: 0.5rem;
   border-top: 1px solid #e5e7eb;
 }
@@ -434,22 +435,13 @@
   max-width: 48%;
 }
 
-.test-preview-modal-col {
-  display: flex;
-  flex: 1 1 0;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-width: 48%;
-}
-
 @media (width <= 900px) {
   .form-group-test-preview {
     flex-direction: column;
     gap: 1rem;
   }
 
-  .test-params-fields-col,
-  .test-preview-modal-col {
+  .test-params-fields-col {
     max-width: 100%;
   }
 }
@@ -1437,7 +1429,7 @@
 
 .test-preview-modal {
   margin-bottom: 3rem;
-  box-shadow: 1px 2px 4px rgb(0 0 0 / 20%);
+  box-shadow: 1px 2px 4px 0 rgb(0 0 0 / 20%);
 }
 
 .test-method-item {
@@ -1479,7 +1471,10 @@
 }
 
 .advanced-settings-container {
-  position: relative;
+  position: absolute;
+  top: 6px;
+  right: 36px;
+  z-index: 1050;
   flex-shrink: 0;
 }
 

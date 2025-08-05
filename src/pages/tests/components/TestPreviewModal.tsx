@@ -1,7 +1,7 @@
 import { TestInput, TestParam } from "@/types/tests";
 import { EvidenceURLS, TestToolTip } from "@/pages/assessments/components";
 import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParamForm";
-import { FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import {
   TestAutoG069,
   TestAutoHttpsCheck,
@@ -26,6 +26,7 @@ interface TestPreviewProps {
   params: TestParam[];
   testMethodName?: string;
   hasEvidenceParam?: boolean;
+  onTestEdit?: () => void;
   onTestDelete?: () => void;
 }
 
@@ -34,6 +35,7 @@ const TestPreviewModal = ({
   params,
   testMethodName,
   hasEvidenceParam,
+  onTestEdit,
   onTestDelete,
 }: TestPreviewProps) => {
   const testParams: JSX.Element[] = [];
@@ -58,6 +60,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestBinaryParamForm
+        key={`binary-${test.tes}`}
         test={adaptedTest}
         onTestChange={() => {}}
         criterionId=""
@@ -88,6 +91,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestValueFormParam
+        key={`value-${test.tes}`}
         test={adaptedTest}
         onTestChange={() => {}}
         criterionId=""
@@ -108,6 +112,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestTRLForm
+        key={`trl-${test.tes}`}
         test={adaptedTest}
         onTestChange={() => {}}
         criterionId=""
@@ -128,6 +133,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestPercentForm
+        key={`percent-${test.tes}`}
         test={adaptedTest}
         onTestChange={() => {}}
         criterionId=""
@@ -148,6 +154,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestRatioForm
+        key={`ratio-${test.tes}`}
         test={adaptedTest}
         onTestChange={() => {}}
         criterionId=""
@@ -170,6 +177,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestAutoG069Form
+        key={`auto-g069-${test.tes}`}
         g069param=""
         test={adaptedTest}
         onTestChange={() => {}}
@@ -192,6 +200,7 @@ const TestPreviewModal = ({
     } as unknown as TestAutoValidation;
     testParams.push(
       <TestAutoValidationForm
+        key={`auto-validation-${test.tes}`}
         test={adaptedTest}
         onAutoGroupTestCall={() => {}}
       />,
@@ -212,6 +221,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestAutoG069Form
+        key={`auto-g069-user-${test.tes}`}
         g069param={defaultG069userInfo}
         test={adaptedTest}
         onTestChange={() => {}}
@@ -235,6 +245,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestAutoG069Form
+        key={`auto-g069-token-${test.tes}`}
         g069param={defaultG069tokenIntrospection}
         test={adaptedTest}
         onTestChange={() => {}}
@@ -258,6 +269,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestAutoHttpsCheckForm
+        key={`auto-https-${test.tes}`}
         test={adaptedTest}
         onTestChange={() => {}}
         criterionId=""
@@ -284,6 +296,7 @@ const TestPreviewModal = ({
 
     testParams.push(
       <TestAutoMd1Form
+        key={`auto-md1-${test.tes}`}
         test={adaptedTest}
         onTestChange={() => {}}
         criterionId=""
@@ -296,6 +309,23 @@ const TestPreviewModal = ({
     <>
       {testParams?.length > 0 ? (
         <div className="border rounded cat-test-div position-relative">
+          {onTestEdit && (
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                onTestEdit();
+              }}
+              style={{
+                position: "absolute",
+                top: "12px",
+                right: "36px",
+                cursor: "pointer",
+                zIndex: 1001,
+              }}
+            >
+              <FaEdit className={styles["delete-icon"]} size="16px" />
+            </span>
+          )}
           {onTestDelete && (
             <span
               onClick={(e) => {
@@ -310,7 +340,7 @@ const TestPreviewModal = ({
                 zIndex: 1001,
               }}
             >
-              <FaTrash className={styles["delete-icon"]} size="16px" />
+              <FaTrash className={styles["delete-icon"]} size="14px" />
             </span>
           )}
           <div className={styles["test-preview-container"]}>
