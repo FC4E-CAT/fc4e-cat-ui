@@ -1,13 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {
-  useState,
-  useContext,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import { useState, useContext, useEffect, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
 import { Button, Container, Spinner } from "react-bootstrap";
 import { AuthContext } from "@/auth";
@@ -26,6 +19,7 @@ import {
   AssessmentBuilderState,
   AlertInfo,
   RegistryMetric,
+  Criterion,
 } from "@/types";
 import { useGetAllCriteria } from "../../api/services/criteria";
 import AssessmentBuilderStructure from "./AssessmentBuilderStructure";
@@ -35,7 +29,8 @@ import AssessmentBuilderPrinciples from "./AssessmentBuilderPrinciples";
 import AssessmentBuilderTests from "./AssessmentBuilderTests";
 import styles from "./AssessmentBuilder.module.css";
 import { useGetAllTests } from "@/api/services/registry";
-import { canEditCriterion } from "./utils";
+import { canEditMetricAndTests } from "./utils";
+import { RegistryTest } from "@/types/tests";
 
 function AssessmentBuilder() {
   const { mtvId, actId } = useParams<{
@@ -79,16 +74,94 @@ function AssessmentBuilder() {
     [],
   );
 
-  const { data: testData } = useGetAllTests({
-    size: 100,
+  const [allTests, setAllTests] = useState<RegistryTest[]>([]);
+  const [allPrinciples, setAllPrinciples] = useState<Principle[]>([]);
+  const [allCriteria, setAllCriteria] = useState<Criterion[]>([]);
+
+  const {
+    data: testsData,
+    fetchNextPage: testFetchNextPage,
+    hasNextPage: testsHaveNextPage,
+    isFetchingNextPage: testsAreFetchingNextPage,
+  } = useGetAllTests({
+    size: 20,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
 
-  const allTests = useMemo(
-    () => testData?.pages?.flatMap((page) => page.content) || [],
-    [testData?.pages],
-  );
+  const {
+    data: principlesData,
+    refetch: refetchPrinciples,
+    fetchNextPage: principlesFetchNextPage,
+    hasNextPage: principlesHaveNextPage,
+    isFetchingNextPage: principlesAreFetchingNextPage,
+  } = useGetAllPrinciples({
+    token: keycloak?.token || "",
+    isRegistered: registered,
+    size: 20,
+  });
+
+  const {
+    data: criteriaData,
+    fetchNextPage: criteriaFetchNextPage,
+    hasNextPage: criteriaHaveNextPage,
+    isFetchingNextPage: criteriaAreFetchingNextPage,
+  } = useGetAllCriteria({
+    size: 20,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    if (testsData?.pages) {
+      const allTestsData =
+        testsData.pages.flatMap((page) => page.content) || [];
+      setAllTests(allTestsData);
+
+      if (testsHaveNextPage && !testsAreFetchingNextPage) {
+        testFetchNextPage();
+      }
+    }
+  }, [
+    testsData?.pages,
+    testsHaveNextPage,
+    testsAreFetchingNextPage,
+    testFetchNextPage,
+  ]);
+
+  useEffect(() => {
+    if (principlesData?.pages) {
+      const allPrinciplesData =
+        principlesData.pages.flatMap((page) => page.content) || [];
+      setAllPrinciples(allPrinciplesData);
+
+      if (principlesHaveNextPage && !principlesAreFetchingNextPage) {
+        principlesFetchNextPage();
+      }
+    }
+  }, [
+    principlesData?.pages,
+    principlesHaveNextPage,
+    principlesAreFetchingNextPage,
+    principlesFetchNextPage,
+  ]);
+
+  useEffect(() => {
+    if (criteriaData?.pages) {
+      const allCriteriaData =
+        criteriaData.pages.flatMap((page) => page.content) || [];
+      setAllCriteria(allCriteriaData);
+
+      if (criteriaHaveNextPage && !criteriaAreFetchingNextPage) {
+        criteriaFetchNextPage();
+      }
+    }
+  }, [
+    criteriaData?.pages,
+    criteriaHaveNextPage,
+    criteriaAreFetchingNextPage,
+    criteriaFetchNextPage,
+  ]);
 
   useEffect(() => {
     if (
@@ -219,24 +292,6 @@ function AssessmentBuilder() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentData]);
-
-  const { data: principlesData, refetch: refetchPrinciples } =
-    useGetAllPrinciples({
-      token: keycloak?.token || "",
-      isRegistered: registered,
-      size: 100,
-    });
-
-  const allPrinciples: Principle[] =
-    principlesData?.pages?.flatMap((page) => page.content) || [];
-
-  const { data: criteriaData } = useGetAllCriteria({
-    size: 100,
-    token: keycloak?.token || "",
-    isRegistered: registered,
-  });
-  const allCriteria =
-    criteriaData?.pages?.flatMap((page) => page.content) || [];
 
   const motivationCriteriaMutation = useGetMotivationCriteriaMutation(
     keycloak?.token || "",
@@ -419,7 +474,7 @@ function AssessmentBuilder() {
               setIsPrincipleSelected={setIsPrincipleSelected}
               isTestSelected={isTestSelected}
               setIsTestSelected={setIsTestSelected}
-              canEditCriterion={canEditCriterion({
+              canEditMetricAndTests={canEditMetricAndTests({
                 currentCriterion: allCriteria.find(
                   (criterion) =>
                     criterion?.cri?.toLowerCase() ===

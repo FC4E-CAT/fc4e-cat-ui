@@ -40,7 +40,7 @@ interface AssessmentBuilderPreviewProps {
   setIsPrincipleSelected: React.Dispatch<React.SetStateAction<boolean>>;
   isTestSelected: boolean;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
-  canEditCriterion: boolean;
+  canEditMetricAndTests: boolean;
 }
 
 function AssessmentBuilderPreview({
@@ -56,7 +56,7 @@ function AssessmentBuilderPreview({
   setIsPrincipleSelected,
   isTestSelected,
   setIsTestSelected,
-  canEditCriterion,
+  canEditMetricAndTests,
 }: AssessmentBuilderPreviewProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
@@ -262,7 +262,7 @@ function AssessmentBuilderPreview({
                   )}
                 </div>
                 <div className={styles["advanced-settings-container"]}>
-                  {isPrincipleAssigned && canEditCriterion && (
+                  {isPrincipleAssigned && canEditMetricAndTests && (
                     <button
                       className={styles["advanced-settings-btn"]}
                       onClick={() => setIsAdvancedSettingsOpen((prev) => !prev)}
@@ -535,7 +535,7 @@ function AssessmentBuilderPreview({
                                 })
                               }
                               onTestEdit={
-                                canEditCriterion
+                                canEditMetricAndTests
                                   ? () => {
                                       setBuilderState((prevState) => ({
                                         ...prevState,
