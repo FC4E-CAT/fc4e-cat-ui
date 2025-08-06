@@ -9,6 +9,7 @@ import {
   TestMethodId,
 } from "@/custom-hooks/usePubSub/events/assessmentBuilder";
 import useSubscribe from "@/custom-hooks/usePubSub/useSubscribe";
+import { TestIcon } from "@/components";
 
 function TestsMethods() {
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -135,7 +136,10 @@ function TestsMethods() {
             }}
           >
             <div className={styles["method-name"]}>
-              {method?.friendly_label || method.label}
+              <TestIcon test={method.label} />
+              <span className="ms-2">
+                {method?.friendly_label || method.label}
+              </span>
             </div>
           </div>
         ))}

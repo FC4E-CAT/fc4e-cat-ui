@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import TestHeaderForm from "./TestHeaderForm";
 import TestMethodAndParams from "./TestMethodAndParams";
+import { TestIcon } from "@/components";
 
 export interface TestModalUIProps {
   id?: string;
@@ -199,7 +200,8 @@ function TestModalContainer(props: TestModalUIProps) {
                     }}
                   >
                     <div className="fw-bold mb-1 test-method-label">
-                      {method.label}
+                      <TestIcon test={method.label} />
+                      <span className="ms-2">{method.label}</span>
                     </div>
                     <div className="test-method-description">
                       {method.description}
