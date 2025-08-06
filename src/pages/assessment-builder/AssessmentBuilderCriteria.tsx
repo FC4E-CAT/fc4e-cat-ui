@@ -689,6 +689,17 @@ function AssessmentBuilderCriteria({
       actId,
     });
 
+  const hasCriterionPrinciple = useMemo(() => {
+    return assessment.some((principle) =>
+      principle.criteria?.some(
+        (c) =>
+          c.id === criterionForm?.cri &&
+          principle.id &&
+          principle.id !== "untagged",
+      ),
+    );
+  }, [assessment, criterionForm?.cri]);
+
   return (
     <>
       {formMode === "new" || formMode === "edit" ? (
@@ -888,25 +899,28 @@ function AssessmentBuilderCriteria({
                     style={{ maxHeight: "160px", overflowY: "auto" }}
                     ref={scrollableContainerRef}
                   >
-                    <div
-                      className={`px-3 py-1 ${!principleTag ? "bg-primary text-white" : ""}`}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        setPrincipleTag(null);
-                        setIsDropdownOpen(false);
-                        setPrincipleSearchTerm("");
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!principleTag) return;
-                        e.currentTarget.style.backgroundColor = "#f8f9fa";
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!principleTag) return;
-                        e.currentTarget.style.backgroundColor = "";
-                      }}
-                    >
-                      No principle (Untagged)
-                    </div>
+                    {(formMode !== "edit" ||
+                      (formMode === "edit" && !hasCriterionPrinciple)) && (
+                      <div
+                        className={`px-3 py-1 ${!principleTag ? "bg-primary text-white" : ""}`}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setPrincipleTag(null);
+                          setIsDropdownOpen(false);
+                          setPrincipleSearchTerm("");
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!principleTag) return;
+                          e.currentTarget.style.backgroundColor = "#f8f9fa";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!principleTag) return;
+                          e.currentTarget.style.backgroundColor = "";
+                        }}
+                      >
+                        No principle (Untagged)
+                      </div>
+                    )}
 
                     {filteredPrinciplesForForm.length === 0 &&
                     principleSearchTerm ? (
