@@ -18,6 +18,7 @@ export interface RegistryTest {
   used_by_motivations?: MotivationReference[];
   test_versions?: RegistryTest[];
   is_latest_version?: boolean;
+  db_id?: string;
 }
 
 export type RegistryTestsResponse = ResponsePage<RegistryTest[]>;

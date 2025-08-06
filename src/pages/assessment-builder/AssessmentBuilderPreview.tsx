@@ -40,7 +40,6 @@ interface AssessmentBuilderPreviewProps {
   setIsPrincipleSelected: React.Dispatch<React.SetStateAction<boolean>>;
   isTestSelected: boolean;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
-  allTests: RegistryTest[];
   canEditCriterion: boolean;
 }
 
@@ -57,7 +56,6 @@ function AssessmentBuilderPreview({
   setIsPrincipleSelected,
   isTestSelected,
   setIsTestSelected,
-  allTests,
   canEditCriterion,
 }: AssessmentBuilderPreviewProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -487,7 +485,6 @@ function AssessmentBuilderPreview({
                   setBuilderState={setBuilderState}
                   refetchAssessmentData={refetchAssessmentData}
                   setIsTestSelected={setIsTestSelected}
-                  allTests={allTests}
                   formMode={builderState.formMode}
                   selectedCriterionId={builderState.selectedId}
                 />
@@ -518,7 +515,6 @@ function AssessmentBuilderPreview({
                               setBuilderState={setBuilderState}
                               refetchAssessmentData={refetchAssessmentData}
                               setIsTestSelected={setIsTestSelected}
-                              allTests={allTests}
                               formMode={builderState.formMode}
                               testToEdit={testToEdit}
                               setTestToEdit={setTestToEdit}

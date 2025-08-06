@@ -419,7 +419,6 @@ function AssessmentBuilder() {
               setIsPrincipleSelected={setIsPrincipleSelected}
               isTestSelected={isTestSelected}
               setIsTestSelected={setIsTestSelected}
-              allTests={allTests}
               canEditCriterion={canEditCriterion({
                 currentCriterion: allCriteria.find(
                   (criterion) =>
