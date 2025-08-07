@@ -51,8 +51,6 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
     }
   };
 
-  console.log(accKeys);
-
   // call use effect to react to required field changes
   useEffect(() => {
     setAccKeys((keys) => {

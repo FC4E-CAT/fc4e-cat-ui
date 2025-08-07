@@ -6,6 +6,7 @@ export interface Config {
   theme?: ConfigTheme;
   links?: ConfigLinks;
   g069_providers: Record<string, string>;
+  auto_subject_type?: string;
 }
 
 export type ConfigRelationIds = {

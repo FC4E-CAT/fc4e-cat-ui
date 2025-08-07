@@ -41,6 +41,8 @@ const themeHomeBenefits = config.theme?.home?.display_benefits ?? true;
 const themeActorArt = config.theme?.actor_art;
 const themeAbout = config.theme?.about?.display ?? true;
 
+const autoSubjectType = config.auto_subject_type ?? "";
+
 export {
   API,
   relMtvActorId,
@@ -64,4 +66,5 @@ export {
   themeActorArt,
   themeAbout,
   pidSelectionView,
+  autoSubjectType,
 };

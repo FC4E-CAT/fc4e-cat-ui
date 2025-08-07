@@ -358,7 +358,7 @@ function ValidationDetails(props: ValidationProps) {
                 </section>
               </div>
               <div className="row border-top py-3 mt-4">
-                <h4>{t("fields.organisation")}</h4>
+                <h4>{t("page_validations.org")}</h4>
                 <section className="col-9 disabled">
                   <div>
                     <strong>{t("fields.id")}: </strong>

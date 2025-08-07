@@ -234,6 +234,7 @@
     "subtitle": "All validation Requests in one place.",
     "org_name": "Organization Name",
     "org_role": "Organization Role",
+    "org": "Organization",
     "actor_name": "Actor Name",
     "tip_view": "View Validation Request"
   },
