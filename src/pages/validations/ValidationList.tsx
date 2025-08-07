@@ -196,9 +196,8 @@ function ValidationList() {
               onClick={() => {
                 setOpts({ ...opts, page: opts.page - 1 });
               }}
-              className={`ms-4 btn py-0 btn-light btn-small ${
-                opts.page === 1 ? "disabled text-muted" : null
-              }`}
+              className={`ms-4 btn py-0 btn-light btn-small ${opts.page === 1 ? "disabled text-muted" : null
+                }`}
             >
               <FaArrowLeft />
             </span>
@@ -206,11 +205,10 @@ function ValidationList() {
               onClick={() => {
                 setOpts({ ...opts, page: opts.page + 1 });
               }}
-              className={`btn py-0 btn-light btn-small" ${
-                data?.total_pages > data?.number_of_page
+              className={`btn py-0 btn-light btn-small" ${data?.total_pages > data?.number_of_page
                   ? null
                   : "disabled text-muted"
-              }`}
+                }`}
             >
               <FaArrowRight />
             </span>
