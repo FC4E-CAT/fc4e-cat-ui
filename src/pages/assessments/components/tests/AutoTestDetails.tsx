@@ -1,4 +1,4 @@
-import { LastRun } from "@/types";
+import type { LastRun } from "@/types";
 import { Alert, Col, Row } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 

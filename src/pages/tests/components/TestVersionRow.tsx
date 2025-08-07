@@ -2,7 +2,7 @@ import React from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaBars, FaEdit } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { MotivationReference } from "@/types";
+import type { MotivationReference } from "@/types";
 import { MotivationRefList } from "@/components/MotivationRefList";
 
 interface TestVersionRowProps {

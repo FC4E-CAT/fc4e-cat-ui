@@ -1,7 +1,7 @@
-import { AssessmentTest } from "./assessment";
-import { ResponsePage } from "./common";
-import { MotivationReference } from "./motivation";
-import { Principle } from "./principle";
+import type { AssessmentTest } from "./assessment";
+import type { ResponsePage } from "./common";
+import type { MotivationReference } from "./motivation";
+import type { Principle } from "./principle";
 
 export interface Criterion {
   id: string;

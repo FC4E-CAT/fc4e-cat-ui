@@ -1,5 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 
 import { AuthProvider, ProtectedRoute, KeycloakLogout } from "@/auth";
 import { Header, Footer } from "@/components";
@@ -53,8 +57,18 @@ import MetricTypesSettings from "./pages/admin/settings/MetricTypesSettings";
 import AlgorithmsSettings from "./pages/admin/settings/AlgorithmsSettings";
 import BenchmarkTypesSettings from "./pages/admin/settings/BenchmarkTypesSettings";
 import { pidSelectionView, themeAbout } from "./config";
+import { handleBackendError } from "./utils";
+import axios from "axios";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        handleBackendError(error);
+      }
+    },
+  }),
+});
 
 function App() {
   return (

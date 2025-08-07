@@ -6,10 +6,10 @@ import { DebugJSON } from "./components/DebugJSON";
 import { CriteriaTabs } from "./components";
 import { Alert, Button, Col } from "react-bootstrap";
 import {
-  Assessment,
-  AssessmentCriterion,
+  type Assessment,
+  type AssessmentCriterion,
   AssessmentCriterionImperative,
-  AssessmentTest,
+  type AssessmentTest,
 } from "@/types";
 import { evalAssessment, evalMetric } from "@/utils";
 import { AssessmentEvalStats } from "./components/AssessmentEvalStats";

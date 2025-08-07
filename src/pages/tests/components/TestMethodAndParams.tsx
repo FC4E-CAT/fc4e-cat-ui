@@ -1,6 +1,6 @@
 import { OverlayTrigger, Tooltip, Form } from "react-bootstrap";
 import { FaInfoCircle } from "react-icons/fa";
-import { TestParam } from "@/types/tests";
+import type { TestParam } from "@/types/tests";
 
 interface TestMethodAndParamsProps {
   showErrors: boolean;

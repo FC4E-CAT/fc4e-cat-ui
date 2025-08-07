@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { ApiOptions, Subject, SubjectListResponse } from "@/types";
+import type { ApiOptions, Subject, SubjectListResponse } from "@/types";
 import { APIClient } from "@/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
@@ -19,9 +19,6 @@ export const useGetSubjects = ({
         `/v1/subjects?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
@@ -44,9 +41,6 @@ export function useGetSubject({
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: !!token && isRegistered && !!id && id > 0,
   });
 }
@@ -63,48 +57,45 @@ export function useCreateSubject(token: string) {
       return APIClient(token).post("/v1/subjects", postData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["subjects"]);
+      queryClient.invalidateQueries({ queryKey: ["subjects"] });
     },
   });
 }
 
 export function useUpdateSubject(token: string) {
   const queryClient = useQueryClient();
-  return useMutation(
-    async (data: Subject) => {
+  return useMutation({
+    mutationFn: async (data: Subject) => {
       const response = await APIClient(token).patch<Subject>(
         `/v1/subjects/${data.id}`,
         data,
       );
       if (response.status == 200) {
-        queryClient.invalidateQueries(["subjects"]);
-        queryClient.invalidateQueries(["subject", data.id]);
+        queryClient.invalidateQueries({ queryKey: ["subjects"] });
+        queryClient.invalidateQueries({ queryKey: ["subject", data.id] });
       }
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
+
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+  });
 }
 
 export function useDeleteSubject(token: string) {
   const queryClient = useQueryClient();
-  return useMutation(
-    async (id: number) => {
+  return useMutation({
+    mutationFn: async (id: number) => {
       const response = await APIClient(token).delete(`/v1/subjects/${id}`);
       if (response.status == 200) {
-        queryClient.invalidateQueries(["subjects"]);
-        queryClient.invalidateQueries(["subject", id]);
+        queryClient.invalidateQueries({ queryKey: ["subjects"] });
+        queryClient.invalidateQueries({ queryKey: ["subject", id] });
       }
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+  });
 }

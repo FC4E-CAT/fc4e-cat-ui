@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { AlertInfo, Motivation, MotivationActor } from "@/types";
+import type { AlertInfo, Motivation, MotivationActor } from "@/types";
 import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import {
   Alert,

@@ -11,11 +11,11 @@ import { FaInfoCircle } from "react-icons/fa";
 import { Form, Tooltip, OverlayTrigger } from "react-bootstrap";
 import styles from "./AssessmentBuilder.module.css";
 import { useTranslation } from "react-i18next";
-import { TestFull, TestInput, TestParam } from "@/types/tests";
+import type { TestFull, TestInput, TestParam } from "@/types/tests";
 import toast from "react-hot-toast";
 import { relMtvMetricTest } from "@/config";
 import TestPreviewModal from "../tests/components/TestPreviewModal";
-import {
+import type {
   AlertInfo,
   AssessmentBuilderState,
   AssessmentPrinciple,
@@ -137,28 +137,34 @@ function PreviewTests({
   }, [testMethods, test.test_method_id]);
 
   const updateParamTestDef = useCallback(() => {
-    let names = "";
-    let text = "";
-    let tips = "";
     const subParams = params.filter((item) => item.name !== "evidence");
 
     // iterate over params (minus evidence) and update test def
-    subParams.forEach((item) => {
-      names === ""
-        ? (names = item.name)
-        : item?.name && (names = names + "|" + item.name);
-      text === ""
-        ? (text = item.text)
-        : item?.text && (text = text + "|" + item.text);
-      tips === ""
-        ? (tips = item.tooltip)
-        : item?.tooltip && (tips = tips + "|" + item.tooltip);
-    });
+    const {
+      names: initialNames,
+      text,
+      tips,
+    } = subParams.reduce(
+      (acc, item) => {
+        if (item?.name) {
+          acc.names = acc.names ? `${acc.names}|${item.name}` : item.name;
+        }
+        if (item?.text) {
+          acc.text = acc.text ? `${acc.text}|${item.text}` : item.text;
+        }
+        if (item?.tooltip) {
+          acc.tips = acc.tips ? `${acc.tips}|${item.tooltip}` : item.tooltip;
+        }
+        return acc;
+      },
+      { names: "", text: "", tips: "" },
+    );
 
-    // Add evidence parameter if toggle is on
-    if (hasEvidence) {
-      names = names === "" ? "evidence" : names + "|evidence";
-    }
+    const names = hasEvidence
+      ? initialNames === ""
+        ? "evidence"
+        : `${initialNames}|evidence`
+      : initialNames;
 
     setTest((test) => ({
       ...test,

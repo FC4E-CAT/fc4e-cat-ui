@@ -1,6 +1,6 @@
 import { useAdminGetUsers, useDeleteUser, useRestoreUser } from "@/api";
 import { AuthContext } from "@/auth";
-import { AlertInfo, UserProfile } from "@/types";
+import type { AlertInfo, UserProfile } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -43,10 +43,12 @@ type UserState = {
 };
 
 // Modes under which UserModal operates
-enum UserModalMode {
-  Delete,
-  Restore,
-}
+const UserModalMode = {
+  Delete: 0,
+  Restore: 1,
+} as const;
+
+type UserModalMode = (typeof UserModalMode)[keyof typeof UserModalMode];
 
 // Basic configuration for subject modal
 type UserModalBasicConfig = {

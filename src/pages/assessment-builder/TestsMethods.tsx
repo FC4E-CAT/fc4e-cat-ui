@@ -2,7 +2,7 @@ import { useContext, useMemo, useState } from "react";
 import styles from "./AssessmentBuilder.module.css";
 import { AuthContext } from "@/auth";
 import { useGetAllTestMethods } from "@/api/services/registry";
-import { RegistryResource } from "@/types";
+import type { RegistryResource } from "@/types";
 import usePublish from "@/custom-hooks/usePubSub/usePublish";
 import {
   LoadTestMethod,

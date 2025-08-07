@@ -22,7 +22,7 @@ import {
   FaBars,
 } from "react-icons/fa";
 
-import { AlertInfo, Criterion } from "@/types";
+import type { AlertInfo, Criterion } from "@/types";
 import { CriterionModal } from "./components/CriterionModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";

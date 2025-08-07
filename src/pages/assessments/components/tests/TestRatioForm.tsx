@@ -4,9 +4,10 @@
 
 import { Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
-import { AssessmentTest, EvidenceURL, TestValueParam } from "@/types";
+import type { AssessmentTest, EvidenceURL, TestValueParam } from "@/types";
 import { useState } from "react";
 import { TestToolTip } from "./TestToolTip";
+import { TestValueEventType } from "@/types/tests";
 
 interface AssessmentTestProps {
   test: TestValueParam;
@@ -17,11 +18,6 @@ interface AssessmentTestProps {
     criterionId: string,
     newTest: AssessmentTest,
   ): void;
-}
-
-enum TestValueEventType {
-  Value = "value",
-  Threshold = "threshold",
 }
 
 export const TestRatioForm = (props: AssessmentTestProps) => {

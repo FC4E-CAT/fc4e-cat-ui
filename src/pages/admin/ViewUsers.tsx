@@ -9,9 +9,9 @@ import {
 } from "react-icons/fa";
 import { FaFileCircleCheck, FaEarlybirds } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
-import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
+import { Tooltip, OverlayTrigger, type TooltipProps } from "react-bootstrap";
 import { idToColor, trimField } from "@/utils/admin";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import { CopyToClipboard } from "react-copy-to-clipboard-ts";
 import { useTranslation } from "react-i18next";
 
 const ViewUsers: React.FC = () => {

@@ -1,11 +1,9 @@
-import { AxiosError } from "axios";
-import {
+import type {
   OrganisationSearchParams,
   OrganisationRORSearchResponse,
 } from "@/types";
 import { APIClient } from "@/api";
 import { useQuery } from "@tanstack/react-query";
-import { handleBackendError } from "@/utils";
 
 export const useOrganisationSearch = ({
   name,
@@ -23,9 +21,6 @@ export const useOrganisationSearch = ({
       );
 
       return response.data as OrganisationRORSearchResponse;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     staleTime: 10 * 1000,
   });

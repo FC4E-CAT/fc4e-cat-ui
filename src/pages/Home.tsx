@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import serviceImg from "@/assets/thumb_service.png";
 import manageImg from "@/assets/thumb_manage.png";
 import ownersImg from "@/assets/thumb_user.png";
-import ROUTES from "../routes";
+import ROUTES from "@/routes";
 import { themeHomeBenefits } from "@/config";
 
 function Home() {

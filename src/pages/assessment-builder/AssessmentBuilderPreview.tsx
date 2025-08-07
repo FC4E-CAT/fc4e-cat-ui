@@ -2,12 +2,12 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
-  AssessmentBuilderState,
-  AssessmentPrinciple,
+  type AssessmentBuilderState,
+  type AssessmentPrinciple,
   AssessmentCriterionImperative,
-  MetricFull,
-  AlertInfo,
-  AssessmentTest,
+  type MetricFull,
+  type AlertInfo,
+  type AssessmentTest,
 } from "@/types";
 import { FaExclamationCircle, FaInfoCircle, FaSlidersH } from "react-icons/fa";
 import TestPreviewModal from "../tests/components/TestPreviewModal";
@@ -17,7 +17,7 @@ import {
   useUpdateMotivationMetricTests,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import { RegistryTest, TestFull } from "@/types/tests";
+import type { RegistryTest, TestFull } from "@/types/tests";
 import { relMtvMetricTest } from "@/config";
 import toast from "react-hot-toast";
 import styles from "./AssessmentBuilder.module.css";

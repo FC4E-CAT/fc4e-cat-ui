@@ -12,9 +12,9 @@ import imgAssessmentBadgeWip from "@/assets/badge-wip.png";
 import imgAssessmentBadgeFailed from "@/assets/badge-failed.png";
 import Accordion from "react-bootstrap/Accordion";
 import {
-  Assessment,
+  type Assessment,
   AssessmentCriterionImperative,
-  AssessmentStats,
+  type AssessmentStats,
 } from "@/types";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import AssessmentPdf from "./AssessmentPdf";
@@ -92,7 +92,8 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               </h2>
               <p className="lead cat-view-lead fs-6 ">
                 <span className="text-gray-dark">
-                  {t("compliance_policy")}: {assessment.assessment_type.name}{" "}
+                  {t("compliance_policy")}:{" "}
+                  {assessment.assessment_type.name}{" "}
                 </span>
               </p>
             </Col>

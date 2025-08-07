@@ -7,7 +7,7 @@ import {
   useUpdateActorCriteriaWithDefaultMetric,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import {
+import type {
   AlertInfo,
   AssessmentBuilderState,
   AssessmentPrinciple,

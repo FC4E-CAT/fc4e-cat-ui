@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { useGetValidationList } from "@/api";
 import { AuthContext } from "@/auth";
-import { ValidationResponse } from "@/types";
+import type { ValidationResponse } from "@/types";
 import { Link } from "react-router-dom";
 import {
   FaList,

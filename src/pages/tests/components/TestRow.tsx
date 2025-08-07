@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { FaClipboardQuestion } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
-import { RegistryTest } from "@/types/tests";
+import type { RegistryTest } from "@/types/tests";
 import { idToColor } from "@/utils/admin";
 import { MotivationRefList } from "@/components/MotivationRefList";
 

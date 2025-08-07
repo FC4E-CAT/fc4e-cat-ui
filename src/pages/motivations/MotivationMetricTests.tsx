@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { AlertInfo } from "@/types";
+import type { AlertInfo } from "@/types";
 import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
@@ -12,7 +12,7 @@ import {
   useGetMotivationMetricTests,
   useUpdateMotivationMetricTests,
 } from "@/api";
-import { RegistryTest } from "@/types/tests";
+import type { RegistryTest } from "@/types/tests";
 import { useGetAllTests } from "@/api/services/registry";
 import { useTranslation } from "react-i18next";
 import { SearchBox } from "@/components/SearchBox";

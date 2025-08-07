@@ -1,6 +1,7 @@
 // Common or minor stuff here
 
-import { MotivationMetric } from "./motivation";
+// Common or minor stuff here
+import type { MotivationMetric } from "./motivation";
 
 export interface ResponsePage<T> {
   size_of_page: number;
@@ -201,4 +202,11 @@ export interface StatsValidations {
 
 export interface StatsSubjects {
   total_subjects: number;
+}
+
+export interface Pagination {
+  size_of_page: number;
+  number_of_page: number;
+  total_elements: number;
+  total_pages: number;
 }

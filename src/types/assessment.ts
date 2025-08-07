@@ -1,4 +1,4 @@
-import { ResponsePage } from "./common";
+import type { ResponsePage } from "./common";
 
 /** API response when requesting a template */
 export interface TemplateResponse {
@@ -58,8 +58,10 @@ export interface RefID {
   name: string;
 }
 
-export interface AssessmentActor extends RefID {}
-export interface AssessmentType extends RefID {}
+// export interface AssessmentActor extends RefID {}
+// export interface AssessmentType extends RefID {}
+
+export type AssessmentActor = RefID;
 
 /** Assessment subject */
 export interface AssessmentSubject {
@@ -72,10 +74,14 @@ export interface AssessmentSubject {
 export type AssessmentSubjectListResponse = ResponsePage<AssessmentSubject[]>;
 
 /** The status of an assesment wether it is public or private */
-export enum AssessmentStatus {
-  Public = "PUBLIC",
-  Private = "PRIVATE",
-}
+// A type for compile-time checking
+export type AssessmentStatus = "PUBLIC" | "PRIVATE";
+
+// A runtime object for actual values
+export const AssessmentStatus = {
+  Public: "PUBLIC",
+  Private: "PRIVATE",
+} as const;
 
 /** An assessment is done on behalf of a specific organisation */
 export interface AssessmentOrg {
@@ -112,12 +118,18 @@ export interface AssessmentCriterion {
 }
 
 /** Each criterion can be either mandatory (must) or optional (should) */
-export enum AssessmentCriterionImperative {
-  Must = "must",
-  MUST = "MUST",
-  SHOULD = "SHOULD",
-  Should = "should",
-}
+export type AssessmentCriterionImperative =
+  | "must"
+  | "MUST"
+  | "SHOULD"
+  | "should";
+
+export const AssessmentCriterionImperative = {
+  Must: "must",
+  MUST: "MUST",
+  SHOULD: "SHOULD",
+  Should: "should",
+} as const;
 
 /** Each criterion includes a SINGLE metric */
 export interface Metric {
@@ -133,15 +145,19 @@ export interface Metric {
 }
 
 /** Each metric has a type. For now, we only deal with type: number  */
-export enum MetricType {
-  Number = "number",
-}
+export type MetricType = "number";
+
+export const MetricType = {
+  Number: "number",
+} as const;
 
 /** Each metric has an algorithm. For now, we only deal with algorithms: single and sum  */
-export enum MetricAlgorithm {
-  Sum = "sum",
-  Single = "single",
-}
+export type MetricAlgorithm = "sum" | "single";
+
+export const MetricAlgorithm = {
+  Sum: "sum",
+  Single: "single",
+} as const;
 
 /** Each benchmark will gonna have different types  */
 export type Benchmark = Record<string, string | number>;
@@ -445,11 +461,13 @@ export interface AssessmentFiltersType {
   subject_type: string;
 }
 
-export enum AssessmentEditMode {
-  Create = "create",
-  Edit = "edit",
-  Import = "import",
-}
+export type AssessmentEditMode = "create" | "edit" | "import";
+
+export const AssessmentEditMode = {
+  Create: "create",
+  Edit: "edit",
+  Import: "import",
+} as const;
 
 export interface AssessmentTypeResponse {
   size_of_page: number;

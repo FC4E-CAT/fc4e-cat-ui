@@ -7,15 +7,15 @@ import {
   useGetProfile,
 } from "@/api";
 import {
-  Assessment,
-  AssessmentSubject,
-  AssessmentTest,
+  type Assessment,
+  type AssessmentSubject,
+  type AssessmentTest,
   AssessmentCriterionImperative,
-  AlertInfo,
+  type AlertInfo,
   AssessmentEditMode,
-  ActorOrgAsmtType,
-  AssessmentCriterion,
-  AutoGroupTest,
+  type ActorOrgAsmtType,
+  type AssessmentCriterion,
+  type AutoGroupTest,
 } from "@/types";
 import { useParams } from "react-router";
 import {

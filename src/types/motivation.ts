@@ -1,5 +1,5 @@
-import { ResponsePage } from "./common";
-import { Principle, PrincipleInput } from "./principle";
+import type { ResponsePage } from "./common";
+import type { Principle, PrincipleInput } from "./principle";
 
 export interface Motivation {
   id: string;

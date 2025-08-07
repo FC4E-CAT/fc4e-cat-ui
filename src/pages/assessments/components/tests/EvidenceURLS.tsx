@@ -1,4 +1,4 @@
-import { EvidenceURL } from "@/types";
+import type { EvidenceURL } from "@/types";
 import { useState } from "react";
 import { InputGroup, Form, Row, Col } from "react-bootstrap";
 import { useTranslation } from "react-i18next";

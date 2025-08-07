@@ -27,7 +27,7 @@ import {
   useDeletePrinciple,
   useGetPrinciples,
 } from "@/api/services/principles";
-import { AlertInfo, Principle } from "@/types";
+import type { AlertInfo, Principle } from "@/types";
 import { PrincipleModal } from "./components/PrincipleModal";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";

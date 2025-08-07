@@ -7,7 +7,12 @@ import {
 } from "@/api";
 import { AuthContext } from "@/auth";
 import { defaultCriterionImperative, defaultCriterionType } from "@/config";
-import { AlertInfo, CriterionInput, CriterionType, Imperative } from "@/types";
+import type {
+  AlertInfo,
+  CriterionInput,
+  CriterionType,
+  Imperative,
+} from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -357,7 +362,6 @@ export function CriterionModal(props: CriterionModalProps) {
                 <Form.Select
                   id="input-motivation-type"
                   aria-describedby="label-motivation-type"
-                  placeholder={t("page_criteria.select_imperative")}
                   value={
                     criterionInput.imperative ? criterionInput.imperative : ""
                   }

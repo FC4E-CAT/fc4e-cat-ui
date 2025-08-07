@@ -1,4 +1,4 @@
-import { Assessment, AssessmentStats } from "@/types";
+import type { Assessment, AssessmentStats } from "@/types";
 import imgLogo from "@/assets/logo-cat.png";
 import {
   Page,

@@ -3,7 +3,7 @@ import { useGetAllTestMethods } from "@/api/services/registry";
 import { AuthContext } from "@/auth";
 import { relMtvActorId } from "@/config";
 import ROUTES, { buildRoute } from "@/routes";
-import {
+import type {
   AlertInfo,
   AutoGroupTest,
   MotivationActor,

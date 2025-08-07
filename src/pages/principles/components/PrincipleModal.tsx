@@ -5,7 +5,7 @@ import {
   useUpdatePrinciple,
 } from "@/api/services/principles";
 import { AuthContext } from "@/auth";
-import { AlertInfo, PrincipleInput } from "@/types";
+import type { AlertInfo, PrincipleInput } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,

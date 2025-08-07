@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { AlertInfo, Criterion, Principle } from "@/types";
+import type { AlertInfo, Criterion, Principle } from "@/types";
 import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";

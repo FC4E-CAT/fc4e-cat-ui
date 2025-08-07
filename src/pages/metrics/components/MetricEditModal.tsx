@@ -12,7 +12,7 @@ import {
   defaultMotivationMetricBenchmarkType,
   defaultMotivationMetricType,
 } from "@/config";
-import {
+import type {
   AlertInfo,
   MetricInput,
   RegistryResource,

@@ -1,24 +1,20 @@
 import { AxiosError } from "axios";
-import {
+import type {
   ApiOptions,
   ApiPaginationOptions,
   RegistryActorListResponse,
 } from "@/types";
 import { APIClient } from "@/api";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { handleBackendError } from "@/utils";
 
 export const useGetActors = ({ size, page, sortBy }: ApiPaginationOptions) =>
-  useQuery({
+  useQuery<RegistryActorListResponse, AxiosError>({
     queryKey: ["actors", { size, page, sortBy }],
     queryFn: async () => {
       const response = await APIClient("").get<RegistryActorListResponse>(
         `/v1/codelist/registry-actors?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
   });
 
@@ -35,15 +31,13 @@ export const useGetAllRegistryActors = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (lastPage.number_of_page < lastPage.total_pages) {
         return lastPage.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,

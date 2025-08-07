@@ -14,7 +14,7 @@ import {
   useGetAllMotivationMetrics,
 } from "@/api/services/motivations";
 import { useQueryClient } from "@tanstack/react-query";
-import {
+import type {
   Principle,
   AssessmentBuilderState,
   AlertInfo,
@@ -30,7 +30,7 @@ import AssessmentBuilderTests from "./AssessmentBuilderTests";
 import styles from "./AssessmentBuilder.module.css";
 import { useGetAllTests } from "@/api/services/registry";
 import { canEditMetricAndTests } from "./utils";
-import { RegistryTest } from "@/types/tests";
+import type { RegistryTest } from "@/types/tests";
 
 function AssessmentBuilder() {
   const { mtvId, actId } = useParams<{
@@ -327,7 +327,9 @@ function AssessmentBuilder() {
 
   useEffect(
     () => () => {
-      queryClient.removeQueries(["assessment-type-template", mtvId, actId]);
+      queryClient.removeQueries({
+        queryKey: ["assessment-type-template", mtvId, actId],
+      });
       setAssessment([]);
       setMotivationMetrics([]);
       setBuilderState({

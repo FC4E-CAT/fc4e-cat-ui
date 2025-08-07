@@ -6,7 +6,7 @@ import { useGetProfile } from "@/api";
 import { trimProfileID } from "@/utils";
 import { AuthContext } from "@/auth";
 import { FaUser, FaShieldAlt } from "react-icons/fa";
-import { UserProfile } from "@/types";
+import type { UserProfile } from "@/types";
 import { useTranslation } from "react-i18next";
 import ROUTES from "../routes";
 import { pidSelectionView, themeAppTitle } from "@/config";

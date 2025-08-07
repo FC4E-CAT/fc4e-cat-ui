@@ -1,7 +1,7 @@
 /**
  * Component to display evaluation statistics
  */
-import { AssessmentResult, ResultStats } from "@/types";
+import type { AssessmentResult, ResultStats } from "@/types";
 import { prettyPrintRanking } from "@/utils";
 import { Row, Col, ProgressBar } from "react-bootstrap";
 import { useTranslation } from "react-i18next";

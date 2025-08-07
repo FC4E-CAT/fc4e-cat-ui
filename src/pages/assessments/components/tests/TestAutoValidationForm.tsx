@@ -5,7 +5,7 @@
 // import { useState } from "react"
 import { Button, Col, Row } from "react-bootstrap";
 
-import { AutoGroupTest, TestAutoValidation } from "@/types";
+import type { AutoGroupTest, TestAutoValidation } from "@/types";
 import { FaPlay } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { FaGears } from "react-icons/fa6";

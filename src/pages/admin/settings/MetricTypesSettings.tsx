@@ -4,9 +4,9 @@ import {
   useUpdateMetricTypeStatus,
 } from "@/api/services/registry";
 import { AuthContext } from "@/auth";
-import { RegistryResource } from "@/types";
+import type { RegistryResource } from "@/types";
 import toast from "react-hot-toast";
-import SettingsLayout, { SettingsItem } from "@/components/SettingsLayout";
+import SettingsLayout, { type SettingsItem } from "@/components/SettingsLayout";
 
 interface MetricTypeResource extends RegistryResource {
   enabled?: boolean;

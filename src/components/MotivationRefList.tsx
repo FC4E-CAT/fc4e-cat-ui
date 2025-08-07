@@ -1,4 +1,4 @@
-import { MotivationReference } from "@/types";
+import type { MotivationReference } from "@/types";
 import { Link } from "react-router-dom";
 import ROUTES, { buildRoute } from "../routes";
 

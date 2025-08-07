@@ -9,7 +9,7 @@ import {
   useGetAssessmentComments,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import { AlertInfo, AssessmentComment } from "@/types";
+import type { AlertInfo, AssessmentComment } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Col, Form, ListGroup, Row } from "react-bootstrap";
 import toast from "react-hot-toast";

@@ -1,13 +1,13 @@
 /** Helper  */
 
 import {
-  Assessment,
+  type Assessment,
   AssessmentCriterionImperative,
-  Metric,
-  ResultStats,
-  AssessmentTest,
-  GroupTestRef,
-  LastRun,
+  type Metric,
+  type ResultStats,
+  type AssessmentTest,
+  type GroupTestRef,
+  type LastRun,
 } from "../types";
 
 /** Evaluates all tests of a metric if the metric is number */

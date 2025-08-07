@@ -1,4 +1,4 @@
-import {
+import type {
   ApiOptions,
   ApiOptionsSearch,
   MetricInput,
@@ -8,6 +8,7 @@ import {
   PrincipleResponse,
   Principle,
   PrincipleInput,
+  Pagination,
 } from "@/types";
 import {
   useInfiniteQuery,
@@ -18,7 +19,11 @@ import {
 import { APIClient } from "../client";
 import { AxiosError } from "axios";
 import { handleBackendError } from "@/utils";
-import { RegistryTest, RegistryTestsResponse, TestInput } from "@/types/tests";
+import type {
+  RegistryTest,
+  RegistryTestsResponse,
+  TestInput,
+} from "@/types/tests";
 
 export const useGetAllAlgorithms = ({
   token,
@@ -34,16 +39,16 @@ export const useGetAllAlgorithms = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
+
     retry: false,
     enabled: isRegistered,
   });
@@ -63,15 +68,14 @@ export const useGetAllTestMethods = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -89,7 +93,7 @@ export const useUpdateTestMethodStatus = (token: string) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["all-test-methods"]);
+      queryClient.invalidateQueries({ queryKey: ["all-test-methods"] });
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
@@ -111,15 +115,14 @@ export const useGetAllMetricTypes = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -139,15 +142,14 @@ export const useGetAllBenchmarkTypes = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -207,15 +209,14 @@ export const useGetAllTests = ({ token, isRegistered, size }: ApiOptions) =>
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -223,22 +224,20 @@ export const useGetAllTests = ({ token, isRegistered, size }: ApiOptions) =>
 
 export const useCreateTest = (token: string, test: TestInput) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post(`/v1/registry/tests`, test);
       return response.data;
     },
 
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["registry-tests"]);
-        queryClient.invalidateQueries(["all-tests"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["registry-tests"] });
+      queryClient.invalidateQueries({ queryKey: ["all-tests"] });
+    },
+  });
 };
 
 export const useGetTests = ({
@@ -254,14 +253,11 @@ export const useGetTests = ({
     queryKey: ["registry-tests", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
       let url = `/v1/registry/tests?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
-      search ? (url = `${url}&search=${search}`) : null;
+      if (search) url += `&search=${search}`;
 
       const response = await APIClient(token).get<RegistryTestsResponse>(url);
 
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
@@ -285,9 +281,6 @@ export const useGetTest = ({
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
   });
 
@@ -300,31 +293,25 @@ export const useGetStatistics = () =>
       response = await APIClient().get<Statistics>(`/v1/statistics`);
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
   });
 
 export const useUpdateTest = (token: string, id: string, test: TestInput) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).patch<TestInput>(
         `/v1/registry/tests/${id}`,
         test,
       );
       return response.data;
     },
-
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["registry-tests"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["registry-tests"] });
+    },
+  });
 };
 
 export function useDeleteTest(token: string) {
@@ -335,7 +322,7 @@ export function useDeleteTest(token: string) {
     },
     // on success refresh test query (so that the deleted test dissapears from list)
     onSuccess: () => {
-      queryClient.invalidateQueries(["registry-tests"]);
+      queryClient.invalidateQueries({ queryKey: ["registry-tests"] });
     },
   });
 }
@@ -355,8 +342,8 @@ export function useCreateTestVersion({
       return APIClient(token).post(`/v1/registry/tests/${id}/version`, test);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["registry-tests"]);
-      queryClient.invalidateQueries(["all-tests"]);
+      queryClient.invalidateQueries({ queryKey: ["registry-tests"] });
+      queryClient.invalidateQueries({ queryKey: ["all-tests"] });
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
@@ -377,14 +364,11 @@ export const useGetRegistryMetrics = ({
     queryKey: ["registry-metrics", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
       let url = `/v1/registry/metrics?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
-      search ? (url = `${url}&search=${search}`) : null;
+      if (search) url += `&search=${search}`;
 
       const response = await APIClient(token).get<RegistryMetricResponse>(url);
 
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
@@ -395,23 +379,21 @@ export const useUpdateMetric = (
   metric: MetricInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).put(
         `/v1/registry/metrics/${id}`,
         metric,
       );
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["registry-metrics"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["registry-metrics"] });
+    },
+  });
 };
 
 export const useCreateMetricVersion = ({
@@ -432,7 +414,7 @@ export const useCreateMetricVersion = ({
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["registry-metrics"]);
+      queryClient.invalidateQueries({ queryKey: ["registry-metrics"] });
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
@@ -447,7 +429,7 @@ export function useDeleteMetric(token: string) {
       return APIClient(token).delete(`/v1/registry/metrics/${metricId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["registry-metrics"]);
+      queryClient.invalidateQueries({ queryKey: ["registry-metrics"] });
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
@@ -457,23 +439,21 @@ export function useDeleteMetric(token: string) {
 
 export const useCreateMetric = (token: string, metric: MetricInput) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post(
         `/v1/registry/metrics`,
         metric,
       );
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["registry-metrics"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["registry-metrics"] });
+    },
+  });
 };
 
 export const useGetAllPrinciples = ({
@@ -489,15 +469,14 @@ export const useGetAllPrinciples = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -519,14 +498,11 @@ export const useGetPrinciples = ({
     ],
     queryFn: async () => {
       let url = `/v1/registry/principles?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
-      search ? (url = `${url}&search=${search}`) : null;
+      if (search) url += `&search=${search}`;
 
       const response = await APIClient(token).get<PrincipleResponse>(url);
 
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
@@ -548,9 +524,6 @@ export const useGetPrinciple = ({
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
   });
 
@@ -559,24 +532,22 @@ export const useCreatePrinciple = (
   principle: PrincipleInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post<PrincipleInput>(
         `/v1/registry/principles`,
         principle,
       );
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["registry-principles"]);
-        queryClient.invalidateQueries(["all-principles"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["registry-principles"] });
+      queryClient.invalidateQueries({ queryKey: ["all-principles"] });
+    },
+  });
 };
 
 export const useUpdatePrinciple = (
@@ -585,24 +556,22 @@ export const useUpdatePrinciple = (
   principle: PrincipleInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).patch<PrincipleInput>(
         `/v1/registry/principles/${id}`,
         principle,
       );
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["registry-principles"]);
-        queryClient.invalidateQueries(["all-principles"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["registry-principles"] });
+      queryClient.invalidateQueries({ queryKey: ["all-principles"] });
+    },
+  });
 };
 
 export const useDeletePrinciple = (token: string) => {
@@ -612,8 +581,8 @@ export const useDeletePrinciple = (token: string) => {
       return APIClient(token).delete(`/v1/registry/principles/${principleId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["registry-principles"]);
-      queryClient.invalidateQueries(["all-principles"]);
+      queryClient.invalidateQueries({ queryKey: ["registry-principles"] });
+      queryClient.invalidateQueries({ queryKey: ["all-principles"] });
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);

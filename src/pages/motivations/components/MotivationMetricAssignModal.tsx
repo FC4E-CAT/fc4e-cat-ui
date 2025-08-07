@@ -1,5 +1,5 @@
 import { Modal, Button, Alert } from "react-bootstrap";
-import { AlertInfo, MotivationMetric } from "@/types";
+import type { AlertInfo, MotivationMetric } from "@/types";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FaBorderNone, FaInfoCircle } from "react-icons/fa";
 import {

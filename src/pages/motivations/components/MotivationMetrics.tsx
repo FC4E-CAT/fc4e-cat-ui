@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { AlertInfo, RegistryMetric } from "@/types";
+import type { AlertInfo, RegistryMetric } from "@/types";
 import {
   Fragment,
   useContext,

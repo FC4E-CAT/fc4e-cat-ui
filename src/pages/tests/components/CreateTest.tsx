@@ -6,8 +6,8 @@ import {
   useCreateTestVersion,
 } from "@/api/services/registry";
 import { AuthContext } from "@/auth";
-import { AlertInfo, RegistryResource } from "@/types";
-import { TestInput, TestParam } from "@/types/tests";
+import type { AlertInfo, RegistryResource } from "@/types";
+import type { TestInput, TestParam } from "@/types/tests";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -113,28 +113,34 @@ function CreateTest() {
   }, [data, testId]);
 
   const updateParamTestDef = () => {
-    let names = "";
-    let text = "";
-    let tips = "";
     const subParams = params.filter((item) => item.name !== "evidence");
 
     // iterate over params (minus evidence) and update test def
-    subParams.forEach((item) => {
-      names === ""
-        ? (names = item.name)
-        : item?.name && (names = names + "|" + item.name);
-      text === ""
-        ? (text = item.text)
-        : item?.text && (text = text + "|" + item.text);
-      tips === ""
-        ? (tips = item.tooltip)
-        : item?.tooltip && (tips = tips + "|" + item.tooltip);
-    });
+    const {
+      names: initialNames,
+      text,
+      tips,
+    } = subParams.reduce(
+      (acc, item) => {
+        if (item?.name) {
+          acc.names = acc.names ? `${acc.names}|${item.name}` : item.name;
+        }
+        if (item?.text) {
+          acc.text = acc.text ? `${acc.text}|${item.text}` : item.text;
+        }
+        if (item?.tooltip) {
+          acc.tips = acc.tips ? `${acc.tips}|${item.tooltip}` : item.tooltip;
+        }
+        return acc;
+      },
+      { names: "", text: "", tips: "" },
+    );
 
-    // Add evidence parameter if toggle is on
-    if (hasEvidence) {
-      names = names === "" ? "evidence" : names + "|evidence";
-    }
+    const names = hasEvidence
+      ? initialNames === ""
+        ? "evidence"
+        : `${initialNames}|evidence`
+      : initialNames;
 
     setTest((test) => ({
       ...test,

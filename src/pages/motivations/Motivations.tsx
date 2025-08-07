@@ -27,7 +27,7 @@ import {
   usePublishMotivation,
   useUnpublishMotivation,
 } from "@/api/services/motivations";
-import { AlertInfo, Motivation } from "@/types";
+import type { AlertInfo, Motivation } from "@/types";
 import { Link } from "react-router-dom";
 import ROUTES, { buildRoute } from "../../routes";
 import { MotivationModal } from "./components/MotivationModal";
