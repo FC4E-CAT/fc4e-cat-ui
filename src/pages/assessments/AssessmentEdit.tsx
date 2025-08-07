@@ -60,6 +60,7 @@ import { useTranslation } from "react-i18next";
 import { GroupTestModal } from "./components/tests/GroupTestModal";
 import { FaGears } from "react-icons/fa6";
 import ROUTES from "../../routes";
+import { autoSubjectType } from "@/config";
 
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
@@ -436,6 +437,16 @@ const AssessmentEdit = ({
       setAssessment((prev_assessment) => ({
         ...templateData!,
         ...prev_assessment!,
+        ...(mode === AssessmentEditMode.Create && autoSubjectType
+          ? {
+              subject: {
+                id: organisation?.id || templateData?.organisation.id || "",
+                name:
+                  organisation?.name || templateData?.organisation.name || "",
+                type: autoSubjectType,
+              },
+            }
+          : {}),
         actor: {
           name: actor?.name || templateData?.actor.name || "",
           id: actor?.id || templateData?.actor.id || "",

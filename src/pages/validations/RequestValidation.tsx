@@ -52,23 +52,6 @@ function RequestValidation() {
     isRegistered: registered,
   });
 
-  useEffect(() => {
-    // gather all registry actors types
-    let tmpAct: RegistryActor[] = [];
-
-    // iterate over backend pages and gather all items in the registry actors array
-    if (actData?.pages) {
-      actData.pages.map((page) => {
-        tmpAct = [...tmpAct, ...page.content];
-      });
-      if (actHasNextPage) {
-        actFetchNextPage();
-      }
-    }
-
-    setActors(tmpAct);
-  }, [actData, actHasNextPage, actFetchNextPage]);
-
   type FormValues = {
     organisation_role: string;
     organisation_id: string;
@@ -102,6 +85,30 @@ function RequestValidation() {
       registry_actor_id: registryActorId,
     },
   });
+
+  useEffect(() => {
+    // gather all registry actors types
+    let tmpAct: RegistryActor[] = [];
+
+    // iterate over backend pages and gather all items in the registry actors array
+    if (actData?.pages) {
+      actData.pages.map((page) => {
+        tmpAct = [...tmpAct, ...page.content];
+      });
+      if (actHasNextPage) {
+        actFetchNextPage();
+      }
+    }
+
+    setActors(tmpAct);
+
+    // Automatically select the actor if there's only one
+    if (tmpAct.length === 1) {
+      const singleActor = tmpAct[0];
+      setValue("registry_actor_id", singleActor.id);
+      setRegistryActorID(singleActor.id);
+    }
+  }, [actData, actHasNextPage, actFetchNextPage, setValue]);
 
   const { mutateAsync: refetchValidationRequest } = useValidationRequest({
     organisation_role: organisationRole,
@@ -205,9 +212,11 @@ function RequestValidation() {
               value != "" || t("page_validation_create.err_select"),
           })}
         >
-          <option disabled value={""}>
-            {t("page_validation_create.select_actor")}...
-          </option>
+          {actors && actors.length > 1 && (
+            <option disabled value={""}>
+              {t("page_validation_create.select_actor")}...
+            </option>
+          )}
           {actors &&
             actors.map((t, i) => {
               return (
