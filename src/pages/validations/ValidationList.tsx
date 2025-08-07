@@ -9,6 +9,8 @@ import {
   FaPlus,
   FaArrowLeft,
   FaArrowRight,
+  FaIdBadge,
+  FaUserSecret,
 } from "react-icons/fa";
 
 import {
@@ -18,6 +20,7 @@ import {
   Row,
   Col,
   Card,
+  Badge,
 } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import BadgeStatus from "@/components/BadgeStatus";
@@ -92,15 +95,45 @@ function ValidationList() {
         </div>
       </div>
 
-      <div className="py-2 px-2">
+      <div className="py-2 px-2 ">
         {validations.length > 0 ? (
-          <Row className="mt-3">
+          <Row className="mt-3 align-items-stretch">
             {validations.map((item) => (
-              <Col key={item.id} lg={3} md={6} sm={12} className="mb-2">
-                <Card className="shadow border-0">
+              <Col
+                key={item.id}
+                lg={3}
+                md={6}
+                sm={12}
+                className="mb-2 d-flex align-items-stretch"
+              >
+                <Card className="shadow border-1 w-100">
                   <Card.Body className="p-3">
                     <div className="d-flex justify-content-between align-items-center mb-1">
                       <BadgeStatus status={item.status} />
+                      <div className="small text-end">
+                        <Badge bg="light" text="dark">
+                          {t("fields.id")}:{item.id}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="gap-2 mb-1">
+                      <Card.Title className="fw-light fs-5">
+                        {item.organisation_name}
+                      </Card.Title>
+                    </div>
+                    <div className="fw-light fs-6">
+                      {" "}
+                      <FaIdBadge className="m2 text-secondary " />{" "}
+                      {item.organisation_role}
+                    </div>
+                    <div className="fw-light fs-6">
+                      {" "}
+                      <FaUserSecret className="m2 text-secondary " />{" "}
+                      {item.registry_actor_name}
+                    </div>
+                  </Card.Body>
+                  <Card.Footer className="bg-transparent border-1">
+                    <div className="text-end">
                       <OverlayTrigger
                         key="view"
                         placement="top"
@@ -120,43 +153,7 @@ function ValidationList() {
                         </Link>
                       </OverlayTrigger>
                     </div>
-                    <div className="d-flex gap-2 mb-1">
-                      <small
-                        className="text-muted fw-bold"
-                        style={{ textWrap: "nowrap" }}
-                      >
-                        {t("fields.id")}:
-                      </small>
-                      <div className="small">{item.id}</div>
-                    </div>
-                    <div className="d-flex gap-2 mb-1">
-                      <small
-                        className="text-muted fw-bold"
-                        style={{ textWrap: "nowrap" }}
-                      >
-                        {t("page_validations.org_name")}:
-                      </small>
-                      <div className="small">{item.organisation_name}</div>
-                    </div>
-                    <div className="d-flex gap-2 mb-1">
-                      <small
-                        className="text-muted fw-bold"
-                        style={{ textWrap: "nowrap" }}
-                      >
-                        {t("page_validations.org_role")}:
-                      </small>
-                      <div className="small">{item.organisation_role}</div>
-                    </div>
-                    <div className="d-flex gap-2 mb-1">
-                      <small
-                        className="text-muted fw-bold"
-                        style={{ textWrap: "nowrap" }}
-                      >
-                        {t("page_validations.actor_name")}:
-                      </small>
-                      <div className="small">{item.registry_actor_name}</div>
-                    </div>
-                  </Card.Body>
+                  </Card.Footer>
                 </Card>
               </Col>
             ))}
@@ -199,9 +196,8 @@ function ValidationList() {
               onClick={() => {
                 setOpts({ ...opts, page: opts.page - 1 });
               }}
-              className={`ms-4 btn py-0 btn-light btn-small ${
-                opts.page === 1 ? "disabled text-muted" : null
-              }`}
+              className={`ms-4 btn py-0 btn-light btn-small ${opts.page === 1 ? "disabled text-muted" : null
+                }`}
             >
               <FaArrowLeft />
             </span>
@@ -209,11 +205,10 @@ function ValidationList() {
               onClick={() => {
                 setOpts({ ...opts, page: opts.page + 1 });
               }}
-              className={`btn py-0 btn-light btn-small" ${
-                data?.total_pages > data?.number_of_page
+              className={`btn py-0 btn-light btn-small" ${data?.total_pages > data?.number_of_page
                   ? null
                   : "disabled text-muted"
-              }`}
+                }`}
             >
               <FaArrowRight />
             </span>
