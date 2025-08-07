@@ -206,8 +206,8 @@ function ValidationList() {
                 setOpts({ ...opts, page: opts.page + 1 });
               }}
               className={`btn py-0 btn-light btn-small" ${data?.total_pages > data?.number_of_page
-                  ? null
-                  : "disabled text-muted"
+                ? null
+                : "disabled text-muted"
                 }`}
             >
               <FaArrowRight />
