@@ -414,25 +414,39 @@
 
 .form-group-test-preview {
   display: flex;
-  flex-direction: row;
-  gap: 2.5rem;
+  flex-direction: column;
   align-items: flex-start;
+  width: 100%;
 }
 
 .form-group-test-preview-label {
-  width: 100%;
+  margin-bottom: 0.2rem;
   font-size: 1rem;
   font-weight: 600;
   color: #374151;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.test-params-fields-col {
+.test-info-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: 100%;
+  margin-bottom: 0.3rem;
+}
+
+.test-info-left {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 0.2rem;
-  max-width: 48%;
+  gap: 0.1rem;
+}
+
+.test-info-right {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.1rem;
 }
 
 @media (width <= 900px) {
@@ -441,8 +455,8 @@
     gap: 1rem;
   }
 
-  .test-params-fields-col {
-    max-width: 100%;
+  .test-info-row {
+    flex-direction: column;
   }
 }
 
@@ -474,17 +488,6 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: #555;
-}
-
-.test-preview-modal input {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-}
-
-.test-preview-modal textarea {
-  resize: none;
 }
 
 .form-control {
@@ -903,35 +906,17 @@
   }
 }
 
-/* Algorithm Configuration Styles */
-.algorithm-config-container {
-  background: transparent;
-}
-
-.algorithm-config-container.expanded {
-  margin-bottom: 1rem;
-  overflow: hidden;
-  background: white;
-  border-radius: 0.5rem;
-  outline: 1px solid #e5e7eb;
-}
-
-.algorithm-config-container.expanded:hover {
-  outline-color: #d1d5db;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-}
-
 .config-header {
   display: flex;
   gap: 1.2rem;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0.4rem;
+  padding: 0.5rem;
   font-size: 0.875rem;
   cursor: pointer;
   background: transparent;
-  border: 1px dashed #d1d5db;
+  border: 1px solid #f3f4f6;
   border-radius: 0.375rem;
   transition: all 0.2s ease;
 }
@@ -942,15 +927,7 @@
 
 .config-header.selected {
   background: #eaebed;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
-}
-
-.config-header.expanded {
-  padding: 0.6rem 1rem;
-  background: #f8f9fa;
-  border: none;
-  border-bottom: 1px solid #e5e7eb;
-  border-radius: 0;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 6%);
 }
 
 .config-edit-btn {
@@ -1429,6 +1406,27 @@
 .test-preview-modal {
   margin-bottom: 3rem;
   box-shadow: 1px 2px 4px 0 rgb(0 0 0 / 20%);
+  transition: all 0.3s ease;
+}
+
+.test-preview-modal.creating-test {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  background: #f8fafc;
+  border: 2px solid #3b82f6;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgb(59 130 246 / 20%);
+}
+
+.test-preview-modal input {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+}
+
+.test-preview-modal textarea {
+  resize: none;
 }
 
 .test-method-item {
