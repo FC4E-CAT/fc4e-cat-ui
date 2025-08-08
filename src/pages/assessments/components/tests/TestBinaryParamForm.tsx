@@ -109,15 +109,9 @@ export const TestBinaryParamForm = (props: AssessmentTestProps) => {
       <div>
         <Row>
           <Col>
-            {testParams[testParams.length - 1] === "evidence" && (
-              <div className="mt-2">
-                <span className="fw-light-500 text-sm text-secondary">
-                  <strong>{textParams[textParams?.length - 1]}</strong>
-                  <TestToolTip
-                    tipId={"evidence-" + props.test.id}
-                    tipText={tipParams[tipParams?.length - 1]}
-                  />
-                </span>
+            {(testParams[testParams.length - 1] === "evidence" ||
+              testParams?.includes("evidence")) && (
+              <div className="mt-1">
                 <EvidenceURLS
                   urls={props.test.evidence_url || []}
                   onListChange={onURLChange}

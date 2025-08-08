@@ -64,9 +64,7 @@ function TestModalContainer(props: TestModalUIProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const testMethodName = testMethods.find(
-    (m) => m.id === test?.test_method_id,
-  )?.label;
+  const testMethod = testMethods.find((m) => m.id === test?.test_method_id);
 
   return (
     <div className="test-container py-3">
@@ -201,7 +199,9 @@ function TestModalContainer(props: TestModalUIProps) {
                   >
                     <div className="fw-bold mb-1 test-method-label">
                       <TestIcon test={method.label} />
-                      <span className="ms-2">{method.label}</span>
+                      <span className="ms-2">
+                        {method?.friendly_label || method.label}
+                      </span>
                     </div>
                     <div className="test-method-description">
                       {method.description}
@@ -243,7 +243,7 @@ function TestModalContainer(props: TestModalUIProps) {
                           Test Method Parameters:
                         </span>
                         <span className="fw-medium fw-bold">
-                          {testMethodName}
+                          {testMethod?.friendly_label || testMethod?.label}
                         </span>
                       </div>
 
@@ -271,7 +271,6 @@ function TestModalContainer(props: TestModalUIProps) {
                       testMethods.find((m) => m.id === test?.test_method_id)
                         ?.label
                     }
-                    hasEvidenceParam={hasEvidence}
                   />
                 </div>
               </div>

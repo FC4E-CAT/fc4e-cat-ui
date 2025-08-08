@@ -466,7 +466,6 @@
   display: flex;
   gap: 0.3rem;
   align-items: center;
-  height: 1.2rem;
 }
 
 .form-group-parameter label,
@@ -1381,7 +1380,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
+  width: 54px;
   height: 32px;
   padding: 0;
   font-size: 0.85rem;

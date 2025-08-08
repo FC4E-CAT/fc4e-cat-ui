@@ -176,7 +176,9 @@ function PreviewTests({
       )?.map((index) => {
         if (testToEdit && testToEdit?.params) {
           // Split the string fields by "|" to get individual parameters
-          const paramNames = testToEdit.params.split("|");
+          const paramNames = testToEdit.params
+            ? testToEdit.params.split("|")
+            : [];
           const paramTexts = testToEdit.text ? testToEdit.text.split("|") : [];
           const paramTooltips = testToEdit.tool_tip
             ? testToEdit.tool_tip.split("|")
@@ -289,7 +291,7 @@ function PreviewTests({
         relation: relMtvMetricTest,
       }));
 
-      const createTestPromise = mutateCreateTest
+      mutateCreateTest
         .mutateAsync()
         .then((newTest) => {
           alert.current = {
@@ -331,14 +333,9 @@ function PreviewTests({
           alert.current = {
             message: "Error: " + err.response.data.message,
           };
+          toast.error(alert.current.message);
           throw err;
         });
-
-      toast.promise(createTestPromise, {
-        loading: t("page_tests.toast_create_progress"),
-        success: () => alert.current.message,
-        error: () => alert.current.message,
-      });
     } else if (formMode === "edit") {
       const updateTestPromise = mutateUpdateTest
         .mutateAsync()
@@ -559,13 +556,22 @@ function PreviewTests({
             label: test.label || "",
             description: test.description || "",
           }}
-          params={params}
+          params={
+            hasEvidence &&
+            !params[(params?.length || 1) - 1]?.name?.includes("evidence")
+              ? params.concat({
+                  id: params?.length + 1,
+                  name: "evidence",
+                  text: "",
+                  tooltip: "",
+                })
+              : params
+          }
           testMethodName={
             testMethods?.find(
               (testMethod) => testMethod?.id === test?.test_method_id,
             )?.label || ""
           }
-          hasEvidenceParam={hasEvidence}
         />
       </div>
 

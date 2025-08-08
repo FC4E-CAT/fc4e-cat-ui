@@ -96,7 +96,7 @@ const TestMethodsSettings: React.FC = () => {
   // Convert test methods to SettingsItem format
   const settingsItems: SettingsItem[] = testMethods.map((method) => ({
     id: method.id,
-    label: method.label,
+    label: method?.friendly_label || method.label,
     description: method.description,
     enabled: method?.enabled,
     used_by_published_motivations: method?.used_by_published_motivations,

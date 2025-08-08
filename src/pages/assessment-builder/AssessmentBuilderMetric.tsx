@@ -15,6 +15,7 @@ import {
 import { useUpdateMotivationAlgorithmSettings } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
+import { round } from "./utils";
 
 interface MetricConfiguration {
   mtr: string;
@@ -35,10 +36,8 @@ interface AssessmentBuilderMetricProps {
   builderState: AssessmentBuilderState;
   mtvId?: string;
   mtrId?: string;
-  refetchAssessmentData: () => void;
   criterionPidGraph?: string;
   motivationMetrics?: MetricFull[];
-  setIsConfiguring: React.Dispatch<React.SetStateAction<boolean>>;
   onClose?: () => void;
 }
 
@@ -47,10 +46,8 @@ function AssessmentBuilderMetric({
   builderState,
   mtvId,
   mtrId,
-  refetchAssessmentData,
   criterionPidGraph,
   motivationMetrics,
-  setIsConfiguring,
   onClose,
 }: AssessmentBuilderMetricProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -83,6 +80,13 @@ function AssessmentBuilderMetric({
 
   const [initialAdvancedSettigns, setInitialAdvancedSettigs] =
     useState<MetricConfiguration>(defaultConfig);
+
+  // Separate state for input display value to handle decimal point
+  const [displayValue, setDisplayValue] = useState<string>("");
+
+  useEffect(() => {
+    setDisplayValue(metricConfig.value_benchmark?.toString() || "0");
+  }, [metricConfig.value_benchmark]);
 
   useEffect(() => {
     setShowErrors(false);
@@ -178,9 +182,6 @@ function AssessmentBuilderMetric({
       if (algorithmDbId) {
         const promise = mutateUpdateMotivationAlgorithm
           .mutateAsync()
-          .then(() => {
-            refetchAssessmentData();
-          })
           .catch((err) => {
             alert.current = {
               message: t("page_motivations.toast_assign_metric_criterion_fail"),
@@ -196,7 +197,6 @@ function AssessmentBuilderMetric({
           });
       }
 
-      setIsConfiguring(false);
       setShowErrors(false);
       if (onClose) {
         onClose();
@@ -207,6 +207,8 @@ function AssessmentBuilderMetric({
       setIsLoading(false);
     }
   };
+
+  console.log("benchmarkValue:", metricConfig.value_benchmark);
 
   const haveAdvancedSettingsChanged = useMemo(() => {
     return (
@@ -482,7 +484,7 @@ function AssessmentBuilderMetric({
                   ...prev,
                   value_benchmark: Math.max(
                     0,
-                    Number(prev?.value_benchmark || 1) - 1,
+                    round(Number(prev?.value_benchmark || 1) - 1),
                   ),
                 }))
               }
@@ -490,18 +492,53 @@ function AssessmentBuilderMetric({
               ▼
             </button>
             <input
-              type="number"
               min="0"
               max="99"
-              value={metricConfig.value_benchmark?.toString() || "0"}
-              onChange={(e) =>
-                setMetricConfig((prev) => ({
-                  ...prev,
-                  value_benchmark: Number(e.target.value) || 0,
-                }))
-              }
+              value={displayValue}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (
+                  (isNaN(Number(value)) && value !== ".") ||
+                  (value?.includes(".") && value.split(".")[1]?.length > 1)
+                ) {
+                  return;
+                }
+
+                if (value === "") {
+                  setMetricConfig((prev) => ({
+                    ...prev,
+                    value_benchmark: 0,
+                  }));
+                  return;
+                }
+
+                if (value.includes("..")) {
+                  return;
+                }
+
+                setDisplayValue(value);
+
+                if (value.endsWith(".")) {
+                  return;
+                }
+
+                const numValue = parseFloat(value);
+
+                // Only update if it's a valid number within range and has max 1 decimal place
+                const decimalPlaces = (value.split(".")[1] || "").length;
+                if (
+                  decimalPlaces <= 1 &&
+                  !isNaN(numValue) &&
+                  numValue >= 0 &&
+                  numValue <= 99
+                ) {
+                  setMetricConfig((prev) => ({
+                    ...prev,
+                    value_benchmark: round(numValue, 1),
+                  }));
+                }
+              }}
               className={styles["spinner-input"]}
-              readOnly
             />
             <button
               className={styles["spinner-btn"]}
@@ -509,7 +546,10 @@ function AssessmentBuilderMetric({
               onClick={() =>
                 setMetricConfig((prev) => ({
                   ...prev,
-                  value_benchmark: Number(prev.value_benchmark || 0) + 1,
+                  value_benchmark: Math.min(
+                    99,
+                    round(Number(prev.value_benchmark || 0) + 1),
+                  ),
                 }))
               }
             >
@@ -526,7 +566,6 @@ function AssessmentBuilderMetric({
         <button
           className={styles["config-cancel-btn"]}
           onClick={() => {
-            setIsConfiguring(false);
             setShowErrors(false);
             if (onClose) {
               onClose();

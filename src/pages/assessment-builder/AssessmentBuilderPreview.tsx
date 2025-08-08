@@ -287,8 +287,6 @@ function AssessmentBuilderPreview({
                           mtrId={mtrId}
                           criterionPidGraph={criterionPidGraph}
                           motivationMetrics={motivationMetrics}
-                          refetchAssessmentData={refetchAssessmentData}
-                          setIsConfiguring={setIsAdvancedSettingsOpen}
                           onClose={() => setIsAdvancedSettingsOpen(false)}
                         />
                       </div>
@@ -305,10 +303,13 @@ function AssessmentBuilderPreview({
               </p>
 
               <div
-                className={`${styles["config-header"]} my-3 ${
+                className={`${canEditMetricAndTests && styles["config-header"]} my-3 ${
                   isPrincipleSelected ? styles["selected"] : ""
                 }`}
                 onClick={() => {
+                  if (!canEditMetricAndTests) {
+                    return;
+                  }
                   setIsPrincipleSelected((prev) => {
                     if (!prev) {
                       setIsTestSelected(false);
@@ -369,50 +370,54 @@ function AssessmentBuilderPreview({
                         </span>
                       </OverlayTrigger>
                     </div>
-                    <div className={styles["config-header-right"]}>
-                      <button
-                        className={`${styles["config-edit-btn"]} ${isPrincipleSelected ? styles["selected"] : ""}`}
-                      >
-                        {isPrincipleSelected ? "Editing" : "Edit"}
-                      </button>
-                    </div>
+                    {canEditMetricAndTests && (
+                      <div className={styles["config-header-right"]}>
+                        <button
+                          className={`${styles["config-edit-btn"]} ${isPrincipleSelected ? styles["selected"] : ""}`}
+                        >
+                          {isPrincipleSelected ? "Editing" : "Edit"}
+                        </button>
+                      </div>
+                    )}
                   </>
                 ) : (
-                  <>
-                    <div className={styles["config-header-left"]}>
-                      <span
-                        className={styles["config-header-title"]}
-                        style={{ color: "grey" }}
-                      >
-                        (+) Add a Principle
-                      </span>
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id="algorithm-config-tooltip">
-                            Principle is required. Please select a principle for
-                            the criterion.
-                          </Tooltip>
-                        }
-                      >
-                        <span className={styles["config-btn-warning"]}>
-                          <FaExclamationCircle size="18px" />
+                  canEditMetricAndTests && (
+                    <>
+                      <div className={styles["config-header-left"]}>
+                        <span
+                          className={styles["config-header-title"]}
+                          style={{ color: "grey" }}
+                        >
+                          (+) Add a Principle
                         </span>
-                      </OverlayTrigger>
-                    </div>
-                    <div className={styles["config-header-right"]}>
-                      <button
-                        className={`${styles["config-edit-btn"]} ${isPrincipleSelected ? styles["selected"] : ""}`}
-                      >
-                        {isPrincipleSelected ? "Editing" : "Edit"}
-                      </button>
-                    </div>
-                  </>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="algorithm-config-tooltip">
+                              Principle is required. Please select a principle
+                              for the criterion.
+                            </Tooltip>
+                          }
+                        >
+                          <span className={styles["config-btn-warning"]}>
+                            <FaExclamationCircle size="18px" />
+                          </span>
+                        </OverlayTrigger>
+                      </div>
+                      <div className={styles["config-header-right"]}>
+                        <button
+                          className={`${styles["config-edit-btn"]} ${isPrincipleSelected ? styles["selected"] : ""}`}
+                        >
+                          {isPrincipleSelected ? "Editing" : "Edit"}
+                        </button>
+                      </div>
+                    </>
+                  )
                 )}
               </div>
 
               {/* Tests Configuration Section */}
-              {isPrincipleAssigned && (
+              {isPrincipleAssigned && canEditMetricAndTests && (
                 <div
                   className={`${styles["config-header"]} my-3 
                     ${isTestSelected && styles["selected"]}`}
@@ -528,11 +533,14 @@ function AssessmentBuilderPreview({
                               }}
                               params={getTestParams(test)}
                               testMethodName={test.type}
-                              onTestDelete={() =>
-                                setShowDeleteModal({
-                                  testId: test.id,
-                                  testLabel: test.name,
-                                })
+                              onTestDelete={
+                                canEditMetricAndTests
+                                  ? () =>
+                                      setShowDeleteModal({
+                                        testId: test.id,
+                                        testLabel: test.name,
+                                      })
+                                  : undefined
                               }
                               onTestEdit={
                                 canEditMetricAndTests
