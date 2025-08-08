@@ -299,7 +299,7 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
                       </option>
                       {testMethods.map((item) => (
                         <option key={item.id} value={item.label}>
-                          {item.label}
+                          {item?.friendly_label || item.label}
                         </option>
                       ))}
                     </>

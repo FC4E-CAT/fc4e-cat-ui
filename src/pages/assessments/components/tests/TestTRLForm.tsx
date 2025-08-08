@@ -225,12 +225,15 @@ export const TestTRLForm = (props: AssessmentTestProps) => {
             )}
           </div>
 
-          {testParams[testParams.length - 1] === "evidence" && (
-            <EvidenceURLS
-              urls={props.test.evidence_url || []}
-              onListChange={onURLChange}
-              noTitle={true}
-            />
+          {(testParams[testParams.length - 1] === "evidence" ||
+            testParams?.includes("evidence")) && (
+            <div className="mt-1">
+              <EvidenceURLS
+                urls={props.test.evidence_url || []}
+                onListChange={onURLChange}
+                noTitle={true}
+              />
+            </div>
           )}
         </Col>
       </Row>

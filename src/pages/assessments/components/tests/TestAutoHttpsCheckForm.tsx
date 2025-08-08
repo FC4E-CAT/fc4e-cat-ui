@@ -177,17 +177,9 @@ export const TestAutoHttpsCheckForm = (props: AssessmentTestProps) => {
             )}
         </div>
 
-        {testParams[testParams.length - 1] === "evidence" && (
-          <div className="mt-2">
-            <h6>
-              {textParams[1] && textParams[1]}{" "}
-              {tipParams[1] && (
-                <TestToolTip
-                  tipId={"evidence-" + props.test.id}
-                  tipText={tipParams[1]}
-                />
-              )}
-            </h6>
+        {(testParams[testParams.length - 1] === "evidence" ||
+          testParams?.includes("evidence")) && (
+          <div className="mt-1">
             <EvidenceURLS
               urls={props.test.evidence_url || []}
               onListChange={onURLChange}

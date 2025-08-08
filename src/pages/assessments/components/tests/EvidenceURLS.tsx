@@ -2,6 +2,7 @@ import { EvidenceURL } from "@/types";
 import { useState } from "react";
 import { InputGroup, Form, Row, Col } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { TestToolTip } from "./TestToolTip";
 
 /**
  * Small component to add url list
@@ -47,6 +48,16 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
           <strong>{t("page_assessment_edit.evidence")}:</strong>
         </small>
       )}
+
+      <span className="fw-light-500 text-sm text-secondary">
+        <strong>Can you provide public evidence of such a declaration?</strong>
+        <span className="ms-2">
+          <TestToolTip
+            tipId="evidence-id"
+            tipText="A document, web page, or publication describing the intention"
+          />
+        </span>
+      </span>
 
       <Row className="justify-content-md-right">
         <Col md={10}>

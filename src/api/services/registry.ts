@@ -78,6 +78,8 @@ export const useGetAllTestMethods = ({
   });
 
 export const useUpdateTestMethodStatus = (token: string) => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
       const response = await APIClient(token).put(
@@ -85,6 +87,9 @@ export const useUpdateTestMethodStatus = (token: string) => {
         { enabled },
       );
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["all-test-methods"]);
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);

@@ -234,13 +234,6 @@ function AssessmentBuilderPrinciples({
         principleForm.description
       ) {
         const createPrinciplePromise = createPrincipleToMotivation();
-
-        await toast.promise(createPrinciplePromise, {
-          loading: "Adding principle to motivation...",
-          success: () => alert.current.message,
-          error: () => alert.current.message,
-        });
-
         newPrincipleId = await createPrinciplePromise;
       }
     }

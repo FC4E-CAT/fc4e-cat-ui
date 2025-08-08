@@ -1,5 +1,4 @@
 import { TestInput, TestParam } from "@/types/tests";
-import { EvidenceURLS, TestToolTip } from "@/pages/assessments/components";
 import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParamForm";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import {
@@ -25,7 +24,6 @@ interface TestPreviewProps {
   test: TestInput;
   params: TestParam[];
   testMethodName?: string;
-  hasEvidenceParam?: boolean;
   onTestEdit?: () => void;
   onTestDelete?: () => void;
 }
@@ -34,7 +32,6 @@ const TestPreviewModal = ({
   test,
   params,
   testMethodName,
-  hasEvidenceParam,
   onTestEdit,
   onTestDelete,
 }: TestPreviewProps) => {
@@ -359,23 +356,6 @@ const TestPreviewModal = ({
               </div>
             )}
           </div>
-
-          {hasEvidenceParam && (
-            <div className="mb-2">
-              <span className="fw-light-500 text-sm text-secondary">
-                <strong>
-                  Can you provide public evidence of such a declaration?
-                </strong>
-                <span className="ms-2">
-                  <TestToolTip
-                    tipId="evidence-id"
-                    tipText="A document, web page, or publication describing the intention"
-                  />
-                </span>
-              </span>
-              <EvidenceURLS urls={[]} onListChange={() => {}} noTitle={true} />
-            </div>
-          )}
         </div>
       ) : null}
     </>
