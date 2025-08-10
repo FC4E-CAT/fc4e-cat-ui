@@ -419,7 +419,7 @@ function AssessmentBuilderPreview({
               {/* Tests Configuration Section */}
               {isPrincipleAssigned && canEditMetricAndTests && (
                 <div
-                  className={`${styles["config-header"]} my-3 
+                  className={`${styles["config-header"]} mt-4
                     ${isTestSelected && styles["selected"]}`}
                   onClick={() => {
                     if (!isPrincipleAssigned) return;
@@ -506,24 +506,23 @@ function AssessmentBuilderPreview({
                     {tests &&
                       tests.length > 0 &&
                       tests.map((test) => (
-                        <div
-                          key={test.id}
-                          className={`${styles["test-item"]} my-3`}
-                        >
+                        <div key={test.id} className="mt-3 mb-4">
                           {testToEdit &&
                           testToEdit.id === test.id &&
                           builderState.formMode === "edit" ? (
-                            <PreviewTests
-                              mtvId={mtvId || ""}
-                              mtrId={mtrId || ""}
-                              assessment={assessment}
-                              setBuilderState={setBuilderState}
-                              refetchAssessmentData={refetchAssessmentData}
-                              setIsTestSelected={setIsTestSelected}
-                              formMode={builderState.formMode}
-                              testToEdit={testToEdit}
-                              setTestToEdit={setTestToEdit}
-                            />
+                            <div className="mb-5">
+                              <PreviewTests
+                                mtvId={mtvId || ""}
+                                mtrId={mtrId || ""}
+                                assessment={assessment}
+                                setBuilderState={setBuilderState}
+                                refetchAssessmentData={refetchAssessmentData}
+                                setIsTestSelected={setIsTestSelected}
+                                formMode={builderState.formMode}
+                                testToEdit={testToEdit}
+                                setTestToEdit={setTestToEdit}
+                              />
+                            </div>
                           ) : (
                             <TestPreviewModal
                               test={{

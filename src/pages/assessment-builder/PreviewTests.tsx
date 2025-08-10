@@ -363,184 +363,196 @@ function PreviewTests({
 
   return (
     <div
-      className={`${styles["test-preview-modal"]} border rounded px-3 py-2 ${testToEdit && "my-4"}`}
+      className={`${styles["test-preview-modal"]} ${styles["creating-test"]} border rounded px-3 py-2 ${testToEdit && "my-4"}`}
     >
-      <div className={`${styles["form-group-test-preview"]} mb-2`}>
-        <div className={styles["test-params-fields-col"]}>
-          <label className={styles["form-group-test-preview-label"]}>
-            Test Information
-          </label>
+      <div className={`${styles["form-group-test-preview"]} mb-3`}>
+        <label className={styles["form-group-test-preview-label"]}>
+          Test Information
+        </label>
 
-          <div className={styles["form-group-parameter"]}>
-            <label htmlFor="input-test-tes">TES (*):</label>
-            <input
-              className={styles["form-control"]}
-              disabled={formMode === "edit"}
-              type="text"
-              id="input-test-tes"
-              value={test.tes}
-              onChange={(e) =>
-                setTest((prev) => ({ ...prev, tes: e.target.value }))
-              }
-              placeholder="Enter test identifier"
-            />
-            {showErrors && test.tes === "" && (
-              <span className={styles["invalid-feedback"]}>
-                {t("required")}
-              </span>
-            )}
+        <div className={styles["test-info-row"]}>
+          <div className={styles["test-info-left"]}>
+            <div className={styles["form-group-parameter"]}>
+              <label htmlFor="input-test-tes">TES (*):</label>
+              <input
+                className={styles["form-control"]}
+                disabled={formMode === "edit"}
+                type="text"
+                id="input-test-tes"
+                value={test.tes}
+                onChange={(e) =>
+                  setTest((prev) => ({ ...prev, tes: e.target.value }))
+                }
+                placeholder="Enter test identifier"
+              />
+              {showErrors && test.tes === "" && (
+                <span className={styles["invalid-feedback"]}>
+                  {t("required")}
+                </span>
+              )}
+            </div>
+
+            <div className={styles["form-group-parameter"]}>
+              <label htmlFor="input-test-label">Label (*):</label>
+              <input
+                type="text"
+                id="input-test-label"
+                value={test.label}
+                onChange={(e) =>
+                  setTest((prev) => ({ ...prev, label: e.target.value }))
+                }
+                className={styles["form-control"]}
+                placeholder="Enter test label"
+              />
+              {showErrors && test.label === "" && (
+                <span className={styles["invalid-feedback"]}>
+                  {t("required")}
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className={styles["form-group-parameter"]}>
-            <label htmlFor="input-test-label">Label (*):</label>
-            <input
-              type="text"
-              id="input-test-label"
-              value={test.label}
-              onChange={(e) =>
-                setTest((prev) => ({ ...prev, label: e.target.value }))
-              }
-              className={styles["form-control"]}
-              placeholder="Enter test label"
-            />
-            {showErrors && test.label === "" && (
-              <span className={styles["invalid-feedback"]}>
-                {t("required")}
-              </span>
-            )}
-          </div>
-
-          <div className={styles["form-group-parameter"]}>
-            <label htmlFor="input-test-description">Description (*):</label>
-            <textarea
-              id="input-test-description"
-              rows={4}
-              value={test.description}
-              onChange={(e) =>
-                setTest((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }))
-              }
-              className={styles["form-control"]}
-              placeholder="Enter test description"
-            />
-            {showErrors && test.description === "" && (
-              <span className={styles["invalid-feedback"]}>
-                {t("required")}
-              </span>
-            )}
+          <div className={styles["test-info-right"]}>
+            <div className={styles["form-group-parameter"]}>
+              <label htmlFor="input-test-description">Description (*):</label>
+              <textarea
+                id="input-test-description"
+                rows={4}
+                value={test.description}
+                onChange={(e) =>
+                  setTest((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                className={styles["form-control"]}
+                placeholder="Enter test description"
+              />
+              {showErrors && test.description === "" && (
+                <span className={styles["invalid-feedback"]}>
+                  {t("required")}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className={styles["test-params-fields-col"]}>
-          {params?.length > 0 && (
+        {params?.length > 0 && (
+          <>
             <label className={styles["form-group-test-preview-label"]}>
               {params?.length === 1 ? "Method Parameter" : "Method Parameters"}
               {testMethodName && (
                 <span className="fw-light">: ({testMethodName})</span>
               )}
             </label>
-          )}
 
-          {params?.length > 0 &&
-            params.map((param, index) => (
-              <div key={param.id}>
-                <div className={styles["form-group-parameter"]}>
-                  <label className="fw-medium small">
-                    {params?.length === 1
-                      ? "Parameter Name (*)"
-                      : `Parameter Name ${index + 1} (*)`}
-                  </label>
-                  <input
-                    type="text"
-                    className={styles["form-control"]}
-                    value={param.name}
-                    onChange={(e) =>
-                      updateParam(param.id, "name", e.target.value)
-                    }
-                    placeholder="Enter parameter name"
-                  />
-                </div>
-                {showErrors && param.name === "" && (
-                  <span className={styles["invalid-feedback"]}>
-                    {t("required")}
-                  </span>
-                )}
+            {params.map((param, index) => (
+              <div className={styles["test-info-row"]} key={param.id}>
+                <div className={styles["test-info-left"]}>
+                  <div key={`${param.id}-name-help`}>
+                    <div className={styles["form-group-parameter"]}>
+                      <label className="fw-medium small">
+                        {params?.length === 1
+                          ? "Parameter Name (*)"
+                          : `Parameter Name ${index + 1} (*)`}
+                      </label>
+                      <input
+                        type="text"
+                        className={styles["form-control"]}
+                        value={param.name}
+                        onChange={(e) =>
+                          updateParam(param.id, "name", e.target.value)
+                        }
+                        placeholder="Enter parameter name"
+                      />
+                      {showErrors && param.name === "" && (
+                        <span className={styles["invalid-feedback"]}>
+                          {t("required")}
+                        </span>
+                      )}
+                    </div>
 
-                <div className={styles["form-group-parameter"]}>
-                  <label className="fw-medium small">
-                    {params?.length === 1
-                      ? "Question (*)"
-                      : `Question ${index + 1} (*)`}
-                  </label>
-                  <textarea
-                    rows={2}
-                    className={styles["form-control"]}
-                    value={param.text}
-                    onChange={(e) =>
-                      updateParam(param.id, "text", e.target.value)
-                    }
-                    placeholder="Enter the question"
-                  />
+                    <div className={styles["form-group-parameter"]}>
+                      <label className="fw-medium small">
+                        {params?.length === 1
+                          ? "Help Text (*)"
+                          : `Help Text ${index + 1} (*)`}
+                      </label>
+                      <textarea
+                        rows={2}
+                        className={styles["form-control"]}
+                        value={param.tooltip}
+                        onChange={(e) =>
+                          updateParam(param.id, "tooltip", e.target.value)
+                        }
+                        placeholder="Enter helpful guidance"
+                      />
+                      {showErrors && param.tooltip === "" && (
+                        <span className={styles["invalid-feedback"]}>
+                          {t("required")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                {showErrors && param.text === "" && (
-                  <span className={styles["invalid-feedback"]}>
-                    {t("required")}
-                  </span>
-                )}
 
-                <div className={styles["form-group-parameter"]}>
-                  <label className="fw-medium small">
-                    {params?.length === 1
-                      ? "Help Text (*)"
-                      : `Help Text ${index + 1} (*)`}
-                  </label>
-                  <textarea
-                    rows={2}
-                    className={styles["form-control"]}
-                    value={param.tooltip}
-                    onChange={(e) =>
-                      updateParam(param.id, "tooltip", e.target.value)
-                    }
-                    placeholder="Enter helpful guidance"
-                  />
+                <div className={styles["test-info-right"]}>
+                  <div
+                    key={`${param.id}-question`}
+                    className={styles["form-group-parameter"]}
+                  >
+                    <label className="fw-medium small">
+                      {params?.length === 1
+                        ? "Question (*)"
+                        : `Question ${index + 1} (*)`}
+                    </label>
+                    <textarea
+                      rows={4}
+                      className={styles["form-control"]}
+                      value={param.text}
+                      onChange={(e) =>
+                        updateParam(param.id, "text", e.target.value)
+                      }
+                      placeholder="Enter the question"
+                    />
+                    {showErrors && param.text === "" && (
+                      <span className={styles["invalid-feedback"]}>
+                        {t("required")}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                {showErrors && param.tooltip === "" && (
-                  <span className={styles["invalid-feedback"]}>
-                    {t("required")}
-                  </span>
-                )}
               </div>
             ))}
 
-          <div className={styles["evidence-parameter-option"]}>
-            <label className="fw-medium small">Evidence Parameter</label>
-            <OverlayTrigger
-              placement="top"
-              overlay={
-                <Tooltip id="evidence-tooltip">
-                  Please provide an evidence of via a public source or URL to
-                  validate the information with an official reference.
-                </Tooltip>
-              }
-            >
-              <span className="ms-1">
-                <FaInfoCircle className="mb-1" />
-              </span>
-            </OverlayTrigger>
-            <Form.Check
-              className="mt-1"
-              aria-label="evidence-toggle"
-              checked={hasEvidence}
-              id="evidence-toggle"
-              onChange={(e) => {
-                setHasEvidence(e.target.checked);
-              }}
-              type="switch"
-            />
-          </div>
-        </div>
+            <div className={styles["evidence-parameter-option"]}>
+              <label className="fw-medium small">Evidence Parameter</label>
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip id="evidence-tooltip">
+                    Please provide evidence via a public source or URL to
+                    validate the information with an official reference.
+                  </Tooltip>
+                }
+              >
+                <span className="ms-1">
+                  <FaInfoCircle className="mb-1" />
+                </span>
+              </OverlayTrigger>
+              <Form.Check
+                className="mt-1"
+                aria-label="evidence-toggle"
+                checked={hasEvidence}
+                id="evidence-toggle"
+                onChange={(e) => {
+                  setHasEvidence(e.target.checked);
+                }}
+                type="switch"
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <div className="mb-3">
