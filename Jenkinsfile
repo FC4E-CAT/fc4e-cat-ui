@@ -11,7 +11,7 @@ pipeline {
         stage ('Build and Deploy cat-ui') {
             agent {
                 docker {
-                    image 'node:lts-buster'
+                    image 'node:20.19-bullseye'
                 }
             }
             steps {
