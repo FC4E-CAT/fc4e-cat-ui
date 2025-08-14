@@ -1,6 +1,6 @@
 import { Button } from "react-bootstrap";
-import { RegistryResource } from "@/types";
-import { TestInput, TestParam } from "@/types/tests";
+import type { RegistryResource } from "@/types";
+import type { TestInput, TestParam } from "@/types/tests";
 import TestPreviewModal from "./TestPreviewModal";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";

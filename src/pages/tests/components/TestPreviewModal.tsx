@@ -1,7 +1,7 @@
-import { TestInput, TestParam } from "@/types/tests";
+import type { TestInput, TestParam } from "@/types/tests";
 import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParamForm";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import {
+import type {
   TestAutoG069,
   TestAutoHttpsCheck,
   TestAutoMD1,
@@ -19,6 +19,7 @@ import { TestTRLForm } from "@/pages/assessments/components/tests/TestTRLForm";
 import { TestPercentForm } from "@/pages/assessments/components/tests/TestPercentForm";
 import { TestRatioForm } from "@/pages/assessments/components/tests/TestRatioForm";
 import styles from "@/pages/assessment-builder/AssessmentBuilder.module.css";
+import React from "react";
 
 interface TestPreviewProps {
   test: TestInput;
@@ -35,7 +36,7 @@ const TestPreviewModal = ({
   onTestEdit,
   onTestDelete,
 }: TestPreviewProps) => {
-  const testParams: JSX.Element[] = [];
+  const testParams: React.JSX.Element[] = [];
 
   if (
     testMethodName === "Binary-Manual-Evidence" ||

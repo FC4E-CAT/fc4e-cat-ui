@@ -1,9 +1,9 @@
 import { useValidationStatusUpdate, useGetValidationDetails } from "@/api";
 import { AuthContext } from "@/auth";
 import {
-  ValidationProps,
-  AlertInfo,
-  ValidationResponse,
+  type ValidationProps,
+  type AlertInfo,
+  type ValidationResponse,
   ValidationStatus,
 } from "@/types";
 import { useRef, useState, useContext, useEffect } from "react";
@@ -20,8 +20,8 @@ import {
 import Badge from "react-bootstrap/Badge";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { idToColor, trimField } from "@/utils/admin";
-import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Tooltip, OverlayTrigger, type TooltipProps } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard-ts";
 import { useTranslation } from "react-i18next";
 import ROUTES, { buildRoute } from "../../routes";
 

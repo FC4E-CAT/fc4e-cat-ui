@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RegistryMetric } from "@/types";
+import type { RegistryMetric } from "@/types";
 import { MetricModal } from "./MetricModal";
 import { MetricEditModal } from "./MetricEditModal";
 

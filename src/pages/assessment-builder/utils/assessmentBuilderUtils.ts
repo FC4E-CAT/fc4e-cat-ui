@@ -1,5 +1,5 @@
 import { relMtvPrincpleCriterion } from "@/config";
-import {
+import type {
   AssessmentPrinciple,
   AssessmentCriterion,
   CriterionInput,

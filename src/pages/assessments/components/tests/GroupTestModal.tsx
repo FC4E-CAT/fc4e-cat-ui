@@ -6,7 +6,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import {
+import type {
   AdditionalInfoItem,
   Assessment,
   AutoGroupTest,

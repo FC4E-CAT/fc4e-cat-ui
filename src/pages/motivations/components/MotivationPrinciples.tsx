@@ -1,6 +1,6 @@
 import { useGetMotivationPrinciples } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
-import { Principle } from "@/types";
+import type { Principle } from "@/types";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Button, Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import notavailImg from "@/assets/thumb_notavail.png";

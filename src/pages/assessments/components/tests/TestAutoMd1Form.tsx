@@ -6,7 +6,7 @@
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { TestToolTip } from "./TestToolTip";
-import {
+import type {
   AssessmentTest,
   EvidenceURL,
   TestAutoError,

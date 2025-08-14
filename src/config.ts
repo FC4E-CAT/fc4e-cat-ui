@@ -1,5 +1,5 @@
 import configJSON from "./config.json";
-import { Config } from "./types";
+import type { Config } from "./types";
 
 const config: Config = configJSON;
 

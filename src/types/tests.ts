@@ -1,5 +1,5 @@
-import { ResponsePage } from "./common";
-import { MotivationReference } from "./motivation";
+import type { ResponsePage } from "./common";
+import type { MotivationReference } from "./motivation";
 
 export interface RegistryTest {
   id: string;
@@ -69,3 +69,11 @@ export interface TestFull {
   text?: string;
   tool_tip?: string;
 }
+
+export const TestValueEventType = {
+  Value: "value",
+  Threshold: "threshold",
+} as const;
+
+export type TestValueEventType =
+  (typeof TestValueEventType)[keyof typeof TestValueEventType];

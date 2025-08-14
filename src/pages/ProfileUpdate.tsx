@@ -8,7 +8,7 @@ import { AxiosError } from "axios";
 import { useGetProfile } from "@/api";
 import logoOrcid from "@/assets/logo-orcid-id.svg";
 import { useTranslation } from "react-i18next";
-import ROUTES from "../routes";
+import ROUTES from "@/routes";
 
 type FormData = {
   name: string;

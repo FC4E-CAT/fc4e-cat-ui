@@ -5,11 +5,12 @@
 // import { useState } from "react"
 import { Alert, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
-import { AssessmentTest, EvidenceURL, TestValueParam } from "@/types";
+import type { AssessmentTest, EvidenceURL, TestValueParam } from "@/types";
 import { useState } from "react";
 import { TestToolTip } from "./TestToolTip";
 import { FaCogs } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { TestValueEventType } from "@/types/tests";
 
 interface AssessmentTestProps {
   test: TestValueParam;
@@ -20,11 +21,6 @@ interface AssessmentTestProps {
     criterionId: string,
     newTest: AssessmentTest,
   ): void;
-}
-
-enum TestValueEventType {
-  Value = "value",
-  Threshold = "threshold",
 }
 
 export const TestValueFormParam = (props: AssessmentTestProps) => {

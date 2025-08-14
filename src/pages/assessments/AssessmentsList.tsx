@@ -25,7 +25,11 @@ import {
   Tooltip,
   Table,
 } from "react-bootstrap";
-import { AssessmentListItem, AssessmentFiltersType, AlertInfo } from "@/types";
+import type {
+  AssessmentListItem,
+  AssessmentFiltersType,
+  AlertInfo,
+} from "@/types";
 import {
   useGetAssessments,
   useGetObjects,

@@ -1,14 +1,4 @@
-import { ResponsePage } from "./common";
-
-export interface UserProfile {
-  id: string;
-  registered_on: string;
-  user_type: string;
-  name: string;
-  surname: string;
-  email: string;
-  updated_on: string;
-}
+import type { ResponsePage } from "./common";
 
 export interface UserProfile {
   id: string;

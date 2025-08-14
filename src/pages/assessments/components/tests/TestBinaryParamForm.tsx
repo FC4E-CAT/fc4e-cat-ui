@@ -5,7 +5,7 @@
 import { Form, Row, Col } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { TestToolTip } from "./TestToolTip";
-import { AssessmentTest, EvidenceURL, TestBinaryParam } from "@/types";
+import type { AssessmentTest, EvidenceURL, TestBinaryParam } from "@/types";
 import { useTranslation } from "react-i18next";
 
 interface AssessmentTestProps {

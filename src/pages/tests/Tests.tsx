@@ -1,11 +1,11 @@
 import { AuthContext } from "@/auth";
 import { useContext, useEffect, useRef, useState } from "react";
-import { AlertInfo } from "@/types";
+import type { AlertInfo } from "@/types";
 import toast from "react-hot-toast";
 import { DeleteModal } from "@/components/DeleteModal";
 import { useTranslation } from "react-i18next";
 import { useDeleteTest, useGetTests } from "@/api/services/registry";
-import { RegistryTest } from "@/types/tests";
+import type { RegistryTest } from "@/types/tests";
 import { TestDetailsModal } from "./components/TestDetailsModal";
 import TestsHeader from "./components/TestsHeader";
 import TestSearch from "./components/TestSearch";

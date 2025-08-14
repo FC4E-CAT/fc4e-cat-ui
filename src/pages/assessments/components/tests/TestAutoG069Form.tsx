@@ -5,7 +5,7 @@
 // import { useState } from "react"
 import { Badge, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { TestToolTip } from "./TestToolTip";
-import {
+import type {
   AssessmentTest,
   TestAutoError,
   TestAutoG069,

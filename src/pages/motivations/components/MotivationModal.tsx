@@ -4,7 +4,7 @@ import {
   useUpdateMotivation,
 } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
-import {
+import type {
   AlertInfo,
   Motivation,
   MotivationInput,
@@ -280,7 +280,6 @@ export function MotivationModal(props: MotivationModalProps) {
                 <Form.Select
                   id="input-motivation-type"
                   aria-describedby="label-motivation-type"
-                  placeholder={t("page_motivations.select_mtv_type")}
                   value={
                     motivationInput.motivation_type_id
                       ? motivationInput.motivation_type_id

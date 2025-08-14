@@ -10,10 +10,10 @@ import {
   FaCopy,
   FaUserCircle,
 } from "react-icons/fa";
-import { UserProfile } from "@/types";
+import type { UserProfile } from "@/types";
 import { idToColor, trimField } from "@/utils/admin";
-import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Tooltip, OverlayTrigger, type TooltipProps } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard-ts";
 import { useTranslation } from "react-i18next";
 import ROUTES from "@/routes";
 

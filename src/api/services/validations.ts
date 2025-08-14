@@ -1,7 +1,8 @@
 import { APIClient } from "@/api";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { ApiOptions, ApiValidations } from "@/types";
-import {
+import type {
+  ApiOptions,
+  ApiValidations,
   APIValidationResponse,
   ValidationDetailsRequestParams,
   ValidationResponse,
@@ -26,16 +27,13 @@ export const useAdminGetValidations = ({
     queryKey: ["validations"],
     queryFn: async () => {
       let url = `/v1/admin/validations?size=${size}&page=${page}`;
-      sortBy ? (url = `${url}&sort=${sortBy}`) : null;
-      sortOrder ? (url = `${url}&order=${sortOrder}`) : null;
-      type ? (url = `${url}&type=${type}`) : null;
-      status ? (url = `${url}&status=${status}`) : null;
-      search ? (url = `${url}&search=${search}`) : null;
+      if (sortBy) url += `&sort=${sortBy}`;
+      if (sortOrder) url += `&order=${sortOrder}`;
+      if (type) url += `&type=${type}`;
+      if (status) url += `&status=${status}`;
+      if (search) url += `&search=${search}`;
       const response = await APIClient(token).get<APIValidationResponse>(url);
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
@@ -55,9 +53,6 @@ export const useGetValidationList = ({
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     staleTime: 0,
     enabled: !!token && isRegistered,
   });
@@ -76,9 +71,6 @@ export const useAdminValidations = ({
         `/v1/admin/validations?size=${size}&page=${page}&sortby=${sortBy}`,
       );
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     staleTime: 0,
     enabled: !!token && isRegistered,
@@ -106,9 +98,6 @@ export const useGetValidationDetails = ({
 
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled:
       !!token &&
       isRegistered &&
@@ -125,8 +114,8 @@ export const useValidationRequest = ({
   registry_actor_id,
   token,
 }: ValidationRequestParams) =>
-  useMutation(
-    async () => {
+  useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post<ValidationResponse>(
         `/v1/validations`,
         {
@@ -141,12 +130,11 @@ export const useValidationRequest = ({
       );
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
+
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+  });
 
 export const useValidationStatusUpdate = ({
   validation_id,
@@ -154,8 +142,8 @@ export const useValidationStatusUpdate = ({
   rejection_reason,
   token,
 }: ValidationUpdateStatusParams) =>
-  useMutation(
-    async () => {
+  useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).put<ValidationResponse>(
         `/v1/admin/validations/${validation_id}/update-status`,
         {
@@ -166,9 +154,7 @@ export const useValidationStatusUpdate = ({
       );
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+  });

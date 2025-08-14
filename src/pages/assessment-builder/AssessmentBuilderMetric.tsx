@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState, useMemo } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import {
+import type {
   AssessmentBuilderState,
   AssessmentPrinciple,
   MetricFull,

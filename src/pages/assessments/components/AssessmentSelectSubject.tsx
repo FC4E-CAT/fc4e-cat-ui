@@ -12,7 +12,7 @@ import {
 } from "react-bootstrap";
 import { FaInfoCircle } from "react-icons/fa";
 import { AuthContext } from "@/auth";
-import { AssessmentSubject } from "@/types";
+import type { AssessmentSubject } from "@/types";
 import { useGetSubjects } from "@/api/services/subjects";
 import { useTranslation } from "react-i18next";
 

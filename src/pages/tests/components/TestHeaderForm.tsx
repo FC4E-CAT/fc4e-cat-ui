@@ -1,7 +1,7 @@
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaInfoCircle } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { TestInput } from "@/types/tests";
+import type { TestInput } from "@/types/tests";
 
 interface TestHeaderFormProps {
   isEditing?: boolean;

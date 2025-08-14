@@ -1,6 +1,6 @@
 import { FaFileImport, FaList, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import ROUTES from "../../routes";
+import ROUTES from "@/routes";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
 import serviceImg from "@/assets/thumb_service.png";

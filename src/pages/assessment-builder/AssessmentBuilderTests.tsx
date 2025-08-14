@@ -1,11 +1,11 @@
 import { useState, useContext, useMemo, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import {
+import type {
   AlertInfo,
   AssessmentBuilderState,
   AssessmentPrinciple,
 } from "@/types";
-import { RegistryTest } from "@/types/tests";
+import type { RegistryTest } from "@/types/tests";
 import { AuthContext } from "@/auth";
 import styles from "./AssessmentBuilder.module.css";
 import { FaClipboardQuestion } from "react-icons/fa6";

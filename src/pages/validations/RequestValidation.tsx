@@ -5,7 +5,7 @@ import {
   useGetAllRegistryActors,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import {
+import type {
   UserProfile,
   AlertInfo,
   OrganisationRORSearchResultModified,
@@ -14,13 +14,13 @@ import {
 import { ErrorMessage } from "@hookform/error-message";
 import { useContext, useState, useRef, useEffect } from "react";
 import { OverlayTrigger, Tooltip, Row, Col, InputGroup } from "react-bootstrap";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { FaInfoCircle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
-import Select, { SingleValue } from "react-select";
-import ROUTES from "../../routes";
+import Select, { type SingleValue } from "react-select";
+import ROUTES from "@/routes";
 
 function RequestValidation() {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { RegistryMetric } from "@/types";
+import type { RegistryMetric } from "@/types";
 
 import { Modal, Button, ListGroup } from "react-bootstrap";
 import { useTranslation } from "react-i18next";

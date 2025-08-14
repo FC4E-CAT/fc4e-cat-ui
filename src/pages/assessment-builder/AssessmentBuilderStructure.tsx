@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import {
+import type {
   AssessmentBuilderState,
   AssessmentPrinciple,
   Criterion,

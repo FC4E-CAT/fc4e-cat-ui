@@ -1,4 +1,4 @@
-import { ApiAuthOptions, ResponsePage } from "./common";
+import type { ApiAuthOptions, ResponsePage } from "./common";
 
 export type ValidationResponse = {
   id: number;
@@ -57,8 +57,10 @@ export type ValidationProps = {
   admin?: boolean;
 };
 
-export const enum ValidationStatus {
-  APPROVED = "APPROVED",
-  REJECTED = "REJECTED",
-  REVIEW = "REVIEW",
-}
+export type ValidationStatus = "APPROVED" | "REJECTED" | "REVIEW";
+
+export const ValidationStatus = {
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+  REVIEW: "REVIEW",
+} as const;

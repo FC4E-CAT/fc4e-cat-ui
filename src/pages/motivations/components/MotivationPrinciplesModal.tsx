@@ -1,5 +1,5 @@
 import { SearchBox } from "@/components/SearchBox";
-import { Criterion, Principle } from "@/types";
+import type { Criterion, Principle } from "@/types";
 import { useState, useEffect, useMemo } from "react";
 import {
   Button,

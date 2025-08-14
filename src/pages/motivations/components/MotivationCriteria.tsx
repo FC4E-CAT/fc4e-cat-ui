@@ -1,6 +1,6 @@
 import { useGetMotivationCriteria } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
-import { Criterion } from "@/types";
+import type { Criterion } from "@/types";
 import { useContext, useEffect, useMemo, useState } from "react";
 import {
   Button,

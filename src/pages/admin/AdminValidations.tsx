@@ -1,6 +1,6 @@
 import { useAdminGetValidations, useGetAllRegistryActors } from "@/api";
 import { AuthContext } from "@/auth";
-import { RegistryActor, ValidationResponse } from "@/types";
+import type { RegistryActor, ValidationResponse } from "@/types";
 import { idToColor, trimField } from "@/utils/admin";
 import { useContext, useEffect, useState } from "react";
 import {

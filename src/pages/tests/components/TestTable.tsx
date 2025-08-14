@@ -7,7 +7,7 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { RegistryTest } from "@/types/tests";
+import type { RegistryTest } from "@/types/tests";
 import TestRow from "./TestRow";
 import TestVersionRow from "./TestVersionRow";
 

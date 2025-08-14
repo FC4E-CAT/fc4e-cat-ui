@@ -6,7 +6,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import {
+import type {
   ApiOptions,
   Assessment,
   AssessmentDetailsResponse,
@@ -18,10 +18,9 @@ import {
   ApiAssessments,
   ApiObjects,
   ApiAdminAssessments,
+  Pagination,
 } from "@/types";
-import { AxiosError } from "axios";
-import { handleBackendError } from "@/utils";
-import ROUTES from "../../routes";
+import ROUTES from "@/routes";
 
 export function useCreateAssessment(token: string) {
   const navigate = useNavigate();
@@ -50,7 +49,7 @@ export function useDeleteAssessment(token: string) {
     },
     // on success refresh assessments query (so that the deleted assessment dissapears from list)
     onSuccess: () => {
-      queryClient.invalidateQueries(["assessments"]);
+      queryClient.invalidateQueries({ queryKey: ["assessments"] });
     },
   });
 }
@@ -63,7 +62,7 @@ export function useAdminDeleteAssessment(token: string) {
     },
     // on success refresh assessments query (so that the deleted assessment dissapears from list)
     onSuccess: () => {
-      queryClient.invalidateQueries(["assessments"]);
+      queryClient.invalidateQueries({ queryKey: ["assessments"] });
     },
   });
 }
@@ -86,7 +85,9 @@ export function useUpdateAssessment(
     },
     // for the time being redirect to assessment list
     onSuccess: () => {
-      queryClient.invalidateQueries(["assessment", { assessmentID }]);
+      queryClient.invalidateQueries({
+        queryKey: ["assessment", { assessmentID }],
+      });
     },
   });
 }
@@ -111,16 +112,13 @@ export const useGetAssessments = ({
           : `/v2/assessments/by-motivation/${motivationId}/by-actor/${actorId}?size=${size}&page=${page}`
         : `/v2/assessments?size=${size}&page=${page}`;
 
-      subject_name ? (url = `${url}&subject_name=${subject_name}`) : null;
-      subject_type ? (url = `${url}&subject_type=${subject_type}`) : null;
+      if (subject_name) url += `&subject_name=${subject_name}`;
+      if (subject_type) url += `&subject_type=${subject_type}`;
 
       const response = await APIClient(
         isPublic ? "" : token,
       ).get<AssessmentListResponse>(url);
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: isPublic || (!!token && isRegistered),
   });
@@ -141,9 +139,6 @@ export function useGetAssessmentShares({
       const response = await APIClient(token).get<SharedUsers>(url);
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: (!!token && isRegistered && id !== "") || id !== "",
   });
 }
@@ -158,8 +153,8 @@ export function useShareAssessment(token: string, id: string) {
     },
     // for the time being redirect to assessment list
     onSuccess: () => {
-      queryClient.invalidateQueries(["assessment-shares", id]);
-      queryClient.invalidateQueries(["assessments"]);
+      queryClient.invalidateQueries({ queryKey: ["assessment-shares", id] });
+      queryClient.invalidateQueries({ queryKey: ["assessments"] });
     },
   });
 }
@@ -189,9 +184,6 @@ export function useGetAssessment({
         await APIClient(token).get<AssessmentDetailsResponse>(url);
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled:
       (isPublic && id !== "") ||
       (!!token && isRegistered && id !== "") ||
@@ -216,9 +208,6 @@ export function useGetAdminAssessment({
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: (!!token && isRegistered && id !== "") || id !== "",
   });
 }
@@ -237,9 +226,6 @@ export const useGetAdminAssessments = ({
         `/v1/admin/assessments?size=${size}&page=${page}${search !== "" ? "&search=" + search : ""}`,
       );
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
@@ -260,9 +246,6 @@ export function useGetAdminAssessmentById({
       const response =
         await APIClient(token).get<AssessmentDetailsResponse>(url);
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered && id !== "",
   });
@@ -287,9 +270,6 @@ export function useGetObjects({
       ).get<AssessmentSubjectListResponse>(url);
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
   });
 }
 
@@ -306,9 +286,6 @@ export function useGetAssessmentTypes({
       const url = `/v1/codelist/assessment-types?size=100&page=1`;
       const response = await APIClient(token).get<AssessmentTypeResponse>(url);
       return response.data.content;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: isRegistered,
   });
@@ -327,15 +304,14 @@ export const useGetAssessmentComments = (
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -350,7 +326,7 @@ export function useAssessmentCommentAdd(token: string, id: string) {
     },
     // update query cache
     onSuccess: () => {
-      queryClient.invalidateQueries(["assessment-comments", id]);
+      queryClient.invalidateQueries({ queryKey: ["assessment-comments", id] });
     },
   });
 }
@@ -371,7 +347,7 @@ export function useAssessmentCommentUpdate(
     },
     // update query cache
     onSuccess: () => {
-      queryClient.invalidateQueries(["assessment-comments", id]);
+      queryClient.invalidateQueries({ queryKey: ["assessment-comments", id] });
     },
   });
 }
@@ -389,7 +365,7 @@ export function useAssessmentCommentDelete(
     },
     // update query cache
     onSuccess: () => {
-      queryClient.invalidateQueries(["assessment-comments", id]);
+      queryClient.invalidateQueries({ queryKey: ["assessment-comments", id] });
     },
   });
 }
@@ -410,8 +386,8 @@ export function useAssessmentPublish(
     },
     // update query cache
     onSuccess: () => {
-      queryClient.invalidateQueries(["assessments"]);
-      queryClient.invalidateQueries(["assessment", { id }]);
+      queryClient.invalidateQueries({ queryKey: ["assessments"] });
+      queryClient.invalidateQueries({ queryKey: ["assessment", { id }] });
     },
   });
 }
@@ -431,8 +407,8 @@ export function useAssessmentUnpublish(
     },
     // update query cache
     onSuccess: () => {
-      queryClient.invalidateQueries(["assessments"]);
-      queryClient.invalidateQueries(["assessment", { id }]);
+      queryClient.invalidateQueries({ queryKey: ["assessments"] });
+      queryClient.invalidateQueries({ queryKey: ["assessment", { id }] });
     },
   });
 }

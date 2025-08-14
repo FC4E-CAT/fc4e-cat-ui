@@ -1,6 +1,7 @@
 // Import API service modules
-import { AuthContext, AuthProvider } from "./AuthContext";
+import { AuthProvider } from "./AuthProvider";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { KeycloakLogout } from "./KeycloakLogout";
+import { AuthContext } from "./auth-context";
 
-export { AuthProvider, AuthContext, ProtectedRoute, KeycloakLogout };
+export { AuthProvider, ProtectedRoute, KeycloakLogout, AuthContext };

@@ -6,7 +6,7 @@ import {
 } from "@/api";
 
 import { AuthContext } from "@/auth";
-import { AlertInfo, Criterion, Imperative } from "@/types";
+import type { AlertInfo, Criterion, Imperative } from "@/types";
 import { useState, useContext, useEffect, useRef } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";

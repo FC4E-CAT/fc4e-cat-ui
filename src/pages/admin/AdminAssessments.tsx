@@ -18,9 +18,9 @@ import {
   OverlayTrigger,
   Tooltip,
   Table,
-  TooltipProps,
+  type TooltipProps,
 } from "react-bootstrap";
-import { AssessmentListItem, AlertInfo } from "@/types";
+import type { AssessmentListItem, AlertInfo } from "@/types";
 import {
   useAdminDeleteAssessment,
   useGetAdminAssessment,
@@ -36,7 +36,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { PublishModal } from "@/components";
 import { trimField } from "@/utils/admin";
-import CopyToClipboard from "react-copy-to-clipboard";
+import { CopyToClipboard } from "react-copy-to-clipboard-ts";
 
 type Pagination = {
   page: number;

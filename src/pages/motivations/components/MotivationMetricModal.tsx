@@ -15,7 +15,7 @@ import {
   defaultMotivationMetricBenchmarkType,
   defaultMotivationMetricType,
 } from "@/config";
-import { AlertInfo, MetricInput, RegistryResource } from "@/types";
+import type { AlertInfo, MetricInput, RegistryResource } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -467,7 +467,6 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 <Form.Select
                   id="input-metric-type"
                   aria-describedby="label-metric-type"
-                  placeholder={t("page_motivations.select_mtv_type")}
                   value={
                     metricInput.type_metric_id ? metricInput.type_metric_id : ""
                   }
@@ -528,7 +527,6 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 <Form.Select
                   id="input-metric-algorithm"
                   aria-describedby="label-metric-algorithm"
-                  placeholder={t("page_motivations.select_metric_algo")}
                   value={
                     metricInput.type_algorithm_id
                       ? metricInput.type_algorithm_id
@@ -591,7 +589,6 @@ export function MotivationMetricModal(props: MetricModalProps) {
                 <Form.Select
                   id="input-benchmark-type"
                   aria-describedby="label-benchmark-type"
-                  placeholder={t("page_motivations.select_benchmark_type")}
                   value={
                     metricInput.type_benchmark_id
                       ? metricInput.type_benchmark_id
@@ -682,11 +679,13 @@ export function MotivationMetricModal(props: MetricModalProps) {
           className="btn-success"
           onClick={() => {
             if (handleValidate() === true) {
-              props?.isVersioning
-                ? handleCreateNewVersion()
-                : props.mtrId
-                  ? handleUpdate()
-                  : handleCreate();
+              if (props?.isVersioning) {
+                handleCreateNewVersion();
+              } else if (props.mtrId) {
+                handleUpdate();
+              } else {
+                handleCreate();
+              }
             }
           }}
         >

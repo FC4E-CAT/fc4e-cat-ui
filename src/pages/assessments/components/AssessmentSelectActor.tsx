@@ -4,7 +4,7 @@
  */
 
 import { Form } from "react-bootstrap";
-import { ActorOrgAsmtType } from "@/types";
+import type { ActorOrgAsmtType } from "@/types";
 import { useTranslation } from "react-i18next";
 
 interface AssessmentSelectActorProps {

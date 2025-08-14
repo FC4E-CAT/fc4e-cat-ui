@@ -1,6 +1,6 @@
 import { useAssessmentPublish, useAssessmentUnpublish } from "@/api";
 import { AuthContext } from "@/auth";
-import { AlertInfo } from "@/types";
+import type { AlertInfo } from "@/types";
 import { useContext, useRef } from "react";
 import { Modal, Button, ListGroup } from "react-bootstrap";
 import toast from "react-hot-toast";

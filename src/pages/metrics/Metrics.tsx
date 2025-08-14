@@ -25,7 +25,7 @@ import {
   FaPlus,
 } from "react-icons/fa";
 
-import { AlertInfo, RegistryMetric } from "@/types";
+import type { AlertInfo, RegistryMetric } from "@/types";
 import { useTranslation } from "react-i18next";
 import { idToColor } from "@/utils/admin";
 import {

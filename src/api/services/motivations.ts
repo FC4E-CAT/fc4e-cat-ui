@@ -7,7 +7,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
-import {
+import type {
   ApiOptions,
   ApiOptionsSearch,
   Assessment,
@@ -30,10 +30,14 @@ import {
   PrincipleInput,
   PrincipleResponse,
   RelationResponse,
+  Pagination,
 } from "@/types";
-import { CriterionMetricResponse, CriterionResponse } from "@/types/criterion";
+import type {
+  CriterionMetricResponse,
+  CriterionResponse,
+  CriterionInput,
+} from "@/types/criterion";
 import { relMtvPrincipleId } from "@/config";
-import { CriterionInput } from "../../types/criterion";
 
 export const useGetMotivations = ({
   size,
@@ -51,9 +55,6 @@ export const useGetMotivations = ({
         `/v1/registry/motivations?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}${search ? "&search=" + search : ""}`,
       );
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
@@ -77,9 +78,6 @@ export const useGetMotivation = ({
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
   });
 
@@ -96,15 +94,14 @@ export const useGetMotivationTypes = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -119,15 +116,14 @@ export const useGetAllActors = ({ token, isRegistered, size }: ApiOptions) =>
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -142,15 +138,14 @@ export const useGetRelations = ({ token, isRegistered, size }: ApiOptions) =>
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -161,8 +156,8 @@ export const useCreateMotivation = (
   { mtv, label, description, motivation_type_id, based_on }: MotivationInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post<MotivationResponse>(
         `/v1/registry/motivations`,
         {
@@ -176,15 +171,13 @@ export const useCreateMotivation = (
       return response.data;
     },
 
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["motivations"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["motivations"] });
+    },
+  });
 };
 
 export function usePublishMotivation(token: string) {
@@ -195,7 +188,7 @@ export function usePublishMotivation(token: string) {
     },
     // on success refresh motivation query
     onSuccess: () => {
-      queryClient.invalidateQueries(["motivations"]);
+      queryClient.invalidateQueries({ queryKey: ["motivations"] });
     },
   });
 }
@@ -210,7 +203,7 @@ export function useUnpublishMotivation(token: string) {
     },
     // on success refresh motivation query
     onSuccess: () => {
-      queryClient.invalidateQueries(["motivations"]);
+      queryClient.invalidateQueries({ queryKey: ["motivations"] });
     },
   });
 }
@@ -225,7 +218,9 @@ export function usePublishMotivationActor(token: string) {
     },
     // on success refresh motivations/mtvId query
     onSuccess: (_, params) => {
-      queryClient.invalidateQueries(["motivations", params.mtvId]);
+      queryClient.invalidateQueries({
+        queryKey: ["motivations", params.mtvId],
+      });
     },
   });
 }
@@ -240,7 +235,9 @@ export function useUnpublishMotivationActor(token: string) {
     },
     // on success refresh motivations/mtvId query
     onSuccess: (_, params) => {
-      queryClient.invalidateQueries(["motivations", params.mtvId]);
+      queryClient.invalidateQueries({
+        queryKey: ["motivations", params.mtvId],
+      });
     },
   });
 }
@@ -251,8 +248,8 @@ export const useUpdateMotivation = (
   { mtv, label, description, motivation_type_id }: MotivationInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).patch<MotivationResponse>(
         `/v1/registry/motivations/${id}`,
         {
@@ -265,15 +262,13 @@ export const useUpdateMotivation = (
       return response.data;
     },
 
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["motivations", id]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["motivations", id] });
+    },
+  });
 };
 
 export const useMotivationAddActor = (
@@ -284,8 +279,8 @@ export const useMotivationAddActor = (
   autoGroups: AutoGroupTest[],
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post<MotivationResponse>(
         `/v1/registry/motivations/${motivationId}/actors`,
         [
@@ -298,15 +293,15 @@ export const useMotivationAddActor = (
       );
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["motivations", motivationId]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["motivations", motivationId],
+      });
+    },
+  });
 };
 
 export const useGetMotivationPrinciples = (
@@ -321,15 +316,14 @@ export const useGetMotivationPrinciples = (
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -347,15 +341,14 @@ export const useGetAllMotivationMetrics = (
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -373,15 +366,14 @@ export const useGetMotivationCriteria = (
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -422,11 +414,9 @@ export const useGetMotivationMetricTests = (
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: () => {
       return undefined;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered && !!mtvId && !!mtrId,
@@ -445,15 +435,14 @@ export const useGetMotivationActorCriteria = (
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -482,9 +471,6 @@ export const useGetMotivationMetric = ({
       response = await APIClient(token).get<CriterionMetricResponse>(url);
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: !!token,
   });
 
@@ -505,9 +491,6 @@ export const useGetMotivationMetricFull = ({
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: !!token && !!mtrId,
   });
 
@@ -526,7 +509,9 @@ export function useUpdateMotivationActorCriteria(
     },
     // on change refresh motivation-actor-criteria list
     onSuccess: () => {
-      queryClient.invalidateQueries(["motivation-actor-criteria"]);
+      queryClient.invalidateQueries({
+        queryKey: ["motivation-actor-criteria"],
+      });
     },
   });
 }
@@ -546,7 +531,9 @@ export function useUpdateActorCriteriaWithDefaultMetric(
     },
     // on change refresh motivation-actor-criteria list
     onSuccess: () => {
-      queryClient.invalidateQueries(["motivation-actor-criteria"]);
+      queryClient.invalidateQueries({
+        queryKey: ["motivation-actor-criteria"],
+      });
     },
   });
 }
@@ -565,7 +552,9 @@ export function useUpdateMotivationPrinciplesCriteria(
     },
     // on change refresh motivation-principle-criteria list
     onSuccess: () => {
-      queryClient.invalidateQueries(["motivation-principles-criteria"]);
+      queryClient.invalidateQueries({
+        queryKey: ["motivation-principles-criteria"],
+      });
     },
   });
 }
@@ -577,8 +566,8 @@ export function useDeleteMotivationMetric(token: string) {
       return APIClient(token).delete(`/v1/registry/metrics/${mtrId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["motivation-metrics"]);
-      queryClient.invalidateQueries(["all-metrics"]);
+      queryClient.invalidateQueries({ queryKey: ["motivation-metrics"] });
+      queryClient.invalidateQueries({ queryKey: ["all-metrics"] });
     },
   });
 }
@@ -593,7 +582,9 @@ export function useDeleteMotivationActor(token: string) {
     },
     // on success refresh motivation query (so that the deleted actor dissapears from list)
     onSuccess: (_, params) => {
-      queryClient.invalidateQueries(["motivations", params.mtvId]);
+      queryClient.invalidateQueries({
+        queryKey: ["motivations", params.mtvId],
+      });
     },
   });
 }
@@ -603,8 +594,8 @@ export const useCreateMotivationPrinciple = (
   { pri, label, description }: PrincipleInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post<PrincipleResponse>(
         `/v1/registry/motivations/${mtvId}/principle`,
         {
@@ -618,16 +609,15 @@ export const useCreateMotivationPrinciple = (
       );
       return response.data;
     },
-
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["motivation-principles", mtvId]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["motivation-principles", mtvId],
+      });
+    },
+  });
 };
 
 export const useUpdateMotivationMetric = (
@@ -646,8 +636,8 @@ export const useUpdateMotivationMetric = (
   }: MetricInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).put<MetricResponse>(
         `/v1/registry/metrics/${mtrId}`,
         {
@@ -664,17 +654,17 @@ export const useUpdateMotivationMetric = (
       return response.data;
     },
 
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["motivation-metrics"]);
-        queryClient.invalidateQueries(["all-metrics"]);
-        queryClient.invalidateQueries(["motivation-metric-full", mtvId, mtrId]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["motivation-metrics"] });
+      queryClient.invalidateQueries({ queryKey: ["all-metrics"] });
+      queryClient.invalidateQueries({
+        queryKey: ["motivation-metric-full", mtvId, mtrId],
+      });
+    },
+  });
 };
 
 export const useCreateMotivationMetric = (
@@ -693,8 +683,8 @@ export const useCreateMotivationMetric = (
   }: MetricInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post(
         `/v1/registry/motivations/${mtvId}/metric`,
         {
@@ -712,16 +702,14 @@ export const useCreateMotivationMetric = (
       return response.data;
     },
 
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["motivation-metrics"]);
-        queryClient.invalidateQueries(["all-metrics"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["motivation-metrics"] });
+      queryClient.invalidateQueries({ queryKey: ["all-metrics"] });
+    },
+  });
 };
 
 export function useUpdateMotivationAssignMetric(
@@ -739,11 +727,9 @@ export function useUpdateMotivationAssignMetric(
     },
     // on change refresh motivation criterion
     onSuccess: () => {
-      queryClient.invalidateQueries([
-        "motivation-criterion-metric",
-        mtvId,
-        criId,
-      ]);
+      queryClient.invalidateQueries({
+        queryKey: ["motivation-criterion-metric", mtvId, criId],
+      });
     },
   });
 }
@@ -763,7 +749,9 @@ export function useUpdateMotivationMetricTests(
     },
     // on change refresh motivation-metric-test
     onSuccess: () => {
-      queryClient.invalidateQueries(["motivation-metric-tests", mtvId, mtrId]);
+      queryClient.invalidateQueries({
+        queryKey: ["motivation-metric-tests", mtvId, mtrId],
+      });
     },
   });
 }
@@ -795,9 +783,11 @@ export function useUpdateMotivationAlgorithmSettings(
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["motivation-metrics"]);
-      queryClient.invalidateQueries(["all-metrics"]);
-      queryClient.invalidateQueries(["motivation-metric-full", mtvId, mtrId]);
+      queryClient.invalidateQueries({ queryKey: ["motivation-metrics"] });
+      queryClient.invalidateQueries({ queryKey: ["all-metrics"] });
+      queryClient.invalidateQueries({
+        queryKey: ["motivation-metric-full", mtvId, mtrId],
+      });
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
@@ -836,9 +826,11 @@ export function useCreateMetricVersion(
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["motivation-metrics"]);
-      queryClient.invalidateQueries(["all-metrics"]);
-      queryClient.invalidateQueries(["motivation-metric-full", mtvId, mtrId]);
+      queryClient.invalidateQueries({ queryKey: ["motivation-metrics"] });
+      queryClient.invalidateQueries({ queryKey: ["all-metrics"] });
+      queryClient.invalidateQueries({
+        queryKey: ["motivation-metric-full", mtvId, mtrId],
+      });
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
@@ -851,24 +843,22 @@ export const useAssignPrinciplesToMotivation = (
   mtvId: string,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async (principleAssignments: PrincipleAssignmentInput[]) => {
+  return useMutation({
+    mutationFn: async (principleAssignments: PrincipleAssignmentInput[]) => {
       const response = await APIClient(token).post<PrincipleResponse>(
         `/v1/registry/motivations/${mtvId}/principles`,
         principleAssignments,
       );
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["motivation-principles"]);
-        queryClient.invalidateQueries(["all-principles"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["motivation-principles"] });
+      queryClient.invalidateQueries({ queryKey: ["all-principles"] });
+    },
+  });
 };
 
 export const useCreateMotivationCriterion = (
@@ -877,8 +867,8 @@ export const useCreateMotivationCriterion = (
   { cri, label, description }: CriterionInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post<CriterionResponse>(
         `/v1/registry/motivations/${mtvId}/criterion`,
         {
@@ -894,16 +884,15 @@ export const useCreateMotivationCriterion = (
       );
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["motivation-criteria"]);
-        queryClient.invalidateQueries(["all-criteria"]);
-      },
+
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["motivation-criteria"] });
+      queryClient.invalidateQueries({ queryKey: ["all-criteria"] });
+    },
+  });
 };
 
 export const useGetMotivationAssessmentTypeTemplate = (
@@ -919,9 +908,6 @@ export const useGetMotivationAssessmentTypeTemplate = (
         `/v1/registry/motivations/${mtvId}/by-actor/${actId}/assessment-type-template`,
       );
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: (failureCount: number, error: unknown) => {
       if ((error as AxiosError)?.response?.status === 404) {

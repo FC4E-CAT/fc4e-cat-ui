@@ -10,7 +10,7 @@ import {
   OverlayTrigger,
   Tooltip,
 } from "react-bootstrap";
-import { AssessmentSubject, UserProfile, AssessmentActor } from "@/types";
+import type { AssessmentSubject, UserProfile, AssessmentActor } from "@/types";
 import { AssessmentSelectSubject } from "./AssessmentSelectSubject";
 import {
   FaCog,

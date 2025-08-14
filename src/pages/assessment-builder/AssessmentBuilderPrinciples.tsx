@@ -4,7 +4,7 @@ import {
   useUpdateActorCriteriaWithDefaultMetric,
   useUpdateMotivationPrinciplesCriteria,
 } from "@/api";
-import {
+import type {
   AlertInfo,
   AssessmentBuilderState,
   AssessmentPrinciple,
