@@ -59,7 +59,7 @@
 
 .preview-column {
   flex: 1;
-  min-width: 480px;
+  min-width: 540px;
 }
 
 .editor-column {
@@ -447,17 +447,6 @@
   flex: 1;
   flex-direction: column;
   gap: 0.1rem;
-}
-
-@media (width <= 900px) {
-  .form-group-test-preview {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .test-info-row {
-    flex-direction: column;
-  }
 }
 
 .form-group-test {
@@ -857,55 +846,6 @@
   background-color: #c82333;
 }
 
-/* Responsive adjustments for tooltip */
-@media (width < 768px) {
-  .motivations-tooltip {
-    position: fixed;
-    inset: auto auto 8px 8px;
-    max-width: calc(100vw - 16px);
-    margin-right: 0;
-    transform: none;
-  }
-
-  .form-actions-tests {
-    width: 100%;
-    margin-top: 0.5rem;
-  }
-}
-
-@media (width < 1200px) {
-  .editor-column {
-    flex: 0 0 300px;
-  }
-
-  .preview-column {
-    min-width: 400px;
-  }
-}
-
-@media (width < 1060px) {
-  .builder-layout {
-    flex-direction: column;
-  }
-
-  .assessment-builder {
-    height: auto;
-  }
-
-  .structure-column,
-  .preview-column,
-  .editor-column {
-    flex: none;
-    min-height: 300px;
-  }
-
-  .header-content {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-end;
-  }
-}
-
 /* Algorithm Configuration Styles */
 .algorithm-config-container {
   background: transparent;
@@ -1089,12 +1029,6 @@
   gap: 0.5rem;
 }
 
-@media (width < 1468px) {
-  .algorithm-options-compact {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 .algorithm-option-compact {
   position: relative;
   display: flex;
@@ -1149,18 +1083,6 @@
   gap: 0.5rem;
 }
 
-@media (width < 1468px) {
-  .benchmark-options-compact {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (width < 768px) {
-  .benchmark-options-compact {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 /* Individual Benchmark Option Card */
 .benchmark-option-card {
   position: relative;
@@ -1174,18 +1096,6 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.375rem;
   transition: all 0.2s ease;
-}
-
-@media (width < 1468px) {
-  .benchmark-option-card {
-    height: 70px;
-  }
-}
-
-@media (width < 768px) {
-  .benchmark-option-card {
-    height: 40px;
-  }
 }
 
 .benchmark-option-card:hover {
@@ -1556,4 +1466,144 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 8px 25px rgb(0 0 0 / 15%);
+}
+
+@media (width > 1920px) {
+  .assessment-builder {
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+
+  .structure-column {
+    flex: 0 1 500px;
+  }
+
+  .editor-column {
+    flex: 0 1 550px;
+  }
+
+  .preview-column {
+    flex: 1;
+    max-width: 1400px;
+  }
+}
+
+@media (width > 1600px) {
+  .structure-column {
+    flex: 0 1 450px;
+  }
+
+  .editor-column {
+    flex: 0 1 450px;
+  }
+
+  .preview-column {
+    flex: 1;
+    max-width: 1200px;
+  }
+}
+
+@media (width < 1468px) {
+  .algorithm-options-compact {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .benchmark-options-compact {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .benchmark-option-card {
+    height: 70px;
+  }
+
+  .column-content:has(.builder-preview) {
+    padding: 2.6rem 1.3rem;
+  }
+
+  .advanced-settings-container {
+    right: 20px;
+  }
+}
+
+@media (width < 1280px) {
+  .structure-column {
+    flex: 0 1 280px;
+  }
+
+  .editor-column {
+    flex: 0 1 320px;
+  }
+
+  .preview-column {
+    flex: 2;
+    min-width: 450px;
+  }
+}
+
+@media (width < 1060px) {
+  .builder-layout {
+    flex-direction: column;
+  }
+
+  .assessment-builder {
+    height: auto;
+    margin: 0 0.25rem;
+  }
+
+  .structure-column,
+  .preview-column,
+  .editor-column {
+    flex: none;
+    min-height: 300px;
+  }
+
+  .preview-column {
+    min-height: 400px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-end;
+  }
+
+  .form-group-test-preview {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .test-info-row {
+    flex-direction: column;
+  }
+}
+
+@media (width < 768px) {
+  .assessment-builder {
+    margin: 0 0.25rem;
+  }
+
+  .column-content:has(.builder-preview) {
+    padding: 2.6rem 1rem;
+  }
+
+  .motivations-tooltip {
+    position: fixed;
+    inset: auto auto 8px 8px;
+    max-width: calc(100vw - 16px);
+    margin-right: 0;
+    transform: none;
+  }
+
+  .form-actions-tests {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .benchmark-options-compact {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .benchmark-option-card {
+    height: 40px;
+  }
 }
