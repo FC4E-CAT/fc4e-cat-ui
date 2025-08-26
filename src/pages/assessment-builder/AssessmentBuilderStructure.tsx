@@ -30,6 +30,7 @@ function AssessmentBuilderStructure({
   setAssessment,
   selectedId,
   allCriteria,
+  hasUnsavedChanges,
 }: {
   mtvId: string;
   actId: string;
@@ -38,6 +39,7 @@ function AssessmentBuilderStructure({
   setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
   selectedId?: string;
   allCriteria: Criterion[];
+  hasUnsavedChanges?: boolean;
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [collapsedPrinciples, setCollapsedPrinciples] = useState<Set<string>>(
@@ -50,6 +52,16 @@ function AssessmentBuilderStructure({
     criterionId: string;
     criterionName: string;
   } | null>(null);
+
+  const [showUnsavedChangesModal, setShowUnsavedChangesModal] = useState(false);
+  const [pendingNavigation, setPendingNavigation] =
+    useState<AssessmentBuilderState | null>({
+      formMode: "none",
+      entityMode: "none",
+      selectedId: "",
+      selectedPrincipleIndex: -1,
+      selectedCriterionIndex: -1,
+    });
 
   const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
 
@@ -245,6 +257,46 @@ function AssessmentBuilderStructure({
     setCriterionToDelete(null);
   };
 
+  const handleCriterionClick = (
+    criterionId: string,
+    principleIndex: number,
+    criterionIndex: number,
+  ) => {
+    // Check if we're switching to a different criterion and have unsaved changes
+    if (hasUnsavedChanges && selectedId !== criterionId) {
+      setPendingNavigation({
+        entityMode: "criterion",
+        formMode: "edit",
+        selectedId: criterionId,
+        selectedPrincipleIndex: principleIndex,
+        selectedCriterionIndex: criterionIndex,
+      });
+      setShowUnsavedChangesModal(true);
+      return;
+    }
+
+    setBuilderState({
+      entityMode: "criterion",
+      formMode: "edit",
+      selectedId: criterionId,
+      selectedPrincipleIndex: principleIndex,
+      selectedCriterionIndex: criterionIndex,
+    });
+  };
+
+  const confirmDiscardChanges = () => {
+    if (pendingNavigation) {
+      setBuilderState(pendingNavigation);
+    }
+    setShowUnsavedChangesModal(false);
+    setPendingNavigation(null);
+  };
+
+  const cancelDiscardChanges = () => {
+    setShowUnsavedChangesModal(false);
+    setPendingNavigation(null);
+  };
+
   return (
     <div className={styles["structure-tree"]}>
       {assessment?.map((principle: AssessmentPrinciple, principleIndex) => {
@@ -287,13 +339,11 @@ function AssessmentBuilderStructure({
                         : ""
                     }`}
                     onClick={() =>
-                      setBuilderState({
-                        entityMode: "criterion",
-                        formMode: "edit",
-                        selectedId: criterion.id,
-                        selectedPrincipleIndex: principleIndex,
-                        selectedCriterionIndex: criterionIndex,
-                      })
+                      handleCriterionClick(
+                        criterion.id,
+                        principleIndex,
+                        criterionIndex,
+                      )
                     }
                   >
                     <div className="d-flex align-items-center gap-1">
@@ -411,13 +461,11 @@ function AssessmentBuilderStructure({
                           selectedId === criterion.id ? styles["selected"] : ""
                         }`}
                         onClick={() =>
-                          setBuilderState({
-                            entityMode: "criterion",
-                            formMode: "edit",
-                            selectedId: criterion.id,
-                            selectedPrincipleIndex: untaggedPrincipleIndex,
-                            selectedCriterionIndex: untaggedCriteriaIndex,
-                          })
+                          handleCriterionClick(
+                            criterion.id,
+                            untaggedPrincipleIndex,
+                            untaggedCriteriaIndex,
+                          )
                         }
                       >
                         <span className={styles["tree-icon"]}>
@@ -485,6 +533,38 @@ function AssessmentBuilderStructure({
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
       />
+
+      {showUnsavedChangesModal && (
+        <div
+          className={styles["delete-modal-overlay"]}
+          onClick={cancelDiscardChanges}
+        >
+          <div
+            className={styles["delete-modal-content"]}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h4 className={styles["delete-modal-title"]}>Unsaved Changes</h4>
+            <p className={styles["delete-modal-message"]}>
+              You have unsaved changes. Are you sure you want to discard them
+              and continue?
+            </p>
+            <div className={styles["delete-modal-actions"]}>
+              <button
+                className={styles["delete-modal-cancel-btn"]}
+                onClick={cancelDiscardChanges}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles["delete-modal-remove-btn"]}
+                onClick={confirmDiscardChanges}
+              >
+                Discard Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

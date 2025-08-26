@@ -56,6 +56,7 @@ function AssessmentBuilder() {
   });
   const [isPrincipleSelected, setIsPrincipleSelected] = useState(false);
   const [isTestSelected, setIsTestSelected] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const {
     data: assessmentData,
@@ -367,6 +368,10 @@ function AssessmentBuilder() {
     );
   }, [assessment, builderState.selectedId]);
 
+  const handleUnsavedChangesUpdate = useCallback((hasChanges: boolean) => {
+    setHasUnsavedChanges(hasChanges);
+  }, []);
+
   if (isLoading) {
     return (
       <Container fluid className="py-4">
@@ -440,6 +445,7 @@ function AssessmentBuilder() {
                 setBuilderState={setBuilderState}
                 selectedId={builderState.selectedId || ""}
                 allCriteria={allCriteria}
+                hasUnsavedChanges={hasUnsavedChanges}
               />
             </div>
           </div>
@@ -485,6 +491,7 @@ function AssessmentBuilder() {
                 mtvId: mtvId || "",
                 actId: actId || "",
               })}
+              onUnsavedChangesUpdate={handleUnsavedChangesUpdate}
             />
           </div>
 

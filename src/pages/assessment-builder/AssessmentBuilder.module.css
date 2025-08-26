@@ -846,24 +846,6 @@
   background-color: #c82333;
 }
 
-/* Algorithm Configuration Styles */
-.algorithm-config-container {
-  background: transparent;
-}
-
-.algorithm-config-container.expanded {
-  margin-bottom: 1rem;
-  overflow: hidden;
-  outline: 1px solid #e5e7eb;
-  background: white;
-  border-radius: 0.5rem;
-}
-
-.algorithm-config-container.expanded:hover {
-  outline-color: #d1d5db;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-}
-
 .config-header {
   display: flex;
   gap: 1.2rem;
@@ -1399,7 +1381,6 @@
   position: absolute;
   top: 6px;
   right: 36px;
-  z-index: 1050;
   flex-shrink: 0;
 }
 
