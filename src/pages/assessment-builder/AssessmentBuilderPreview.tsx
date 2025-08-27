@@ -41,6 +41,7 @@ interface AssessmentBuilderPreviewProps {
   isTestSelected: boolean;
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
   canEditMetricAndTests: boolean;
+  onUnsavedChangesUpdate?: (hasChanges: boolean) => void;
 }
 
 function AssessmentBuilderPreview({
@@ -57,6 +58,7 @@ function AssessmentBuilderPreview({
   isTestSelected,
   setIsTestSelected,
   canEditMetricAndTests,
+  onUnsavedChangesUpdate,
 }: AssessmentBuilderPreviewProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
@@ -227,6 +229,19 @@ function AssessmentBuilderPreview({
   const cancelDeleteTest = () => {
     setShowDeleteModal({ testId: "", testLabel: "" });
   };
+
+  const hasUnsavedChanges =
+    isPrincipleSelected ||
+    isTestSelected ||
+    isAdvancedSettingsOpen ||
+    (builderState.entityMode === "principle" &&
+      builderState.formMode === "new") ||
+    (builderState.entityMode === "test" &&
+      (builderState.formMode === "new" || builderState.formMode === "edit"));
+
+  useEffect(() => {
+    onUnsavedChangesUpdate?.(hasUnsavedChanges);
+  }, [hasUnsavedChanges, onUnsavedChangesUpdate]);
 
   return (
     <div className={styles["column-content"]}>
