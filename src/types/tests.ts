@@ -47,7 +47,7 @@ export interface TestParam {
 }
 
 export interface TestFull {
-  id: string;
+  id?: string;
   tes?: string;
   label?: string;
   description?: string;
@@ -68,6 +68,8 @@ export interface TestFull {
   params?: string;
   text?: string;
   tool_tip?: string;
+  value?: boolean | string | number | null;
+  result?: number | string | null;
 }
 
 export const TestValueEventType = {

@@ -624,7 +624,7 @@ export default function MotivationDetails() {
                                         className="btn btn-light btn-sm m-1"
                                         to={buildRoute(
                                           ROUTES.ADMIN.MOTIVATIONS
-                                            .ASSESSMENT_BUILDER,
+                                            .ASSESSMENT_BUILDER_EDIT,
                                           {
                                             mtvId: params.mtvId || "",
                                             actId: item.id,

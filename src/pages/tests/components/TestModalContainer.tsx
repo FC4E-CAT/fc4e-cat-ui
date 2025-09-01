@@ -1,6 +1,6 @@
 import { Button } from "react-bootstrap";
 import type { RegistryResource } from "@/types";
-import type { TestInput, TestParam } from "@/types/tests";
+import type { TestFull, TestInput, TestParam } from "@/types/tests";
 import TestPreviewModal from "./TestPreviewModal";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -265,7 +265,7 @@ function TestModalContainer(props: TestModalUIProps) {
                     Preview Test
                   </div>
                   <TestPreviewModal
-                    test={test}
+                    test={test as TestFull}
                     params={params}
                     testMethodName={
                       testMethods.find((m) => m.id === test?.test_method_id)
