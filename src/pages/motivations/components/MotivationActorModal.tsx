@@ -148,7 +148,7 @@ export function MotivationActorModal(props: MotivationActorModalProps) {
       .then(() => {
         props.onHide();
         navigate(
-          buildRoute(ROUTES.ADMIN.MOTIVATIONS.ASSESSMENT_BUILDER, {
+          buildRoute(ROUTES.ADMIN.MOTIVATIONS.ASSESSMENT_BUILDER_EDIT, {
             mtvId: props?.id || "",
             actId: actorId || "",
           }),

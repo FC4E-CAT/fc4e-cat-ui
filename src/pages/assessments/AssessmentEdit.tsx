@@ -1153,12 +1153,12 @@ const AssessmentEdit = ({
                   <Button
                     id="save_assessment_button"
                     disabled={!wizardTabActive}
-                    className="ms-2 btn btn-success px-5"
+                    className="ms-2 btn btn-success px-3"
                     onClick={() => {
                       handleUpdateAssessment(false);
                     }}
                   >
-                    {t("buttons.save")}
+                    {t("buttons.save_progress")}
                   </Button>
 
                   <Button
@@ -1170,7 +1170,7 @@ const AssessmentEdit = ({
                         assessment.result.compliance !== null
                       )
                     }
-                    className="ms-2 btn btn-success px-5"
+                    className="ms-2 btn btn-success px-3"
                     onClick={() => {
                       handleUpdateAssessment(true);
                     }}

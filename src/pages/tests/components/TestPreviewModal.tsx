@@ -1,7 +1,8 @@
-import type { TestInput, TestParam } from "@/types/tests";
+import type { TestFull, TestParam } from "@/types/tests";
 import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBinaryParamForm";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import type {
+  AssessmentTest,
   TestAutoG069,
   TestAutoHttpsCheck,
   TestAutoMD1,
@@ -22,11 +23,18 @@ import styles from "@/pages/assessment-builder/AssessmentBuilder.module.css";
 import React from "react";
 
 interface TestPreviewProps {
-  test: TestInput;
+  test: TestFull;
   params: TestParam[];
   testMethodName?: string;
   onTestEdit?: () => void;
   onTestDelete?: () => void;
+  onTestChange?: (
+    principleId: string,
+    criterionId: string,
+    newTest: AssessmentTest,
+  ) => void;
+  criterionId?: string;
+  principleId?: string;
 }
 
 const TestPreviewModal = ({
@@ -35,6 +43,9 @@ const TestPreviewModal = ({
   testMethodName,
   onTestEdit,
   onTestDelete,
+  onTestChange,
+  criterionId,
+  principleId,
 }: TestPreviewProps) => {
   const testParams: React.JSX.Element[] = [];
 
@@ -49,20 +60,20 @@ const TestPreviewModal = ({
       description: test.description || "",
       type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
-      value: "",
-      result: "",
       params: params?.map((p) => p.name).join("|") || "",
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
       evidence_url: [],
+      value: test.value,
+      result: test.result,
     } as unknown as TestBinaryParam;
 
     testParams.push(
       <TestBinaryParamForm
         key={`binary-${test.tes}`}
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   } else if (
@@ -75,8 +86,6 @@ const TestPreviewModal = ({
       name: test.label || "",
       type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
-      value: "",
-      result: "",
       suffix: "",
       unit: "",
       min_value: 0,
@@ -85,15 +94,17 @@ const TestPreviewModal = ({
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
+      value: test.value,
+      result: test.result,
     } as unknown as TestValueParam;
 
     testParams.push(
       <TestValueFormParam
         key={`value-${test.tes}`}
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   } else if (testMethodName === "TRL-Manual") {
@@ -106,15 +117,17 @@ const TestPreviewModal = ({
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
+      value: test.value,
+      result: test.result,
     } as unknown as TestValueParam;
 
     testParams.push(
       <TestTRLForm
         key={`trl-${test.tes}`}
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   } else if (testMethodName === "Percent-Manual") {
@@ -127,15 +140,17 @@ const TestPreviewModal = ({
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
+      value: test.value,
+      result: test.result,
     } as unknown as TestValueParam;
 
     testParams.push(
       <TestPercentForm
         key={`percent-${test.tes}`}
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   } else if (testMethodName === "Ratio-Manual") {
@@ -148,15 +163,17 @@ const TestPreviewModal = ({
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
+      value: test.value,
+      result: test.result,
     } as unknown as TestValueParam;
 
     testParams.push(
       <TestRatioForm
         key={`ratio-${test.tes}`}
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   } else if (testMethodName === "Auto-Check-String-Binary") {
@@ -165,12 +182,12 @@ const TestPreviewModal = ({
       name: test.label || "",
       type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
-      value: "",
-      result: "",
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
       auto_type: "g069",
+      value: test.value,
+      result: test.result,
     } as unknown as TestAutoG069;
 
     testParams.push(
@@ -178,9 +195,9 @@ const TestPreviewModal = ({
         key={`auto-g069-${test.tes}`}
         g069param=""
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   } else if (testMethodName === "Fully-Automated-Validation") {
@@ -189,12 +206,12 @@ const TestPreviewModal = ({
       name: test.label || "",
       type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
-      value: "",
-      result: "",
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
       auto_type: "g069",
+      value: test.value,
+      result: test.result,
     } as unknown as TestAutoValidation;
     testParams.push(
       <TestAutoValidationForm
@@ -209,12 +226,12 @@ const TestPreviewModal = ({
       name: test.label || "",
       type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
-      value: "",
-      result: "",
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
       auto_type: "g069",
+      value: test.value,
+      result: test.result,
     } as unknown as TestAutoG069;
 
     testParams.push(
@@ -222,9 +239,9 @@ const TestPreviewModal = ({
         key={`auto-g069-user-${test.tes}`}
         g069param={defaultG069userInfo}
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   } else if (testMethodName === "Auto-Check-AARC-G069-Token-Introspection") {
@@ -233,12 +250,12 @@ const TestPreviewModal = ({
       name: test.label || "",
       type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
-      value: "",
-      result: "",
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
       auto_type: "g069",
+      value: test.value,
+      result: test.result,
     } as unknown as TestAutoG069;
 
     testParams.push(
@@ -246,9 +263,9 @@ const TestPreviewModal = ({
         key={`auto-g069-token-${test.tes}`}
         g069param={defaultG069tokenIntrospection}
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   } else if (testMethodName === "Auto-Check-Url-Binary") {
@@ -257,21 +274,21 @@ const TestPreviewModal = ({
       name: test.label || "",
       type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
-      value: "",
-      result: "",
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
       auto_type: "https",
+      value: test.value,
+      result: test.result,
     } as unknown as TestAutoHttpsCheck;
 
     testParams.push(
       <TestAutoHttpsCheckForm
         key={`auto-https-${test.tes}`}
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   } else if (
@@ -284,21 +301,21 @@ const TestPreviewModal = ({
       name: test.label || "",
       type: testMethodName,
       text: params?.map((p) => p.text).join("|") || "",
-      value: "",
-      result: "",
       params: params?.map((p) => p.name).join("|") || "",
       evidence_url: [],
       tool_tip: params?.map((p) => p.tooltip).join("|") || "",
       auto_type: "md1",
+      value: test.value,
+      result: test.result,
     } as unknown as TestAutoMD1;
 
     testParams.push(
       <TestAutoMd1Form
         key={`auto-md1-${test.tes}`}
         test={adaptedTest}
-        onTestChange={() => {}}
-        criterionId=""
-        principleId=""
+        onTestChange={onTestChange || (() => {})}
+        criterionId={criterionId || ""}
+        principleId={principleId || ""}
       />,
     );
   }

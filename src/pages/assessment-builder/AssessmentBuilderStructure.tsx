@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import type {
-  AssessmentBuilderState,
-  AssessmentPrinciple,
-  Criterion,
+import {
+  AssessmentCriterionImperative,
+  type Assessment,
+  type AssessmentBuilderState,
+  type AssessmentPrinciple,
+  type Criterion,
 } from "@/types";
 import {
   FaFileAlt,
@@ -11,6 +13,8 @@ import {
   FaChevronUp,
   FaTrash,
   FaExclamationCircle,
+  FaTimesCircle,
+  FaCheckCircle,
 } from "react-icons/fa";
 import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
 import { isCriterionCompleted } from "./utils";
@@ -21,6 +25,7 @@ import {
   useGetMotivationActorCriteria,
   useUpdateActorCriteriaWithDefaultMetric,
 } from "@/api";
+import { useTranslation } from "react-i18next";
 
 function AssessmentBuilderStructure({
   mtvId,
@@ -28,20 +33,27 @@ function AssessmentBuilderStructure({
   setBuilderState,
   assessment,
   setAssessment,
+  setAssessmentInfo,
   selectedId,
   allCriteria,
   hasUnsavedChanges,
+  isEditing,
 }: {
   mtvId: string;
   actId: string;
   setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
   assessment: AssessmentPrinciple[];
   setAssessment: React.Dispatch<React.SetStateAction<AssessmentPrinciple[]>>;
+  setAssessmentInfo: React.Dispatch<
+    React.SetStateAction<Assessment | undefined>
+  >;
   selectedId?: string;
   allCriteria: Criterion[];
   hasUnsavedChanges?: boolean;
+  isEditing?: boolean;
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
+  const { t } = useTranslation();
   const [collapsedPrinciples, setCollapsedPrinciples] = useState<Set<string>>(
     new Set(),
   );
@@ -108,10 +120,20 @@ function AssessmentBuilderStructure({
           1,
         )[0];
         reorderedAssessment.push(untaggedPrinciple);
-        setAssessment(reorderedAssessment);
+        if (isEditing) {
+          setAssessment(reorderedAssessment);
+        } else {
+          setAssessmentInfo((prev: Assessment | undefined) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              principles: reorderedAssessment,
+            };
+          });
+        }
       }
     }
-  }, [assessment, setAssessment]);
+  }, [assessment, setAssessment, setAssessmentInfo, isEditing]);
 
   // Update selectedPrincipleIndex and selectedCriterionIndex when assessment or selectedId changes
   useEffect(() => {
@@ -263,7 +285,7 @@ function AssessmentBuilderStructure({
     criterionIndex: number,
   ) => {
     // Check if we're switching to a different criterion and have unsaved changes
-    if (hasUnsavedChanges && selectedId !== criterionId) {
+    if (isEditing && hasUnsavedChanges && selectedId !== criterionId) {
       setPendingNavigation({
         entityMode: "criterion",
         formMode: "edit",
@@ -354,47 +376,78 @@ function AssessmentBuilderStructure({
                         <span className={styles["principle-display"]}>
                           {criterion.id} - {criterion.name}
                         </span>
-                        {!isCriterionCompleted(
-                          assessment[principleIndex || 0]?.criteria[
-                            criterionIndex || 0
-                          ]?.id || "",
-                          assessment,
-                        ) && (
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={
-                              <Tooltip id="criterion-tooltip">
-                                This criterion has missing information. Please
-                                select and complete it.
-                              </Tooltip>
-                            }
-                          >
-                            <span
-                              className={`${styles["config-btn-warning"]} ms-2`}
-                            >
-                              <FaExclamationCircle size="18px" />
-                            </span>
-                          </OverlayTrigger>
+                        {!isEditing && criterion.metric.result === 0 && (
+                          <FaTimesCircle className="ms-2 text-danger" />
                         )}
+                        {!isEditing && criterion.metric.result === 1 && (
+                          <FaCheckCircle className="ms-2 text-success" />
+                        )}
+                        {isEditing &&
+                          !isCriterionCompleted(
+                            assessment[principleIndex || 0]?.criteria[
+                              criterionIndex || 0
+                            ]?.id || "",
+                            assessment,
+                          ) && (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="criterion-tooltip">
+                                  This criterion has missing information. Please
+                                  select and complete it.
+                                </Tooltip>
+                              }
+                            >
+                              <span
+                                className={`${styles["config-btn-warning"]} ms-2`}
+                              >
+                                <FaExclamationCircle size="18px" />
+                              </span>
+                            </OverlayTrigger>
+                          )}
                       </span>
                     </div>
-                    <span
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteClick(
-                          principleIndex,
-                          criterionIndex,
-                          criterion.id,
-                          criterion.name,
-                        );
-                      }}
-                      style={{
-                        marginLeft: "auto",
-                        marginRight: "8px",
-                      }}
-                    >
-                      <FaTrash className={`${styles["delete-icon"]}`} />
-                    </span>
+
+                    {isEditing ? (
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(
+                            principleIndex,
+                            criterionIndex,
+                            criterion.id,
+                            criterion.name,
+                          );
+                        }}
+                        style={{
+                          marginLeft: "auto",
+                          marginRight: "8px",
+                        }}
+                      >
+                        <FaTrash className={styles["delete-icon"]} />
+                      </span>
+                    ) : (
+                      <>
+                        {(criterion.imperative ===
+                          AssessmentCriterionImperative.Must ||
+                          criterion.imperative ===
+                            AssessmentCriterionImperative.MUST) && (
+                          <div
+                            style={{
+                              marginLeft: "auto",
+                              marginRight: "16px",
+                            }}
+                          >
+                            <small
+                              style={{ fontSize: "0.7rem" }}
+                              className="ms-2 badge rounded-pill text-bg-light text-secondary border align-middle"
+                            >
+                              {t("required")}
+                            </small>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 );
               })}
@@ -487,35 +540,25 @@ function AssessmentBuilderStructure({
                             <FaExclamationCircle size="18px" />
                           </span>
                         </OverlayTrigger>
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClick(
-                              untaggedPrincipleIndex,
-                              untaggedCriteriaIndex,
-                              criterion.id,
-                              criterion.name,
-                            );
-                          }}
-                          style={{
-                            marginLeft: "auto",
-                            marginRight: "8px",
-                            cursor: "pointer",
-                            color: "#6c757d",
-                            fontSize: "0.8rem",
-                            transition: "all 0.2s ease",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.color = "#dc3545";
-                            e.currentTarget.style.transform = "scale(1.1)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.color = "#6c757d";
-                            e.currentTarget.style.transform = "scale(1)";
-                          }}
-                        >
-                          <FaTrash />
-                        </span>
+                        {isEditing && (
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(
+                                untaggedPrincipleIndex,
+                                untaggedCriteriaIndex,
+                                criterion.id,
+                                criterion.name,
+                              );
+                            }}
+                            style={{
+                              marginLeft: "auto",
+                              marginRight: "8px",
+                            }}
+                          >
+                            <FaTrash className={styles["delete-icon"]} />
+                          </span>
+                        )}
                       </div>
                     );
                   },

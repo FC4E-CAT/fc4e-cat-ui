@@ -312,10 +312,16 @@ function App() {
                   <Route index element={<MotivationAssessmentEditor />} />
                 </Route>
                 <Route
-                  path={ROUTES.ADMIN.MOTIVATIONS.ASSESSMENT_BUILDER}
+                  path={ROUTES.ADMIN.MOTIVATIONS.ASSESSMENT_BUILDER_VIEW}
                   element={<ProtectedRoute />}
                 >
                   <Route index element={<AssessmentBuilder />} />
+                </Route>
+                <Route
+                  path={ROUTES.ADMIN.MOTIVATIONS.ASSESSMENT_BUILDER_EDIT}
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<AssessmentBuilder isEditing />} />
                 </Route>
                 <Route
                   path={ROUTES.ADMIN.PRINCIPLES.ROOT}

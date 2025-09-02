@@ -25,6 +25,7 @@ import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
 import PreviewTests from "./PreviewTests";
 import usePublish from "@/custom-hooks/usePubSub/usePublish";
 import { LoadTestMethod } from "@/custom-hooks/usePubSub/events/assessmentBuilder";
+import { CriterionProgress } from "../assessments/components/CriterionProgress";
 
 interface AssessmentBuilderPreviewProps {
   assessment: AssessmentPrinciple[];
@@ -42,6 +43,12 @@ interface AssessmentBuilderPreviewProps {
   setIsTestSelected: React.Dispatch<React.SetStateAction<boolean>>;
   canEditMetricAndTests: boolean;
   onUnsavedChangesUpdate?: (hasChanges: boolean) => void;
+  isEditing?: boolean;
+  onTestChange: (
+    principleId: string,
+    criterionId: string,
+    newTest: AssessmentTest,
+  ) => void;
 }
 
 function AssessmentBuilderPreview({
@@ -59,6 +66,8 @@ function AssessmentBuilderPreview({
   setIsTestSelected,
   canEditMetricAndTests,
   onUnsavedChangesUpdate,
+  isEditing,
+  onTestChange,
 }: AssessmentBuilderPreviewProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
@@ -246,10 +255,24 @@ function AssessmentBuilderPreview({
   return (
     <div className={styles["column-content"]}>
       {assessment?.length > 0 ? (
-        <div className={styles["builder-preview"]}>
+        <div
+          className={`${styles["builder-preview"]} ${!isEditing && styles["view-mode"]}`}
+        >
           {builderState.selectedCriterionIndex != null &&
           builderState.selectedCriterionIndex > -1 ? (
             <div>
+              {!isEditing && (
+                <div className="d-flex justify-content-end">
+                  <CriterionProgress
+                    metric={
+                      assessment[builderState.selectedPrincipleIndex || 0]
+                        .criteria[builderState.selectedCriterionIndex || 0]
+                        .metric
+                    }
+                  />
+                </div>
+              )}
+
               {/* Criterion Title with Advanced Settings Button */}
               <div className={styles["criterion-header"]}>
                 <div className={styles["criterion-title-section"]}>
@@ -263,7 +286,7 @@ function AssessmentBuilderPreview({
                       assessment[builderState.selectedPrincipleIndex || 0]
                         ?.criteria[builderState.selectedCriterionIndex]?.name
                     }
-                  </span>
+                  </span>{" "}
                   {assessment[builderState.selectedPrincipleIndex || 0]
                     ?.criteria[builderState.selectedCriterionIndex]
                     ?.imperative === AssessmentCriterionImperative.MUST ? (
@@ -276,38 +299,40 @@ function AssessmentBuilderPreview({
                     </span>
                   )}
                 </div>
-                <div className={styles["advanced-settings-container"]}>
-                  {isPrincipleAssigned && canEditMetricAndTests && (
-                    <button
-                      className={styles["advanced-settings-btn"]}
-                      onClick={() => setIsAdvancedSettingsOpen((prev) => !prev)}
-                      disabled={isAdvancedSettingsOpen}
-                    >
-                      <FaSlidersH /> Advanced Settings
-                    </button>
-                  )}
-
-                  {/* Advanced Settings Modal positioned relative to button */}
-                  {isAdvancedSettingsOpen && (
-                    <div className={styles["advanced-settings-modal"]}>
-                      <div
-                        className={styles["modal-backdrop"]}
-                        onClick={() => setIsAdvancedSettingsOpen(false)}
-                      />
-                      <div className={styles["modal-content"]}>
-                        <AssessmentBuilderMetric
-                          assessment={assessment}
-                          builderState={builderState}
-                          mtvId={mtvId}
-                          mtrId={mtrId}
-                          criterionPidGraph={criterionPidGraph}
-                          motivationMetrics={motivationMetrics}
-                          onClose={() => setIsAdvancedSettingsOpen(false)}
+                {isEditing && (
+                  <div className={styles["advanced-settings-container"]}>
+                    {isPrincipleAssigned && canEditMetricAndTests && (
+                      <button
+                        className={styles["advanced-settings-btn"]}
+                        onClick={() =>
+                          setIsAdvancedSettingsOpen((prev) => !prev)
+                        }
+                        disabled={isAdvancedSettingsOpen}
+                      >
+                        <FaSlidersH /> Advanced Settings
+                      </button>
+                    )}
+                    {isAdvancedSettingsOpen && (
+                      <div className={styles["advanced-settings-modal"]}>
+                        <div
+                          className={styles["modal-backdrop"]}
+                          onClick={() => setIsAdvancedSettingsOpen(false)}
                         />
+                        <div className={styles["modal-content"]}>
+                          <AssessmentBuilderMetric
+                            assessment={assessment}
+                            builderState={builderState}
+                            mtvId={mtvId}
+                            mtrId={mtrId}
+                            criterionPidGraph={criterionPidGraph}
+                            motivationMetrics={motivationMetrics}
+                            onClose={() => setIsAdvancedSettingsOpen(false)}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <p className="text-muted lh-sm mt-2 mb-2">
@@ -318,7 +343,7 @@ function AssessmentBuilderPreview({
               </p>
 
               <div
-                className={`${canEditMetricAndTests && styles["config-header"]} my-3 ${
+                className={`${canEditMetricAndTests && isEditing && styles["config-header"]} my-3 ${
                   isPrincipleSelected ? styles["selected"] : ""
                 }`}
                 onClick={() => {
@@ -348,7 +373,8 @@ function AssessmentBuilderPreview({
                   }
                 }}
               >
-                {assessment[builderState.selectedPrincipleIndex || 0]?.name ? (
+                {assessment[builderState.selectedPrincipleIndex || 0]?.name ||
+                !isEditing ? (
                   <>
                     <div className={styles["config-header-title"]}>
                       Part of Principle{" "}
@@ -385,7 +411,7 @@ function AssessmentBuilderPreview({
                         </span>
                       </OverlayTrigger>
                     </div>
-                    {canEditMetricAndTests && (
+                    {isEditing && canEditMetricAndTests && (
                       <div className={styles["config-header-right"]}>
                         <button
                           className={`${styles["config-edit-btn"]} ${isPrincipleSelected ? styles["selected"] : ""}`}
@@ -432,7 +458,7 @@ function AssessmentBuilderPreview({
               </div>
 
               {/* Tests Configuration Section */}
-              {isPrincipleAssigned && canEditMetricAndTests && (
+              {isEditing && isPrincipleAssigned && canEditMetricAndTests && (
                 <div
                   className={`${styles["config-header"]} mt-4
                     ${isTestSelected && styles["selected"]}`}
@@ -511,6 +537,17 @@ function AssessmentBuilderPreview({
               )}
 
               {(() => {
+                const criterionId =
+                  assessment[builderState.selectedPrincipleIndex || 0]
+                    ?.criteria[builderState.selectedCriterionIndex || 0]?.id ||
+                  "";
+
+                const principleId =
+                  assessment[builderState.selectedPrincipleIndex || 0]?.id ||
+                  "";
+
+                // if editing is not true, we want to assign the tests variable using assessmentInfo instead of assessment. So, based on principleId and criterionId, search assessmentInfo.principles array for the right tests array
+
                 const tests =
                   assessment[builderState.selectedPrincipleIndex || 0]
                     ?.criteria[builderState.selectedCriterionIndex]?.metric
@@ -544,11 +581,13 @@ function AssessmentBuilderPreview({
                                 tes: test.id || "",
                                 label: test.name || "",
                                 description: test.description || "",
+                                value: test.value,
+                                result: test.result,
                               }}
                               params={getTestParams(test)}
                               testMethodName={test.type}
                               onTestDelete={
-                                canEditMetricAndTests
+                                isEditing && canEditMetricAndTests
                                   ? () =>
                                       setShowDeleteModal({
                                         testId: test.id,
@@ -557,7 +596,7 @@ function AssessmentBuilderPreview({
                                   : undefined
                               }
                               onTestEdit={
-                                canEditMetricAndTests
+                                isEditing && canEditMetricAndTests
                                   ? () => {
                                       setBuilderState((prevState) => ({
                                         ...prevState,
@@ -575,6 +614,9 @@ function AssessmentBuilderPreview({
                                     }
                                   : undefined
                               }
+                              onTestChange={onTestChange}
+                              criterionId={criterionId}
+                              principleId={principleId}
                             />
                           )}
                         </div>
