@@ -351,7 +351,7 @@ export const useGetAllMotivationMetrics = (
       }
     },
     retry: false,
-    enabled: isRegistered,
+    enabled: isRegistered && mtvId != null && mtvId !== "",
   });
 
 export const useGetMotivationCriteria = (
@@ -376,7 +376,7 @@ export const useGetMotivationCriteria = (
       }
     },
     retry: false,
-    enabled: isRegistered,
+    enabled: isRegistered && mtvId != null && mtvId !== "",
   });
 
 export const useGetMotivationCriteriaMutation = (token: string) => {
@@ -445,7 +445,12 @@ export const useGetMotivationActorCriteria = (
       }
     },
     retry: false,
-    enabled: isRegistered,
+    enabled:
+      isRegistered &&
+      mtvId != null &&
+      mtvId !== "" &&
+      actId != null &&
+      actId !== "",
   });
 
 export const useGetMotivationMetric = ({
@@ -917,6 +922,11 @@ export const useGetMotivationAssessmentTypeTemplate = (
       return failureCount < 2;
     },
     enabled:
-      !!token && isRegistered && mtvId !== undefined && actId !== undefined,
+      !!token &&
+      isRegistered &&
+      mtvId != null &&
+      mtvId !== "" &&
+      actId != null &&
+      actId !== "",
     refetchOnWindowFocus: false,
   });
