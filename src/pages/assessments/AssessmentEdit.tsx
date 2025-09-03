@@ -9,12 +9,9 @@ import {
 import {
   type Assessment,
   type AssessmentSubject,
-  type AssessmentTest,
-  AssessmentCriterionImperative,
   type AlertInfo,
   AssessmentEditMode,
   type ActorOrgAsmtType,
-  type AssessmentCriterion,
   type AutoGroupTest,
 } from "@/types";
 import { useParams } from "react-router";
@@ -27,7 +24,7 @@ import {
   Alert,
   Offcanvas,
 } from "react-bootstrap";
-import { AssessmentInfo, CriteriaTabs } from "@/pages/assessments/components";
+import { AssessmentInfo } from "@/pages/assessments/components";
 import {
   FaCheckCircle,
   FaComment,
@@ -40,18 +37,14 @@ import {
   FaTimesCircle,
   FaUsers,
 } from "react-icons/fa";
-import { evalAssessment, evalMetric } from "@/utils";
-
 import {
   useCreateAssessment,
   useGetAssessment,
   useUpdateAssessment,
 } from "@/api";
 import { Link, useNavigate } from "react-router-dom";
-import { AssessmentEvalStats } from "./components/AssessmentEvalStats";
 import { DebugJSON } from "./components/DebugJSON";
 import { AssessmentSelectActor } from "./components/AssessmentSelectActor";
-
 import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
 import { Comments } from "./components/Comments";
@@ -61,6 +54,7 @@ import { GroupTestModal } from "./components/tests/GroupTestModal";
 import { FaGears } from "react-icons/fa6";
 import ROUTES from "../../routes";
 import { autoSubjectType } from "@/config";
+import AssessmentBuilder from "../assessment-builder/AssessmentBuilder";
 
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
@@ -135,22 +129,8 @@ const AssessmentEdit = ({
   const handleGuideClose = () =>
     setGuide({ id: "", title: "", text: "", show: false });
 
-  const handleGuide = (id: string, title: string, text: string) => {
-    if (id == guide.id) {
-      setGuide({ id: "", title: "", text: "", show: false });
-    } else {
-      setGuide({
-        id: id,
-        text: text,
-        title: title,
-        show: true,
-      });
-    }
-  };
-
   const navigate = useNavigate();
 
-  const [resetCriterionTab, setResetCriterionTab] = useState(false);
   const [importInfo, setImportInfo] = useState<Assessment>();
 
   const qTemplate = useGetMotivationTemplate(
@@ -198,14 +178,12 @@ const AssessmentEdit = ({
       setActiveTab(2 + extraTab);
     } else if (hash === "#assessment") {
       setActiveTab(3 + extraTab);
-      setResetCriterionTab(true);
     }
   }, [extraTab]);
 
   useEffect(() => {
     if (mode === AssessmentEditMode.Edit) {
       setActiveTab(3);
-      setResetCriterionTab(true);
     }
   }, [mode, extraTab]);
 
@@ -233,10 +211,6 @@ const AssessmentEdit = ({
     keycloak?.token || "",
     asmtId,
   );
-
-  function handleResetCriterionTabComplete() {
-    setResetCriterionTab(false);
-  }
 
   // function that checks if the required fields are empty
   function checkRequiredFields(assessment: Assessment): boolean {
@@ -281,12 +255,6 @@ const AssessmentEdit = ({
 
   // handle tab changes in wizard
   function handleChangeTab(tabKey: number) {
-    // if user selects the last step in the wizard (assessment)
-    // triger the reset criterion tab signal so as to select the first
-    // available criterion as the active sub-tab inside assessment
-    if (tabKey == 3) {
-      setResetCriterionTab(true);
-    }
     // set the active tab in the wizard
     setActiveTab(tabKey);
   }
@@ -477,8 +445,6 @@ const AssessmentEdit = ({
   useEffect(() => {
     if (mode !== AssessmentEditMode.Edit && qTemplate.data) {
       const data = qTemplate.data;
-
-      // setAssessment(data);
       setTemplateData(data);
       // if not on create mode load assessment itself
     } else if (mode === AssessmentEditMode.Edit && qAssessment.data) {
@@ -538,98 +504,6 @@ const AssessmentEdit = ({
       reader.readAsText(file);
     }
   };
-
-  function handleCriterionChange(
-    principleID: string,
-    criterionID: string,
-    newTest: AssessmentTest,
-  ) {
-    // update criterion change
-    const mandatory: (number | null)[] = [];
-    const optional: (number | null)[] = [];
-
-    if (assessment) {
-      const newPrinciples = assessment?.principles.map((principle) => {
-        if (principle.id === principleID) {
-          const newCriteria = principle.criteria.map((criterion) => {
-            let resultCriterion: AssessmentCriterion;
-            if (criterion.id === criterionID) {
-              const newTests = criterion.metric.tests.map((test) => {
-                if (test.id === newTest.id) {
-                  return newTest;
-                }
-                return test;
-              });
-              let newMetric = { ...criterion.metric, tests: newTests };
-              const { result, value } = evalMetric(newMetric);
-              newMetric = { ...newMetric, result: result, value: value };
-              // create a new criterion object with updates due to changes
-              resultCriterion = { ...criterion, metric: newMetric };
-            } else {
-              // use the old object with no changes
-              resultCriterion = criterion;
-            }
-
-            return resultCriterion;
-          });
-
-          return { ...principle, criteria: newCriteria };
-        }
-        return principle;
-      });
-
-      let compliance: boolean | null;
-
-      const newAssessment = {
-        ...assessment,
-        principles: newPrinciples,
-      };
-      // update criteria result reference tables
-
-      newAssessment.principles.forEach((principle) => {
-        principle.criteria.forEach((criterion) => {
-          if (
-            criterion.imperative === AssessmentCriterionImperative.Must ||
-            criterion.imperative === AssessmentCriterionImperative.MUST
-          ) {
-            mandatory.push(criterion.metric.result);
-          } else {
-            optional.push(criterion.metric.result);
-          }
-        });
-      });
-
-      if (mandatory.some((result) => result === null)) {
-        compliance = null;
-      } else {
-        compliance = mandatory.every((result) => result === 1);
-      }
-
-      // get how many optional items have passed
-      const optionalPass: number = optional.reduce(
-        (sum: number, current: number | null) => {
-          if (current && current > 0) {
-            return sum + 1;
-          }
-          return sum;
-        },
-        0,
-      );
-
-      // if there any optional items available, ranking is equal to the percentage of optional passed / total optional
-      // else ranking is 0
-      const ranking =
-        optional.length > 0 ? (optionalPass / optional.length) * 100 : 0;
-
-      setAssessment({
-        ...newAssessment,
-        result: { compliance: compliance, ranking: ranking },
-      });
-    }
-  }
-
-  // evaluate the assessment
-  const evalResult = evalAssessment(assessment);
 
   let importDone = true;
   if (mode === AssessmentEditMode.Import) {
@@ -763,7 +637,7 @@ const AssessmentEdit = ({
         }}
       >
         <Card className="mb-3 mt-3">
-          <Card.Header>
+          <Card.Header className="d-flex justify-content-between align-items-center">
             <Nav variant="pills">
               {mode === AssessmentEditMode.Import && (
                 <Nav.Item className="bg-light border rounded me-2">
@@ -827,7 +701,7 @@ const AssessmentEdit = ({
               )}
             </Nav>
           </Card.Header>
-          <Card.Body>
+          <Card.Body className="p-1">
             <Tab.Content className="p-2">
               {mode === AssessmentEditMode.Import && (
                 <Tab.Pane className="text-black" eventKey={"step-1"}>
@@ -1058,16 +932,6 @@ const AssessmentEdit = ({
                 className="text-black"
                 eventKey={`step-${3 + extraTab}`}
               >
-                {evalResult && assessment?.result && (
-                  <AssessmentEvalStats
-                    evalResult={evalResult}
-                    assessmentResult={assessment.result}
-                  />
-                )}
-                <div
-                  className="row bg-secondary"
-                  style={{ height: "1px" }}
-                ></div>
                 {hasAutoGroups && (
                   <div className="row cat-alert-warning-colors p-2">
                     <div>
@@ -1096,15 +960,18 @@ const AssessmentEdit = ({
                     </div>
                   </div>
                 )}
-                <CriteriaTabs
+                <AssessmentBuilder
+                  assessmentTemplate={assessment}
+                  setAssessmentTemplate={setAssessment}
                   onAutoTestGroup={handleAutoTestGroup}
-                  autogroups={assessment?.automated_group_test}
-                  principles={assessment?.principles || []}
-                  resetActiveTab={resetCriterionTab}
-                  onTestChange={handleCriterionChange}
-                  onResetActiveTab={handleResetCriterionTabComplete}
-                  handleGuide={handleGuide}
-                  handleGuideClose={handleGuideClose}
+                  onAssessmentCreate={
+                    mode !== AssessmentEditMode.Edit
+                      ? handleCreateAssessment
+                      : undefined
+                  }
+                  onSaveAssessmentChanges={() => handleUpdateAssessment(false)}
+                  onAssessmentSubmit={() => handleUpdateAssessment(true)}
+                  wizardTabActive={wizardTabActive}
                 />
               </Tab.Pane>
             </Tab.Content>
@@ -1135,9 +1002,8 @@ const AssessmentEdit = ({
                 {`${t("buttons.next")} →`}
               </Button>
             </div>
-            {/* Add SAVE button here and cancel */}
             <div>
-              {mode !== AssessmentEditMode.Edit ? (
+              {mode !== AssessmentEditMode.Edit && (
                 <Button
                   id="create_assessment_button"
                   disabled={!wizardTabActive}
@@ -1148,36 +1014,6 @@ const AssessmentEdit = ({
                 >
                   {t("buttons.create")}
                 </Button>
-              ) : (
-                <>
-                  <Button
-                    id="save_assessment_button"
-                    disabled={!wizardTabActive}
-                    className="ms-2 btn btn-success px-3"
-                    onClick={() => {
-                      handleUpdateAssessment(false);
-                    }}
-                  >
-                    {t("buttons.save_progress")}
-                  </Button>
-
-                  <Button
-                    id="submit_assessment_button"
-                    disabled={
-                      !(
-                        assessment &&
-                        assessment.result &&
-                        assessment.result.compliance !== null
-                      )
-                    }
-                    className="ms-2 btn btn-success px-3"
-                    onClick={() => {
-                      handleUpdateAssessment(true);
-                    }}
-                  >
-                    {t("buttons.submit")}
-                  </Button>
-                </>
               )}
               <Link
                 className="btn btn-secondary ms-5 px-4"

@@ -33,6 +33,7 @@
 .header-actions {
   display: flex;
   gap: 0.75rem;
+  align-items: center;
 }
 
 .builder-layout {
@@ -229,37 +230,6 @@
 .form-actions-tests .btn-secondary {
   height: 36px;
   padding: 0.4rem 0.5rem;
-}
-
-.header-actions .btn-secondary,
-.header-actions .btn-primary {
-  padding: 0.5rem 1rem;
-  font-weight: 500;
-  border-radius: 0.375rem;
-  transition: all 0.2s;
-}
-
-.header-actions .btn-secondary {
-  color: #374151;
-  background: #f8f9fa;
-  border: 1px solid #d1d5db;
-}
-
-.header-actions .btn-secondary:hover {
-  background: #e5e7eb;
-  border-color: #9ca3af;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
-}
-
-.header-actions .btn-primary {
-  color: white;
-  background: #3b82f6;
-  border: none;
-}
-
-.header-actions .btn-primary:hover {
-  background: #2563eb;
-  box-shadow: 0 4px 8px rgb(59 130 246 / 30%);
 }
 
 .btn-outline-primary {
@@ -512,17 +482,6 @@
   margin: 0;
   font-size: 0.875rem;
   color: #dc3545;
-}
-
-.header-actions .btn-primary:disabled {
-  cursor: not-allowed;
-  background: #9ca3af;
-  box-shadow: none;
-}
-
-.header-actions .btn-primary:disabled:hover {
-  background: #9ca3af;
-  box-shadow: none;
 }
 
 .column-content .builder-preview {

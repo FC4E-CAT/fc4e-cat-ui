@@ -12,7 +12,7 @@ export interface TemplateResponse {
 export interface AssessmentType {
   id: string;
   name: string;
-  description: string;
+  description?: string;
 }
 
 /** Actor type part of TemplateResponse from API */
@@ -445,6 +445,7 @@ export interface AssessmentDetailsResponse {
   id: number;
   shared_to_user: boolean;
   assessment_doc: Assessment;
+  assessment_doc_version?: string;
 }
 
 export interface ObjectListItem {

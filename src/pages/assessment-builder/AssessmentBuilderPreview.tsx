@@ -8,6 +8,7 @@ import {
   type MetricFull,
   type AlertInfo,
   type AssessmentTest,
+  type AutoGroupTest,
 } from "@/types";
 import { FaExclamationCircle, FaInfoCircle, FaSlidersH } from "react-icons/fa";
 import TestPreviewModal from "../tests/components/TestPreviewModal";
@@ -49,6 +50,8 @@ interface AssessmentBuilderPreviewProps {
     criterionId: string,
     newTest: AssessmentTest,
   ) => void;
+  autogroups?: AutoGroupTest[];
+  onAutoTestGroup?: (autoGroup: AutoGroupTest) => void;
 }
 
 function AssessmentBuilderPreview({
@@ -68,6 +71,8 @@ function AssessmentBuilderPreview({
   onUnsavedChangesUpdate,
   isEditing,
   onTestChange,
+  autogroups,
+  onAutoTestGroup,
 }: AssessmentBuilderPreviewProps) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
@@ -617,6 +622,8 @@ function AssessmentBuilderPreview({
                               onTestChange={onTestChange}
                               criterionId={criterionId}
                               principleId={principleId}
+                              autogroups={autogroups}
+                              onAutoTestGroup={onAutoTestGroup}
                             />
                           )}
                         </div>

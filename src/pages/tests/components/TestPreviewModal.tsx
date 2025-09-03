@@ -3,6 +3,7 @@ import { TestBinaryParamForm } from "@/pages/assessments/components/tests/TestBi
 import { FaEdit, FaTrash } from "react-icons/fa";
 import type {
   AssessmentTest,
+  AutoGroupTest,
   TestAutoG069,
   TestAutoHttpsCheck,
   TestAutoMD1,
@@ -35,6 +36,8 @@ interface TestPreviewProps {
   ) => void;
   criterionId?: string;
   principleId?: string;
+  autogroups?: AutoGroupTest[];
+  onAutoTestGroup?: (autoGroup: AutoGroupTest) => void;
 }
 
 const TestPreviewModal = ({
@@ -46,6 +49,8 @@ const TestPreviewModal = ({
   onTestChange,
   criterionId,
   principleId,
+  autogroups,
+  onAutoTestGroup,
 }: TestPreviewProps) => {
   const testParams: React.JSX.Element[] = [];
 
@@ -217,7 +222,10 @@ const TestPreviewModal = ({
       <TestAutoValidationForm
         key={`auto-validation-${test.tes}`}
         test={adaptedTest}
-        onAutoGroupTestCall={() => {}}
+        autogroup={autogroups?.find(
+          (item) => item.test_method === testMethodName,
+        )}
+        onAutoGroupTestCall={onAutoTestGroup || (() => {})}
       />,
     );
   } else if (testMethodName === "Auto-Check-AARC-G069-User-Info") {

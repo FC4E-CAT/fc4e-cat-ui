@@ -1,15 +1,25 @@
 import { useTranslation } from "react-i18next";
-import type { AssessmentResult, ResultStats } from "@/types";
+import type { Assessment, AssessmentResult, ResultStats } from "@/types";
 import { prettyPrintRanking } from "@/utils";
 import styles from "./AssessmentBuilder.module.css";
-import { ProgressBar } from "react-bootstrap";
+import { Button, ProgressBar } from "react-bootstrap";
 
 function AssessmentEvalStats({
   evalResult,
   assessmentResult,
+  onAssessmentCreate,
+  onSaveAssessmentChanges,
+  onAssessmentSubmit,
+  wizardTabActive,
+  currentAssessmentInfo,
 }: {
   evalResult: ResultStats;
   assessmentResult: AssessmentResult;
+  onAssessmentCreate?: () => void;
+  onSaveAssessmentChanges?: () => void;
+  onAssessmentSubmit?: () => void;
+  wizardTabActive?: boolean;
+  currentAssessmentInfo?: Assessment | null;
 }) {
   const { t } = useTranslation();
 
@@ -119,6 +129,45 @@ function AssessmentEvalStats({
           </ProgressBar>
         </div>
       )}
+      <div className="d-flex align-items-center ms-auto">
+        {onAssessmentCreate && (
+          <Button
+            id="create_assessment_button"
+            disabled={!wizardTabActive}
+            className="ms-5 btn btn-primary px-5"
+            onClick={onAssessmentCreate}
+          >
+            {t("buttons.create")}
+          </Button>
+        )}
+        {onSaveAssessmentChanges && (
+          <Button
+            id="save_assessment_button"
+            disabled={!wizardTabActive}
+            className="ms-2 px-3"
+            variant="outline-primary"
+            onClick={onSaveAssessmentChanges}
+          >
+            {t("buttons.save_progress")}
+          </Button>
+        )}
+        {onAssessmentSubmit && (
+          <Button
+            id="submit_assessment_button"
+            disabled={
+              !(
+                currentAssessmentInfo &&
+                currentAssessmentInfo.result &&
+                currentAssessmentInfo.result.compliance !== null
+              )
+            }
+            className="ms-2 btn btn-primary px-3"
+            onClick={onAssessmentSubmit}
+          >
+            {t("buttons.submit")}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

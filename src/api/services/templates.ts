@@ -35,7 +35,13 @@ export const useGetMotivationTemplate = (
       );
       return response.data;
     },
-    enabled: !!token && isRegistered && mtvId !== "" && actId !== "",
+    enabled:
+      !!token &&
+      isRegistered &&
+      mtvId != null &&
+      mtvId !== "" &&
+      actId != null &&
+      actId !== "",
     refetchOnWindowFocus: false,
   });
 
@@ -54,6 +60,11 @@ export const useGetMotivationAssessmentType = (
       return response.data;
     },
     enabled:
-      !!token && isRegistered && mtvId !== undefined && actId !== undefined,
+      !!token &&
+      isRegistered &&
+      mtvId != null &&
+      mtvId !== "" &&
+      actId != null &&
+      actId !== "",
     refetchOnWindowFocus: false,
   });

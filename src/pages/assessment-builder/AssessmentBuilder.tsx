@@ -1,15 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState, useContext, useEffect, useRef, useCallback } from "react";
-import toast from "react-hot-toast";
+import { useState, useContext, useEffect, useCallback } from "react";
 import { Button, Container, Spinner } from "react-bootstrap";
+import { FaEye } from "react-icons/fa";
 import { AuthContext } from "@/auth";
 import { useGetAllPrinciples, useGetMotivationAssessmentType } from "@/api";
 import { useGetMotivationAssessmentTypeTemplate } from "@/api/services/motivations";
 import {
-  usePublishMotivationActor,
-  useUnpublishMotivationActor,
-  useGetMotivation,
   useGetMotivationCriteriaMutation,
   useGetAllMotivationMetrics,
 } from "@/api/services/motivations";
@@ -17,7 +14,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   type Principle,
   type AssessmentBuilderState,
-  type AlertInfo,
   type RegistryMetric,
   type Criterion,
   type AssessmentTest,
@@ -25,6 +21,7 @@ import {
   type Assessment,
   type AssessmentPrinciple,
   AssessmentCriterionImperative,
+  type AutoGroupTest,
 } from "@/types";
 import { useGetAllCriteria } from "../../api/services/criteria";
 import { useGetAllTests } from "@/api/services/registry";
@@ -40,7 +37,29 @@ import { canEditMetricAndTests } from "./utils";
 import styles from "./AssessmentBuilder.module.css";
 import AssessmentEvalStats from "./AssessmentEvalStats";
 
-function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
+interface AssessmentBuilderProps {
+  assessmentTemplate?: Assessment;
+  setAssessmentTemplate?: React.Dispatch<
+    React.SetStateAction<Assessment | undefined>
+  >;
+  isEditing?: boolean;
+  onAutoTestGroup?: (autoGroup: AutoGroupTest) => void;
+  onAssessmentCreate?: () => void;
+  onSaveAssessmentChanges?: (exit?: boolean) => void;
+  onAssessmentSubmit?: (exit?: boolean) => void;
+  wizardTabActive?: boolean;
+}
+
+function AssessmentBuilder({
+  assessmentTemplate,
+  setAssessmentTemplate,
+  isEditing,
+  onAutoTestGroup,
+  onAssessmentCreate,
+  onSaveAssessmentChanges,
+  onAssessmentSubmit,
+  wizardTabActive,
+}: AssessmentBuilderProps) {
   const { mtvId, actId } = useParams<{
     mtvId: string;
     actId: string;
@@ -50,9 +69,6 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const alert = useRef<AlertInfo>({
-    message: "",
-  });
   const { t } = useTranslation();
 
   const [builderState, setBuilderState] = useState<AssessmentBuilderState>({
@@ -74,14 +90,14 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
     mtvId || "",
     actId || "",
     keycloak?.token || "",
-    registered,
+    registered && !assessmentTemplate,
   );
 
   const { data: assessmentTemplateData } = useGetMotivationAssessmentType(
     mtvId || "",
     actId || "",
     keycloak?.token || "",
-    registered,
+    registered && !assessmentTemplate,
   );
 
   const [assessment, setAssessment] = useState<AssessmentPrinciple[]>(
@@ -91,6 +107,10 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
   const [motivationMetrics, setMotivationMetrics] = useState<RegistryMetric[]>(
     [],
   );
+
+  // Use props if available, otherwise use local state
+  const currentAssessmentInfo = assessmentTemplate || assessmentInfo;
+  const setCurrentAssessmentInfo = setAssessmentTemplate || setAssessmentInfo;
 
   const [allTests, setAllTests] = useState<RegistryTest[]>([]);
   const [allPrinciples, setAllPrinciples] = useState<Principle[]>([]);
@@ -183,9 +203,11 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
 
   useEffect(() => {
     if (assessmentTemplateData) {
-      setAssessmentInfo(assessmentTemplateData);
+      setCurrentAssessmentInfo(assessmentTemplateData);
     }
-  }, [assessmentTemplateData]);
+  }, [assessmentTemplateData, setCurrentAssessmentInfo]);
+
+  console.log("builderState:", builderState);
 
   useEffect(() => {
     if (
@@ -208,144 +230,101 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
               assessmentData?.principles?.[0]?.criteria?.length > 0 ? 0 : -1,
           });
         }
-      } else {
-        if (
-          assessmentTemplateData &&
-          assessmentTemplateData?.principles?.[0]?.criteria?.length > 0
-        ) {
-          setBuilderState({
-            formMode: "edit",
-            entityMode: "criterion",
-            selectedId:
-              assessmentTemplateData?.principles?.[0]?.criteria?.length > 0
-                ? assessmentTemplateData?.principles?.[0]?.criteria?.[0]?.id
-                : "",
-            selectedPrincipleIndex:
-              assessmentTemplateData?.principles?.length > 0 ? 0 : -1,
-            selectedCriterionIndex:
-              assessmentTemplateData?.principles?.[0]?.criteria?.length > 0
-                ? 0
-                : -1,
-          });
-        }
+      } else if (
+        assessmentTemplateData &&
+        assessmentTemplateData?.principles?.[0]?.criteria?.length > 0
+      ) {
+        setBuilderState({
+          formMode: "edit",
+          entityMode: "criterion",
+          selectedId:
+            assessmentTemplateData?.principles?.[0]?.criteria?.length > 0
+              ? assessmentTemplateData?.principles?.[0]?.criteria?.[0]?.id
+              : "",
+          selectedPrincipleIndex:
+            assessmentTemplateData?.principles?.length > 0 ? 0 : -1,
+          selectedCriterionIndex:
+            assessmentTemplateData?.principles?.[0]?.criteria?.length > 0
+              ? 0
+              : -1,
+        });
       }
+    } else if (
+      assessmentTemplate &&
+      assessmentTemplate?.principles?.[0]?.criteria?.length > 0 &&
+      builderState.formMode === "none" &&
+      builderState.entityMode === "none"
+    ) {
+      console.log("assessmentTemplate:", assessmentTemplate);
+      setBuilderState({
+        formMode: "edit",
+        entityMode: "criterion",
+        selectedId:
+          assessmentTemplate?.principles?.[0]?.criteria?.length > 0
+            ? assessmentTemplate?.principles?.[0]?.criteria?.[0]?.id
+            : "",
+        selectedPrincipleIndex:
+          assessmentTemplate?.principles?.length > 0 ? 0 : -1,
+        selectedCriterionIndex:
+          assessmentTemplate?.principles?.[0]?.criteria?.length > 0 ? 0 : -1,
+      });
     }
   }, [
     assessmentData,
     assessmentTemplateData,
+    assessmentTemplate,
     builderState.formMode,
     builderState.entityMode,
     isEditing,
   ]);
 
-  const { data: motivationData } = useGetMotivation({
-    id: mtvId || "",
-    token: keycloak?.token || "",
-    isRegistered: registered,
-  });
-
-  const isPublished =
-    motivationData?.actors?.find((actor) => actor.id === actId)?.published ||
-    false;
-
-  const mutationPublish = usePublishMotivationActor(keycloak?.token || "");
-  const mutationUnpublish = useUnpublishMotivationActor(keycloak?.token || "");
-
-  const handlePublish = () => {
-    if (!mtvId || !actId) return;
-
-    const promise = mutationPublish
-      .mutateAsync({ mtvId, actId })
-      .catch((err) => {
-        alert.current = {
-          message: t("page_motivations.toast_asmt_publish_fail"),
-        };
-        throw err;
-      })
-      .then(() => {
-        alert.current = {
-          message: t("page_motivations.toast_asmt_publish_success"),
-        };
-        refetchAssessmentData();
-      });
-
-    toast.promise(promise, {
-      loading: t("page_motivations.toast_asmt_publish_progress"),
-      success: () => `${alert.current.message}`,
-      error: () => `${alert.current.message}`,
-    });
-  };
-
-  const handleUnpublish = () => {
-    if (!mtvId || !actId) return;
-
-    const promise = mutationUnpublish
-      .mutateAsync({ mtvId, actId })
-      .catch((err) => {
-        alert.current = {
-          message: t("page_motivations.toast_asmt_unpublish_fail"),
-        };
-        throw err;
-      })
-      .then(() => {
-        alert.current = {
-          message: t("page_motivations.toast_asmt_unpublish_success"),
-        };
-        refetchAssessmentData();
-      });
-
-    toast.promise(promise, {
-      loading: t("page_motivations.toast_asmt_unpublish_progress"),
-      success: () => `${alert.current.message}`,
-      error: () => `${alert.current.message}`,
-    });
-  };
-
-  function handleTestChange(
+  const handleTestChange = (
     principleID: string,
     criterionID: string,
     newTest: AssessmentTest,
-  ) {
+  ) => {
     // update criterion change
     const mandatory: (number | null)[] = [];
     const optional: (number | null)[] = [];
 
-    console.log("assessmentInfo", assessmentInfo);
+    console.log("currentAssessmentInfo", currentAssessmentInfo);
 
-    if (assessmentInfo) {
-      const newPrinciples = assessmentInfo?.principles.map((principle) => {
-        if (principle.id === principleID) {
-          const newCriteria = principle.criteria.map((criterion) => {
-            let resultCriterion: AssessmentCriterion;
-            if (criterion.id === criterionID) {
-              const newTests = criterion.metric.tests.map((test) => {
-                if (test.id === newTest.id) {
-                  return newTest;
-                }
-                return test;
-              });
-              let newMetric = { ...criterion.metric, tests: newTests };
-              const { result, value } = evalMetric(newMetric);
-              newMetric = { ...newMetric, result: result, value: value };
-              // create a new criterion object with updates due to changes
-              resultCriterion = { ...criterion, metric: newMetric };
-            } else {
-              // use the old object with no changes
-              resultCriterion = criterion;
-            }
+    if (currentAssessmentInfo) {
+      const newPrinciples = currentAssessmentInfo?.principles.map(
+        (principle) => {
+          if (principle.id === principleID) {
+            const newCriteria = principle.criteria.map((criterion) => {
+              let resultCriterion: AssessmentCriterion;
+              if (criterion.id === criterionID) {
+                const newTests = criterion.metric.tests.map((test) => {
+                  if (test.id === newTest.id) {
+                    return newTest;
+                  }
+                  return test;
+                });
+                let newMetric = { ...criterion.metric, tests: newTests };
+                const { result, value } = evalMetric(newMetric);
+                newMetric = { ...newMetric, result: result, value: value };
+                // create a new criterion object with updates due to changes
+                resultCriterion = { ...criterion, metric: newMetric };
+              } else {
+                // use the old object with no changes
+                resultCriterion = criterion;
+              }
 
-            return resultCriterion;
-          });
+              return resultCriterion;
+            });
 
-          return { ...principle, criteria: newCriteria };
-        }
-        return principle;
-      });
+            return { ...principle, criteria: newCriteria };
+          }
+          return principle;
+        },
+      );
 
       let compliance: boolean | null;
 
       const newAssessment = {
-        ...assessmentInfo,
+        ...currentAssessmentInfo,
         principles: newPrinciples,
       };
       // update criteria result reference tables
@@ -369,17 +348,28 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
         compliance = mandatory.every((result) => result === 1);
       }
 
-      const ranking: number | null = optional.reduce((sum, result) => {
-        if (sum === null || result === null) return null;
-        return sum + result;
-      }, 0);
+      // get how many optional items have passed
+      const optionalPass: number = optional.reduce(
+        (sum: number, current: number | null) => {
+          if (current && current > 0) {
+            return sum + 1;
+          }
+          return sum;
+        },
+        0,
+      );
 
-      setAssessmentInfo({
+      // if there any optional items available, ranking is equal to the percentage of optional passed / total optional
+      // else ranking is 0
+      const ranking =
+        optional.length > 0 ? (optionalPass / optional.length) * 100 : 0;
+
+      setCurrentAssessmentInfo({
         ...newAssessment,
         result: { compliance: compliance, ranking: ranking },
       });
     }
-  }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 70);
@@ -517,30 +507,32 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
     );
   }
 
-  const evalResult = evalAssessment(assessmentInfo);
+  const evalResult = evalAssessment(currentAssessmentInfo);
 
   return (
     <>
       <div className={`${styles["assessment-builder"]} mb-3`}>
         <div className={styles["assessment-builder-header"]}>
           <div className={styles["header-content"]}>
-            <div className="d-flex flex-column">
-              <h1 className={styles["builder-title"]}>
-                {isEditing ? "Assessment Builder" : "Assessment Preview"}
-              </h1>
-              {assessmentData && (
-                <p className="lead m-0">
-                  {t("page_preview.motivation")}:{" "}
-                  <strong>{assessmentData?.assessment_type.name}</strong>{" "}
-                  {t("page_preview.actor")}:{" "}
-                  <strong>{assessmentData?.actor.name}</strong>
-                </p>
-              )}
-            </div>
+            {!assessmentTemplate && (
+              <div className="d-flex flex-column">
+                <h1 className={styles["builder-title"]}>
+                  {isEditing ? "Assessment Builder" : "Assessment Preview"}
+                </h1>
+                {assessmentData && (
+                  <p className="lead m-0">
+                    {t("page_preview.motivation")}:{" "}
+                    <strong>{assessmentData?.assessment_type.name}</strong>{" "}
+                    {t("page_preview.actor")}:{" "}
+                    <strong>{assessmentData?.actor.name}</strong>
+                  </p>
+                )}
+              </div>
+            )}
             {isEditing && (
               <div className={styles["header-actions"]}>
                 <button
-                  className={styles["btn-secondary"]}
+                  className={styles["add-principle-btn"]}
                   onClick={() =>
                     window.open(
                       buildRoute(
@@ -554,33 +546,24 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
                     )
                   }
                 >
+                  <FaEye className="mt-1" />
                   Preview
                 </button>
-                {isPublished ? (
-                  <button
-                    className={styles["btn-outline-primary"]}
-                    onClick={handleUnpublish}
-                  >
-                    Unpublish
-                  </button>
-                ) : (
-                  <button
-                    className={styles["btn-primary"]}
-                    onClick={handlePublish}
-                  >
-                    Publish
-                  </button>
-                )}
               </div>
             )}
           </div>
         </div>
 
         {/* Assessment Status Header */}
-        {!isEditing && evalResult && assessmentInfo?.result && (
+        {!isEditing && evalResult && currentAssessmentInfo?.result && (
           <AssessmentEvalStats
             evalResult={evalResult}
-            assessmentResult={assessmentInfo.result}
+            assessmentResult={currentAssessmentInfo.result}
+            onAssessmentCreate={onAssessmentCreate}
+            onSaveAssessmentChanges={onSaveAssessmentChanges}
+            onAssessmentSubmit={onAssessmentSubmit}
+            wizardTabActive={wizardTabActive}
+            currentAssessmentInfo={currentAssessmentInfo}
           />
         )}
 
@@ -606,10 +589,12 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
                 mtvId={mtvId || ""}
                 actId={actId || ""}
                 assessment={
-                  isEditing ? assessment : assessmentInfo?.principles || []
+                  isEditing
+                    ? assessment
+                    : currentAssessmentInfo?.principles || []
                 }
                 setAssessment={setAssessment}
-                setAssessmentInfo={setAssessmentInfo}
+                setAssessmentInfo={setCurrentAssessmentInfo}
                 setBuilderState={setBuilderState}
                 selectedId={builderState.selectedId || ""}
                 allCriteria={allCriteria}
@@ -644,7 +629,7 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
                 )?.id
               }
               assessment={
-                isEditing ? assessment : assessmentInfo?.principles || []
+                isEditing ? assessment : currentAssessmentInfo?.principles || []
               }
               setAssessment={setAssessment}
               builderState={builderState}
@@ -667,6 +652,8 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
               onUnsavedChangesUpdate={handleUnsavedChangesUpdate}
               isEditing={isEditing}
               onTestChange={handleTestChange}
+              onAutoTestGroup={onAutoTestGroup}
+              autogroups={currentAssessmentInfo?.automated_group_test || []}
             />
           </div>
 
@@ -807,15 +794,19 @@ function AssessmentBuilder({ isEditing }: { isEditing?: boolean }) {
           )}
         </div>
       </div>
-      <Button
-        className="mt-4 ms-1"
-        variant="secondary"
-        onClick={() => {
-          navigate(`/admin/motivations/${mtvId || ""}`);
-        }}
-      >
-        {t("buttons.back")}
-      </Button>
+      {!assessmentTemplate && (
+        <Button
+          className="mt-4 ms-1"
+          variant="secondary"
+          onClick={() =>
+            isEditing
+              ? navigate(`/admin/motivations/${mtvId || ""}`)
+              : navigate(-1)
+          }
+        >
+          {t("buttons.back")}
+        </Button>
+      )}
     </>
   );
 }
