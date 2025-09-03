@@ -67,15 +67,14 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
 
   const asmtNumID = asmtId !== undefined ? asmtId : "";
 
-  const qAssessment = useGetAssessment({
+  const { data: assessmentData } = useGetAssessment({
     id: asmtNumID,
     token: keycloak?.token || "",
     isRegistered: registered,
     isPublic: isPublic,
   });
 
-  const assessment = qAssessment.data?.assessment_doc;
-
+  const assessment = assessmentData?.assessment_doc;
   const stats = gatherStats(assessment);
 
   return (
@@ -383,12 +382,12 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                       <span className="text-primary p-2">
                                         {params.map((item, indx) => {
                                           return indx === params.length - 1 ? (
-                                            <span className="me-4">
+                                            <span key={indx} className="me-4">
                                               <strong>{item}:</strong>
                                               {test.value || t("na")}
                                             </span>
                                           ) : (
-                                            <span className="me-4">
+                                            <span key={indx} className="me-4">
                                               <strong>{item}:</strong> {t("na")}
                                             </span>
                                           );
