@@ -1,3 +1,4 @@
+import type { EvidenceURL } from "./assessment";
 import type { ResponsePage } from "./common";
 import type { MotivationReference } from "./motivation";
 
@@ -70,6 +71,7 @@ export interface TestFull {
   tool_tip?: string;
   value?: boolean | string | number | null;
   result?: number | string | null;
+  evidence_url?: EvidenceURL[];
 }
 
 export const TestValueEventType = {

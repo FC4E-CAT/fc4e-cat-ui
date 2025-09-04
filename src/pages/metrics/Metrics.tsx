@@ -295,8 +295,6 @@ export default function Metrics() {
                               style={{ cursor: "pointer", width: "1rem" }}
                               onClick={() => {
                                 setExpandedTests((prev) => {
-                                  console.log("item222", item);
-
                                   return {
                                     ...prev,
                                     [item.metric_id]: !prev[item.metric_id],

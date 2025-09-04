@@ -208,8 +208,6 @@ function AssessmentBuilderMetric({
     }
   };
 
-  console.log("benchmarkValue:", metricConfig.value_benchmark);
-
   const haveAdvancedSettingsChanged = useMemo(() => {
     return (
       initialAdvancedSettigns.type_algorithm_id !==

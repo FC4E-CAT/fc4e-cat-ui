@@ -588,6 +588,7 @@ function AssessmentBuilderPreview({
                                 description: test.description || "",
                                 value: test.value,
                                 result: test.result,
+                                evidence_url: test.evidence_url,
                               }}
                               params={getTestParams(test)}
                               testMethodName={test.type}
@@ -645,12 +646,14 @@ function AssessmentBuilderPreview({
           )}
         </div>
       ) : (
-        <div className="mt-4">
-          <p className="text-muted text-center">
-            Please select a criterion from the structure list or add a new
-            criterion to see its details here
-          </p>
-        </div>
+        isEditing && (
+          <div className="mt-4">
+            <p className="text-muted text-center">
+              Please select a criterion from the structure list or add a new
+              criterion to see its details here
+            </p>
+          </div>
+        )
       )}
       <AssessmentBuilderDeleteModal
         isOpen={Boolean(showDeleteModal?.testId)}
