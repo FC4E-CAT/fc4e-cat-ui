@@ -577,6 +577,18 @@ export function useDeleteMotivationMetric(token: string) {
   });
 }
 
+export function useDeleteMotivation(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (mtvId: string) => {
+      return APIClient(token).delete(`/v1/registry/motivations/${mtvId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["motivations"] });
+    },
+  });
+}
+
 export function useDeleteMotivationActor(token: string) {
   const queryClient = useQueryClient();
   return useMutation({
