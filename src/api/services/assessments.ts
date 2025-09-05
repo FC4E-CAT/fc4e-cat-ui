@@ -379,7 +379,6 @@ export function useAssessmentPublish(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
-      console.log("published:", id);
       return APIClient(token).put(
         `${admin ? "/v1/admin" : "/v2"}/assessments/${id}/publish`,
       );

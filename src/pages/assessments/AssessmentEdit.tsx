@@ -964,11 +964,6 @@ const AssessmentEdit = ({
                   assessmentTemplate={assessment}
                   setAssessmentTemplate={setAssessment}
                   onAutoTestGroup={handleAutoTestGroup}
-                  onAssessmentCreate={
-                    mode !== AssessmentEditMode.Edit
-                      ? handleCreateAssessment
-                      : undefined
-                  }
                   onSaveAssessmentChanges={() => handleUpdateAssessment(false)}
                   onAssessmentSubmit={() => handleUpdateAssessment(true)}
                   wizardTabActive={wizardTabActive}

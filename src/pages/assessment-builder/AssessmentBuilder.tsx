@@ -44,10 +44,10 @@ interface AssessmentBuilderProps {
   >;
   isEditing?: boolean;
   onAutoTestGroup?: (autoGroup: AutoGroupTest) => void;
-  onAssessmentCreate?: () => void;
   onSaveAssessmentChanges?: (exit?: boolean) => void;
   onAssessmentSubmit?: (exit?: boolean) => void;
   wizardTabActive?: boolean;
+  showTitle?: boolean;
 }
 
 function AssessmentBuilder({
@@ -55,10 +55,10 @@ function AssessmentBuilder({
   setAssessmentTemplate,
   isEditing,
   onAutoTestGroup,
-  onAssessmentCreate,
   onSaveAssessmentChanges,
   onAssessmentSubmit,
   wizardTabActive,
+  showTitle = true,
 }: AssessmentBuilderProps) {
   const { mtvId, actId } = useParams<{
     mtvId: string;
@@ -124,7 +124,7 @@ function AssessmentBuilder({
   } = useGetAllTests({
     size: 20,
     token: keycloak?.token || "",
-    isRegistered: registered,
+    isRegistered: registered && isEditing === true,
   });
 
   const {
@@ -135,7 +135,7 @@ function AssessmentBuilder({
     isFetchingNextPage: principlesAreFetchingNextPage,
   } = useGetAllPrinciples({
     token: keycloak?.token || "",
-    isRegistered: registered,
+    isRegistered: registered && isEditing === true,
     size: 20,
   });
 
@@ -147,7 +147,7 @@ function AssessmentBuilder({
   } = useGetAllCriteria({
     size: 20,
     token: keycloak?.token || "",
-    isRegistered: registered,
+    isRegistered: registered && isEditing === true,
   });
 
   useEffect(() => {
@@ -207,8 +207,6 @@ function AssessmentBuilder({
     }
   }, [assessmentTemplateData, setCurrentAssessmentInfo]);
 
-  console.log("builderState:", builderState);
-
   useEffect(() => {
     if (
       assessmentData &&
@@ -255,7 +253,6 @@ function AssessmentBuilder({
       builderState.formMode === "none" &&
       builderState.entityMode === "none"
     ) {
-      console.log("assessmentTemplate:", assessmentTemplate);
       setBuilderState({
         formMode: "edit",
         entityMode: "criterion",
@@ -286,8 +283,6 @@ function AssessmentBuilder({
     // update criterion change
     const mandatory: (number | null)[] = [];
     const optional: (number | null)[] = [];
-
-    console.log("currentAssessmentInfo", currentAssessmentInfo);
 
     if (currentAssessmentInfo) {
       const newPrinciples = currentAssessmentInfo?.principles.map(
@@ -514,10 +509,10 @@ function AssessmentBuilder({
       <div className={`${styles["assessment-builder"]} mb-3`}>
         <div className={styles["assessment-builder-header"]}>
           <div className={styles["header-content"]}>
-            {!assessmentTemplate && (
+            {showTitle && !assessmentTemplate && (
               <div className="d-flex flex-column">
                 <h1 className={styles["builder-title"]}>
-                  {isEditing ? "Assessment Builder" : "Assessment Preview"}
+                  {isEditing ? "Assessment Builder" : "Preview Assessment"}
                 </h1>
                 {assessmentData && (
                   <p className="lead m-0">
@@ -559,7 +554,6 @@ function AssessmentBuilder({
           <AssessmentEvalStats
             evalResult={evalResult}
             assessmentResult={currentAssessmentInfo.result}
-            onAssessmentCreate={onAssessmentCreate}
             onSaveAssessmentChanges={onSaveAssessmentChanges}
             onAssessmentSubmit={onAssessmentSubmit}
             wizardTabActive={wizardTabActive}
