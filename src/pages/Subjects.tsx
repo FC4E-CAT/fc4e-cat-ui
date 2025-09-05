@@ -34,6 +34,7 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { idToColor } from "@/utils/admin";
+import { useGetProfile } from "@/api";
 
 // Modes under which SubjectModal operates
 const SubjectModalMode = {
@@ -303,7 +304,7 @@ function Subjects() {
   const doCreate = searchParams.has("create");
 
   // mutation hook for creating a new subject
-  const { keycloak } = useContext(AuthContext)!;
+  const { keycloak, registered, refreshUserToken } = useContext(AuthContext)!;
 
   const [opts, setOpts] = useState<SubjectState>({
     page: 1,
@@ -348,6 +349,37 @@ function Subjects() {
       setSubjectModalConfig((prevConfig) => ({ ...prevConfig, show: true }));
     }
   }, [doCreate]);
+
+  const { data: profileData } = useGetProfile({
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  console.log("profileData", profileData);
+
+  useEffect(() => {
+    const checkAndRefreshToken = async () => {
+      if (profileData && keycloak?.token) {
+        const userRoles = profileData?.roles || [];
+        const hasValidRole = userRoles?.some(
+          (role: string) =>
+            role.toLowerCase()?.includes("validated") ||
+            role.toLowerCase()?.includes("admin"),
+        );
+
+        if (!hasValidRole) {
+          try {
+            console.log("refreshUserToken called from Subjects page");
+            await refreshUserToken();
+          } catch (error) {
+            console.error("Failed to refresh token:", error);
+          }
+        }
+      }
+    };
+
+    checkAndRefreshToken();
+  }, [profileData, keycloak?.token, refreshUserToken]);
 
   const handleCreateSubject = (item: Subject) => {
     const promise = mutationCreateSubject

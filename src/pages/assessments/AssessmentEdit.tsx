@@ -85,7 +85,7 @@ const AssessmentEdit = ({
   const { t } = useTranslation();
   const [reqFields, setReqFields] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState(1);
-  const { keycloak, registered } = useContext(AuthContext)!;
+  const { keycloak, registered, refreshUserToken } = useContext(AuthContext)!;
   const [assessment, setAssessment] = useState<Assessment>();
   const [actor, setActor] = useState<{ id: string; name: string }>();
   const [organisation, setOrganisation] = useState<{
@@ -109,6 +109,8 @@ const AssessmentEdit = ({
     text: "",
     show: false,
   });
+
+  console.log("keycloak:", keycloak);
 
   // state to show/hide group_testing_modal
   const [groupTestModalConfig, setGroupTestModalConfig] =
@@ -144,6 +146,30 @@ const AssessmentEdit = ({
     token: keycloak?.token || "",
     isRegistered: registered,
   });
+
+  // Check user role and refresh token if needed on component mount
+  useEffect(() => {
+    const checkAndRefreshToken = async () => {
+      if (qProfile?.data && keycloak?.token) {
+        const userRoles = qProfile.data?.roles || [];
+        const hasValidRole = userRoles?.some(
+          (role: string) =>
+            role.toLowerCase()?.includes("validated") ||
+            role.toLowerCase()?.includes("admin"),
+        );
+
+        if (!hasValidRole) {
+          try {
+            await refreshUserToken();
+          } catch (error) {
+            console.error("Failed to refresh token:", error);
+          }
+        }
+      }
+    };
+
+    checkAndRefreshToken();
+  }, [qProfile.data, keycloak?.token, refreshUserToken]);
 
   const asmtNumID = asmtId !== undefined ? asmtId : "";
 
