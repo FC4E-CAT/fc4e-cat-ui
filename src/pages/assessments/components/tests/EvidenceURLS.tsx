@@ -4,10 +4,6 @@ import { InputGroup, Form, Row, Col } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { TestToolTip } from "./TestToolTip";
 
-/**
- * Small component to add url list
- */
-
 interface EvidenceURLSProps {
   urls: EvidenceURL[];
   onListChange(newURLs: EvidenceURL[]): void;
@@ -17,8 +13,11 @@ interface EvidenceURLSProps {
 
 export const EvidenceURLS = (props: EvidenceURLSProps) => {
   const [urlList, setUrlList] = useState<EvidenceURL[]>(props.urls);
-  const [newURL, setNewURL] = useState<EvidenceURL>({ url: "" });
-  const [error, setError] = useState("");
+  const [evidenceInfo, setEvidenceInfo] = useState<EvidenceURL>({
+    url: "",
+    description: "",
+  });
+  const [hasError, setHasError] = useState(false);
   const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
   const { t } = useTranslation();
   const handleRemoveURL = (index: number) => {
@@ -28,16 +27,18 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
   };
 
   const handleAddURL = () => {
-    if (newURL) {
-      if (urlRegex.test(newURL.url)) {
-        const updatedURLs = [...urlList, newURL];
-        setUrlList(updatedURLs);
-        props.onListChange(updatedURLs);
-        setNewURL({ url: "", description: "" });
-        setError("");
-      } else {
-        setError(t("page_assessment_edit.err_evidence"));
-      }
+    const isUrlValid =
+      evidenceInfo.url.trim() && urlRegex.test(evidenceInfo.url);
+    const isDescriptionValid = evidenceInfo.description?.trim();
+
+    if (isUrlValid && isDescriptionValid) {
+      const updatedURLs = [...urlList, evidenceInfo];
+      setUrlList(updatedURLs);
+      props.onListChange(updatedURLs);
+      setEvidenceInfo({ url: "", description: "" });
+      setHasError(false);
+    } else {
+      setHasError(true);
     }
   };
 
@@ -64,10 +65,12 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
           <InputGroup size="sm">
             <Form.Control
               id="input-add-url"
-              value={newURL.url}
+              value={evidenceInfo.url}
               onChange={(e) => {
-                setNewURL({ ...newURL, url: e.target.value.trim() });
-                setError("");
+                setEvidenceInfo((prev) => ({
+                  ...prev,
+                  url: e.target.value.trim(),
+                }));
               }}
               aria-describedby="label-add-url"
               placeholder={t("page_assessment_edit.evidence_url")}
@@ -79,16 +82,28 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
               title={t("page_assessment_edit.evidence_url")}
             />
           </InputGroup>
+          {hasError && !evidenceInfo.url.trim() && (
+            <small className="text-danger d-block">{t("required")}</small>
+          )}
+          {hasError &&
+            evidenceInfo.url.trim() &&
+            !urlRegex.test(evidenceInfo.url) && (
+              <small className="text-danger d-block">
+                {t("page_assessment_edit.err_evidence")}
+              </small>
+            )}
 
           <InputGroup className="mt-2" size="sm">
             <Form.Control
               id="input-add-description"
               as="textarea"
               aria-label="With textarea"
-              value={newURL.description}
+              value={evidenceInfo.description}
               onChange={(e) => {
-                setNewURL({ ...newURL, description: e.target.value });
-                setError("");
+                setEvidenceInfo((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }));
               }}
               aria-describedby="label-add-url"
               placeholder={t("page_assessment_edit.evidence_description")}
@@ -100,6 +115,9 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
               title={t("page_assessment_edit.evidence_description")}
             />
           </InputGroup>
+          {hasError && !evidenceInfo.description?.trim() && (
+            <small className="text-danger d-block">{t("required")}</small>
+          )}
         </Col>
 
         <Col md={1}>
@@ -111,7 +129,6 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
           </span>
         </Col>
       </Row>
-      {error && <small className="text-danger">{error}</small>}
 
       {urlList.map((evid, index) => (
         <Row className="mt-2" key={index}>
