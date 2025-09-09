@@ -1,0 +1,151 @@
+.dashboard-section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  transition: all 0.2s ease;
+}
+
+.dashboard-section:hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.8rem;
+  margin-bottom: 0.2rem;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.section-header svg {
+  width: 32px;
+  height: 32px;
+  padding: 8px;
+  color: #fff;
+  border-radius: 50%;
+}
+
+.section-header h5 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.section-header .fa-users {
+  background-color: #007bff;
+}
+
+.section-header .fa-check-circle {
+  background-color: #28a745;
+}
+
+.section-header .fa-file-alt {
+  background-color: #6f42c1;
+}
+
+.section-header .fa-user-tag {
+  width: 34px;
+  height: 34px;
+  background-color: #fd7e14;
+}
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-left {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.stat-icon.validated {
+  color: #10b981;
+}
+
+.stat-icon.pending {
+  color: #f59e0b;
+}
+
+.stat-icon.rejected {
+  color: #ef4444;
+}
+
+.stat-icon.users {
+  color: #3b82f6;
+}
+
+.stat-icon.assessments {
+  color: #8b5cf6;
+}
+
+.stat-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.section-footer {
+  padding-top: 0.8rem;
+  margin-top: auto;
+}
+
+.dashboard-btn-assessments {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  background-color: #5a6268 !important;
+  border-color: #5a6268 !important;
+  border-radius: 6px !important;
+}
+
+.dashboard-btn-assessments:hover {
+  background-color: #495057 !important;
+  border-color: #495057 !important;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%) !important;
+}
+
+/* Responsive adjustments */
+@media (width <= 768px) {
+  .dashboard-section {
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}

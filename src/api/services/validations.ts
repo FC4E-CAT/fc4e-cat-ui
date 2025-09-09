@@ -1,5 +1,5 @@
 import { APIClient } from "@/api";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
   ApiOptions,
   ApiValidations,
@@ -141,8 +141,10 @@ export const useValidationStatusUpdate = ({
   status,
   rejection_reason,
   token,
-}: ValidationUpdateStatusParams) =>
-  useMutation({
+}: ValidationUpdateStatusParams) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: async () => {
       const response = await APIClient(token).put<ValidationResponse>(
         `/v1/admin/validations/${validation_id}/update-status`,
@@ -154,7 +156,12 @@ export const useValidationStatusUpdate = ({
       );
       return response.data;
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-statistics"] });
+      queryClient.invalidateQueries({ queryKey: ["validations"] });
+    },
     onError: (error: AxiosError) => {
       return handleBackendError(error);
     },
   });
+};

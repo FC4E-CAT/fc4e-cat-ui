@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   FaAward,
   FaBorderNone,
@@ -10,10 +10,16 @@ import {
   FaCog,
   FaBars,
   FaTimes,
+  FaChartBar,
 } from "react-icons/fa";
 import { FaClipboardQuestion, FaFileCircleCheck } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
 import ROUTES from "../routes";
+import { AuthContext } from "@/auth";
+import {
+  useGetAdminStatistics,
+  type AdminStatistics,
+} from "@/api/services/statistics";
 
 function isSel(path: string, name: string): boolean {
   return path.toLowerCase() === name.toLowerCase();
@@ -26,6 +32,19 @@ export default function AdminMenu() {
   const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const { keycloak, registered } = useContext(AuthContext)!;
+
+  const { data: statistics, refetch: refetchStatistics } =
+    useGetAdminStatistics({
+      token: keycloak?.token || "",
+      isRegistered: registered,
+    });
+
+  useEffect(() => {
+    if (keycloak?.token && registered && currentPath) {
+      refetchStatistics();
+    }
+  }, [keycloak?.token, registered, currentPath, refetchStatistics]);
 
   const isAssessmentBuilderPage = currentPath?.includes("/assessment-builder");
 
@@ -119,7 +138,7 @@ export default function AdminMenu() {
                   overflowY: "auto",
                 }}
               >
-                {renderMenuContent(adminPath, userPath, t)}
+                {renderMenuContent(adminPath, userPath, t, statistics)}
               </div>
             </div>
           </>
@@ -130,7 +149,7 @@ export default function AdminMenu() {
 
   return (
     <div className="cat-sidebar-container">
-      {renderMenuContent(adminPath, userPath, t)}
+      {renderMenuContent(adminPath, userPath, t, statistics)}
     </div>
   );
 }
@@ -139,6 +158,7 @@ function renderMenuContent(
   adminPath: string,
   userPath: string,
   t: ReturnType<typeof useTranslation>["t"],
+  statistics?: AdminStatistics,
 ) {
   return (
     <ul className="cat-sidebar-nav">
@@ -151,6 +171,14 @@ function renderMenuContent(
               className={`cat-nav-link-item ${isSel(userPath, "profile") ? "active" : ""}`}
             >
               <FaUsers /> {t("profile")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.DASHBOARD}
+              className={`cat-nav-link-item ${isSel(adminPath, "dashboard") ? "active" : ""}`}
+            >
+              <FaChartBar /> {t("Dashboard")}
             </Link>
           </li>
           <li>
@@ -194,9 +222,22 @@ function renderMenuContent(
           <li>
             <Link
               to={ROUTES.ADMIN.VALIDATIONS}
-              className={`cat-nav-link-item ${isSel(adminPath, "validations") ? "active" : ""}`}
+              className={`position-relative cat-nav-link-item ${isSel(adminPath, "validations") ? "active" : ""}`}
             >
               <FaCheckCircle /> {t("validations")}
+              {(statistics?.validation_statistics?.pending_validations || 0) >
+                0 && (
+                <span
+                  className="position-absolute translate-middle badge rounded-pill bg-danger"
+                  style={{
+                    top: "14px",
+                    right: "64px",
+                    fontSize: "10px",
+                  }}
+                >
+                  {statistics?.validation_statistics?.pending_validations || 0}
+                </span>
+              )}
             </Link>
           </li>
           <li>

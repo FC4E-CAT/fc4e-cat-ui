@@ -56,6 +56,7 @@ import TestMethodsSettings from "./pages/admin/settings/TestMethodsSettings";
 import MetricTypesSettings from "./pages/admin/settings/MetricTypesSettings";
 import AlgorithmsSettings from "./pages/admin/settings/AlgorithmsSettings";
 import BenchmarkTypesSettings from "./pages/admin/settings/BenchmarkTypesSettings";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import { pidSelectionView, themeAbout } from "./config";
 import { handleBackendError } from "./utils";
 import axios from "axios";
@@ -373,6 +374,12 @@ function App() {
                 </Route>
                 <Route path={ROUTES.LOGIN} element={<ProtectedRoute />}>
                   <Route index element={<Profile />} />
+                </Route>
+                <Route
+                  path={ROUTES.ADMIN.DASHBOARD}
+                  element={<ProtectedRoute />}
+                >
+                  <Route index element={<AdminDashboard />} />
                 </Route>
                 <Route
                   path={ROUTES.ADMIN.SETTINGS.ROOT}

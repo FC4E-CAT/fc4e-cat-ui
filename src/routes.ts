@@ -35,7 +35,7 @@ const ROUTES = {
   },
   LOGIN: "/login",
   ADMIN: {
-    DASHBOARD: "/admin",
+    DASHBOARD: "/admin/dashboard",
     USERS: "/admin/users",
     USER_VIEW: "/admin/users/view/:id",
     VALIDATIONS: "/admin/validations",
