@@ -9,3 +9,4 @@ export * from "./services/validations";
 export * from "./services/motivations";
 export * from "./services/principles";
 export * from "./services/criteria";
+export * from "./services/statistics";
