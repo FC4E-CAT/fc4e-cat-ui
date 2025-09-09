@@ -10,7 +10,6 @@ export interface UserProfile {
   email: string;
   updated_on: string;
   banned: boolean;
-  roles: string[];
 }
 
 export interface UserView {

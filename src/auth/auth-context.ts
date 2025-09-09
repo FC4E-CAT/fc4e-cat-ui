@@ -10,7 +10,6 @@ export interface AuthContextProps {
   setRegistered: React.Dispatch<React.SetStateAction<boolean>>;
   keycloak: NullableKeycloak;
   setKeycloak: React.Dispatch<React.SetStateAction<NullableKeycloak>>;
-  refreshUserToken: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextProps | null>(null);
