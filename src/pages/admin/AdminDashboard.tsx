@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col, Spinner } from "react-bootstrap";
 import {
@@ -24,17 +24,49 @@ import {
   FaEyeSlash,
 } from "react-icons/fa";
 import { AuthContext } from "@/auth";
-import { useGetAdminStatistics } from "@/api/services/statistics";
+import {
+  useGetAdminStatistics,
+  useGetMostFailedCriteria,
+  type MostFailedCriteria,
+} from "@/api/services/statistics";
 import ROUTES from "@/routes";
 import styles from "./AdminDashboard.module.css";
 
 function AdminDashboard() {
   const { keycloak, registered } = useContext(AuthContext)!;
 
+  const [mostFailedCriteria, setMostFailedCriteria] = useState<
+    MostFailedCriteria[]
+  >([]);
+
   const { data: statistics, isLoading } = useGetAdminStatistics({
     token: keycloak?.token || "",
     isRegistered: registered,
   });
+
+  const {
+    data: mostFailedData,
+    fetchNextPage: mostFailedFetchNextPage,
+    hasNextPage: mostFailedHasNextPage,
+  } = useGetMostFailedCriteria({
+    size: 5,
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  useEffect(() => {
+    let tmpCriteria: MostFailedCriteria[] = [];
+
+    if (mostFailedData?.pages) {
+      mostFailedData.pages.map((page) => {
+        tmpCriteria = [...tmpCriteria, ...page.content];
+      });
+      if (mostFailedHasNextPage) {
+        mostFailedFetchNextPage();
+      }
+    }
+    setMostFailedCriteria(tmpCriteria);
+  }, [mostFailedData, mostFailedHasNextPage, mostFailedFetchNextPage]);
 
   if (isLoading) {
     return (
@@ -84,13 +116,13 @@ function AdminDashboard() {
           <h2 className="cat-view-heading text-muted">
             Admin Dashboard
             <p className="lead cat-view-lead">
-              System statistics and administrative controls
+              Platform insights and administrative controls
             </p>
           </h2>
         </div>
       </div>
 
-      <Row className="mt-4">
+      <Row className="mt-1">
         {/* Role-Based Status */}
         <Col lg={3} md={6} className="mb-4">
           <div className={styles["dashboard-section"]}>
@@ -360,6 +392,53 @@ function AdminDashboard() {
                 </div>
               )}
             </div>
+          </div>
+        </Col>
+      </Row>
+
+      <Row className="mt-4">
+        <Col lg={12} className="mb-4">
+          <div className={styles["most-failed-section"]}>
+            <div className={styles["section-header"]}>
+              <FaExclamationCircle
+                className={`me-2 ${styles["fa-exclamation-circle"]}`}
+              />
+              <h5 className="mb-0">Most Common Failed Criteria</h5>
+            </div>
+            <div className={styles["failed-criteria-grid"]}>
+              {mostFailedCriteria?.length
+                ? mostFailedCriteria.map((criteria, index) => (
+                    <div key={index} className={styles["failed-criteria-item"]}>
+                      <div className={styles["criteria-header"]}>
+                        <div
+                          className={styles["criteria-title"]}
+                          title={criteria.label}
+                        >
+                          {criteria.cri} - {criteria.label}
+                        </div>
+                        <div className={styles["criteria-percentage"]}>
+                          {criteria.failure_percentage}%
+                        </div>
+                      </div>
+                      <div className={styles["criteria-description"]}>
+                        Failed in {criteria.fail_count} assessments
+                      </div>
+                      <div className={styles["criteria-progress-bar"]}>
+                        <div
+                          className={styles["criteria-progress-fill"]}
+                          style={{ width: `${criteria.failure_percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))
+                : null}
+            </div>
+
+            {mostFailedCriteria?.length === 0 && (
+              <div className="w-100 text-center text-muted mt-4">
+                <p>No failed criteria data available</p>
+              </div>
+            )}
           </div>
         </Col>
       </Row>
