@@ -206,9 +206,7 @@ function AdminDashboard() {
                   <span className={styles["stat-text"]}>Rejected</span>
                 </div>
                 <span className={styles["stat-value"]}>
-                  {(validationStats?.total_validations || 0) -
-                    (validationStats?.accepted_validations || 0) -
-                    (validationStats?.pending_validations || 0) || 0}
+                  {validationStats?.rejected_validations || 0}
                 </span>
               </div>
             </div>

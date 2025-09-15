@@ -22,6 +22,7 @@ export interface ValidationStatistics {
   total_validations: number;
   accepted_validations: number;
   pending_validations: number;
+  rejected_validations: number;
 }
 
 export interface AdminStatistics {
