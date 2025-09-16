@@ -25,6 +25,26 @@ import type {
   TestInput,
 } from "@/types/tests";
 
+export interface AdminSetting {
+  id: string;
+  data: {
+    label: string;
+    config?: Record<string, string | null>;
+    description: string;
+    auth?: {
+      mail: string | null;
+      password: string | null;
+    };
+  };
+  enabled: boolean;
+  updated_on: string;
+}
+
+export interface AdminSettingUpdate {
+  enabled: boolean;
+  data?: Partial<AdminSetting["data"]>;
+}
+
 export const useGetAllAlgorithms = ({
   token,
   isRegistered,
@@ -583,6 +603,48 @@ export const useDeletePrinciple = (token: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["registry-principles"] });
       queryClient.invalidateQueries({ queryKey: ["all-principles"] });
+    },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
+    },
+  });
+};
+
+export const useGetAdminSettings = ({
+  token,
+  isRegistered,
+}: {
+  token: string;
+  isRegistered: boolean;
+}) =>
+  useQuery({
+    queryKey: ["admin-settings"],
+    queryFn: async () => {
+      const response =
+        await APIClient(token).get<AdminSetting[]>(`/v1/admin/settings`);
+      return response.data;
+    },
+    enabled: !!token && isRegistered,
+  });
+
+export const useUpdateAdminSetting = (token: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      updateData,
+    }: {
+      id: string;
+      updateData: AdminSettingUpdate;
+    }) => {
+      const response = await APIClient(token).put(
+        `/v1/admin/settings/${id}`,
+        updateData,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-settings"] });
     },
     onError: (error: AxiosError) => {
       return handleBackendError(error);

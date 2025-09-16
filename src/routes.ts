@@ -49,6 +49,8 @@ const ROUTES = {
       METRIC_TYPES: "/admin/settings/metric-types",
       ALGORITHMS: "/admin/settings/algorithms",
       BENCHMARK_TYPES: "/admin/settings/benchmark-types",
+      ZENODO: "/admin/settings/zenodo",
+      AAI_AUTOCOMPLETE: "/admin/settings/aai-autocomplete",
     },
     MOTIVATIONS: {
       ROOT: "/admin/motivations",
