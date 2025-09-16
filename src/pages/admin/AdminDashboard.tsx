@@ -421,7 +421,9 @@ function AdminDashboard() {
                         </div>
                       </div>
                       <div className={styles["criteria-description"]}>
-                        Failed in {criteria.fail_count} assessments
+                        Failed in <strong>{criteria.fail_count}</strong> of{" "}
+                        <strong>{criteria.used_in_assessments}</strong>{" "}
+                        assessments
                       </div>
                       <div className={styles["criteria-progress-bar"]}>
                         <div

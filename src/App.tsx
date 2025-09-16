@@ -54,6 +54,8 @@ import TestMethodsSettings from "./pages/admin/settings/TestMethodsSettings";
 import MetricTypesSettings from "./pages/admin/settings/MetricTypesSettings";
 import AlgorithmsSettings from "./pages/admin/settings/AlgorithmsSettings";
 import BenchmarkTypesSettings from "./pages/admin/settings/BenchmarkTypesSettings";
+import AAIAutocompleteSettings from "./pages/admin/settings/AAIAutocompleteSettings";
+import ZenodoSettings from "./pages/admin/settings/ZenodoSettings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import { pidSelectionView, themeAbout } from "./config";
 import { handleBackendError } from "./utils";
@@ -397,6 +399,18 @@ function App() {
                 element={<ProtectedRoute />}
               >
                 <Route index element={<BenchmarkTypesSettings />} />
+              </Route>
+              <Route
+                path={ROUTES.ADMIN.SETTINGS.ZENODO}
+                element={<ProtectedRoute />}
+              >
+                <Route index element={<ZenodoSettings />} />
+              </Route>
+              <Route
+                path={ROUTES.ADMIN.SETTINGS.AAI_AUTOCOMPLETE}
+                element={<ProtectedRoute />}
+              >
+                <Route index element={<AAIAutocompleteSettings />} />
               </Route>
               <Route path={ROUTES.LOGOUT} element={<KeycloakLogout />} />
             </Routes>
