@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Spinner, Row, Col } from "react-bootstrap";
 import { FaUserCog } from "react-icons/fa";
@@ -117,30 +117,31 @@ function AAIAutocompleteSettings() {
       </div>
 
       <Row className="mb-4">
-        <Col lg={6}>
+        <Col lg={6} className="system-settings-items-list">
           {aaiSettings.map((setting) => (
-            <Fragment key={setting.id}>
-              <div className="test-method-settings-item d-flex justify-content-between gap-5 my-1">
-                <div>
-                  <div className="d-flex align-items-center gap-2">
-                    <FaUserCog size={16} />
-                    <h6 className="mb-0">{setting.data.label}</h6>
-                  </div>
-                  <span className="text-muted small">
-                    {setting.data.description || "No description available"}
-                  </span>
+            <div
+              className="test-method-settings-item d-flex justify-content-between gap-5 my-1"
+              key={setting.id}
+            >
+              <div>
+                <div className="d-flex align-items-center gap-2">
+                  <FaUserCog size={16} />
+                  <h6 className="mb-0">Enable Registration</h6>
                 </div>
-                <div>
-                  <Form.Check
-                    type="switch"
-                    id={`switch-${setting.id}`}
-                    checked={enabledSettings[setting.id] || false}
-                    onChange={() => handleToggleSetting(setting.id)}
-                    className="test-method-switch"
-                  />
-                </div>
+                <span className="text-muted small">
+                  {setting.data.description || "No description available"}
+                </span>
               </div>
-            </Fragment>
+              <div>
+                <Form.Check
+                  type="switch"
+                  id={`switch-${setting.id}`}
+                  checked={enabledSettings[setting.id] || false}
+                  onChange={() => handleToggleSetting(setting.id)}
+                  className="test-method-switch"
+                />
+              </div>
+            </div>
           ))}
         </Col>
       </Row>
