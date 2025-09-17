@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Row, Col, Form, Button } from "react-bootstrap";
-import { FaSearch } from "react-icons/fa";
+import { Row, Col, Form, Button, InputGroup } from "react-bootstrap";
+import { FaSearch, FaEye, FaEyeSlash } from "react-icons/fa";
 import { AuthContext } from "@/auth";
 import {
   useGetAdminSettings,
@@ -21,6 +21,8 @@ interface ZenodoFormData {
 function ZenodoSettings() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [showApiKeyError, setShowApiKeyError] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<ZenodoFormData>({
     enabled: false,
     zenodoApiKey: "",
@@ -130,8 +132,8 @@ function ZenodoSettings() {
         </h2>
       </div>
 
-      <Row className="d-flex flex-column-reverse flex-lg-row justify-content-lg-between gy-5">
-        <Col lg={6}>
+      <Row className="d-flex flex-column-reverse flex-lg-row justify-content-lg-between">
+        <Col lg={6} className="system-settings-items-list">
           <div className="test-method-settings-item d-flex justify-content-between gap-3">
             <div>
               <div className="d-flex align-items-center gap-2">
@@ -165,26 +167,47 @@ function ZenodoSettings() {
                 >
                   Zenodo API Key <span className="text-danger">*</span>
                 </Form.Label>
-                <Form.Control
-                  id="zenodo-api-key"
-                  type="password"
-                  placeholder="Enter your Zenodo API key"
-                  value={formData.zenodoApiKey}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    handleInputChange("zenodoApiKey", e.target.value);
-                  }}
-                  disabled={isUpdating || formData.enabled}
-                  isInvalid={showApiKeyError}
-                  autoComplete="new-password"
-                  data-form-type="other"
-                  data-lpignore="true"
-                />
+                <InputGroup>
+                  <Form.Control
+                    id="zenodo-api-key"
+                    type={showApiKey ? "text" : "password"}
+                    placeholder="Enter your Zenodo API key"
+                    value={formData.zenodoApiKey}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handleInputChange("zenodoApiKey", e.target.value);
+                    }}
+                    disabled={isUpdating || formData.enabled}
+                    isInvalid={showApiKeyError}
+                    autoComplete="new-password"
+                    data-form-type="other"
+                    data-lpignore="true"
+                    style={{
+                      borderColor: "#dee2e6",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.boxShadow = "none";
+                      e.target.style.borderColor = "#dee2e6";
+                    }}
+                  />
+                  <Button
+                    variant="outline-secondary"
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    disabled={isUpdating}
+                    style={{
+                      borderColor: "#dee2e6",
+                      borderLeft: "none",
+                      height: "32.5px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {showApiKey ? <FaEyeSlash /> : <FaEye />}
+                  </Button>
+                </InputGroup>
                 {showApiKeyError && (
-                  <Form.Control.Feedback type="invalid">
-                    Required
-                  </Form.Control.Feedback>
+                  <Form.Text className="text-danger">Required</Form.Text>
                 )}
               </div>
 
@@ -206,6 +229,13 @@ function ZenodoSettings() {
                   autoComplete="off"
                   data-form-type="other"
                   data-lpignore="true"
+                  style={{
+                    borderColor: "#dee2e6",
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.boxShadow = "none";
+                    e.target.style.borderColor = "#dee2e6";
+                  }}
                 />
               </div>
 
@@ -216,21 +246,44 @@ function ZenodoSettings() {
                 >
                   Zenodo Password
                 </Form.Label>
-                <Form.Control
-                  id="zenodo-password"
-                  type="password"
-                  placeholder="Enter your Zenodo account password"
-                  value={formData.zenodoPassword}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    handleInputChange("zenodoPassword", e.target.value);
-                  }}
-                  disabled={isUpdating || formData.enabled}
-                  autoComplete="new-password"
-                  data-form-type="other"
-                  data-lpignore="true"
-                />
+                <InputGroup>
+                  <Form.Control
+                    id="zenodo-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your Zenodo account password"
+                    value={formData.zenodoPassword}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handleInputChange("zenodoPassword", e.target.value);
+                    }}
+                    disabled={isUpdating || formData.enabled}
+                    autoComplete="new-password"
+                    data-form-type="other"
+                    data-lpignore="true"
+                    style={{
+                      borderColor: "#dee2e6",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.boxShadow = "none";
+                      e.target.style.borderColor = "#dee2e6";
+                    }}
+                  />
+                  <Button
+                    variant="outline-secondary"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isUpdating}
+                    style={{
+                      borderColor: "#dee2e6",
+                      borderLeft: "none",
+                      height: "32.5px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </Button>
+                </InputGroup>
               </div>
             </Form>
           </div>
