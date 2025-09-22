@@ -56,6 +56,7 @@ import AlgorithmsSettings from "./pages/admin/settings/AlgorithmsSettings";
 import BenchmarkTypesSettings from "./pages/admin/settings/BenchmarkTypesSettings";
 import AAIAutocompleteSettings from "./pages/admin/settings/AAIAutocompleteSettings";
 import ZenodoSettings from "./pages/admin/settings/ZenodoSettings";
+import ReportsContainer from "./pages/admin/reports/ReportsContainer";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import { pidSelectionView, themeAbout } from "./config";
 import { handleBackendError } from "./utils";
@@ -411,6 +412,9 @@ function App() {
                 element={<ProtectedRoute />}
               >
                 <Route index element={<AAIAutocompleteSettings />} />
+              </Route>
+              <Route path={ROUTES.ADMIN.REPORTS} element={<ProtectedRoute />}>
+                <Route index element={<ReportsContainer />} />
               </Route>
               <Route path={ROUTES.LOGOUT} element={<KeycloakLogout />} />
             </Routes>

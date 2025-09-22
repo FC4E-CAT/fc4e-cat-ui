@@ -43,6 +43,7 @@ const ROUTES = {
     VALIDATION_REJECT: "/admin/validations/:id/reject",
     VALIDATION_APPROVE: "/admin/validations/:id/approve",
     ASSESSMENTS: "/admin/assessments",
+    REPORTS: "/admin/reports",
     SETTINGS: {
       ROOT: "/admin/settings",
       TEST_METHODS: "/admin/settings/test-methods",
