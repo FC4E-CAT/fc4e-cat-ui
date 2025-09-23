@@ -1,4 +1,4 @@
-import { ResponsePage } from "./common";
+import type { ResponsePage } from "./common";
 
 /** API response when requesting a template */
 export interface TemplateResponse {
@@ -12,7 +12,7 @@ export interface TemplateResponse {
 export interface AssessmentType {
   id: string;
   name: string;
-  description: string;
+  description?: string;
 }
 
 /** Actor type part of TemplateResponse from API */
@@ -36,6 +36,20 @@ export interface Assessment {
   principles: AssessmentPrinciple[];
   published: boolean;
   shared_with_user: boolean;
+  automated_group_test: AutoGroupTest[];
+}
+
+/** Information on automated group tests */
+export interface AutoGroupTest {
+  endpoint: string;
+  test_method: string;
+  params: GroupTestParam[];
+}
+
+export interface GroupTestParam {
+  name: string;
+  assessment_ref?: string;
+  value?: string;
 }
 
 /** Reference with string id */
@@ -44,8 +58,10 @@ export interface RefID {
   name: string;
 }
 
-export interface AssessmentActor extends RefID {}
-export interface AssessmentType extends RefID {}
+// export interface AssessmentActor extends RefID {}
+// export interface AssessmentType extends RefID {}
+
+export type AssessmentActor = RefID;
 
 /** Assessment subject */
 export interface AssessmentSubject {
@@ -58,10 +74,14 @@ export interface AssessmentSubject {
 export type AssessmentSubjectListResponse = ResponsePage<AssessmentSubject[]>;
 
 /** The status of an assesment wether it is public or private */
-export enum AssessmentStatus {
-  Public = "PUBLIC",
-  Private = "PRIVATE",
-}
+// A type for compile-time checking
+export type AssessmentStatus = "PUBLIC" | "PRIVATE";
+
+// A runtime object for actual values
+export const AssessmentStatus = {
+  Public: "PUBLIC",
+  Private: "PRIVATE",
+} as const;
 
 /** An assessment is done on behalf of a specific organisation */
 export interface AssessmentOrg {
@@ -81,27 +101,39 @@ export interface AssessmentPrinciple {
   name: string;
   criteria: AssessmentCriterion[];
   description: string;
+  imperative?: string;
+  principle_id?: string;
+  db_id?: string;
 }
 
 /** Each principle contains a list of criteria */
 export interface AssessmentCriterion {
   id: string;
   name: string;
-  imperative: AssessmentCriterionImperative;
+  imperative: AssessmentCriterionImperative | string;
   metric: Metric;
   description?: string;
+  principle_id?: string;
+  db_id?: string;
 }
 
 /** Each criterion can be either mandatory (must) or optional (should) */
-export enum AssessmentCriterionImperative {
-  Must = "must",
-  MUST = "MUST",
-  SHOULD = "SHOULD",
-  Should = "should",
-}
+export type AssessmentCriterionImperative =
+  | "must"
+  | "MUST"
+  | "SHOULD"
+  | "should";
+
+export const AssessmentCriterionImperative = {
+  Must: "must",
+  MUST: "MUST",
+  SHOULD: "SHOULD",
+  Should: "should",
+} as const;
 
 /** Each criterion includes a SINGLE metric */
 export interface Metric {
+  id: string;
   type: string;
   label_algorithm_type: string;
   label_type_metric: string;
@@ -109,18 +141,23 @@ export interface Metric {
   value: number | null;
   result: number | null;
   tests: AssessmentTest[];
+  db_id?: string;
 }
 
 /** Each metric has a type. For now, we only deal with type: number  */
-export enum MetricType {
-  Number = "number",
-}
+export type MetricType = "number";
+
+export const MetricType = {
+  Number: "number",
+} as const;
 
 /** Each metric has an algorithm. For now, we only deal with algorithms: single and sum  */
-export enum MetricAlgorithm {
-  Sum = "sum",
-  Single = "single",
-}
+export type MetricAlgorithm = "sum" | "single";
+
+export const MetricAlgorithm = {
+  Sum: "sum",
+  Single: "single",
+} as const;
 
 /** Each benchmark will gonna have different types  */
 export type Benchmark = Record<string, string | number>;
@@ -138,6 +175,8 @@ export interface TestBinary {
   result: number | null;
   value: boolean | null;
   evidence_url?: EvidenceURL[];
+  last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestBinaryParam {
@@ -152,6 +191,8 @@ export interface TestBinaryParam {
   params: string;
   evidence_url?: EvidenceURL[];
   tool_tip: string;
+  last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestValue {
@@ -170,6 +211,8 @@ export interface TestValue {
   benchmark: Benchmark;
   params: string;
   evidence_url?: EvidenceURL[];
+  last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestValueParam {
@@ -195,6 +238,75 @@ export interface TestValueParam {
   params: string;
   benchmark: Benchmark;
   evidence_url?: EvidenceURL[];
+  last_run?: LastRun;
+  db_id?: string;
+}
+
+export interface TestAutoG069 {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type:
+    | "Auto-Check-String-Binary"
+    | "Auto-Check-AARC-G069-User-Info"
+    | "Auto-Check-AARC-G069-Token-Introspection";
+  text: string;
+  result: number | null;
+  value: string | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
+  last_run?: LastRun;
+  db_id?: string;
+}
+
+export interface TestAutoError {
+  code: number;
+  message: string;
+}
+
+export interface TestAutoResponseStatus {
+  code: number;
+  message: string;
+  is_valid: boolean;
+}
+
+export interface AdditionalInfoItem {
+  is_valid: boolean;
+  message: string;
+}
+
+export interface TestAutoResponse {
+  test_status: TestAutoResponseStatus;
+  last_run: string;
+  additional_info: Record<string, AdditionalInfoItem>;
+}
+
+export interface GroupTestRef {
+  criterionId: string;
+  criterionName: string;
+  criterionImperative: AssessmentCriterionImperative | string;
+  testId: string;
+  testName: string;
+  result: number | null;
+  last_run: LastRun;
+}
+
+export interface TestAutoValidation {
+  id: string;
+  name: string;
+  description?: string;
+  guidance?: Guidance;
+  type: "Fully-Automated-Validation";
+  text: string;
+  result: number | null;
+  value: string | null;
+  params: string;
+  evidence_url?: EvidenceURL[];
+  tool_tip: string;
+  last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestAutoHttpsCheck {
@@ -209,6 +321,8 @@ export interface TestAutoHttpsCheck {
   params: string;
   evidence_url?: EvidenceURL[];
   tool_tip: string;
+  last_run?: LastRun;
+  db_id?: string;
 }
 
 export interface TestAutoMD1 {
@@ -223,6 +337,8 @@ export interface TestAutoMD1 {
   params: string;
   evidence_url?: EvidenceURL[];
   tool_tip: string;
+  last_run?: LastRun;
+  db_id?: string;
 }
 
 /** Supported tests: Binary | Value | BinaryParam | ValueParam | TestAutoHttpsCheck **/
@@ -232,7 +348,9 @@ export type AssessmentTest =
   | TestBinaryParam
   | TestValueParam
   | TestAutoHttpsCheck
-  | TestAutoMD1;
+  | TestAutoMD1
+  | TestAutoG069
+  | TestAutoValidation;
 
 export interface EvidenceURL {
   url: string;
@@ -327,6 +445,7 @@ export interface AssessmentDetailsResponse {
   id: number;
   shared_to_user: boolean;
   assessment_doc: Assessment;
+  assessment_doc_version?: string;
 }
 
 export interface ObjectListItem {
@@ -343,11 +462,13 @@ export interface AssessmentFiltersType {
   subject_type: string;
 }
 
-export enum AssessmentEditMode {
-  Create = "create",
-  Edit = "edit",
-  Import = "import",
-}
+export type AssessmentEditMode = "create" | "edit" | "import";
+
+export const AssessmentEditMode = {
+  Create: "create",
+  Edit: "edit",
+  Import: "import",
+} as const;
 
 export interface AssessmentTypeResponse {
   size_of_page: number;
@@ -390,4 +511,10 @@ export interface AssessmentStats {
   total_optional: number;
   completed_mandatory: number;
   completed_optional: number;
+}
+
+export interface LastRun {
+  timestamp: string;
+  code: number;
+  message: string;
 }

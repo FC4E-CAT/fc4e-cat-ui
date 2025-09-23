@@ -18,9 +18,9 @@ import {
   OverlayTrigger,
   Tooltip,
   Table,
-  TooltipProps,
+  type TooltipProps,
 } from "react-bootstrap";
-import { AssessmentListItem, AlertInfo } from "@/types";
+import type { AssessmentListItem, AlertInfo } from "@/types";
 import {
   useAdminDeleteAssessment,
   useGetAdminAssessment,
@@ -30,12 +30,13 @@ import { AuthContext } from "@/auth";
 import { prettyPrintRanking } from "@/utils";
 import { Link } from "react-router-dom";
 import { DeleteModal } from "@/components/DeleteModal";
+import ROUTES from "../../routes";
 
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { PublishModal } from "@/components";
 import { trimField } from "@/utils/admin";
-import CopyToClipboard from "react-copy-to-clipboard";
+import { CopyToClipboard } from "react-copy-to-clipboard-ts";
 
 type Pagination = {
   page: number;
@@ -125,13 +126,9 @@ function AdminAssessments() {
     search: searchTerm,
   });
 
-  // const { data: userObjects } = useGetObjects({
-  //   size: 100,
-  //   page: 1,
-  //   token: keycloak?.token || "",
-  //   assessmentTypeId: motivationIdParam || "",
-  //   actorId: actorIdParam || "",
-  // });
+  useEffect(() => {
+    refetch();
+  }, [opts, refetch]);
 
   const [asmtNumID, setAsmtNumID] = useState<string>("");
   const qAssessment = useGetAdminAssessment({
@@ -518,7 +515,10 @@ function AdminAssessments() {
           )}
           <div className="d-flex justify-content-between pb-4">
             <div>
-              <Link className="btn btn-secondary" to="/assess">
+              <Link
+                className="btn btn-secondary"
+                to={ROUTES.ASSESSMENTS.ASSESS}
+              >
                 {t("buttons.back")}
               </Link>
             </div>

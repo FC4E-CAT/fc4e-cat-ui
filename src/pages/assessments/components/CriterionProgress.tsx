@@ -1,4 +1,4 @@
-import { Metric } from "@/types";
+import type { Metric } from "@/types";
 import { useTranslation } from "react-i18next";
 
 export function CriterionProgress({ metric }: { metric: Metric }) {

@@ -1,11 +1,13 @@
-import { ResponsePage } from "./common";
-import { MotivationReference } from "./motivation";
+import type { ResponsePage } from "./common";
+import type { MotivationReference } from "./motivation";
 
 export interface RegistryMetric {
   metric_id: string;
   metric_mtr: string;
   metric_label: string;
   metric_description: string;
+  metric_version?: string;
+  metric_versions?: RegistryMetric[];
   type_algorithm_id: string;
   type_algorithm_label: string;
   type_algorithm_description: string;

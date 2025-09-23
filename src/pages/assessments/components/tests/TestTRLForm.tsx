@@ -1,0 +1,238 @@
+/**
+ * Component to display and edit a TRL test
+ */
+
+import { Alert, Col, Form, InputGroup, Row } from "react-bootstrap";
+import { EvidenceURLS } from "./EvidenceURLS";
+import type { AssessmentTest, EvidenceURL, TestValueParam } from "@/types";
+import { useState } from "react";
+import { TestToolTip } from "./TestToolTip";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaCogs,
+  FaHandPointer,
+} from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { TestValueEventType } from "@/types/tests";
+
+interface AssessmentTestProps {
+  test: TestValueParam;
+  principleId: string;
+  criterionId: string;
+  onTestChange(
+    principleId: string,
+    criterionId: string,
+    newTest: AssessmentTest,
+  ): void;
+}
+
+export const TestTRLForm = (props: AssessmentTestProps) => {
+  const { t } = useTranslation();
+  const [localValue, setLocalValue] = useState<string>(
+    props.test.value?.toString() || "",
+  );
+  const [localThreshold, setLocalThreshold] = useState<string>(
+    props.test.threshold?.toString() || "",
+  );
+
+  const handleValueChange = (
+    eventType: TestValueEventType,
+    event: React.ChangeEvent<HTMLInputElement> | null,
+  ) => {
+    const newTest = { ...props.test };
+    // keep only a single digit number as input
+    const trlOnlyVal =
+      event !== null
+        ? event.target.value.replace(/[^1-9]/g, "").slice(0, 1)
+        : "5";
+
+    if (eventType === TestValueEventType.Value) {
+      setLocalValue(trlOnlyVal);
+      newTest.value = parseFloat(trlOnlyVal);
+    } else {
+      setLocalThreshold(trlOnlyVal);
+      newTest.threshold = parseFloat(trlOnlyVal);
+    }
+
+    let comparisonMode = "";
+    let comparisonValue = 0;
+    let result: number | null = null;
+
+    // find comparisonMode
+
+    if (newTest.benchmark) {
+      const modes = ["equal_greater_than", "equal_less_than", "equal"];
+
+      for (const mode of modes) {
+        if (mode in newTest.benchmark) {
+          comparisonMode = mode;
+          break;
+        }
+      }
+
+      if (comparisonMode in newTest.benchmark) {
+        if (typeof newTest.benchmark[comparisonMode] === "number") {
+          comparisonValue = newTest.benchmark[comparisonMode] as number;
+        } else if (
+          newTest.benchmark[comparisonMode] === "threshold" &&
+          newTest.threshold
+        ) {
+          comparisonValue = newTest.threshold;
+        }
+      }
+
+      if (newTest.value !== null) {
+        if (comparisonMode === "equal_greater_than") {
+          result = newTest.value >= comparisonValue ? 1 : 0;
+        } else if (comparisonMode === "equal_less_than") {
+          result = newTest.value <= comparisonValue ? 1 : 0;
+        } else {
+          result = newTest.value === comparisonValue ? 1 : 0;
+        }
+      }
+    } else {
+      result = newTest.value;
+    }
+    newTest.result = result;
+    props.onTestChange(props.principleId, props.criterionId, newTest);
+  };
+
+  function onURLChange(newURLS: EvidenceURL[]) {
+    const newTest = { ...props.test, evidence_url: newURLS };
+    props.onTestChange(props.principleId, props.criterionId, newTest);
+  }
+
+  // break parameters
+  const textParams = props.test.text.split("|");
+  const tipParams = props.test.tool_tip.split("|");
+  const testParams = props.test.params.split("|");
+
+  // check if test is automated
+  const automated = props.test.type.endsWith("Auto");
+
+  return (
+    <div>
+      <Row>
+        <Col>
+          {props.test.id && (
+            <h6>
+              <small className="text-muted badge badge-pill border bg-light m">
+                {props.test.id && <span className="me-4">{props.test.id}</span>}
+                {props.test.name}
+              </small>
+            </h6>
+          )}
+        </Col>
+        <Col xs={1} className="text-start"></Col>
+      </Row>
+
+      <Row>
+        <Col>
+          <div>
+            {textParams[0] && <h5>{textParams[0]}</h5>}
+            {automated && (
+              <Alert variant="warning">
+                <div>
+                  <FaCogs />
+                  {` ${t("page_assessment_edit.wip_automated_text")} `}
+                  <em>({t("page_assessment_edit.wip_automated")})</em>
+                </div>
+                <div>
+                  <small>
+                    {`${t("page_assessment_edit.wip_automated_fill")} `}
+                    <code className="text-muted">
+                      {testParams[testParams.length - 1]}
+                    </code>
+                    {` ${t("value")}`}
+                  </small>
+                </div>
+              </Alert>
+            )}
+            <Row>
+              <Col>
+                {localValue === "" ? (
+                  <Alert
+                    variant="primary"
+                    className="text-center"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      handleValueChange(TestValueEventType.Value, null);
+                    }}
+                  >
+                    <span className="me-2">
+                      Click here to specify a TRL value
+                    </span>
+                    <FaArrowLeft />
+                    <FaHandPointer />
+                    <FaArrowRight />
+                  </Alert>
+                ) : (
+                  <div className="mt-1">
+                    <div className="d-flex justify-content-between px-1">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                        <small key={num}>{num}</small>
+                      ))}
+                    </div>
+                    <Form.Range
+                      min={1}
+                      max={9}
+                      step={1}
+                      value={localValue}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        // use this input only if the test is not automated
+                        if (!automated) {
+                          handleValueChange(TestValueEventType.Value, e);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </Col>
+            </Row>
+            {testParams.length > 1 && testParams[1] !== "evidence" && (
+              <>
+                <Row className="mt-1">
+                  <InputGroup className="mt-2">
+                    <InputGroup.Text id="label-second-value">
+                      {tipParams[1] && (
+                        <TestToolTip
+                          tipId={"params-2-" + props.test.id}
+                          tipText={tipParams[1]}
+                        />
+                      )}
+                      {testParams[1] && (
+                        <span className="ms-2">{testParams[1]}</span>
+                      )}
+                      :
+                    </InputGroup.Text>
+                    <Form.Control
+                      value={localThreshold || ""}
+                      type="text"
+                      id="input-value-community"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleValueChange(TestValueEventType.Threshold, e)
+                      }
+                      disabled={automated}
+                    />
+                  </InputGroup>
+                </Row>
+              </>
+            )}
+          </div>
+
+          {(testParams[testParams.length - 1] === "evidence" ||
+            testParams?.includes("evidence")) && (
+            <div className="mt-1">
+              <EvidenceURLS
+                urls={props.test.evidence_url || []}
+                onListChange={onURLChange}
+                noTitle={true}
+              />
+            </div>
+          )}
+        </Col>
+      </Row>
+    </div>
+  );
+};

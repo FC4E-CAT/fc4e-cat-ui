@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import serviceImg from "@/assets/thumb_service.png";
 import manageImg from "@/assets/thumb_manage.png";
 import ownersImg from "@/assets/thumb_user.png";
+import ROUTES from "@/routes";
+import { themeHomeBenefits } from "@/config";
 
 function Home() {
   const { data } = useGetStatistics();
@@ -22,7 +24,10 @@ function Home() {
             {t("page_home.description")}
             <br />
             <span className="float-right">
-              <Link to="/assess" className="btn btn-light mt-4 ">
+              <Link
+                to={ROUTES.ASSESSMENTS.ASSESS}
+                className="btn btn-light mt-4 "
+              >
                 <FaInfoCircle className="me-2 text-muted" />{" "}
                 {t("buttons.about")}...
               </Link>
@@ -66,69 +71,71 @@ function Home() {
           </div>
         </div>
       </div>
-      <div className="row bg-light p-4">
-        <h2>{t("page_home.benefits")}</h2>
-        <div className="row">
-          <div className="col">
-            <Card className="p-2 border-grey shadow-sm mb-2">
-              <Card.Img
-                className="mx-auto p-2"
-                src={manageImg}
-                alt={t("page_home.managers")}
-                style={{ maxWidth: "80px" }}
-              />
+      {themeHomeBenefits && (
+        <div className="row bg-light p-4">
+          <h2>{t("page_home.benefits")}</h2>
+          <div className="row">
+            <div className="col">
+              <Card className="p-2 border-grey shadow-sm mb-2">
+                <Card.Img
+                  className="mx-auto p-2"
+                  src={manageImg}
+                  alt={t("page_home.managers")}
+                  style={{ maxWidth: "80px" }}
+                />
 
-              <Card.Body>
-                <Card.Title className="d-flex justify-content-between">
-                  {t("page_home.managers")}
-                </Card.Title>
-                <span className="lead cat-home-lead">
-                  <small>{t("page_home.managers_description")}</small>
-                </span>
-              </Card.Body>
-              <Card.Footer className="bg-transparent border-0"></Card.Footer>
-            </Card>
-          </div>
-          <div className="col">
-            <Card className="p-2 border-grey shadow-sm mb-2">
-              <Card.Img
-                className="mx-auto p-2"
-                src={ownersImg}
-                alt={t("page_home.owners")}
-                style={{ maxWidth: "80px" }}
-              />
-              <Card.Body>
-                <Card.Title className="d-flex justify-content-between">
-                  {t("page_home.owners")}
-                </Card.Title>
-                <span className="lead cat-home-lead">
-                  <small>{t("page_home.owners_description")}</small>
-                </span>
-              </Card.Body>
-              <Card.Footer className="bg-transparent border-0"></Card.Footer>
-            </Card>
-          </div>
-          <div className="col cat-heading-right">
-            <Card className="p-2 border-grey shadow-sm mb-2">
-              <Card.Img
-                className="mx-auto p-2"
-                src={serviceImg}
-                alt={t("page_home.providers")}
-                style={{ maxWidth: "80px" }}
-              />
-              <Card.Body>
-                <Card.Title className="d-flex justify-content-between">
-                  {t("page_home.providers")}
-                </Card.Title>
-                <span className="lead cat-home-lead">
-                  <small>{t("page_home.providers_description")}</small>
-                </span>
-              </Card.Body>
-              <Card.Footer className="bg-transparent border-0"></Card.Footer>
-            </Card>
+                <Card.Body>
+                  <Card.Title className="d-flex justify-content-between">
+                    {t("page_home.managers")}
+                  </Card.Title>
+                  <span className="lead cat-home-lead">
+                    <small>{t("page_home.managers_description")}</small>
+                  </span>
+                </Card.Body>
+                <Card.Footer className="bg-transparent border-0"></Card.Footer>
+              </Card>
+            </div>
+            <div className="col">
+              <Card className="p-2 border-grey shadow-sm mb-2">
+                <Card.Img
+                  className="mx-auto p-2"
+                  src={ownersImg}
+                  alt={t("page_home.owners")}
+                  style={{ maxWidth: "80px" }}
+                />
+                <Card.Body>
+                  <Card.Title className="d-flex justify-content-between">
+                    {t("page_home.owners")}
+                  </Card.Title>
+                  <span className="lead cat-home-lead">
+                    <small>{t("page_home.owners_description")}</small>
+                  </span>
+                </Card.Body>
+                <Card.Footer className="bg-transparent border-0"></Card.Footer>
+              </Card>
+            </div>
+            <div className="col cat-heading-right">
+              <Card className="p-2 border-grey shadow-sm mb-2">
+                <Card.Img
+                  className="mx-auto p-2"
+                  src={serviceImg}
+                  alt={t("page_home.providers")}
+                  style={{ maxWidth: "80px" }}
+                />
+                <Card.Body>
+                  <Card.Title className="d-flex justify-content-between">
+                    {t("page_home.providers")}
+                  </Card.Title>
+                  <span className="lead cat-home-lead">
+                    <small>{t("page_home.providers_description")}</small>
+                  </span>
+                </Card.Body>
+                <Card.Footer className="bg-transparent border-0"></Card.Footer>
+              </Card>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <div className="row p-4"></div>
     </div>
   );

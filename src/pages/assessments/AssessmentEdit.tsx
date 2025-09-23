@@ -7,14 +7,12 @@ import {
   useGetProfile,
 } from "@/api";
 import {
-  Assessment,
-  AssessmentSubject,
-  AssessmentTest,
-  AssessmentCriterionImperative,
-  AlertInfo,
+  type Assessment,
+  type AssessmentSubject,
+  type AlertInfo,
   AssessmentEditMode,
-  ActorOrgAsmtType,
-  AssessmentCriterion,
+  type ActorOrgAsmtType,
+  type AutoGroupTest,
 } from "@/types";
 import { useParams } from "react-router";
 import {
@@ -26,7 +24,7 @@ import {
   Alert,
   Offcanvas,
 } from "react-bootstrap";
-import { AssessmentInfo, CriteriaTabs } from "@/pages/assessments/components";
+import { AssessmentInfo } from "@/pages/assessments/components";
 import {
   FaCheckCircle,
   FaComment,
@@ -39,23 +37,24 @@ import {
   FaTimesCircle,
   FaUsers,
 } from "react-icons/fa";
-import { evalAssessment, evalMetric } from "@/utils";
-
 import {
   useCreateAssessment,
   useGetAssessment,
   useUpdateAssessment,
 } from "@/api";
 import { Link, useNavigate } from "react-router-dom";
-import { AssessmentEvalStats } from "./components/AssessmentEvalStats";
 import { DebugJSON } from "./components/DebugJSON";
 import { AssessmentSelectActor } from "./components/AssessmentSelectActor";
-
 import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
 import { Comments } from "./components/Comments";
 import FormCheckInput from "react-bootstrap/esm/FormCheckInput";
 import { useTranslation } from "react-i18next";
+import { GroupTestModal } from "./components/tests/GroupTestModal";
+import { FaGears } from "react-icons/fa6";
+import ROUTES from "../../routes";
+import { autoSubjectType } from "@/config";
+import AssessmentBuilder from "../assessment-builder/AssessmentBuilder";
 
 type AssessmentEditProps = {
   mode: AssessmentEditMode;
@@ -65,6 +64,11 @@ interface ShareModalConfig {
   show: boolean;
   name: string;
   id: string;
+}
+
+interface GroupTestModalConfig {
+  group: AutoGroupTest | null;
+  show: boolean;
 }
 
 type Guide = {
@@ -106,6 +110,13 @@ const AssessmentEdit = ({
     show: false,
   });
 
+  // state to show/hide group_testing_modal
+  const [groupTestModalConfig, setGroupTestModalConfig] =
+    useState<GroupTestModalConfig>({
+      group: null,
+      show: false,
+    });
+
   // Share Modal
   const [shareModalConfig, setShareModalConfig] = useState<ShareModalConfig>({
     show: false,
@@ -118,22 +129,8 @@ const AssessmentEdit = ({
   const handleGuideClose = () =>
     setGuide({ id: "", title: "", text: "", show: false });
 
-  const handleGuide = (id: string, title: string, text: string) => {
-    if (id == guide.id) {
-      setGuide({ id: "", title: "", text: "", show: false });
-    } else {
-      setGuide({
-        id: id,
-        text: text,
-        title: title,
-        show: true,
-      });
-    }
-  };
-
   const navigate = useNavigate();
 
-  const [resetCriterionTab, setResetCriterionTab] = useState(false);
   const [importInfo, setImportInfo] = useState<Assessment>();
 
   const qTemplate = useGetMotivationTemplate(
@@ -181,9 +178,14 @@ const AssessmentEdit = ({
       setActiveTab(2 + extraTab);
     } else if (hash === "#assessment") {
       setActiveTab(3 + extraTab);
-      setResetCriterionTab(true);
     }
   }, [extraTab]);
+
+  useEffect(() => {
+    if (mode === AssessmentEditMode.Edit) {
+      setActiveTab(3);
+    }
+  }, [mode, extraTab]);
 
   // TODO: Get all available pages in an infinite scroll not all sequentially.
   useEffect(() => {
@@ -209,10 +211,6 @@ const AssessmentEdit = ({
     keycloak?.token || "",
     asmtId,
   );
-
-  function handleResetCriterionTabComplete() {
-    setResetCriterionTab(false);
-  }
 
   // function that checks if the required fields are empty
   function checkRequiredFields(assessment: Assessment): boolean {
@@ -257,17 +255,16 @@ const AssessmentEdit = ({
 
   // handle tab changes in wizard
   function handleChangeTab(tabKey: number) {
-    // if user selects the last step in the wizard (assessment)
-    // triger the reset criterion tab signal so as to select the first
-    // available criterion as the active sub-tab inside assessment
-    if (tabKey == 3) {
-      setResetCriterionTab(true);
-    }
     // set the active tab in the wizard
     setActiveTab(tabKey);
   }
 
   function handleNextTab() {
+    // in case we are creating a new assessment don't move over second tab
+    if (mode === AssessmentEditMode.Create && activeTab > 1) {
+      return;
+    }
+
     if (
       (mode === AssessmentEditMode.Import && activeTab < 4) ||
       activeTab < 3
@@ -280,6 +277,10 @@ const AssessmentEdit = ({
     if (activeTab > 1) {
       handleChangeTab(activeTab - 1);
     }
+  }
+
+  function handleAutoTestGroup(autogroup: AutoGroupTest) {
+    setGroupTestModalConfig({ group: autogroup, show: true });
   }
 
   function handleUpdateAssessment(exit: boolean) {
@@ -299,7 +300,7 @@ const AssessmentEdit = ({
             message: t("page_assessment_edit.toast_update_success"),
           };
           if (exit) {
-            navigate("/assessments");
+            navigate(ROUTES.ASSESSMENTS.ROOT);
           }
         });
       toast.promise(promise, {
@@ -404,6 +405,16 @@ const AssessmentEdit = ({
       setAssessment((prev_assessment) => ({
         ...templateData!,
         ...prev_assessment!,
+        ...(mode === AssessmentEditMode.Create && autoSubjectType
+          ? {
+              subject: {
+                id: organisation?.id || templateData?.organisation.id || "",
+                name:
+                  organisation?.name || templateData?.organisation.name || "",
+                type: autoSubjectType,
+              },
+            }
+          : {}),
         actor: {
           name: actor?.name || templateData?.actor.name || "",
           id: actor?.id || templateData?.actor.id || "",
@@ -434,8 +445,6 @@ const AssessmentEdit = ({
   useEffect(() => {
     if (mode !== AssessmentEditMode.Edit && qTemplate.data) {
       const data = qTemplate.data;
-
-      // setAssessment(data);
       setTemplateData(data);
       // if not on create mode load assessment itself
     } else if (mode === AssessmentEditMode.Edit && qAssessment.data) {
@@ -468,6 +477,10 @@ const AssessmentEdit = ({
     }
   }
 
+  const handleUpdateAutoResults = (assessment: Assessment) => {
+    setAssessment(assessment);
+  };
+
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -492,98 +505,6 @@ const AssessmentEdit = ({
     }
   };
 
-  function handleCriterionChange(
-    principleID: string,
-    criterionID: string,
-    newTest: AssessmentTest,
-  ) {
-    // update criterion change
-    const mandatory: (number | null)[] = [];
-    const optional: (number | null)[] = [];
-
-    if (assessment) {
-      const newPrinciples = assessment?.principles.map((principle) => {
-        if (principle.id === principleID) {
-          const newCriteria = principle.criteria.map((criterion) => {
-            let resultCriterion: AssessmentCriterion;
-            if (criterion.id === criterionID) {
-              const newTests = criterion.metric.tests.map((test) => {
-                if (test.id === newTest.id) {
-                  return newTest;
-                }
-                return test;
-              });
-              let newMetric = { ...criterion.metric, tests: newTests };
-              const { result, value } = evalMetric(newMetric);
-              newMetric = { ...newMetric, result: result, value: value };
-              // create a new criterion object with updates due to changes
-              resultCriterion = { ...criterion, metric: newMetric };
-            } else {
-              // use the old object with no changes
-              resultCriterion = criterion;
-            }
-
-            return resultCriterion;
-          });
-
-          return { ...principle, criteria: newCriteria };
-        }
-        return principle;
-      });
-
-      let compliance: boolean | null;
-
-      const newAssessment = {
-        ...assessment,
-        principles: newPrinciples,
-      };
-      // update criteria result reference tables
-
-      newAssessment.principles.forEach((principle) => {
-        principle.criteria.forEach((criterion) => {
-          if (
-            criterion.imperative === AssessmentCriterionImperative.Must ||
-            criterion.imperative === AssessmentCriterionImperative.MUST
-          ) {
-            mandatory.push(criterion.metric.result);
-          } else {
-            optional.push(criterion.metric.result);
-          }
-        });
-      });
-
-      if (mandatory.some((result) => result === null)) {
-        compliance = null;
-      } else {
-        compliance = mandatory.every((result) => result === 1);
-      }
-
-      // get how many optional items have passed
-      const optionalPass: number = optional.reduce(
-        (sum: number, current: number | null) => {
-          if (current && current > 0) {
-            return sum + 1;
-          }
-          return sum;
-        },
-        0,
-      );
-
-      // if there any optional items available, ranking is equal to the percentage of optional passed / total optional
-      // else ranking is 0
-      const ranking =
-        optional.length > 0 ? (optionalPass / optional.length) * 100 : 0;
-
-      setAssessment({
-        ...newAssessment,
-        result: { compliance: compliance, ranking: ranking },
-      });
-    }
-  }
-
-  // evaluate the assessment
-  const evalResult = evalAssessment(assessment);
-
   let importDone = true;
   if (mode === AssessmentEditMode.Import) {
     importDone = Boolean(importInfo?.actor?.id);
@@ -594,10 +515,29 @@ const AssessmentEdit = ({
       ? importDone
         ? activeTab === 1 || (wizardTabActive && activeTab <= 3)
         : false
-      : wizardTabActive && activeTab < 3;
+      : mode === AssessmentEditMode.Create
+        ? wizardTabActive && activeTab < 2
+        : wizardTabActive && activeTab < 3;
+
+  // check if assessment has automated test groups
+  const hasAutoGroups =
+    assessment && assessment?.automated_group_test?.length > 0;
 
   return (
     <>
+      {hasAutoGroups && (
+        <GroupTestModal
+          show={
+            groupTestModalConfig.show && Boolean(groupTestModalConfig.group)
+          }
+          groupTest={groupTestModalConfig.group}
+          onHide={() => {
+            setGroupTestModalConfig({ group: null, show: false });
+          }}
+          assessment={assessment}
+          onUpdateResults={handleUpdateAutoResults}
+        />
+      )}
       <ShareModal
         show={shareModalConfig.show}
         name={shareModalConfig.name}
@@ -697,7 +637,7 @@ const AssessmentEdit = ({
         }}
       >
         <Card className="mb-3 mt-3">
-          <Card.Header>
+          <Card.Header className="d-flex justify-content-between align-items-center">
             <Nav variant="pills">
               {mode === AssessmentEditMode.Import && (
                 <Nav.Item className="bg-light border rounded me-2">
@@ -742,24 +682,26 @@ const AssessmentEdit = ({
                   )}
                 </Nav.Link>
               </Nav.Item>
-              <Nav.Item
-                className={`bg-light border rounded me-2 ${
-                  !wizardTabActive ? "opacity-25" : ""
-                }`}
-              >
-                <Nav.Link
-                  eventKey={`step-${3 + extraTab}`}
-                  disabled={!wizardTabActive}
+              {mode !== AssessmentEditMode.Create && (
+                <Nav.Item
+                  className={`bg-light border rounded me-2 ${
+                    !wizardTabActive ? "opacity-25" : ""
+                  }`}
                 >
-                  <span className="badge text-black bg-light me-2">
-                    {`${t("page_assessment_edit.step")} ${3 + extraTab}.`}
-                  </span>{" "}
-                  {t("assessment")}
-                </Nav.Link>
-              </Nav.Item>
+                  <Nav.Link
+                    eventKey={`step-${3 + extraTab}`}
+                    disabled={!wizardTabActive}
+                  >
+                    <span className="badge text-black bg-light me-2">
+                      {`${t("page_assessment_edit.step")} ${3 + extraTab}.`}
+                    </span>{" "}
+                    {t("assessment")}
+                  </Nav.Link>
+                </Nav.Item>
+              )}
             </Nav>
           </Card.Header>
-          <Card.Body>
+          <Card.Body className="p-1">
             <Tab.Content className="p-2">
               {mode === AssessmentEditMode.Import && (
                 <Tab.Pane className="text-black" eventKey={"step-1"}>
@@ -779,7 +721,7 @@ const AssessmentEdit = ({
                         <small>
                           <FaHandPointRight />{" "}
                           {` ${t("page_assessment_edit.imp5")} `}
-                          <Link to="/assessments">
+                          <Link to={ROUTES.ASSESSMENTS.ROOT}>
                             {t("page_assessment_edit.imp6")}
                           </Link>
                           {` ${t("page_assessment_edit.imp7")} `}
@@ -990,23 +932,41 @@ const AssessmentEdit = ({
                 className="text-black"
                 eventKey={`step-${3 + extraTab}`}
               >
-                {evalResult && assessment?.result && (
-                  <AssessmentEvalStats
-                    evalResult={evalResult}
-                    assessmentResult={assessment.result}
-                  />
+                {hasAutoGroups && (
+                  <div className="row cat-alert-warning-colors p-2">
+                    <div>
+                      <small className="me-2">
+                        <FaGears size="1.2rem" className="me-2" />
+                        {t("page_assessment_edit.include_group_tests")}
+                      </small>
+
+                      {assessment?.automated_group_test.map((item) => {
+                        return (
+                          <Button
+                            size="sm"
+                            variant="success"
+                            key={item.test_method}
+                            onClick={() => {
+                              setGroupTestModalConfig({
+                                group: item,
+                                show: true,
+                              });
+                            }}
+                          >
+                            {item.test_method}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
-                <div
-                  className="row bg-secondary"
-                  style={{ height: "1px" }}
-                ></div>
-                <CriteriaTabs
-                  principles={assessment?.principles || []}
-                  resetActiveTab={resetCriterionTab}
-                  onTestChange={handleCriterionChange}
-                  onResetActiveTab={handleResetCriterionTabComplete}
-                  handleGuide={handleGuide}
-                  handleGuideClose={handleGuideClose}
+                <AssessmentBuilder
+                  assessmentTemplate={assessment}
+                  setAssessmentTemplate={setAssessment}
+                  onAutoTestGroup={handleAutoTestGroup}
+                  onSaveAssessmentChanges={() => handleUpdateAssessment(false)}
+                  onAssessmentSubmit={() => handleUpdateAssessment(true)}
+                  wizardTabActive={wizardTabActive}
                 />
               </Tab.Pane>
             </Tab.Content>
@@ -1037,9 +997,8 @@ const AssessmentEdit = ({
                 {`${t("buttons.next")} →`}
               </Button>
             </div>
-            {/* Add SAVE button here and cancel */}
             <div>
-              {mode !== AssessmentEditMode.Edit ? (
+              {mode !== AssessmentEditMode.Edit && (
                 <Button
                   id="create_assessment_button"
                   disabled={!wizardTabActive}
@@ -1050,36 +1009,6 @@ const AssessmentEdit = ({
                 >
                   {t("buttons.create")}
                 </Button>
-              ) : (
-                <>
-                  <Button
-                    id="save_assessment_button"
-                    disabled={!wizardTabActive}
-                    className="ms-2 btn btn-success px-5"
-                    onClick={() => {
-                      handleUpdateAssessment(false);
-                    }}
-                  >
-                    {t("buttons.save")}
-                  </Button>
-
-                  <Button
-                    id="submit_assessment_button"
-                    disabled={
-                      !(
-                        assessment &&
-                        assessment.result &&
-                        assessment.result.compliance !== null
-                      )
-                    }
-                    className="ms-2 btn btn-success px-5"
-                    onClick={() => {
-                      handleUpdateAssessment(true);
-                    }}
-                  >
-                    {t("buttons.submit")}
-                  </Button>
-                </>
               )}
               <Link
                 className="btn btn-secondary ms-5 px-4"

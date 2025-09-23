@@ -10,7 +10,7 @@ import {
   FaExclamationTriangle,
   FaStaylinked,
 } from "react-icons/fa";
-import { AlertInfo, Subject } from "@/types";
+import type { AlertInfo, Subject } from "@/types";
 import {
   useCreateSubject,
   useDeleteSubject,
@@ -36,11 +36,14 @@ import { useTranslation } from "react-i18next";
 import { idToColor } from "@/utils/admin";
 
 // Modes under which SubjectModal operates
-enum SubjectModalMode {
-  Create,
-  Update,
-  Delete,
-}
+const SubjectModalMode = {
+  Create: 0,
+  Update: 1,
+  Delete: 2,
+} as const;
+
+type SubjectModalMode =
+  (typeof SubjectModalMode)[keyof typeof SubjectModalMode];
 
 // Basic configuration for subject modal
 type SubjectModalBasicConfig = {

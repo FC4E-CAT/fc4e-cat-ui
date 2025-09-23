@@ -1,5 +1,6 @@
-import { MotivationReference } from "@/types";
+import type { MotivationReference } from "@/types";
 import { Link } from "react-router-dom";
+import ROUTES, { buildRoute } from "../routes";
 
 /**
  * Small component to display a short list of motivations in which the item is included.
@@ -16,7 +17,7 @@ export const MotivationRefList = ({
           <span className="badge bg-primary-cat border">
             <Link
               className="text-muted"
-              to={`/admin/motivations/${item.id}`}
+              to={buildRoute(ROUTES.ADMIN.MOTIVATIONS.VIEW, { mtvId: item.id })}
             >{`${item.label}`}</Link>
           </span>
         </span>

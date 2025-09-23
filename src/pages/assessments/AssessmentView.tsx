@@ -12,14 +12,15 @@ import imgAssessmentBadgeWip from "@/assets/badge-wip.png";
 import imgAssessmentBadgeFailed from "@/assets/badge-failed.png";
 import Accordion from "react-bootstrap/Accordion";
 import {
-  Assessment,
+  type Assessment,
   AssessmentCriterionImperative,
-  AssessmentStats,
+  type AssessmentStats,
 } from "@/types";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import AssessmentPdf from "./AssessmentPdf";
 import { useTranslation } from "react-i18next";
 import { prettyPrintRanking } from "@/utils";
+import { AutoTestDetails } from "./components/tests/AutoTestDetails";
 
 // dig through the assessment and collect the completion statistics
 function gatherStats(assessment: Assessment | undefined): AssessmentStats {
@@ -66,15 +67,14 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
 
   const asmtNumID = asmtId !== undefined ? asmtId : "";
 
-  const qAssessment = useGetAssessment({
+  const { data: assessmentData } = useGetAssessment({
     id: asmtNumID,
     token: keycloak?.token || "",
     isRegistered: registered,
     isPublic: isPublic,
   });
 
-  const assessment = qAssessment.data?.assessment_doc;
-
+  const assessment = assessmentData?.assessment_doc;
   const stats = gatherStats(assessment);
 
   return (
@@ -91,7 +91,8 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
               </h2>
               <p className="lead cat-view-lead fs-6 ">
                 <span className="text-gray-dark">
-                  {t("compliance_policy")}: {assessment.assessment_type.name}{" "}
+                  {t("compliance_policy")}:{" "}
+                  {assessment.assessment_type.name}{" "}
                 </span>
               </p>
             </Col>
@@ -381,12 +382,12 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                       <span className="text-primary p-2">
                                         {params.map((item, indx) => {
                                           return indx === params.length - 1 ? (
-                                            <span className="me-4">
+                                            <span key={indx} className="me-4">
                                               <strong>{item}:</strong>
                                               {test.value || t("na")}
                                             </span>
                                           ) : (
-                                            <span className="me-4">
+                                            <span key={indx} className="me-4">
                                               <strong>{item}:</strong> {t("na")}
                                             </span>
                                           );
@@ -419,6 +420,13 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
                                           ))}
                                         </div>
                                       )}
+
+                                    {test.last_run && (
+                                      <AutoTestDetails
+                                        details={test.last_run}
+                                        variant="white"
+                                      />
+                                    )}
                                   </div>
                                 );
                               })}

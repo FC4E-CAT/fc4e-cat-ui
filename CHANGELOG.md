@@ -2,7 +2,84 @@
 
 All notable changes in FC4E-CAT-UI project are documented here
 
-## [v3.1.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v3.1.0) (2025-03-31)
+## [v3.2.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.3.2.0) (2025-09-23)
+
+### Added
+
+- CAT-1016 Update Zenodo Settings UI with Password Visibility Toggle and Improve Toggle Button Styling ([#589](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/589))
+- CAT-1015 Implement Settings UI and Functionality for Zenodo and AAI Autocomplete Values ([#587](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/587))
+- CAT-1014 Add "Most Common Failed Criteria" section to Admin Dashboard ([#586](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/586))
+- CAT-341 Implement Administrator Dashboard Page ([#582](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/582))
+- CAT-1003 Implement motivation deletion functionality with API integration ([#579](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/579))
+- CAT-998 Integrate Assessment Builder Preview Mode into Assessment List ([#575](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/575))
+- CAT-996 Implement Interactive Preview Mode for Assessment ([#574](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/574))
+- CAT-987 Expand use of test icons in AssessmentBuilder and Create Test ([#565](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/565))
+- CAT-987 Add icons to different types of tests ([#564](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/564))
+- CAT-983 Add Edit Mode for Tests in Assessment Builder ([#560](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/560))
+- CAT-980 Refactor Test Configuration to be Created in Preview Column of Builder ([#559](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/559))
+- CAT-975 Add Live Test Preview to Assessment Builder with Interactive Feedback ([#558](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/558))
+- CAT-973 Implement Advanced Settings for Metric and Assessment Builder Improvements ([#554](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/554))
+- CAT-965 Add Test Deletion, Auto-select Criteria & UI Improvements for Assessment Builder ([#551](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/551))
+- CAT-942 Implement Test Assignment in Assessment Builder ([#550](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/550))
+- CAT-933 Implement Metric Configuration in Assessment Builder ([#546](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/546))
+- CAT-917 Refactor Assessment Builder to use Criteria-First Approach (sub-tasks) ([#543](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/543))
+- CAT-917 Refactor Assessment Builder to use Criteria-First ([#541](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/541))
+- CAT-916 Implement Assessment Builder with Principles Management ([#540](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/540))
+- CAT-910 Add aai providers in request validation form ([#537](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/537))
+- CAT-899 Add execution information in assessment when automated tests run ([#536](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/536))
+- CAT-906 Merge Metrics and Metric-Definition Entities and Implement Metric Management ([#535](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/535))
+- CAT-900 Configure auto group tests when adding a new Motivation-Actor ([#534](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/534))
+- CAT-905 Create Reusable Settings Layout and Implement Settings for Metrics ([#533](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/533))
+- CAT-901 Implement Admin Settings Panel with Test Method Management ([#532](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/532))
+- CAT-896 Support automated group of tests in the ui ([#531](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/531))
+- CAT-880 Add Versioning Support for Metrics ([#526](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/526))
+- CAT-870 Implement Test Preview Mode in Test Creation UI ([#521](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/521))
+- CAT-869 Implement Test Versioning UI for Tests ([#520](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/520))
+- CAT-866 Implement "Create New Version" for Test ([#519](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/519))
+- CAT-865 Add support for automated g069 test ([#518](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/518))
+
+### Changed
+
+- CAT-1013 Make UserMenu responsive for smaller screens ([#585](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/585))
+- CAT-914 Refactor assessment progress bars UI to improve clarity of questions status ([#578](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/578))
+- CAT-522 Set evidence description required when adding evidence url ([#577](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/577))
+- CAT-993 Improve Assessment Builder Responsive Layout Across All Screen Sizes ([#572](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/572))
+- CAT-989 update to vite 7.x, react 19.x and react-query 5.x ([#571](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/571))
+- CAT-992 Improve Layout and UX for Assessment Builder Test Creation Form ([#570](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/570))
+- CAT-991 Assessment Builder Enhancements and Refactoring ([#569](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/569))
+- CAT-985 Refactor Validation styles to display as a grid of cards ([#568](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/568))
+- CAT-947 Update validation request form and optional functionality ([#567](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/567))
+- CAT-986 Refactor test_id handling when assign tests to a metric ([#563](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/563))
+- CAT-985 Refactor Validation styles to display as a grid of cards ([#562](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/562))
+- CAT-949 create new assessment in two steps ([#557](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/557))
+- CAT-888 Revert binary test form to use yes/no option boxes ([#556](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/556))
+- CAT-888 Update TRL slider ([#555](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/555))
+- CAT-888 Create specific views and update existing ones for trl, ratio ([#553](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/553))
+- CAT-948 Don't limit validation source search to 3 characters and above ([#549](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/549))
+- CAT-918 Apply burger menu for small screens for admin pages ([#547](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/547))
+- CAT-932 Implement minimal theme/branding options ([#544](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/544))
+- CAT-913 Update styling in autotest details ([#539](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/539))
+- CAT-912 Refactor Application Routing to Use Constants Routes ([#538](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/538))
+- CAT-892 Implement test method preview components and improve create test form UI ([#530](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/530))
+- CAT-890 Refactor Test Creation UI and functionality ([#529](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/529))
+- CAT-889 Update TestBinaryParam ([#528](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/528))
+- CAT-883 Refactor Sidebar Menu Design and Improve Page Layout ([#527](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/527))
+- CAT-877 Merge Test and Test Definition Entities in UI ([#525](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/525))
+- CAT-874 View public assessments from all motivations ([#523](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/523))
+- CAT-872 Handle multiple g069 test methods ([#522](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/522))
+
+### Fixed
+
+- CAT-1034 Fix Assessments Pagination Not Working ([#591](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/591))
+- CAT-1009 Fix 401 token invalidation not triggering user logout after role change ([#583](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/583))
+- CAT-999 Assessment Result View Crashes After Assessment Update/Submit ([#576](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/576))
+- CAT-994 Add Confirmation Dialog for Unsaved Changes When Switching Criteria ([#573](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/573))
+- CAT-988 Refactor pagination handling and improve criterion editing workflow for Assessment Builder ([#566](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/566))
+- CAT-984 Fix test assignment to metrics conflict when creating new tests ([#561](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/561))
+- CAT-955 Fix Criterion-Principle Assignment to Assessment Type ([#548](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/548))
+- CAT-873 Refactor Test Form Modal UI and Parameters Management ([#524](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/524))
+
+## [v3.1.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.3.1.0) (2025-03-31)
 
 ### Added
 
@@ -158,13 +235,13 @@ All notable changes in FC4E-CAT-UI project are documented here
 - Small fixes ([#403](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/403))
 - CAT-578 fix motivations search and pagination ([#405](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/405))
 
-## [v1.3.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.3.1) (2024-09-11)
+## [v1.3.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.1.3.1) (2024-09-11)
 
 ### Fixed:
 
 - CAT-491 Fix assessment name in delete assessment modal ([#333](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/333))
 
-## [v1.3.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.3.0) (2024-09-10)
+## [v1.3.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.1.3.0) (2024-09-10)
 
 ### Added:
 
@@ -287,7 +364,7 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-467 Fix user details in comments ([#301](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/301))
 - CAT-461 Fix view actor in shared assessment issue ([#305](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/305))
 
-## [v1.2.3](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.3) (2024-07-04)
+## [v1.2.3](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.1.2.3) (2024-07-04)
 
 ### Added:
 
@@ -304,7 +381,7 @@ All notable changes in FC4E-CAT-UI project are documented here
 
 - CAT-391 Display error when import json format has issues ([#209](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/209))
 
-## [v1.2.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.1) (2024-06-13)
+## [v1.2.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.1.2.1) (2024-06-13)
 
 ### Fixed:
 
@@ -313,7 +390,7 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-389 Fix required label on assessment criterion menu ([#201](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/201))
 - CAT-390 make Public Assessment download button work without login ([#202](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/202))
 
-## [v1.2.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.2.0) (2024-06-10)
+## [v1.2.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.1.2.0) (2024-06-10)
 
 ### Added:
 
@@ -330,7 +407,7 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-379 Fix orcid validation regex ([#191](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/191))
 - CAT-367 Fix key press enter issue in assessment edit view ([#194](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/194))
 
-## [v1.1.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.1.0) (2024-04-29)
+## [v1.1.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.1.1.0) (2024-04-29)
 
 ### Added:
 
@@ -370,19 +447,19 @@ All notable changes in FC4E-CAT-UI project are documented here
 - CAT-344 Fix button layout in admin validations and admin user views ([#182](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/182))
 - CAT-344 Fix validation actor filter service provider value ([#184](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/184))
 
-## [v1.0.2](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.0.2) (2024-02-16)
+## [v1.0.2](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.1.0.2) (2024-02-16)
 
 ### Added:
 
 CAT-319 Update UI validation to support custom organisation source ([#144](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/144))
 
-## [v1.0.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.0.1) (2024-02-12)
+## [v1.0.1](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.1.0.1) (2024-02-12)
 
 ### Fixed:
 
 CAT-310 Fix validation details requests for admin and non-admin views ([#141](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/141))
 
-## [v1.0.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v1.0.0) (2024-01-26)
+## [v1.0.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/V.1.1.0) (2024-01-26)
 
 ### Added:
 
@@ -463,7 +540,7 @@ CAT-310 Fix validation details requests for admin and non-admin views ([#141](ht
 - CAT-260 Elaborate on faulty actor changes in the assessment ([#121](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/121))
 - CAT-271 Fix Filters in assessment list views ([#129](https://github.com/FC4E-CAT/fc4e-cat-ui/pull/129))
 
-## [v0.2.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v0.2.0) (2023-09-04)
+## [v0.2.0](https://github.com/FC4E-CAT/fc4e-cat-ui/releases/tag/v.0.2.0) (2023-09-04)
 
 ### Added
 

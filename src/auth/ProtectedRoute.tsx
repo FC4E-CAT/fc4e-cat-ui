@@ -4,6 +4,7 @@ import { AuthContext } from "@/auth";
 import Keycloak from "keycloak-js";
 import KeycloakConfig from "@/keycloak.json";
 import { useUserRegister, useGetProfile } from "@/api";
+import ROUTES from "@/routes";
 
 import UserMenu from "@/components/UserMenu";
 import AdminMenu from "@/components/AdminMenu";
@@ -100,23 +101,24 @@ export function ProtectedRoute() {
   // check if a non-admin user tries to access an admin view
   useEffect(() => {
     if (authenticated && adminRoute && profileData) {
-      if (profileData.user_type.toLowerCase() !== "admin") navigate("/profile");
+      if (profileData.user_type.toLowerCase() !== "admin")
+        navigate(ROUTES.PROFILE.ROOT);
     }
   }, [authenticated, adminRoute, profileData, navigate]);
 
   if (authenticated && isSuccess && profileData) {
     return profileData.user_type.toLowerCase() === "admin" ? (
       <div className="cat-admin-container d-flex flex-row">
-        <div className="bg-light p-4 my-4 mb-5 rounded">
+        <div>
           <AdminMenu />
         </div>
-        <div className="rounded bg-white container-fluid mb-4 flex-grow-1">
+        <div className="bg-white container-fluid mb-4 flex-grow-1">
           <Outlet />
         </div>
       </div>
     ) : (
       <div className="cat-admin-container d-flex flex-row">
-        <div className="bg-light p-4 my-4 mb-5 rounded">
+        <div>
           <UserMenu />
         </div>
         <div className="rounded bg-white container-fluid mb-4 flex-grow-1">

@@ -8,6 +8,13 @@ interface MotivationMetricProps {
   show: boolean;
   getByCriterion: boolean;
   onHide: () => void;
+  onMetricMetadata?: () => {
+    id: string;
+    name: string;
+    label_algorithm_type: string;
+    label_type_metric: string;
+    benchmark_value: string;
+  };
 }
 /**
  * Modal component for displaying criterion metric
@@ -22,8 +29,11 @@ export function MotivationMetricDetailsModal(props: MotivationMetricProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-success text-white" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
+      <Modal.Header closeButton>
+        <Modal.Title
+          className="d-flex align-items-center gap-1"
+          id="contained-modal-title-vcenter"
+        >
           {props.getByCriterion
             ? t("page_motivations.criterion_metric_tests")
             : t("page_motivations.metric_details")}
@@ -35,6 +45,7 @@ export function MotivationMetricDetailsModal(props: MotivationMetricProps) {
             mtvId={props.mtvId}
             itemId={props.itemId}
             getByCriterion={props.getByCriterion}
+            metricMetadata={props?.onMetricMetadata && props.onMetricMetadata()}
           />
         )}
       </Modal.Body>

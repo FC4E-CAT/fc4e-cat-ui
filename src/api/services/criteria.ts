@@ -7,12 +7,14 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { handleBackendError } from "@/utils";
-import {
+import type {
+  ApiOptions,
   ApiOptionsSearch,
   CriterionInput,
   CriterionResponse,
   CriterionTypeResponse,
   ImperativeResponse,
+  Pagination,
   RegistryCriterion,
 } from "@/types";
 
@@ -29,14 +31,11 @@ export const useGetCriteria = ({
     queryKey: ["criteria", { size, page, sortBy, sortOrder, search }],
     queryFn: async () => {
       let url = `/v1/registry/criteria?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
-      search ? (url = `${url}&search=${search}`) : null;
+      if (search) url += `&search=${search}`;
 
       const response = await APIClient(token).get<CriterionResponse>(url);
 
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
@@ -60,17 +59,10 @@ export const useGetCriterion = ({
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: !!token && isRegistered && id !== "" && id !== undefined,
   });
 
-export const useGetAllCriteria = ({
-  token,
-  isRegistered,
-  size,
-}: ApiOptionsSearch) =>
+export const useGetAllCriteria = ({ token, isRegistered, size }: ApiOptions) =>
   useInfiniteQuery({
     queryKey: ["all-criteria"],
     queryFn: async ({ pageParam = 1 }) => {
@@ -79,15 +71,14 @@ export const useGetAllCriteria = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -106,15 +97,14 @@ export const useGetAllImperatives = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -122,11 +112,18 @@ export const useGetAllImperatives = ({
 
 export const useCreateCriterion = (
   token: string,
-  { cri, label, description, imperative, type_criterion_id }: CriterionInput,
+  {
+    cri,
+    label,
+    description,
+    imperative,
+    type_criterion_id,
+    motivation_id,
+  }: CriterionInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).post<CriterionResponse>(
         `/v1/registry/criteria`,
         {
@@ -135,21 +132,20 @@ export const useCreateCriterion = (
           description,
           imperative,
           type_criterion_id,
+          motivation_id,
         },
       );
       return response.data;
     },
 
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["criteria"]);
-        queryClient.invalidateQueries(["all-criteria"]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["criteria"] });
+      queryClient.invalidateQueries({ queryKey: ["all-criteria"] });
+    },
+  });
 };
 
 export const useGetAllCriterionTypes = ({
@@ -165,15 +161,14 @@ export const useGetAllCriterionTypes = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -182,31 +177,29 @@ export const useGetAllCriterionTypes = ({
 export const useUpdateCriterion = (
   token: string,
   id: string,
-  { cri, label, description }: CriterionInput,
+  { cri, label, description, imperative }: CriterionInput,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation(
-    async () => {
+  return useMutation({
+    mutationFn: async () => {
       const response = await APIClient(token).patch<CriterionResponse>(
         `/v1/registry/criteria/${id}`,
         {
           cri,
           label,
           description,
+          imperative,
         },
       );
       return response.data;
     },
-
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(["criterion", id]);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["criterion", id] });
+    },
+  });
 };
 
 export function useDeleteCriterion(token: string) {
@@ -217,7 +210,7 @@ export function useDeleteCriterion(token: string) {
     },
     // on success refresh criteria query (so that the deleted criterion dissapears from list)
     onSuccess: () => {
-      queryClient.invalidateQueries(["criterion"]);
+      queryClient.invalidateQueries({ queryKey: ["criterion"] });
     },
   });
 }

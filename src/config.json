@@ -17,10 +17,21 @@
     "criterion_imperative": "MUST",
     "motivation_metric_type": "Binary",
     "motivation_metric_algorithm": "Simple Sum",
-    "motivation_metric_benchmark_type": "Binary-Binary "
+    "motivation_metric_benchmark_type": "Binary-Binary ",
+    "g069_param_user_info": "entitlements_in_user_info",
+    "g069_param_token_introspection": "entitlements_in_token_introspection"
   },
   "links": {
     "github": "https://github.com/fc4e-cat",
     "docs": "https://fc4e-cat.github.io/fc4e-cat-doc/"
+  },
+  "g069_providers": {
+    "EGI": "egi",
+    "Bildung Proxy Student": "bildungsproxy-student",
+    "NFDI RegApp": "nfdi-regapp",
+    "Login": "login",
+    "NFDI Infra Staging": "nfdiinfrastaging",
+    "Academic Id": "academic-id",
+    "Cilogon": "cilogon"
   }
 }

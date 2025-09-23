@@ -10,7 +10,7 @@ import {
   OverlayTrigger,
   Tooltip,
 } from "react-bootstrap";
-import { AssessmentSubject, UserProfile, AssessmentActor } from "@/types";
+import type { AssessmentSubject, UserProfile, AssessmentActor } from "@/types";
 import { AssessmentSelectSubject } from "./AssessmentSelectSubject";
 import {
   FaCog,
@@ -40,7 +40,8 @@ interface AssessmentInfoProps {
 }
 
 export const AssessmentInfo = (props: AssessmentInfoProps) => {
-  const [accKeys, setAccKeys] = useState<string[]>([]);
+  // always have first accordeon item open by default
+  const [accKeys, setAccKeys] = useState<string[]>(["acc-1"]);
   const { t } = useTranslation();
   const toggleAccKey = (name: string) => {
     if (accKeys.includes(name)) {
@@ -65,7 +66,7 @@ export const AssessmentInfo = (props: AssessmentInfoProps) => {
   }, [props.reqFields]);
 
   return (
-    <Accordion defaultActiveKey={["acc-1"]} activeKey={accKeys} alwaysOpen>
+    <Accordion activeKey={accKeys}>
       <Accordion.Item eventKey="acc-1" id="accordion_general">
         <Accordion.Header onClick={() => toggleAccKey("acc-1")}>
           <span>

@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { AlertInfo, Motivation, MotivationActor } from "@/types";
+import type { AlertInfo, Motivation, MotivationActor } from "@/types";
 import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import {
   Alert,
@@ -27,6 +27,7 @@ import {
   FaLock,
   FaUnlock,
   FaBorderNone,
+  FaEdit,
 } from "react-icons/fa";
 import schemesImg from "@/assets/thumb_scheme.png";
 import authImg from "@/assets/thumb_auth.png";
@@ -54,6 +55,7 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { MotivationMetrics } from "./components/MotivationMetrics";
 import { useTranslation } from "react-i18next";
 import { SearchBox } from "@/components/SearchBox";
+import ROUTES, { buildRoute } from "../../routes";
 
 const actorImages: { [key: string]: string } = {
   "PID Service Provider (Role)": serviceImg,
@@ -149,7 +151,7 @@ export default function MotivationDetails() {
       message: t("page_motivations.modal_asmt_delete_message"),
       itemId: "",
       itemName: "",
-      mtvId: params.id || "",
+      mtvId: params.mtvId || "",
     });
 
   const mutationDelete = useDeleteMotivationActor(keycloak?.token || "");
@@ -169,14 +171,14 @@ export default function MotivationDetails() {
         })
         .then(() => {
           alert.current = {
-            message: t("page_motivations.toast_asmt_delete_sucess"),
+            message: t("page_motivations.toast_asmt_delete_success"),
           };
           setDeleteActorModalConfig({
             ...deleteActorModalConfig,
             show: false,
             itemId: "",
             itemName: "",
-            mtvId: params.id || "",
+            mtvId: params.mtvId || "",
           });
         });
       toast.promise(promise, {
@@ -230,7 +232,7 @@ export default function MotivationDetails() {
   };
 
   const { data: motivationData } = useGetMotivation({
-    id: params.id!,
+    id: params.mtvId!,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
@@ -241,6 +243,9 @@ export default function MotivationDetails() {
     <Tooltip id="tip-restore">
       {t("page_motivations.tip_manage_criteria")}
     </Tooltip>
+  );
+  const tooltipEditAssessment = (
+    <Tooltip id="tip-edit-assessment">Edit Assessment</Tooltip>
   );
 
   const {
@@ -595,10 +600,40 @@ export default function MotivationDetails() {
                                   >
                                     <Link
                                       className="btn btn-light btn-sm m-1"
-                                      to={`/admin/motivations/${params.id}/templates/actors/${item.id}`}
+                                      to={buildRoute(
+                                        ROUTES.ADMIN.MOTIVATIONS.TEMPLATES,
+                                        {
+                                          mtvId: params.mtvId || "",
+                                          actId: item.id,
+                                        },
+                                      )}
                                     >
                                       <FaBars />
                                     </Link>
+                                  </OverlayTrigger>
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={tooltipEditAssessment}
+                                  >
+                                    {item.published ? (
+                                      <span className="btn btn-light btn-sm m-1 disabled">
+                                        <FaEdit />
+                                      </span>
+                                    ) : (
+                                      <Link
+                                        className="btn btn-light btn-sm m-1"
+                                        to={buildRoute(
+                                          ROUTES.ADMIN.MOTIVATIONS
+                                            .ASSESSMENT_BUILDER_EDIT,
+                                          {
+                                            mtvId: params.mtvId || "",
+                                            actId: item.id,
+                                          },
+                                        )}
+                                      >
+                                        <FaEdit />
+                                      </Link>
+                                    )}
                                   </OverlayTrigger>
                                   <OverlayTrigger
                                     placement="top"
@@ -612,7 +647,14 @@ export default function MotivationDetails() {
                                       <>
                                         <Link
                                           className="btn btn-light btn-sm m-1"
-                                          to={`/admin/motivations/${params.id}/actors/${item.id}`}
+                                          to={buildRoute(
+                                            ROUTES.ADMIN.MOTIVATIONS
+                                              .ACTOR_CRITERIA,
+                                            {
+                                              mtvId: params.mtvId || "",
+                                              actId: item.id,
+                                            },
+                                          )}
                                         >
                                           <FaAward />
                                         </Link>
@@ -634,7 +676,7 @@ export default function MotivationDetails() {
                                         className="btn btn-light btn-sm m-1"
                                         onClick={() => {
                                           handleUnpublish(
-                                            params.id || "",
+                                            params.mtvId || "",
                                             item.id,
                                           );
                                         }}
@@ -657,7 +699,7 @@ export default function MotivationDetails() {
                                         className="btn btn-light btn-sm m-1"
                                         onClick={() => {
                                           handlePublish(
-                                            params.id || "",
+                                            params.mtvId || "",
                                             item.id,
                                           );
                                         }}
@@ -718,7 +760,7 @@ export default function MotivationDetails() {
             }
           >
             <MotivationPrinciples
-              mtvId={params.id || ""}
+              mtvId={params.mtvId || ""}
               published={motivation?.published || false}
             />
           </Tab>
@@ -734,7 +776,7 @@ export default function MotivationDetails() {
             }
           >
             <MotivationCriteria
-              mtvId={params.id || ""}
+              mtvId={params.mtvId || ""}
               published={motivation?.published || false}
             />
           </Tab>
@@ -751,7 +793,7 @@ export default function MotivationDetails() {
             }
           >
             <MotivationMetrics
-              mtvId={params.id || ""}
+              mtvId={params.mtvId || ""}
               published={motivation?.published || false}
             />
           </Tab>
@@ -762,7 +804,7 @@ export default function MotivationDetails() {
         <Button
           variant="secondary"
           onClick={() => {
-            navigate(`/admin/motivations`);
+            navigate(ROUTES.ADMIN.MOTIVATIONS.ROOT);
           }}
         >
           {t("buttons.back")}

@@ -1,5 +1,5 @@
 import { AuthContext } from "@/auth";
-import { AlertInfo, Criterion, Principle } from "@/types";
+import type { AlertInfo, Criterion, Principle } from "@/types";
 import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import { Button, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import toast from "react-hot-toast";
@@ -15,6 +15,7 @@ import {
 import { FaTrashCan } from "react-icons/fa6";
 import { useParams, useNavigate } from "react-router-dom";
 import MotivationPrinciplesModal from "./components/MotivationPrinciplesModal";
+import ROUTES, { buildRoute } from "@/routes";
 
 import { relMtvPrincpleCriterion } from "@/config";
 import {
@@ -106,7 +107,7 @@ export default function MotivationCriteriaPrinciples() {
     fetchNextPage: selCriFetchNextPage,
     hasNextPage: selCriHasNextPage,
   } = useGetMotivationCriteria(params.mtvId || "", {
-    size: 5,
+    size: 100,
     token: keycloak?.token || "",
     isRegistered: registered,
   });
@@ -171,7 +172,11 @@ export default function MotivationCriteriaPrinciples() {
           alert.current = {
             message: t("page_motivations.toast_manage_cri_success"),
           };
-          navigate(`/admin/motivations/${params.mtvId}`);
+          navigate(
+            buildRoute(ROUTES.ADMIN.MOTIVATIONS.VIEW, {
+              mtvId: params.mtvId!,
+            }),
+          );
         });
       toast.promise(promise, {
         loading: t("page_motivations.toast_manage_cri_progress"),
@@ -444,7 +449,11 @@ export default function MotivationCriteriaPrinciples() {
         <Button
           variant="secondary"
           onClick={() => {
-            navigate(`/admin/motivations/${params.mtvId}`);
+            navigate(
+              buildRoute(ROUTES.ADMIN.MOTIVATIONS.VIEW, {
+                mtvId: params.mtvId!,
+              }),
+            );
           }}
         >
           {t("buttons.back")}

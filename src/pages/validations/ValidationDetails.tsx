@@ -1,9 +1,9 @@
 import { useValidationStatusUpdate, useGetValidationDetails } from "@/api";
 import { AuthContext } from "@/auth";
 import {
-  ValidationProps,
-  AlertInfo,
-  ValidationResponse,
+  type ValidationProps,
+  type AlertInfo,
+  type ValidationResponse,
   ValidationStatus,
 } from "@/types";
 import { useRef, useState, useContext, useEffect } from "react";
@@ -20,9 +20,10 @@ import {
 import Badge from "react-bootstrap/Badge";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { idToColor, trimField } from "@/utils/admin";
-import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Tooltip, OverlayTrigger, type TooltipProps } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard-ts";
 import { useTranslation } from "react-i18next";
+import ROUTES, { buildRoute } from "../../routes";
 
 function ValidationDetails(props: ValidationProps) {
   const { t } = useTranslation();
@@ -119,7 +120,7 @@ function ValidationDetails(props: ValidationProps) {
                     message: t("page_validation_details.toast_reject_success"),
                   };
                 })
-                .finally(() => navigate("/admin/validations"));
+                .finally(() => navigate(ROUTES.ADMIN.VALIDATIONS));
               toast.promise(promise, {
                 loading: t("page_validation_details.toast_reject_progress"),
                 success: () => `${alert.current.message}`,
@@ -131,7 +132,9 @@ function ValidationDetails(props: ValidationProps) {
           </button>
           <button
             onClick={() => {
-              navigate(`/admin/validations/${params.id}`);
+              navigate(
+                buildRoute(ROUTES.ADMIN.VALIDATION_VIEW, { id: params.id! }),
+              );
             }}
             className="btn btn-dark mx-4"
           >
@@ -172,7 +175,7 @@ function ValidationDetails(props: ValidationProps) {
                     message: t("page_validation_details.toast_approve_success"),
                   };
                 })
-                .finally(() => navigate("/admin/validations"));
+                .finally(() => navigate(ROUTES.ADMIN.VALIDATIONS));
               toast.promise(promise, {
                 loading: t("page_validation_details.toast_approve_progress"),
                 success: () => `${alert.current.message}`,
@@ -184,7 +187,9 @@ function ValidationDetails(props: ValidationProps) {
           </button>
           <button
             onClick={() => {
-              navigate(`/admin/validations/${params.id}`);
+              navigate(
+                buildRoute(ROUTES.ADMIN.VALIDATION_VIEW, { id: params.id! }),
+              );
             }}
             className="btn btn-dark mx-4"
           >
@@ -225,13 +230,13 @@ function ValidationDetails(props: ValidationProps) {
                 <span>
                   <Link
                     className="btn btn-light border-black text-success"
-                    to={`/admin/validations/${params.id}/approve#alert-spot`}
+                    to={`${buildRoute(ROUTES.ADMIN.VALIDATION_APPROVE, { id: params.id || "" })}#alert-spot`}
                   >
                     <FaCheck /> {t("buttons.approve")}
                   </Link>
                   <Link
                     className="btn btn-light mx-4 text-danger border-black"
-                    to={`/admin/validations/${params.id}/reject#alert-spot`}
+                    to={`${buildRoute(ROUTES.ADMIN.VALIDATION_REJECT, { id: params.id || "" })}#alert-spot`}
                   >
                     <FaTimes /> {t("buttons.reject")}
                   </Link>
@@ -283,7 +288,7 @@ function ValidationDetails(props: ValidationProps) {
               <div className="row py-3 mt-4">
                 {validation?.status === "REVIEW" && (
                   <h4>
-                    {t("field.status")}
+                    {t("fields.status")}
                     <small className="px-3">
                       <span className="badge bg-primary">
                         <FaGlasses /> {t("review")}
@@ -294,7 +299,7 @@ function ValidationDetails(props: ValidationProps) {
                 {validation?.status === ValidationStatus.REJECTED && (
                   <>
                     <h4>
-                      {t("field.status")}
+                      {t("fields.status")}
                       <small className="px-3">
                         <span className="badge bg-danger">
                           <FaTimes /> {t("rejected")}
@@ -324,7 +329,7 @@ function ValidationDetails(props: ValidationProps) {
                 {validation?.status === ValidationStatus.APPROVED && (
                   <>
                     <h4>
-                      {t("field.status")}
+                      {t("fields.status")}
                       <small className="px-3">
                         <span className="badge bg-success">
                           <FaCheck /> {t("approved")}
@@ -353,7 +358,7 @@ function ValidationDetails(props: ValidationProps) {
                 </section>
               </div>
               <div className="row border-top py-3 mt-4">
-                <h4>{t("fields.organisation")}</h4>
+                <h4>{t("page_validations.org")}</h4>
                 <section className="col-9 disabled">
                   <div>
                     <strong>{t("fields.id")}: </strong>
@@ -404,7 +409,9 @@ function ValidationDetails(props: ValidationProps) {
 
         <Link
           className="btn btn-secondary my-4"
-          to={`${isAdmin.current ? "/admin" : ""}/validations`}
+          to={
+            isAdmin.current ? ROUTES.ADMIN.VALIDATIONS : ROUTES.VALIDATIONS.ROOT
+          }
         >
           {t("buttons.back")}
         </Link>

@@ -6,8 +6,10 @@ import { useGetProfile } from "@/api";
 import { trimProfileID } from "@/utils";
 import { AuthContext } from "@/auth";
 import { FaUser, FaShieldAlt } from "react-icons/fa";
-import { UserProfile } from "@/types";
+import type { UserProfile } from "@/types";
 import { useTranslation } from "react-i18next";
+import ROUTES from "../routes";
+import { pidSelectionView, themeAppTitle } from "@/config";
 
 function Header() {
   const { authenticated, keycloak, registered } = useContext(AuthContext)!;
@@ -31,12 +33,12 @@ function Header() {
           <Navbar.Brand>
             {" "}
             {/* Branding logos */}
-            <Link to="/">
+            <Link to={ROUTES.HOME}>
               <img
                 src={logo}
                 height="46"
                 className="d-inline-block align-top"
-                alt="FAIRCORE4EOSC CAT"
+                alt={themeAppTitle}
               />
             </Link>
           </Navbar.Brand>
@@ -49,7 +51,7 @@ function Header() {
               {authenticated && userProfile?.id && (
                 <>
                   <NavItem>
-                    <Link to="/validations" className="cat-nav-link">
+                    <Link to={ROUTES.VALIDATIONS.ROOT} className="cat-nav-link">
                       {t("validations").toUpperCase()}
                     </Link>
                   </NavItem>
@@ -57,15 +59,17 @@ function Header() {
               )}
 
               <NavItem>
-                <Link to="/assess" className="cat-nav-link">
+                <Link to={ROUTES.ASSESSMENTS.ASSESS} className="cat-nav-link">
                   {t("assessments").toUpperCase()}
                 </Link>
               </NavItem>
-              <NavItem>
-                <Link to="/pid-selection" className="cat-nav-link">
-                  {t("pid_selection").toUpperCase()}
-                </Link>
-              </NavItem>
+              {pidSelectionView && (
+                <NavItem>
+                  <Link to={ROUTES.PID_SELECTION} className="cat-nav-link">
+                    {t("pid_selection").toUpperCase()}
+                  </Link>
+                </NavItem>
+              )}
             </Nav>
 
             <Nav>
@@ -73,7 +77,7 @@ function Header() {
               {!authenticated && (
                 <Link
                   id="login-button"
-                  to="/login"
+                  to={ROUTES.LOGIN}
                   className="btn btn-primary my-2"
                 >
                   {t("buttons.login")}
@@ -88,39 +92,48 @@ function Header() {
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
-                    <Dropdown.Item as={Link} to="/profile">
+                    <Dropdown.Item as={Link} to={ROUTES.PROFILE.ROOT}>
                       {t("profile")}
                     </Dropdown.Item>
 
                     {userProfile?.user_type === "Admin" && (
                       <>
                         <Dropdown.Divider />
-                        <Dropdown.Item as={Link} to="/admin/motivations">
+                        <Dropdown.Item
+                          as={Link}
+                          to={ROUTES.ADMIN.MOTIVATIONS.ROOT}
+                        >
                           <FaShieldAlt /> {t("motivations")}
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/admin/principles">
+                        <Dropdown.Item
+                          as={Link}
+                          to={ROUTES.ADMIN.PRINCIPLES.ROOT}
+                        >
                           <FaShieldAlt /> {t("principles")}
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/admin/criteria">
+                        <Dropdown.Item
+                          as={Link}
+                          to={ROUTES.ADMIN.CRITERIA.ROOT}
+                        >
                           <FaShieldAlt /> {t("criteria")}
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/admin/users">
+                        <Dropdown.Item as={Link} to={ROUTES.ADMIN.USERS}>
                           <FaShieldAlt /> {t("users")}
                         </Dropdown.Item>
                         <Dropdown.Item
                           id="admin_validation"
                           as={Link}
-                          to="/admin/validations"
+                          to={ROUTES.ADMIN.VALIDATIONS}
                         >
                           <FaShieldAlt /> {t("validations")}
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/admin/assessments">
+                        <Dropdown.Item as={Link} to={ROUTES.ADMIN.ASSESSMENTS}>
                           <FaShieldAlt /> {t("assessments")}
                         </Dropdown.Item>
                         <Dropdown.Divider />
                       </>
                     )}
-                    <Dropdown.Item as={Link} to="/logout">
+                    <Dropdown.Item as={Link} to={ROUTES.LOGOUT}>
                       {t("buttons.logout")}
                     </Dropdown.Item>
                   </Dropdown.Menu>

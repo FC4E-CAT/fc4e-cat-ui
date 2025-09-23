@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { ApiServiceErr } from "../types";
+import type { ApiServiceErr } from "@/types";
 
 export function trimProfileID(id: string): string {
   let res: string;

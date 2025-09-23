@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { useState, useEffect, useContext } from "react";
 import {
   FaAward,
   FaBorderNone,
@@ -6,9 +7,19 @@ import {
   FaFile,
   FaTags,
   FaUsers,
+  FaCog,
+  FaBars,
+  FaTimes,
+  FaChartBar,
 } from "react-icons/fa";
 import { FaClipboardQuestion, FaFileCircleCheck } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
+import ROUTES from "../routes";
+import { AuthContext } from "@/auth";
+import {
+  useGetAdminStatistics,
+  type AdminStatistics,
+} from "@/api/services/statistics";
 
 function isSel(path: string, name: string): boolean {
   return path.toLowerCase() === name.toLowerCase();
@@ -17,145 +28,288 @@ function isSel(path: string, name: string): boolean {
 export default function AdminMenu() {
   const adminPath = useLocation().pathname.split("/")[2] ?? "";
   const userPath = useLocation().pathname.split("/")[1] ?? "";
+  const currentPath = useLocation().pathname;
   const { t } = useTranslation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const { keycloak, registered } = useContext(AuthContext)!;
+
+  const { data: statistics, refetch: refetchStatistics } =
+    useGetAdminStatistics({
+      token: keycloak?.token || "",
+      isRegistered: registered,
+    });
+
+  useEffect(() => {
+    if (keycloak?.token && registered && currentPath) {
+      refetchStatistics();
+    }
+  }, [keycloak?.token, registered, currentPath, refetchStatistics]);
+
+  const isAssessmentBuilderPage = currentPath?.includes("/assessment-builder");
+
+  const shouldShowBurgerMenu = isSmallScreen || isAssessmentBuilderPage;
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 1400);
+    };
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [currentPath]);
+
+  if (shouldShowBurgerMenu) {
+    return (
+      <>
+        <div style={{ width: "60px", flexShrink: 0 }}>
+          <div className="d-flex justify-content-center pt-3">
+            <button
+              className="btn btn-light border shadow-sm"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+              {isSidebarOpen ? <FaTimes /> : <FaBars />}
+            </button>
+          </div>
+        </div>
+
+        {isSidebarOpen && (
+          <>
+            <div
+              className="position-fixed w-100 h-100"
+              style={{
+                top: 0,
+                left: 0,
+                backgroundColor: "rgba(0,0,0,0.4)",
+                zIndex: 1040,
+              }}
+              onClick={() => setIsSidebarOpen(false)}
+            />
+
+            <div
+              className="position-fixed shadow-lg"
+              style={{
+                position: "absolute",
+                top: "0px",
+                left: 0,
+                zIndex: 1045,
+                height: "100vh",
+                backgroundColor: "rgba(255, 255, 255, 0.95)",
+              }}
+            >
+              <div
+                className="position-absolute"
+                style={{ top: "14px", right: "14px", zIndex: 1046 }}
+              >
+                <button
+                  className="btn btn-dark btn-sm rounded-circle d-flex align-items-center justify-content-center p-2"
+                  onClick={() => setIsSidebarOpen(false)}
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    border: "none",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    backgroundColor: "#495057",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#343a40";
+                    e.currentTarget.style.transform = "scale(1.05)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#495057";
+                    e.currentTarget.style.transform = "scale(1)";
+                  }}
+                  title="Close sidebar"
+                >
+                  <FaTimes size={14} />
+                </button>
+              </div>
+
+              <div
+                className="cat-sidebar-container"
+                style={{
+                  paddingTop: "20px",
+                  height: "100%",
+                  overflowY: "auto",
+                }}
+              >
+                {renderMenuContent(adminPath, userPath, t, statistics)}
+              </div>
+            </div>
+          </>
+        )}
+      </>
+    );
+  }
 
   return (
-    <div className="px-3 py-2">
-      <ul className="nav flex-column mt-2">
-        <h5>
-          <strong>{t("personal_menu")}</strong>
-        </h5>
-        <li
-          className={`nav-item rounded  ${isSel(userPath, "profile") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/profile"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaUsers className="text-muted me-2" /> {t("profile")}
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded  ${isSel(userPath, "validations") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/validations"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaUsers className="text-muted me-2" /> {t("validations")}
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(userPath, "assessments") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/assessments"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaUsers className="text-muted me-2" /> {t("assessments")}
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(userPath, "subjects") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/subjects"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaUsers className="text-muted me-2" /> {t("subjects")}
-          </Link>
-        </li>
-        <hr />
-
-        <h5>
-          <strong>{t("manage")}</strong>
-        </h5>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "users") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/users"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaUsers className="text-muted me-2" /> {t("users")}
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "validations") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/validations"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaCheckCircle className="text-muted me-2" /> {t("validations")}
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "assessments") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/assessments"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaFileCircleCheck className="text-muted me-2" /> {t("assessments")}
-          </Link>
-        </li>
-        <hr />
-
-        <h5>
-          <strong> {t("library")}</strong>
-        </h5>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "motivations") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/motivations"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaFile className="text-muted me-2" /> {t("motivations")}
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "principles") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/principles"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaTags className="text-muted me-2" /> {t("principles")}
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "criteria") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/criteria"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaAward className="text-muted me-2" /> {t("criteria")}
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "tests") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/tests"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaClipboardQuestion className="text-muted me-2" /> {t("tests")}
-          </Link>
-        </li>
-        <li
-          className={`nav-item rounded ${isSel(adminPath, "metrics") ? "cat-menu-selected" : ""}`}
-        >
-          <Link
-            to="/admin/metrics"
-            className="rounded cat-nav-link-light px-3 text-nowrap"
-          >
-            <FaBorderNone className="text-muted me-2" /> {t("metrics")}
-          </Link>
-        </li>
-      </ul>
+    <div className="cat-sidebar-container">
+      {renderMenuContent(adminPath, userPath, t, statistics)}
     </div>
+  );
+}
+
+function renderMenuContent(
+  adminPath: string,
+  userPath: string,
+  t: ReturnType<typeof useTranslation>["t"],
+  statistics?: AdminStatistics,
+) {
+  return (
+    <ul className="cat-sidebar-nav">
+      <div>
+        <h3 className="cat-sidebar-section">{t("personal_menu")}</h3>
+        <div>
+          <li>
+            <Link
+              to={ROUTES.PROFILE.ROOT}
+              className={`cat-nav-link-item ${isSel(userPath, "profile") ? "active" : ""}`}
+            >
+              <FaUsers /> {t("profile")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.DASHBOARD}
+              className={`cat-nav-link-item ${isSel(adminPath, "dashboard") ? "active" : ""}`}
+            >
+              <FaChartBar /> {t("Dashboard")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.VALIDATIONS.ROOT}
+              className={`cat-nav-link-item ${isSel(userPath, "validations") ? "active" : ""}`}
+            >
+              <FaUsers /> {t("validations")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ASSESSMENTS.ROOT}
+              className={`cat-nav-link-item ${isSel(userPath, "assessments") ? "active" : ""}`}
+            >
+              <FaUsers /> {t("assessments")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.SUBJECTS}
+              className={`cat-nav-link-item ${isSel(userPath, "subjects") ? "active" : ""}`}
+            >
+              <FaUsers /> {t("subjects")}
+            </Link>
+          </li>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="cat-sidebar-section">{t("manage")}</h3>
+        <div>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.USERS}
+              className={`cat-nav-link-item ${isSel(adminPath, "users") ? "active" : ""}`}
+            >
+              <FaUsers /> {t("users")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.VALIDATIONS}
+              className={`position-relative cat-nav-link-item ${isSel(adminPath, "validations") ? "active" : ""}`}
+            >
+              <FaCheckCircle /> {t("validations")}
+              {(statistics?.validation_statistics?.pending_validations || 0) >
+                0 && (
+                <span
+                  className="position-absolute translate-middle badge rounded-pill bg-danger"
+                  style={{
+                    top: "14px",
+                    right: "64px",
+                    fontSize: "10px",
+                  }}
+                >
+                  {statistics?.validation_statistics?.pending_validations || 0}
+                </span>
+              )}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.ASSESSMENTS}
+              className={`cat-nav-link-item ${isSel(adminPath, "assessments") ? "active" : ""}`}
+            >
+              <FaFileCircleCheck /> {t("assessments")}
+            </Link>
+          </li>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="cat-sidebar-section">{t("library")}</h3>
+        <div>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.MOTIVATIONS.ROOT}
+              className={`cat-nav-link-item ${isSel(adminPath, "motivations") ? "active" : ""}`}
+            >
+              <FaFile /> {t("motivations")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.PRINCIPLES.ROOT}
+              className={`cat-nav-link-item ${isSel(adminPath, "principles") ? "active" : ""}`}
+            >
+              <FaTags /> {t("principles")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.CRITERIA.ROOT}
+              className={`cat-nav-link-item ${isSel(adminPath, "criteria") ? "active" : ""}`}
+            >
+              <FaAward /> {t("criteria")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.TESTS.ROOT}
+              className={`cat-nav-link-item ${isSel(adminPath, "tests") ? "active" : ""}`}
+            >
+              <FaClipboardQuestion /> {t("tests")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.METRICS.ROOT}
+              className={`cat-nav-link-item ${isSel(adminPath, "metrics") ? "active" : ""}`}
+            >
+              <FaBorderNone /> {t("metrics")}
+            </Link>
+          </li>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="cat-sidebar-section">{t("system")}</h3>
+        <div>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.SETTINGS.ROOT}
+              className={`cat-nav-link-item ${isSel(adminPath, "settings") ? "active" : ""}`}
+            >
+              <FaCog /> {t("Settings")}
+            </Link>
+          </li>
+        </div>
+      </div>
+    </ul>
   );
 }

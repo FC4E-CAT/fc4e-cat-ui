@@ -25,7 +25,11 @@ import {
   Tooltip,
   Table,
 } from "react-bootstrap";
-import { AssessmentListItem, AssessmentFiltersType, AlertInfo } from "@/types";
+import type {
+  AssessmentListItem,
+  AssessmentFiltersType,
+  AlertInfo,
+} from "@/types";
 import {
   useGetAssessments,
   useGetObjects,
@@ -36,6 +40,7 @@ import { AuthContext } from "@/auth";
 import { getUniqueValuesForKey, prettyPrintRanking } from "@/utils";
 import { Link } from "react-router-dom";
 import { DeleteModal } from "@/components/DeleteModal";
+import ROUTES, { buildRoute } from "../../routes";
 
 import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
@@ -154,7 +159,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     subject_type: filters.subject_type,
     isPublic: listPublic,
     actorId: actorIdParam || "",
-    motivationId: motivationIdParam || "",
+    motivationId: "",
   });
 
   // refetch users when parameters change
@@ -317,11 +322,17 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         <div className="col-md-auto cat-heading-right">
           {!listPublic && (
             <>
-              <Link to="/assessments/create" className="btn btn-warning  ms-3">
+              <Link
+                to={ROUTES.ASSESSMENTS.CREATE}
+                className="btn btn-warning  ms-3"
+              >
                 <FaPlus />{" "}
                 <span className="align-middle">{t("buttons.create_new")}</span>
               </Link>
-              <Link to="/assessments/import" className="btn btn-dark  ms-3">
+              <Link
+                to={ROUTES.ASSESSMENTS.IMPORT}
+                className="btn btn-dark  ms-3"
+              >
                 <FaFileImport />{" "}
                 <span className="align-middle">{t("buttons.import")}</span>
               </Link>
@@ -573,7 +584,16 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                               <Link
                                 id={`view-button-${item.id}`}
                                 className="btn btn-light btn-sm m-1"
-                                to={`/${listPublic ? "public-" : ""}assessments/${item.id}/view`}
+                                to={
+                                  listPublic
+                                    ? buildRoute(
+                                        ROUTES.PUBLIC_ASSESSMENTS.VIEW,
+                                        { asmtId: item.id },
+                                      )
+                                    : buildRoute(ROUTES.ASSESSMENTS.VIEW, {
+                                        asmtId: item.id,
+                                      })
+                                }
                               >
                                 <FaBars />
                               </Link>
@@ -590,7 +610,9 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                 <Link
                                   id={`edit-button-${item.id}`}
                                   className="btn btn-light btn-sm m-1"
-                                  to={`/assessments/${item.id}`}
+                                  to={buildRoute(ROUTES.ASSESSMENTS.EDIT, {
+                                    asmtId: item.id,
+                                  })}
                                 >
                                   <FaEdit />
                                 </Link>
@@ -724,7 +746,10 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           )}
           <div className="d-flex justify-content-between pb-4">
             <div>
-              <Link className="btn btn-secondary" to="/assess">
+              <Link
+                className="btn btn-secondary"
+                to={ROUTES.ASSESSMENTS.ASSESS}
+              >
                 {t("buttons.back")}
               </Link>
             </div>

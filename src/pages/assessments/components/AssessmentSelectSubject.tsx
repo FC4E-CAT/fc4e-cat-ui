@@ -12,7 +12,7 @@ import {
 } from "react-bootstrap";
 import { FaInfoCircle } from "react-icons/fa";
 import { AuthContext } from "@/auth";
-import { AssessmentSubject } from "@/types";
+import type { AssessmentSubject } from "@/types";
 import { useGetSubjects } from "@/api/services/subjects";
 import { useTranslation } from "react-i18next";
 
@@ -45,69 +45,73 @@ export const AssessmentSelectSubject = (
 
   return (
     <>
-      <div className="mb-">
-        <h6>{t("page_assessment_edit.select_subject_text")}</h6>
-      </div>
-      <Row className="mb-2">
-        <div className="input-group mb-3">
-          <label className="input-group-text" htmlFor="inputGroupSelect01">
-            {" "}
-            {t("fields.subject")} (*)
-          </label>
-          <select
-            className="form-select"
-            id="subject_id"
-            value={selected}
-            onChange={(e) => {
-              const subject = data?.content
-                .filter((t) => t.id === parseInt(e.target.value))
-                .map((t) => {
-                  return t;
-                });
-              if (subject !== undefined) {
-                props.onSubjectChange({
-                  db_id: subject[0].id,
-                  name: subject[0].name,
-                  type: subject[0].type,
-                  id: subject[0].subject_id,
-                });
-                setSelected(e.target.value);
-              }
-            }}
-          >
-            <option disabled value={-1}>
-              {t("page_assessment_edit.select_object")}
-            </option>
-            {data?.content &&
-              data?.content.map((t, i) => {
-                return (
-                  <option key={`type-${i}`} value={t.id}>
-                    {t.name}-{t.type}-{t.subject_id}
-                  </option>
-                );
-              })}
-          </select>
-          <button
-            className={
-              selected !== "-1"
-                ? "btn btn-outline-danger"
-                : "btn btn-outline-danger disabled"
-            }
-            type="button"
-            disabled={selected === "-1" ? true : false}
-            onClick={() => {
-              setSelected("-1");
-              props.onSubjectChange({
-                id: "",
-                name: "",
-                type: "",
-              });
-            }}
-          >
-            {t("buttons.clear_selection")}
-          </button>
-        </div>
-      </Row>
+      {data?.content && data.content.length > 0 && (
+        <>
+          <div className="mb-">
+            <h6>{t("page_assessment_edit.select_subject_text")}</h6>
+          </div>
+          <Row className="mb-2">
+            <div className="input-group mb-3">
+              <label className="input-group-text" htmlFor="inputGroupSelect01">
+                {" "}
+                {t("fields.subject")} (*)
+              </label>
+              <select
+                className="form-select"
+                id="subject_id"
+                value={selected}
+                onChange={(e) => {
+                  const subject = data?.content
+                    .filter((t) => t.id === parseInt(e.target.value))
+                    .map((t) => {
+                      return t;
+                    });
+                  if (subject !== undefined) {
+                    props.onSubjectChange({
+                      db_id: subject[0].id,
+                      name: subject[0].name,
+                      type: subject[0].type,
+                      id: subject[0].subject_id,
+                    });
+                    setSelected(e.target.value);
+                  }
+                }}
+              >
+                <option disabled value={-1}>
+                  {t("page_assessment_edit.select_object")}
+                </option>
+                {data?.content &&
+                  data?.content.map((t, i) => {
+                    return (
+                      <option key={`type-${i}`} value={t.id}>
+                        {t.name}-{t.type}-{t.subject_id}
+                      </option>
+                    );
+                  })}
+              </select>
+              <button
+                className={
+                  selected !== "-1"
+                    ? "btn btn-outline-danger"
+                    : "btn btn-outline-danger disabled"
+                }
+                type="button"
+                disabled={selected === "-1" ? true : false}
+                onClick={() => {
+                  setSelected("-1");
+                  props.onSubjectChange({
+                    id: "",
+                    name: "",
+                    type: "",
+                  });
+                }}
+              >
+                {t("buttons.clear_selection")}
+              </button>
+            </div>
+          </Row>
+        </>
+      )}
       <Row>
         <Row>
           <InputGroup className="mb-1">

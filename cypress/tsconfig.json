@@ -1,8 +1,10 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
     "types": ["cypress"],
-    "composite": true
+    "composite": true,
+    "noEmit": true
   },
-  "include": ["**/*.*"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js"]
 }

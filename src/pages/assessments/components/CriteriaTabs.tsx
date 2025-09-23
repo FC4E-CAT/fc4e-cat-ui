@@ -1,14 +1,11 @@
 import {
-  // Alert,
   Col,
   ListGroup,
   Nav,
   OverlayTrigger,
-  // OverlayTrigger,
   Row,
   Tab,
   Tooltip,
-  // Tooltip,
 } from "react-bootstrap";
 import {
   FaCableCar,
@@ -25,16 +22,18 @@ import {
   FaHeartPulse,
 } from "react-icons/fa6";
 import {
-  AssessmentPrinciple,
-  AssessmentTest,
+  type AssessmentPrinciple,
+  type AssessmentTest,
   AssessmentCriterionImperative,
-  TestBinary,
-  TestValue,
-  TestBinaryParam,
-  TestValueParam,
-  TestAutoHttpsCheck,
-  TestAutoMD1,
-  // MetricAlgorithm,
+  type TestBinary,
+  type TestValue,
+  type TestBinaryParam,
+  type TestValueParam,
+  type TestAutoHttpsCheck,
+  type TestAutoMD1,
+  type TestAutoG069,
+  type TestAutoValidation,
+  type AutoGroupTest,
 } from "@/types";
 import {
   TestBinaryForm,
@@ -43,13 +42,22 @@ import {
 import { FaCheckCircle, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { CriterionProgress } from "./CriterionProgress";
-import { TestBinaryParamForm } from "./tests/TestBinaryParam";
+import { TestBinaryParamForm } from "./tests/TestBinaryParamForm";
 import { TestValueFormParam } from "./tests/TestValueFormParam";
 import { TestAutoHttpsCheckForm } from "./tests/TestAutoHttpsCheckForm";
 import { useTranslation } from "react-i18next";
 import { TestAutoMd1Form } from "./tests/TestAutoMd1Form";
+import { TestAutoG069Form } from "./tests/TestAutoG069Form";
+import { defaultG069tokenIntrospection, defaultG069userInfo } from "@/config";
+import { TestAutoValidationForm } from "./tests/TestAutoValidationForm";
+import { TestTRLForm } from "./tests/TestTRLForm";
+import { TestRatioForm } from "./tests/TestRatioForm";
+import { TestPercentForm } from "./tests/TestPercentForm";
+import React from "react";
 
 type CriteriaTabsProps = {
+  autogroups: AutoGroupTest[] | undefined;
+  onAutoTestGroup(autogroup: AutoGroupTest): void;
   principles: AssessmentPrinciple[];
   resetActiveTab: boolean;
   handleGuide(id: string, title: string, text: string): void;
@@ -64,8 +72,8 @@ type CriteriaTabsProps = {
 
 /** CriteriaTabs holds the tabs and test content for different criteria */
 export function CriteriaTabs(props: CriteriaTabsProps) {
-  const navs: JSX.Element[] = [];
-  const tabs: JSX.Element[] = [];
+  const navs: React.JSX.Element[] = [];
+  const tabs: React.JSX.Element[] = [];
   const [activeKey, setActiveKey] = useState("");
 
   const { t } = useTranslation();
@@ -186,110 +194,196 @@ export function CriteriaTabs(props: CriteriaTabsProps) {
         </Nav.Item>,
       );
 
-      // tests for each criterion
-      const testList: JSX.Element[] = [];
-
       // store state of test results
 
-      criterion.metric.tests &&
-        criterion.metric.tests.forEach((test) => {
-          if (test.type === "binary") {
-            testList.push(
-              <div className="border mt-4" key={test.id}>
-                <div className="cat-test-div">
-                  <TestBinaryForm
-                    test={test as TestBinary}
-                    onTestChange={props.onTestChange}
-                    criterionId={criterion.id}
-                    principleId={principle.id}
-                    handleGuide={props.handleGuide}
-                  />
+      const testList: React.JSX.Element[] =
+        criterion.metric.tests?.flatMap((test) => {
+          switch (test.type) {
+            case "binary":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestBinaryForm
+                      test={test as TestBinary}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                      handleGuide={props.handleGuide}
+                    />
+                  </div>
                 </div>
-              </div>,
-            );
-          } else if (
-            test.type === "Binary-Manual-Evidence" ||
-            test.type === "Binary-Binary" ||
-            test.type === "Binary-Manual"
-          ) {
-            testList.push(
-              <div className="border mt-4" key={test.id}>
-                <div className="cat-test-div">
-                  <TestBinaryParamForm
-                    test={test as TestBinaryParam}
-                    onTestChange={props.onTestChange}
-                    criterionId={criterion.id}
-                    principleId={principle.id}
-                  />
+              );
+            case "Binary-Manual-Evidence":
+            case "Binary-Binary":
+            case "Binary-Manual":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestBinaryParamForm
+                      test={test as TestBinaryParam}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
                 </div>
-              </div>,
-            );
-          } else if (test.type === "value") {
-            testList.push(
-              <div className="border mt-4" key={test.id}>
-                <div className="cat-test-div">
-                  <TestValueForm
-                    test={test as TestValue}
-                    onTestChange={props.onTestChange}
-                    criterionId={criterion.id}
-                    principleId={principle.id}
-                    handleGuide={props.handleGuide}
-                  />
+              );
+            case "value":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestValueForm
+                      test={test as TestValue}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                      handleGuide={props.handleGuide}
+                    />
+                  </div>
                 </div>
-              </div>,
-            );
-          } else if (
-            test.type === "Number-Manual" ||
-            test.type === "Number-Auto" ||
-            test.type === "Ratio-Manual" ||
-            test.type === "Percent-Manual" ||
-            test.type === "TRL-Manual" ||
-            test.type === "Years-Manual"
-          ) {
-            testList.push(
-              <div className="border mt-4" key={test.id}>
-                <div className="cat-test-div">
-                  <TestValueFormParam
-                    test={test as TestValueParam}
-                    onTestChange={props.onTestChange}
-                    criterionId={criterion.id}
-                    principleId={principle.id}
-                  />
+              );
+            case "Number-Manual":
+            case "Number-Auto":
+            case "Years-Manual":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestValueFormParam
+                      test={test as TestValueParam}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
                 </div>
-              </div>,
-            );
-          } else if (test.type === "Auto-Check-Url-Binary") {
-            testList.push(
-              <div className="border mt-4" key={test.id}>
-                <div className="cat-test-div">
-                  <TestAutoHttpsCheckForm
-                    test={test as TestAutoHttpsCheck}
-                    onTestChange={props.onTestChange}
-                    criterionId={criterion.id}
-                    principleId={principle.id}
-                  />
+              );
+            case "TRL-Manual":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestTRLForm
+                      test={test as TestValueParam}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
                 </div>
-              </div>,
-            );
-          } else if (
-            test.type === "Auto-Check-Xml-MD1a" ||
-            test.type === "Auto-Check-Xml-MD1b1" ||
-            test.type === "Auto-Check-Xml-MD1b2"
-          ) {
-            testList.push(
-              <div className="border mt-4" key={test.id}>
-                <div className="cat-test-div">
-                  <TestAutoMd1Form
-                    test={test as TestAutoMD1}
-                    onTestChange={props.onTestChange}
-                    criterionId={criterion.id}
-                    principleId={principle.id}
-                  />
+              );
+            case "Percent-Manual":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestPercentForm
+                      test={test as TestValueParam}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
                 </div>
-              </div>,
-            );
+              );
+            case "Ratio-Manual":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestRatioForm
+                      test={test as TestValueParam}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
+                </div>
+              );
+            case "Auto-Check-Url-Binary":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestAutoHttpsCheckForm
+                      test={test as TestAutoHttpsCheck}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
+                </div>
+              );
+            case "Auto-Check-String-Binary":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestAutoG069Form
+                      g069param=""
+                      test={test as TestAutoG069}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
+                </div>
+              );
+            case "Fully-Automated-Validation":
+              return (
+                <div className="border mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestAutoValidationForm
+                      autogroup={props.autogroups?.find(
+                        (item) => item.test_method === test.type,
+                      )}
+                      test={test as TestAutoValidation}
+                      onAutoGroupTestCall={props.onAutoTestGroup}
+                    />
+                  </div>
+                </div>
+              );
+            case "Auto-Check-AARC-G069-User-Info":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestAutoG069Form
+                      g069param={defaultG069userInfo}
+                      test={test as TestAutoG069}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
+                </div>
+              );
+            case "Auto-Check-AARC-G069-Token-Introspection":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestAutoG069Form
+                      g069param={defaultG069tokenIntrospection}
+                      test={test as TestAutoG069}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
+                </div>
+              );
+            case "Auto-Check-Xml-MD1a":
+            case "Auto-Check-Xml-MD1b1":
+            case "Auto-Check-Xml-MD1b2":
+              return (
+                <div className="border rounded mt-4" key={test.id}>
+                  <div className="cat-test-div">
+                    <TestAutoMd1Form
+                      test={test as TestAutoMD1}
+                      onTestChange={props.onTestChange}
+                      criterionId={criterion.id}
+                      principleId={principle.id}
+                    />
+                  </div>
+                </div>
+              );
+            default:
+              return [];
           }
-        });
+        }) ?? [];
 
       // add criterion content
       tabs.push(

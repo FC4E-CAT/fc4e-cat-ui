@@ -1,11 +1,7 @@
 // Common or minor stuff here
 
-import { MotivationMetric } from "./motivation";
-
-export type ApiT = {
-  base_url: string;
-  version: string;
-};
+// Common or minor stuff here
+import type { MotivationMetric } from "./motivation";
 
 export interface ResponsePage<T> {
   size_of_page: number;
@@ -37,7 +33,9 @@ export interface Actor {
 export interface RegistryResource {
   id: string;
   label: string;
+  friendly_label?: string;
   description: string;
+  num_params?: number;
 }
 
 export interface MetricResponse {
@@ -72,6 +70,7 @@ export type OrganisationRORSearchResult = {
   id: string;
   name: string;
   website: string;
+  source: string;
   acronym?: string;
 };
 
@@ -87,12 +86,17 @@ export type OrganisationRORSearchResponse = ResponsePage<
   OrganisationRORSearchResult[]
 >;
 
-export type OrganisationRORSearchParams = ApiAuthOptions & {
+export type OrganisationSearchParams = ApiAuthOptions & {
   name: string;
+  source: string;
   page?: number;
 };
 
-export type ApiOptions = ApiAuthOptions & ApiPaginationOptions;
+export type ApiOptions = ApiAuthOptions &
+  ApiPaginationOptions & {
+    search?: string;
+    enabled?: boolean;
+  };
 
 export type ApproveRejectProps = {
   toReject?: boolean;
@@ -198,4 +202,11 @@ export interface StatsValidations {
 
 export interface StatsSubjects {
   total_subjects: number;
+}
+
+export interface Pagination {
+  size_of_page: number;
+  number_of_page: number;
+  total_elements: number;
+  total_pages: number;
 }

@@ -1,6 +1,6 @@
 import { useGetMotivationCriteria } from "@/api/services/motivations";
 import { AuthContext } from "@/auth";
-import { Criterion } from "@/types";
+import type { Criterion } from "@/types";
 import { useContext, useEffect, useMemo, useState } from "react";
 import {
   Button,
@@ -15,6 +15,7 @@ import notavailImg from "@/assets/thumb_notavail.png";
 import { MotivationMetricDetailsModal } from "./MotivationMetricDetailsModal";
 import { FaBars, FaBorderNone, FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import ROUTES, { buildRoute } from "../../../routes";
 import { MotivationMetricAssignModal } from "./MotivationMetricAssignModal";
 import { useTranslation } from "react-i18next";
 import { SearchBox } from "@/components/SearchBox";
@@ -130,7 +131,9 @@ export const MotivationCriteria = ({
           ) : (
             <Link
               id="manage-motivation-criteria-principles"
-              to={`/admin/motivations/${mtvId}/manage-criteria-principles`}
+              to={buildRoute(ROUTES.ADMIN.MOTIVATIONS.MANAGE_CRITERIA, {
+                mtvId: mtvId,
+              })}
               className="btn btn-warning"
             >
               <FaEdit className="me-2" />

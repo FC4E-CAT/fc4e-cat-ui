@@ -1,30 +1,26 @@
-import { AxiosError } from "axios";
-import {
-  OrganisationRORSearchParams,
+import type {
+  OrganisationSearchParams,
   OrganisationRORSearchResponse,
 } from "@/types";
 import { APIClient } from "@/api";
 import { useQuery } from "@tanstack/react-query";
-import { handleBackendError } from "@/utils";
 
-export const useOrganisationRORSearch = ({
+export const useOrganisationSearch = ({
   name,
+  source,
   page,
   token,
-}: OrganisationRORSearchParams) =>
+}: OrganisationSearchParams) =>
   useQuery({
-    queryKey: ["organisation_ror_search", name],
+    queryKey: ["organisation_search", name],
     queryFn: async () => {
       const response = await APIClient(
         token,
       ).get<OrganisationRORSearchResponse>(
-        `/v1/integrations/organisations/ROR/${name}?page=${page}`,
+        `/v1/integrations/organisations/${source}/${name}?page=${page}`,
       );
-      return response.data;
+
+      return response.data as OrganisationRORSearchResponse;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
-    enabled: name.length > 2,
     staleTime: 10 * 1000,
   });

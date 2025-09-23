@@ -8,6 +8,7 @@ import { AxiosError } from "axios";
 import { useGetProfile } from "@/api";
 import logoOrcid from "@/assets/logo-orcid-id.svg";
 import { useTranslation } from "react-i18next";
+import ROUTES from "@/routes";
 
 type FormData = {
   name: string;
@@ -53,7 +54,7 @@ export default function ProfileUpdate() {
       );
       if (response.status === 200) {
         // if all good go back to profile
-        navigate("/profile");
+        navigate(ROUTES.PROFILE.ROOT);
       }
     } catch (error) {
       const err = error as AxiosError;
@@ -179,7 +180,7 @@ export default function ProfileUpdate() {
             <button
               type="button"
               onClick={() => {
-                navigate("/profile");
+                navigate(ROUTES.PROFILE.ROOT);
               }}
               className="btn btn-dark mx-3"
             >

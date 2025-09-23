@@ -1,8 +1,7 @@
 /**
  * Component to debug the asssessment JSON
  */
-
-import { Assessment } from "@/types";
+import type { Assessment } from "@/types";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 

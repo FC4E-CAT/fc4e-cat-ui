@@ -1,4 +1,4 @@
-import { RegistryMetric } from "@/types";
+import type { RegistryMetric } from "@/types";
 
 import { Modal, Button, ListGroup } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,8 @@ interface MetricModalProps {
   metric: RegistryMetric | null;
   show: boolean;
   onHide: () => void;
+  onEdit?: (metric: RegistryMetric) => void;
+  onCreateVersion?: (metric: RegistryMetric) => void;
 }
 /**
  * Modal component for viewing details of a metric
@@ -24,8 +26,11 @@ export function MetricModal(props: MetricModalProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-success text-white" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
+      <Modal.Header closeButton>
+        <Modal.Title
+          className="d-flex align-items-center gap-1"
+          id="contained-modal-title-vcenter"
+        >
           <FaBorderNone className="me-2" /> {t("page_metrics.tip_view")}
         </Modal.Title>
       </Modal.Header>

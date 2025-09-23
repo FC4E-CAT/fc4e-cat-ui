@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { useGetValidationList } from "@/api";
 import { AuthContext } from "@/auth";
-import { ValidationResponse } from "@/types";
+import type { ValidationResponse } from "@/types";
 import { Link } from "react-router-dom";
 import {
   FaList,
@@ -9,11 +9,22 @@ import {
   FaPlus,
   FaArrowLeft,
   FaArrowRight,
+  FaIdBadge,
+  FaUserSecret,
 } from "react-icons/fa";
 
-import { Alert, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import {
+  Alert,
+  OverlayTrigger,
+  Tooltip,
+  Row,
+  Col,
+  Card,
+  Badge,
+} from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import BadgeStatus from "@/components/BadgeStatus";
+import ROUTES, { buildRoute } from "../../routes";
 
 type ValidationState = {
   sortOrder: string;
@@ -75,74 +86,81 @@ function ValidationList() {
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
-          <Link to="/validations/request" className="btn btn-warning mx-2">
+          <Link
+            to={ROUTES.VALIDATIONS.REQUEST}
+            className="btn btn-warning mx-2"
+          >
             <FaPlus className="m2" /> {t("buttons.create_new")}
           </Link>
         </div>
       </div>
-      <div className="py-2 px-2">
-        <Table hover>
-          <thead>
-            <tr className="table-light">
-              <th>
-                <span>{t("fields.id")}</span>
-              </th>
-              <th>
-                <span>{t("page_validations.org_name")}</span>
-              </th>
-              <th>
-                <span>{t("page_validations.org_role")}</span>
-              </th>
-              <th>
-                <span>{t("page_validations.actor_name")}</span>
-              </th>
-              <th>
-                <span>{t("fields.status")}</span>
-              </th>
-              <th>
-                <span>{t("fields.actions")}</span>
-              </th>
-            </tr>
-          </thead>
-          {validations.length > 0 ? (
-            <tbody>
-              {validations.map((item) => {
-                return (
-                  <tr key={item.id}>
-                    <td className="align-middle">{item.id}</td>
-                    <td className="align-middle">{item.organisation_name}</td>
-                    <td className="align-middle">{item.organisation_role}</td>
-                    <td className="align-middle">{item.registry_actor_name}</td>
-                    <td className="align-middle">
+
+      <div className="py-2 px-2 ">
+        {validations.length > 0 ? (
+          <Row className="mt-3 align-items-stretch">
+            {validations.map((item) => (
+              <Col
+                key={item.id}
+                lg={3}
+                md={6}
+                sm={12}
+                className="mb-2 d-flex align-items-stretch"
+              >
+                <Card className="shadow border-1 w-100">
+                  <Card.Body className="p-3">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
                       <BadgeStatus status={item.status} />
-                    </td>
-                    <td>
-                      <div className="d-flex flex-nowrap">
-                        <OverlayTrigger
-                          key="view"
-                          placement="top"
-                          overlay={
-                            <Tooltip id={`tooltip-view`}>
-                              {t("page_validations.tip_view")}
-                            </Tooltip>
-                          }
-                        >
-                          <Link
-                            className="btn btn-light btn-sm m-1"
-                            to={`/validations/${item.id}`}
-                          >
-                            <FaList />
-                          </Link>
-                        </OverlayTrigger>
+                      <div className="small text-end">
+                        <Badge bg="light" text="dark">
+                          {t("fields.id")}:{item.id}
+                        </Badge>
                       </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          ) : null}
-        </Table>
+                    </div>
+                    <div className="gap-2 mb-1">
+                      <Card.Title className="fw-light fs-5">
+                        {item.organisation_name}
+                      </Card.Title>
+                    </div>
+                    <div className="fw-light fs-6">
+                      {" "}
+                      <FaIdBadge className="m2 text-secondary " />{" "}
+                      {item.organisation_role}
+                    </div>
+                    <div className="fw-light fs-6">
+                      {" "}
+                      <FaUserSecret className="m2 text-secondary " />{" "}
+                      {item.registry_actor_name}
+                    </div>
+                  </Card.Body>
+                  <Card.Footer className="bg-transparent border-1">
+                    <div className="text-end">
+                      <OverlayTrigger
+                        key="view"
+                        placement="top"
+                        overlay={
+                          <Tooltip id={`tooltip-view`}>
+                            {t("page_validations.tip_view")}
+                          </Tooltip>
+                        }
+                      >
+                        <Link
+                          className="btn btn-light btn-sm"
+                          to={buildRoute(ROUTES.VALIDATIONS.VIEW, {
+                            id: item.id.toString(),
+                          })}
+                        >
+                          <FaList />
+                        </Link>
+                      </OverlayTrigger>
+                    </div>
+                  </Card.Footer>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : null}
       </div>
+
       {!isLoading && validations.length === 0 && (
         <Alert variant="warning" className="text-center mx-auto">
           <h3>

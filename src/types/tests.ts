@@ -1,50 +1,43 @@
-import { ResponsePage } from "./common";
-import { MotivationReference } from "./motivation";
+import type { EvidenceURL } from "./assessment";
+import type { ResponsePage } from "./common";
+import type { MotivationReference } from "./motivation";
 
-export interface RegistryTestHeader {
+export interface RegistryTest {
   id: string;
   tes: string;
   label: string;
   description: string;
   last_touch?: string;
-}
-
-export interface RegistryTestDefinition {
-  id: string;
-  test_method_id: string;
-  label: string;
-  param_type: string;
-  test_params: string;
-  test_question: string;
-  tool_tip: string;
-}
-
-export interface RegistryTest {
-  test: RegistryTestHeader;
-  test_definition: RegistryTestDefinition;
+  version?: string;
+  test_method_id?: string;
+  label_test_definition?: string;
+  motivation_id?: string;
+  param_type?: string;
+  test_params?: string;
+  test_question?: string;
+  tool_tip?: string;
   used_by_motivations?: MotivationReference[];
+  test_versions?: RegistryTest[];
+  is_latest_version?: boolean;
+  db_id?: string;
 }
 
 export type RegistryTestsResponse = ResponsePage<RegistryTest[]>;
 
-export interface TestDefinitionInput {
-  test_method_id: string;
-  label: string;
-  param_type: string;
-  test_params: string;
-  test_question: string;
-  tool_tip: string;
-}
-
-export interface TestHeaderInput {
+export interface TestInput {
   tes: string;
   label: string;
   description: string;
-}
-
-export interface TestInput {
-  test: TestHeaderInput;
-  test_definition: TestDefinitionInput;
+  test_method_id?: string;
+  label_test_definition?: string;
+  param_type?: string;
+  test_params?: string;
+  test_question?: string;
+  tool_tip?: string;
+  db_id?: string;
+  id?: string;
+  name?: string;
+  tooltip?: string;
 }
 
 export interface TestParam {
@@ -53,3 +46,38 @@ export interface TestParam {
   text: string;
   tooltip: string;
 }
+
+export interface TestFull {
+  id?: string;
+  tes?: string;
+  label?: string;
+  description?: string;
+  last_touch?: string;
+  version?: string;
+  test_method_id?: string;
+  label_test_definition?: string;
+  motivation_id?: string;
+  param_type?: string;
+  test_params?: TestParam[];
+  test_question?: string;
+  used_by_motivations?: MotivationReference[];
+  test_versions?: RegistryTest[];
+  is_latest_version?: boolean;
+  name?: string;
+  db_id?: string;
+  type_db_id?: string;
+  params?: string;
+  text?: string;
+  tool_tip?: string;
+  value?: boolean | string | number | null;
+  result?: number | string | null;
+  evidence_url?: EvidenceURL[];
+}
+
+export const TestValueEventType = {
+  Value: "value",
+  Threshold: "threshold",
+} as const;
+
+export type TestValueEventType =
+  (typeof TestValueEventType)[keyof typeof TestValueEventType];

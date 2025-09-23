@@ -20,16 +20,20 @@ import {
   FaArrowsAltV,
   FaEye,
   FaEyeSlash,
+  FaTrash,
 } from "react-icons/fa";
 
 import {
   useGetMotivations,
   usePublishMotivation,
   useUnpublishMotivation,
+  useDeleteMotivation,
 } from "@/api/services/motivations";
-import { AlertInfo, Motivation } from "@/types";
+import type { AlertInfo, Motivation } from "@/types";
 import { Link } from "react-router-dom";
+import ROUTES, { buildRoute } from "../../routes";
 import { MotivationModal } from "./components/MotivationModal";
+import { DeleteModal } from "@/components/DeleteModal";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
@@ -42,6 +46,19 @@ type MotivationState = {
   status: string;
 };
 
+type Clone = {
+  id: string | null;
+  name: string;
+};
+
+interface DeleteModalConfig {
+  show: boolean;
+  title: string;
+  message: string;
+  itemId: string;
+  itemName: string;
+}
+
 export function SortMarker(
   field: string,
   sortField: string,
@@ -53,11 +70,6 @@ export function SortMarker(
   }
   return <FaArrowsAltV className="text-secondary opacity-50" />;
 }
-
-type Clone = {
-  id: string | null;
-  name: string;
-};
 
 // the main component that lists the motivations in a table
 export default function Motivations() {
@@ -79,8 +91,19 @@ export default function Motivations() {
   const [showCreate, setShowCreate] = useState(false);
   const [clone, setClone] = useState<Clone>({ id: null, name: "" });
 
+  const [deleteModalConfig, setDeleteModalConfig] = useState<DeleteModalConfig>(
+    {
+      show: false,
+      title: t("page_motivations.modal_delete_title"),
+      message: t("page_motivations.modal_delete_message"),
+      itemId: "",
+      itemName: "",
+    },
+  );
+
   const mutationPublish = usePublishMotivation(keycloak?.token || "");
   const mutationUnpublish = useUnpublishMotivation(keycloak?.token || "");
+  const mutationDelete = useDeleteMotivation(keycloak?.token || "");
 
   const handlePublish = (mtvId: string) => {
     const promise = mutationPublish
@@ -124,6 +147,35 @@ export default function Motivations() {
     });
   };
 
+  const handleDeleteConfirmed = () => {
+    if (deleteModalConfig.itemId) {
+      const promise = mutationDelete
+        .mutateAsync(deleteModalConfig.itemId)
+        .catch((err) => {
+          alert.current = {
+            message: t("page_motivations.toast_delete_fail"),
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: t("page_motivations.toast_delete_success"),
+          };
+          setDeleteModalConfig({
+            ...deleteModalConfig,
+            show: false,
+            itemId: "",
+            itemName: "",
+          });
+        });
+      toast.promise(promise, {
+        loading: t("page_motivations.toast_delete_progress"),
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
+      });
+    }
+  };
+
   // handler for changing page size
   const handleChangePageSize = (evt: { target: { value: string } }) => {
     setOpts({ ...opts, page: 1, size: parseInt(evt.target.value) });
@@ -162,6 +214,20 @@ export default function Motivations() {
 
   return (
     <div>
+      <DeleteModal
+        show={deleteModalConfig.show}
+        title={deleteModalConfig.title}
+        message={deleteModalConfig.message}
+        itemId={deleteModalConfig.itemId}
+        itemName={deleteModalConfig.itemName}
+        onHide={() => {
+          setDeleteModalConfig({
+            ...deleteModalConfig,
+            show: false,
+          });
+        }}
+        handleDelete={handleDeleteConfirmed}
+      />
       <MotivationModal
         cloneId={clone.id}
         cloneName={clone.name}
@@ -292,7 +358,9 @@ export default function Motivations() {
                         >
                           <Link
                             className="btn btn-light btn-sm m-1"
-                            to={`/admin/motivations/${item.id}`}
+                            to={buildRoute(ROUTES.ADMIN.MOTIVATIONS.VIEW, {
+                              mtvId: item.id,
+                            })}
                           >
                             <FaBars />
                           </Link>
@@ -351,6 +419,34 @@ export default function Motivations() {
                           >
                             <FaRegClone />
                           </span>
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-delete">
+                              {t("page_motivations.tip_delete")}
+                            </Tooltip>
+                          }
+                        >
+                          {item.published ? (
+                            <span className="btn btn-light btn-sm m-1 disabled">
+                              <FaTrash />
+                            </span>
+                          ) : (
+                            <span
+                              className="btn btn-light btn-sm m-1"
+                              onClick={() => {
+                                setDeleteModalConfig({
+                                  ...deleteModalConfig,
+                                  show: true,
+                                  itemId: item.id,
+                                  itemName: `${item.mtv} - ${item.label}`,
+                                });
+                              }}
+                            >
+                              <FaTrash />
+                            </span>
+                          )}
                         </OverlayTrigger>
                       </div>
                     </td>

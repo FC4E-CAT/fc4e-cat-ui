@@ -6,15 +6,18 @@ import {
 } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { APIClient } from "@/api";
-import {
+import type {
   ApiOptions,
   ApiUsers,
   UserAccess,
   ApiViewUsers,
   UserView,
   AsmtEligibilityResponse,
+  UserResponse,
+  UserListResponse,
+  Pagination,
 } from "@/types";
-import { UserResponse, UserListResponse } from "@/types";
+
 import { handleBackendError } from "@/utils";
 
 export const useGetProfile = ({ token, isRegistered }: ApiOptions) =>
@@ -24,9 +27,6 @@ export const useGetProfile = ({ token, isRegistered }: ApiOptions) =>
       const response =
         await APIClient(token).get<UserResponse>(`/v1/users/profile`);
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -45,15 +45,14 @@ export const useGetAsmtEligibility = ({
       );
       return response.data;
     },
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.number_of_page < lastPage.total_pages) {
-        return lastPage.number_of_page + 1;
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
       } else {
         return undefined;
       }
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     retry: false,
     enabled: isRegistered,
@@ -74,9 +73,6 @@ export const useGetAdminUsers = ({
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled: !!token && isRegistered,
   });
 
@@ -88,9 +84,6 @@ export const useGetViewUsers = ({ id, token, isRegistered }: ApiViewUsers) =>
         `/v1/admin/users/${id}`,
       );
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
@@ -110,22 +103,19 @@ export const useAdminGetUsers = ({
     queryKey: ["users"],
     queryFn: async () => {
       let url = `/v1/admin/users?size=${size}&page=${page}&sort=${sortBy}&order=${sortOrder}`;
-      search ? (url = `${url}&search=${search}`) : null;
-      type ? (url = `${url}&type=${type}`) : null;
-      status ? (url = `${url}&status=${status}`) : null;
+      if (search) url += `&search=${search}`;
+      if (type) url += `&type=${type}`;
+      if (status) url += `&status=${status}`;
 
       const response = await APIClient(token).get<UserListResponse>(url);
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered,
   });
 
 export const useUserRegister = () =>
-  useMutation(
-    async (token: string) => {
+  useMutation({
+    mutationFn: async (token: string) => {
       try {
         const response = await APIClient(token).post(`/v1/users/register`);
         if (response.status === 200) {
@@ -142,53 +132,49 @@ export const useUserRegister = () =>
         }
       }
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+  });
 
 export function useDeleteUser(token: string) {
   const queryClient = useQueryClient();
-  return useMutation(
-    async (data: UserAccess) => {
+  return useMutation({
+    mutationFn: async (data: UserAccess) => {
       const response = await APIClient(token).put<UserAccess>(
         "/v1/admin/users/deny-access",
         data,
       );
       if (response.status == 200) {
-        queryClient.invalidateQueries(["users"]);
-        queryClient.invalidateQueries(["users", data.user_id]);
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+        queryClient.invalidateQueries({ queryKey: ["users", data.user_id] });
       }
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
+
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+  });
 }
 
 export function useRestoreUser(token: string) {
   const queryClient = useQueryClient();
-  return useMutation(
-    async (data: UserAccess) => {
+  return useMutation({
+    mutationFn: async (data: UserAccess) => {
       const response = await APIClient(token).put<UserAccess>(
         "/v1/admin/users/permit-access",
         data,
       );
       if (response.status == 200) {
-        queryClient.invalidateQueries(["users"]);
-        queryClient.invalidateQueries(["users", data.user_id]);
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+        queryClient.invalidateQueries({ queryKey: ["users", data.user_id] });
       }
       return response.data;
     },
-    {
-      onError: (error: AxiosError) => {
-        return handleBackendError(error);
-      },
+
+    onError: (error: AxiosError) => {
+      return handleBackendError(error);
     },
-  );
+  });
 }

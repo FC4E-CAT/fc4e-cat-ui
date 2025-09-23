@@ -5,11 +5,12 @@
 // import { useState } from "react"
 import { Alert, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
-import { AssessmentTest, EvidenceURL, TestValueParam } from "@/types";
+import type { AssessmentTest, EvidenceURL, TestValueParam } from "@/types";
 import { useState } from "react";
 import { TestToolTip } from "./TestToolTip";
 import { FaCogs } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { TestValueEventType } from "@/types/tests";
 
 interface AssessmentTestProps {
   test: TestValueParam;
@@ -20,11 +21,6 @@ interface AssessmentTestProps {
     criterionId: string,
     newTest: AssessmentTest,
   ): void;
-}
-
-enum TestValueEventType {
-  Value = "value",
-  Threshold = "threshold",
 }
 
 export const TestValueFormParam = (props: AssessmentTestProps) => {
@@ -114,12 +110,14 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
     <div>
       <Row>
         <Col>
-          <h6>
-            <small className="text-muted badge badge-pill border bg-light m">
-              <span className="me-4">{props.test.id}</span>
-              {props.test.name}
-            </small>
-          </h6>
+          {props.test.id && (
+            <h6>
+              <small className="text-muted badge badge-pill border bg-light m">
+                {props.test.id && <span className="me-4">{props.test.id}</span>}
+                {props.test.name}
+              </small>
+            </h6>
+          )}
         </Col>
         <Col xs={1} className="text-start"></Col>
       </Row>
@@ -127,7 +125,7 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
       <Row>
         <Col>
           <div>
-            <h5>{textParams[0]}</h5>
+            {textParams[0] && <h5>{textParams[0]}</h5>}
             {automated && (
               <Alert variant="warning">
                 <div>
@@ -149,11 +147,16 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
             <Row>
               <InputGroup className="mt-1">
                 <InputGroup.Text id="label-first-value">
-                  <TestToolTip
-                    tipId={"params-1-" + props.test.id}
-                    tipText={tipParams[0]}
-                  />
-                  <span className="ms-2">{testParams[0]}</span>:
+                  {tipParams[0] && (
+                    <TestToolTip
+                      tipId={"params-1-" + props.test.id}
+                      tipText={tipParams[0]}
+                    />
+                  )}
+                  {testParams[0] && (
+                    <span className="ms-2">{testParams[0]}</span>
+                  )}
+                  :
                 </InputGroup.Text>
                 <Form.Control
                   value={automated ? "" : localValue || ""}
@@ -174,11 +177,16 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
                 <Row className="mt-1">
                   <InputGroup className="mt-2">
                     <InputGroup.Text id="label-second-value">
-                      <TestToolTip
-                        tipId={"params-2-" + props.test.id}
-                        tipText={tipParams[1]}
-                      />
-                      <span className="ms-2">{testParams[1]}</span>:
+                      {tipParams[1] && (
+                        <TestToolTip
+                          tipId={"params-2-" + props.test.id}
+                          tipText={tipParams[1]}
+                        />
+                      )}
+                      {testParams[1] && (
+                        <span className="ms-2">{testParams[1]}</span>
+                      )}
+                      :
                     </InputGroup.Text>
                     <Form.Control
                       value={localThreshold || ""}
@@ -200,11 +208,16 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
                   <Row className="mt-1">
                     <InputGroup className="mt-2">
                       <InputGroup.Text id="label-second-value">
-                        <TestToolTip
-                          tipId={"params-3-" + props.test.id}
-                          tipText={tipParams[2]}
-                        />
-                        <span className="ms-2">{testParams[2]}</span>:
+                        {tipParams[2] && (
+                          <TestToolTip
+                            tipId={"params-3-" + props.test.id}
+                            tipText={tipParams[2]}
+                          />
+                        )}
+                        {testParams[2] && (
+                          <span className="ms-2">{testParams[2]}</span>
+                        )}
+                        :
                       </InputGroup.Text>
                       <Form.Control
                         value={localValue || ""}
@@ -222,12 +235,15 @@ export const TestValueFormParam = (props: AssessmentTestProps) => {
               )}
           </div>
 
-          {testParams[testParams.length - 1] === "evidence" && (
-            <EvidenceURLS
-              urls={props.test.evidence_url || []}
-              onListChange={onURLChange}
-              noTitle={true}
-            />
+          {(testParams[testParams.length - 1] === "evidence" ||
+            testParams?.includes("evidence")) && (
+            <div className="mt-1">
+              <EvidenceURLS
+                urls={props.test.evidence_url || []}
+                onListChange={onURLChange}
+                noTitle={true}
+              />
+            </div>
           )}
         </Col>
       </Row>

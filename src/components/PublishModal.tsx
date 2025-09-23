@@ -1,6 +1,6 @@
 import { useAssessmentPublish, useAssessmentUnpublish } from "@/api";
 import { AuthContext } from "@/auth";
-import { AlertInfo } from "@/types";
+import type { AlertInfo } from "@/types";
 import { useContext, useRef } from "react";
 import { Modal, Button, ListGroup } from "react-bootstrap";
 import toast from "react-hot-toast";
@@ -89,8 +89,11 @@ export function PublishModal(props: PublishModalProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-success text-white" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
+      <Modal.Header closeButton>
+        <Modal.Title
+          className="d-flex align-items-center gap-1"
+          id="contained-modal-title-vcenter"
+        >
           {props.publish ? (
             <>
               <FaEye className="me-2" />

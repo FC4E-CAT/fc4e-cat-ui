@@ -1,8 +1,6 @@
-import { AxiosError } from "axios";
-import { Assessment, TemplateResponse } from "@/types";
+import type { Assessment, TemplateResponse } from "@/types";
 import { APIClient } from "@/api";
 import { useQuery } from "@tanstack/react-query";
-import { handleBackendError } from "@/utils";
 
 /** Backend calls for getting Assessment Template */
 export const useGetTemplate = (
@@ -18,9 +16,6 @@ export const useGetTemplate = (
         `/v1/templates/by-type/${templateTypeId}/by-actor/${actorId}`,
       );
       return response.data;
-    },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
     },
     enabled: !!token && isRegistered && actorId !== undefined,
     refetchOnWindowFocus: false,
@@ -40,10 +35,13 @@ export const useGetMotivationTemplate = (
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
-    enabled: !!token && isRegistered && mtvId !== "" && actId !== "",
+    enabled:
+      !!token &&
+      isRegistered &&
+      mtvId != null &&
+      mtvId !== "" &&
+      actId != null &&
+      actId !== "",
     refetchOnWindowFocus: false,
   });
 
@@ -61,10 +59,12 @@ export const useGetMotivationAssessmentType = (
       );
       return response.data;
     },
-    onError: (error: AxiosError) => {
-      return handleBackendError(error);
-    },
     enabled:
-      !!token && isRegistered && mtvId !== undefined && actId !== undefined,
+      !!token &&
+      isRegistered &&
+      mtvId != null &&
+      mtvId !== "" &&
+      actId != null &&
+      actId !== "",
     refetchOnWindowFocus: false,
   });

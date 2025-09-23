@@ -6,11 +6,12 @@
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
 import { TestToolTip } from "./TestToolTip";
-import {
+import type {
   AssessmentTest,
   EvidenceURL,
-  Md1TestResponse,
+  TestAutoError,
   TestAutoMD1,
+  TestAutoResponse,
 } from "@/types";
 import { FaCheckCircle, FaClock, FaPlay, FaTimes } from "react-icons/fa";
 import { APIClient } from "@/api";
@@ -18,6 +19,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "@/auth";
 import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
+import { AutoTestDetails } from "./AutoTestDetails";
 
 interface AssessmentTestProps {
   test: TestAutoMD1;
@@ -48,7 +50,6 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
   const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
   const validUrl = urlRegex.test(localValue || "");
 
-  const [message, setMessage] = useState("");
   const [runningTest, setRunningTest] = useState(false);
 
   // break parameters
@@ -62,7 +63,7 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
 
     setRunningTest(true);
     APIClient(token)
-      .post<Md1TestResponse>(
+      .post<TestAutoResponse | TestAutoError>(
         `/v1/automated/validate-metadata/${testModeMap[props.test.type]}`,
         `{"metadata_url": "${localValue}"}`,
         {
@@ -70,19 +71,34 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
         },
       )
       .then((resp) => {
-        if (resp.data.code === 200 && resp.data.is_valid !== undefined) {
+        if (resp.status === 200) {
+          const okResp = resp.data as TestAutoResponse;
           const newTest = {
             ...props.test,
             value: localValue,
-            result: resp.data.is_valid ? 1 : 0,
+            result: okResp.test_status.is_valid ? 1 : 0,
+            last_run: {
+              timestamp: new Date().toISOString(),
+              message: okResp.test_status.message || "",
+              code: okResp.test_status.code,
+            },
           };
+
           props.onTestChange(props.principleId, props.criterionId, newTest);
         } else {
-          const newTest = { ...props.test, value: localValue, result: 0 };
+          const errResp = resp.data as TestAutoError;
+          const newTest = {
+            ...props.test,
+            value: localValue,
+            result: 0,
+            last_run: {
+              timestamp: new Date().toISOString(),
+              message: errResp.message,
+              code: errResp.code,
+            },
+          };
+
           props.onTestChange(props.principleId, props.criterionId, newTest);
-        }
-        if (resp.data.message) {
-          setMessage(resp.data.message);
         }
       })
       .catch((error: AxiosError) => {
@@ -97,26 +113,30 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
     <div>
       <Row>
         <Col>
-          <h6>
-            <small className="text-muted badge badge-pill border bg-light">
-              <span className="me-4">{props.test.id}</span>
-              {props.test.name}
-            </small>
-          </h6>
+          {props.test.id && (
+            <h6>
+              <small className="text-muted badge badge-pill border bg-light">
+                {props.test.id && <span className="me-4">{props.test.id}</span>}
+                {props.test.name}
+              </small>
+            </h6>
+          )}
         </Col>
         <Col xs={3} className="text-start"></Col>
       </Row>
 
       <Row>
         <div>
-          <h5>{textParams[0]}</h5>
+          {textParams[0] && <h5>{textParams[0]}</h5>}
           <InputGroup className="mt-1">
             <InputGroup.Text id="label-first-value">
-              <TestToolTip
-                tipId={"params-1-" + props.test.id}
-                tipText={tipParams[0]}
-              />
-              <span className="ms-2">{testParams[0]}</span>:
+              {tipParams[0] && (
+                <TestToolTip
+                  tipId={"params-1-" + props.test.id}
+                  tipText={tipParams[0]}
+                />
+              )}
+              {testParams[0] && <span className="ms-2">{testParams[0]}</span>}:
             </InputGroup.Text>
             <Form.Control
               value={localValue || ""}
@@ -124,7 +144,6 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
               id="input-value-control"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setLocalValue(e.target.value);
-                setMessage("");
               }}
             />
             <Button
@@ -168,26 +187,11 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
                 )}
               </div>
             )}
-          {!runningTest && message && (
-            <div>
-              <small
-                className={`${props.test.result !== null && props.test.result > 0 ? "text-success" : "text-danger"}`}
-              >
-                {message}
-              </small>
-            </div>
-          )}
         </div>
 
-        {testParams[testParams.length - 1] === "evidence" && (
-          <div className="mt-2">
-            <h6>
-              {textParams[1]}{" "}
-              <TestToolTip
-                tipId={"evidence-" + props.test.id}
-                tipText={tipParams[1]}
-              />
-            </h6>
+        {(testParams[testParams.length - 1] === "evidence" ||
+          testParams?.includes("evidence")) && (
+          <div className="mt-1">
             <EvidenceURLS
               urls={props.test.evidence_url || []}
               onListChange={onURLChange}
@@ -195,6 +199,11 @@ export const TestAutoMd1Form = (props: AssessmentTestProps) => {
             />
           </div>
         )}
+        <div className="mt-2">
+          {props.test.last_run && (
+            <AutoTestDetails details={props.test.last_run} />
+          )}
+        </div>
       </Row>
     </div>
   );

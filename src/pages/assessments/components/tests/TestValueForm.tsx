@@ -13,10 +13,11 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { EvidenceURLS } from "./EvidenceURLS";
-import { AssessmentTest, EvidenceURL, TestValue } from "@/types";
+import type { AssessmentTest, EvidenceURL, TestValue } from "@/types";
 import { FaLock, FaRegQuestionCircle } from "react-icons/fa";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { TestValueEventType } from "@/types/tests";
 
 interface AssessmentTestProps {
   test: TestValue;
@@ -28,11 +29,6 @@ interface AssessmentTestProps {
     criterionId: string,
     newTest: AssessmentTest,
   ): void;
-}
-
-enum TestValueEventType {
-  Value = "value",
-  Threshold = "threshold",
 }
 
 export const TestValueForm = (props: AssessmentTestProps) => {
@@ -124,8 +120,7 @@ export const TestValueForm = (props: AssessmentTestProps) => {
                 //setShowHelp(!showHelp);
                 props.handleGuide(
                   props.test.id + props.test.guidance?.id || " ",
-                  `${t("page_assessment_edit.guidance")} ${props.test.guidance?.id}` ||
-                    "",
+                  `${t("page_assessment_edit.guidance")} ${props.test.guidance?.id}`,
                   props.test.guidance?.description ||
                     t("page_assessment_edit.no_guidance"),
                 );

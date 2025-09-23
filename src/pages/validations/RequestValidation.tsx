@@ -1,11 +1,11 @@
 import {
   useGetProfile,
   useValidationRequest,
-  useOrganisationRORSearch,
+  useOrganisationSearch,
   useGetAllRegistryActors,
 } from "@/api";
 import { AuthContext } from "@/auth";
-import {
+import type {
   UserProfile,
   AlertInfo,
   OrganisationRORSearchResultModified,
@@ -14,12 +14,13 @@ import {
 import { ErrorMessage } from "@hookform/error-message";
 import { useContext, useState, useRef, useEffect } from "react";
 import { OverlayTrigger, Tooltip, Row, Col, InputGroup } from "react-bootstrap";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { FaInfoCircle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
-import Select, { SingleValue } from "react-select";
+import Select, { type SingleValue } from "react-select";
+import ROUTES from "@/routes";
 
 function RequestValidation() {
   const navigate = useNavigate();
@@ -50,23 +51,6 @@ function RequestValidation() {
     token: keycloak?.token || "",
     isRegistered: registered,
   });
-
-  useEffect(() => {
-    // gather all registry actors types
-    let tmpAct: RegistryActor[] = [];
-
-    // iterate over backend pages and gather all items in the registry actors array
-    if (actData?.pages) {
-      actData.pages.map((page) => {
-        tmpAct = [...tmpAct, ...page.content];
-      });
-      if (actHasNextPage) {
-        actFetchNextPage();
-      }
-    }
-
-    setActors(tmpAct);
-  }, [actData, actHasNextPage, actFetchNextPage]);
 
   type FormValues = {
     organisation_role: string;
@@ -102,6 +86,30 @@ function RequestValidation() {
     },
   });
 
+  useEffect(() => {
+    // gather all registry actors types
+    let tmpAct: RegistryActor[] = [];
+
+    // iterate over backend pages and gather all items in the registry actors array
+    if (actData?.pages) {
+      actData.pages.map((page) => {
+        tmpAct = [...tmpAct, ...page.content];
+      });
+      if (actHasNextPage) {
+        actFetchNextPage();
+      }
+    }
+
+    setActors(tmpAct);
+
+    // Automatically select the actor if there's only one
+    if (tmpAct.length === 1) {
+      const singleActor = tmpAct[0];
+      setValue("registry_actor_id", singleActor.id);
+      setRegistryActorID(singleActor.id);
+    }
+  }, [actData, actHasNextPage, actFetchNextPage, setValue]);
+
   const { mutateAsync: refetchValidationRequest } = useValidationRequest({
     organisation_role: organisationRole,
     organisation_id: organisationId,
@@ -113,8 +121,12 @@ function RequestValidation() {
     isRegistered: registered,
   });
 
-  const { data: organisations } = useOrganisationRORSearch({
+  // hook-form utility methods to watch and change values
+  const watchOrgSource = watch("organisation_source", "ROR");
+
+  const { data: organisations } = useOrganisationSearch({
     name: inputValue,
+    source: watchOrgSource,
     page: 1,
     token: keycloak?.token || "",
     isRegistered: registered,
@@ -140,7 +152,7 @@ function RequestValidation() {
           message: "Validation request succesfully submitted.",
         };
       })
-      .then(() => navigate("/validations"));
+      .then(() => navigate(ROUTES.VALIDATIONS.ROOT));
     toast.promise(promise, {
       loading: "Submitting",
       success: () => `${alert.current.message}`,
@@ -173,9 +185,6 @@ function RequestValidation() {
     setValue("organisation_website", s?.website || "");
   };
 
-  // hook-form utility methods to watch and change values
-  const watchOrgSource = watch("organisation_source", "ROR");
-
   const actors_select_div = (
     <>
       <label
@@ -203,9 +212,11 @@ function RequestValidation() {
               value != "" || t("page_validation_create.err_select"),
           })}
         >
-          <option disabled value={""}>
-            {t("page_validation_create.select_actor")}...
-          </option>
+          {actors && actors.length > 1 && (
+            <option disabled value={""}>
+              {t("page_validation_create.select_actor")}...
+            </option>
+          )}
           {actors &&
             actors.map((t, i) => {
               return (
@@ -239,6 +250,57 @@ function RequestValidation() {
       </div>
       <form className="mt-4 py-4 px-4" onSubmit={handleSubmit(onSubmit)}>
         <Row>
+          <Col className="mt-3" xs={12} md={3}>
+            <label
+              htmlFor="organisation_source"
+              className="d-flex align-items-center form-label fw-bold"
+            >
+              <FaInfoCircle className="me-2" />{" "}
+              {t("page_validation_create.org_source")} (*)
+            </label>
+            <OverlayTrigger
+              key="top"
+              placement="top"
+              overlay={
+                <Tooltip id="tooltip-top-org-source">
+                  {t("page_validation_create.tip_org_source")}
+                </Tooltip>
+              }
+            >
+              <select
+                className={`form-select ${
+                  errors.organisation_source ? "is-invalid" : ""
+                }`}
+                id="organisation_source"
+                aria-describedby="organisation_source_help"
+                {...register("organisation_source", {
+                  required: {
+                    value: true,
+                    message: t("page_validation_create.err_org_source"),
+                  },
+                  minLength: {
+                    value: 3,
+                    message: t("page_validation_create.err_min_length"),
+                  },
+                })}
+                defaultValue="ROR"
+                onChange={(e) => {
+                  setValue("organisation_source", e.target.value);
+                  setValue("organisation_name", "");
+                  setValue("organisation_website", "");
+                }}
+              >
+                <option value="ROR">{t("ror")}</option>
+                <option value="NACO">{t("aai_providers")}</option>
+                <option value="CUSTOM">{t("custom")}</option>
+              </select>
+            </OverlayTrigger>
+            <ErrorMessage
+              errors={errors}
+              name="organisation_source"
+              render={({ message }) => <p className="text-danger">{message}</p>}
+            />
+          </Col>
           <Col className="mt-3" xs={12} md={6}>
             <label
               htmlFor="organisation_name"
@@ -256,7 +318,7 @@ function RequestValidation() {
                 </Tooltip>
               }
             >
-              {watchOrgSource === "ROR" ? (
+              {watchOrgSource === "ROR" || watchOrgSource === "NACO" ? (
                 <>
                   {/* hidden field to just validate the combo below */}
                   <input
@@ -306,56 +368,7 @@ function RequestValidation() {
               render={({ message }) => <p className="text-danger">{message}</p>}
             />
           </Col>
-          <Col className="mt-3" xs={12} md={3}>
-            <label
-              htmlFor="organisation_source"
-              className="d-flex align-items-center form-label fw-bold"
-            >
-              <FaInfoCircle className="me-2" />{" "}
-              {t("page_validation_create.org_source")} (*)
-            </label>
-            <OverlayTrigger
-              key="top"
-              placement="top"
-              overlay={
-                <Tooltip id="tooltip-top-org-source">
-                  {t("page_validation_create.tip_org_source")}
-                </Tooltip>
-              }
-            >
-              <select
-                className={`form-select ${
-                  errors.organisation_source ? "is-invalid" : ""
-                }`}
-                id="organisation_source"
-                aria-describedby="organisation_source_help"
-                {...register("organisation_source", {
-                  required: {
-                    value: true,
-                    message: t("page_validation_create.err_org_source"),
-                  },
-                  minLength: {
-                    value: 3,
-                    message: t("page_validation_create.err_min_length"),
-                  },
-                })}
-                defaultValue="ROR"
-                onChange={(e) => {
-                  setValue("organisation_source", e.target.value);
-                  setValue("organisation_name", "");
-                  setValue("organisation_website", "");
-                }}
-              >
-                <option value="ROR">{t("ror")}</option>
-                <option value="CUSTOM">{t("custom")}</option>
-              </select>
-            </OverlayTrigger>
-            <ErrorMessage
-              errors={errors}
-              name="organisation_source"
-              render={({ message }) => <p className="text-danger">{message}</p>}
-            />
-          </Col>
+
           <Col className="mt-3" xs={12} md={3}>
             <label
               htmlFor="organisation_website"
@@ -488,7 +501,10 @@ function RequestValidation() {
           >
             {t("buttons.submit")}
           </button>
-          <Link to="/validations" className="my-2 btn btn-secondary mx-3">
+          <Link
+            to={ROUTES.VALIDATIONS.ROOT}
+            className="my-2 btn btn-secondary mx-3"
+          >
             <span>{t("buttons.cancel")}</span>
           </Link>
         </div>

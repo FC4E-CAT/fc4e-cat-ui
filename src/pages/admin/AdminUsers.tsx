@@ -1,6 +1,6 @@
 import { useAdminGetUsers, useDeleteUser, useRestoreUser } from "@/api";
 import { AuthContext } from "@/auth";
-import { AlertInfo, UserProfile } from "@/types";
+import type { AlertInfo, UserProfile } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -26,6 +26,7 @@ import {
 import toast from "react-hot-toast";
 import { idToColor, trimField } from "@/utils/admin";
 import { Link } from "react-router-dom";
+import ROUTES, { buildRoute } from "../../routes";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 import BadgeUserType from "@/components/BadgeUserType";
@@ -42,10 +43,12 @@ type UserState = {
 };
 
 // Modes under which UserModal operates
-enum UserModalMode {
-  Delete,
-  Restore,
-}
+const UserModalMode = {
+  Delete: 0,
+  Restore: 1,
+} as const;
+
+type UserModalMode = (typeof UserModalMode)[keyof typeof UserModalMode];
 
 // Basic configuration for subject modal
 type UserModalBasicConfig = {
@@ -450,7 +453,9 @@ export default function AdminUsers() {
                       >
                         <Link
                           className="btn btn-sm btn-light"
-                          to={`/admin/users/view/${item.id}`}
+                          to={buildRoute(ROUTES.ADMIN.USER_VIEW, {
+                            id: item.id.toString(),
+                          })}
                         >
                           <FaBars />
                         </Link>

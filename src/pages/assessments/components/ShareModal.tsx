@@ -1,12 +1,12 @@
 import { useGetAssessmentShares, useShareAssessment } from "@/api";
 import { AuthContext } from "@/auth";
-import { AlertInfo } from "@/types";
+import type { AlertInfo } from "@/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Modal, Button, ListGroup, Form, InputGroup } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { FaShare, FaUserAlt, FaCopy } from "react-icons/fa";
-import { Tooltip, OverlayTrigger, TooltipProps } from "react-bootstrap";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Tooltip, OverlayTrigger, type TooltipProps } from "react-bootstrap";
+import { CopyToClipboard } from "react-copy-to-clipboard-ts";
 import { useTranslation } from "react-i18next";
 
 interface ShareModalProps {
@@ -79,8 +79,11 @@ export function ShareModal(props: ShareModalProps) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header className="bg-success text-white" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
+      <Modal.Header closeButton>
+        <Modal.Title
+          className="d-flex align-items-center gap-1"
+          id="contained-modal-title-vcenter"
+        >
           <FaShare className="me-2" />
           {t("page_assessment_list.tip_share")}
         </Modal.Title>

@@ -41,6 +41,7 @@
   "published": "Published",
   "required": "Required",
   "draft": "Draft",
+  "automated_test_details": "Automated test details",
   "compliance_policy": "Compliance Policy",
   "interoperability_guidelines": "Interoperability Guidelines",
   "acceptable_use_policy": "Acceptable Use Policy",
@@ -50,10 +51,17 @@
   "mandatory": "Mandatory",
   "optional": "Optional",
   "unknown": "Unknown",
+  "assessment_ref": "Assessment Reference",
+  "value": "Value",
   "error": "Error",
   "github": "Github",
+  "autotest_info": "The above test is automated. Execution info:",
+  "last_run": "Last Run",
+  "message": "Message",
   "documentation": "Documentation",
   "personal_menu": "My items",
+  "aai_providers": "AAI Providers (NACO)",
+  "endpoint": "Endpoint",
   "login_alert": "Press login to authenticate",
   "under_motivation": "under motivation",
   "tip_publish_assessment": "Publish Assessment (makes it public)",
@@ -66,6 +74,11 @@
   "toast_assessment_publish_progress": "Publishing Assessment...",
   "toast_assessment_unpublish_success": "Assessment Unpublished!",
   "toast_assessment_unpublish_progress": "Unpublishing Assessment...",
+  "test_group_contains": "This Automated Test Group contains the following tests",
+  "test_group_run": "To run this test group please press the button below...",
+  "param_type": "Parameter Type",
+  "test_method": "Test Method",
+  "running_test_group": "Test Group is running...",
   "total": "Total",
   "buttons": {
     "login": "Login",
@@ -79,10 +92,12 @@
     "update_details": "Update Details",
     "create": "Create",
     "create_new": "Create New",
+    "create_version": "Create New Version",
     "delete": "Delete",
     "confirm_delete": "Confirm Delete",
     "about": "About",
     "save": "Save",
+    "save_progress": "Save Progress",
     "cancel": "Cancel",
     "submit": "Submit",
     "reject": "Reject",
@@ -98,7 +113,9 @@
     "next": "Next",
     "restore": "Restore",
     "publish": "Publish",
-    "unpublish": "Unpublish"
+    "unpublish": "Unpublish",
+    "run_test_group": "Run Test Group",
+    "add_group_test": "Add Group Test"
   },
   "fields": {
     "actions": "Actions",
@@ -161,7 +178,6 @@
     "version": "Version",
     "commit": "Commit"
   },
-
   "page_profile": {
     "title": "User Dashboard",
     "validation_requests_subtitle": "View your current validation requests or create a new one.",
@@ -219,6 +235,7 @@
     "subtitle": "All validation Requests in one place.",
     "org_name": "Organization Name",
     "org_role": "Organization Role",
+    "org": "Organization",
     "actor_name": "Actor Name",
     "tip_view": "View Validation Request"
   },
@@ -296,6 +313,7 @@
     "tip_delete": "Delete Assessment"
   },
   "page_assessments": {
+    "public_view": "View public assessments",
     "view": "View your assessments",
     "subtitle": "Read about different actors in the ecosystem before starting."
   },
@@ -387,7 +405,8 @@
     "reimport": "Please try to import a different file...",
     "share1": "This is a",
     "share2": "shared",
-    "share3": "assessment from another user, which includes the following actor information"
+    "share3": "assessment from another user, which includes the following actor information",
+    "include_group_tests": "This assessment includes the following automated group test(s):"
   },
   "page_preview": {
     "title": "Preview Assessment",
@@ -543,6 +562,7 @@
     "toast_unpublish_progress": "Unpublishing motivation...",
     "toast_unpublish_fail": "Error during motivation unpublishing!",
     "toast_asmt_publish_success": "Assessment Type succesfully published!",
+    "toast_asmt_publish_fail": "Error during Assessment Type publishing!",
     "toast_asmt_publish_progress": "Publishing Assessment Type...",
     "toast_asmt_upublish_fail": "Error during Assessment Type publishing!",
     "toast_asmt_unpublish_success": "Assessment Type succesfully unpublished!",
@@ -562,6 +582,9 @@
     "toast_assign_metric_success": "Test Assignment to Metric succeeded!!",
     "toast_assign_metric_progress": "Assinging tests to metric...",
     "toast_assign_metric_fail": "Error during assigning tests to metric!",
+    "toast_assign_metric_criterion_progress": "Assigning Metric to Criterion...",
+    "toast_assign_metric_criterion_success": "Metric Assigned to Criterion!",
+    "toast_assign_metric_criterion_fail": "Error during assigning Metric to Criterion!",
     "toast_manage_cri_success": "Motivation Criteria & Principles Saved!",
     "toast_manage_cri_progress": "Saving Motivation Criteria & Principles...",
     "toast_manage_cri_fail": "Error during saving Motivation Criteria & Principles!",
@@ -658,7 +681,9 @@
     "list_principles_subtitle": "Principles related with criteria under motivation",
     "create_principle": "Create Principle",
     "modal_principles_title": "Manage Principles",
-
+    "manage_metrics": "Manage Metrics",
+    "tip_test_method": "Please select one test method which identify which assessment tests belong to this group",
+    "select_test_method": "Please select test method",
     "modal_asmt_delete_title": "Delete Assessment Type",
     "modal_asmt_delete_message": "Are you sure you want to delete the following Assessment type ?",
     "asmt_types": "Assessment Types",
@@ -677,7 +702,17 @@
     "tip_view_metric_tests": "View metric details and included tests",
     "metric_details": "Metric details",
     "modal_metric_delete_title": "Delete Metric",
-    "modal_metric_delete_message": "Are you sure you want to delete the following Metric ?"
+    "modal_metric_delete_message": "Are you sure you want to delete the following Metric ?",
+    "tip_endpoint": "Please enter a valid endpoint path for the automated group test to call",
+    "select_endpoint": "Enter a valid endpoint path",
+    "group_tests_section": "Group Tests (optional)",
+    "group_test": "Automated Group Test",
+    "info_add_group_tests": "In case you want to have automated groups of tests in this Motivation-Actor please select \"Add Group Test\"",
+    "tip_param_assessment_ref": "A query path in the form of a field or a sequence of nested fields separated by dot (example: organisation.id). These fields should be available in the assessment schema",
+    "tip_param_value": "Enter a specific number or string to be passed as parameter value",
+    "tip_select_param_type": "Please select if the value of the parameter is a reference to value provided by an existing assessment field or a hardcoded value",
+    "select_param_type": "Select the type of the parameter",
+    "tip_param_name": "Please provide a name for this parameter"
   },
   "page_tests": {
     "title": "Tests",
@@ -685,6 +720,7 @@
     "tip_view": "View test details",
     "tip_delete": "Delete test",
     "tip_edit": "Edit test",
+    "tip_create_version": "Create a new version of this test",
     "tip_label": "Label (Name) of the test item",
     "modal_delete_title": "Delete test",
     "modal_delete_message": "Are you sure you want to delete the following test?",
@@ -697,6 +733,7 @@
     "parameters_add": "Add new",
     "parameters_add_evidence": "Add Evidence",
     "create_new": "Create New Test",
+    "create_new_version": "Create New Test Version",
     "edit": "Edit Test",
     "view": "View Test Details",
     "toast_delete_success": "Test succesfully deleted!",
@@ -704,7 +741,10 @@
     "toast_create_success": "Test Created!",
     "toast_create_progress": "Creating Test...",
     "toast_update_success": "Test Updated!",
-    "toast_update_progress": "Updating Test..."
+    "toast_update_progress": "Updating Test...",
+    "toast_create_version_success": "New test version successfully created!",
+    "toast_create_version_progress": "Creating new test version...",
+    "update": "Update Test"
   },
   "page_metrics": {
     "title": "Metrics",

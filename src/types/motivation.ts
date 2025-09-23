@@ -1,5 +1,5 @@
-import { ResponsePage } from "./common";
-import { Principle, PrincipleInput } from "./principle";
+import type { ResponsePage } from "./common";
+import type { Principle, PrincipleInput } from "./principle";
 
 export interface Motivation {
   id: string;
@@ -35,6 +35,7 @@ export interface MetricInput {
   type_algorithm_id: string;
   type_benchmark_id: string;
   value_benchmark: number;
+  criterion_id?: string;
 }
 
 export interface MotivationMetric {
@@ -125,6 +126,9 @@ export interface MotivationReference {
   id: string;
   mtv: string;
   label: string;
+  lodMTV?: string;
+  first_actor_assignment?: string;
+  first_actor_assignment_label?: string;
 }
 
 export interface MotivationPrincipleInput {
@@ -154,4 +158,36 @@ export interface MetricTest {
 export interface MetricTestInput {
   test_id: string;
   relation: string;
+}
+
+export interface PrincipleAssignmentInput {
+  principle_id: string;
+  relation: string;
+  annotation_text?: string;
+  annotation_url?: string;
+}
+
+export interface CriterionAssignmentInput {
+  criterion_id: string;
+  relation: string;
+  annotation_text?: string;
+  annotation_url?: string;
+}
+
+export interface CriterionBuilderInput {
+  cri: string;
+  label: string;
+  description: string;
+  imperative?: string;
+  principleTag?: string;
+}
+
+export type FormMode = "none" | "select" | "new" | "edit";
+export type EntityMode = "none" | "principle" | "criterion" | "test";
+export interface AssessmentBuilderState {
+  formMode: FormMode;
+  entityMode: EntityMode;
+  selectedId?: string;
+  selectedPrincipleIndex?: number;
+  selectedCriterionIndex?: number;
 }

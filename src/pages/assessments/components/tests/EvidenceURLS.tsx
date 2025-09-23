@@ -1,22 +1,23 @@
-import { EvidenceURL } from "@/types";
+import type { EvidenceURL } from "@/types";
 import { useState } from "react";
 import { InputGroup, Form, Row, Col } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-
-/**
- * Small component to add url list
- */
+import { TestToolTip } from "./TestToolTip";
 
 interface EvidenceURLSProps {
   urls: EvidenceURL[];
   onListChange(newURLs: EvidenceURL[]): void;
   noTitle?: boolean;
+  isPreviewMode?: boolean;
 }
 
 export const EvidenceURLS = (props: EvidenceURLSProps) => {
   const [urlList, setUrlList] = useState<EvidenceURL[]>(props.urls);
-  const [newURL, setNewURL] = useState<EvidenceURL>({ url: "" });
-  const [error, setError] = useState("");
+  const [evidenceInfo, setEvidenceInfo] = useState<EvidenceURL>({
+    url: "",
+    description: "",
+  });
+  const [hasError, setHasError] = useState(false);
   const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
   const { t } = useTranslation();
   const handleRemoveURL = (index: number) => {
@@ -26,16 +27,18 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
   };
 
   const handleAddURL = () => {
-    if (newURL) {
-      if (urlRegex.test(newURL.url)) {
-        const updatedURLs = [...urlList, newURL];
-        setUrlList(updatedURLs);
-        props.onListChange(updatedURLs);
-        setNewURL({ url: "", description: "" });
-        setError("");
-      } else {
-        setError(t("page_assessment_edit.err_evidence"));
-      }
+    const isUrlValid =
+      evidenceInfo.url.trim() && urlRegex.test(evidenceInfo.url);
+    const isDescriptionValid = evidenceInfo.description?.trim();
+
+    if (isUrlValid && isDescriptionValid) {
+      const updatedURLs = [...urlList, evidenceInfo];
+      setUrlList(updatedURLs);
+      props.onListChange(updatedURLs);
+      setEvidenceInfo({ url: "", description: "" });
+      setHasError(false);
+    } else {
+      setHasError(true);
     }
   };
 
@@ -47,60 +50,27 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
         </small>
       )}
 
-      {urlList.length > 0 && (
-        <ul className="list-group mt-2">
-          {urlList.map((item, index) => (
-            <li className="list-group-item p-2" key={index}>
-              <Row>
-                <Col md="auto">
-                  <small>[{index}]</small>
-                </Col>
-                <Col>
-                  <div>
-                    <small>
-                      <a
-                        className="ms-2"
-                        href={item.url}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {item.url}
-                      </a>{" "}
-                    </small>
-                  </div>
-                  <div>
-                    {item.description && (
-                      <small>
-                        <em className="ms-2">{item.description}</em>
-                      </small>
-                    )}
-                  </div>
-                </Col>
-                <Col md="auto">
-                  <small>
-                    <span
-                      className="btn btn-sm btn-light border ms-4"
-                      onClick={() => handleRemoveURL(index)}
-                    >
-                      {t("buttons.remove").toLowerCase()}
-                    </span>
-                  </small>
-                </Col>
-              </Row>
-            </li>
-          ))}
-        </ul>
-      )}
-      <Row className="m-1 p-2 bg-light border rounded-bottom">
-        <Col>
+      <span className="fw-light-500 text-sm text-secondary">
+        <strong>Can you provide public evidence of such a declaration?</strong>
+        <span className="ms-2">
+          <TestToolTip
+            tipId="evidence-id"
+            tipText="A document, web page, or publication describing the intention"
+          />
+        </span>
+      </span>
+
+      <Row className="justify-content-md-right">
+        <Col md={10}>
           <InputGroup size="sm">
-            <InputGroup.Text id="label-add-url">{t("url")}:</InputGroup.Text>
             <Form.Control
               id="input-add-url"
-              value={newURL.url}
+              value={evidenceInfo.url}
               onChange={(e) => {
-                setNewURL({ ...newURL, url: e.target.value.trim() });
-                setError("");
+                setEvidenceInfo((prev) => ({
+                  ...prev,
+                  url: e.target.value.trim(),
+                }));
               }}
               aria-describedby="label-add-url"
               placeholder={t("page_assessment_edit.evidence_url")}
@@ -109,18 +79,31 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
                   handleAddURL();
                 }
               }}
+              title={t("page_assessment_edit.evidence_url")}
             />
           </InputGroup>
+          {hasError && !evidenceInfo.url.trim() && (
+            <small className="text-danger d-block">{t("required")}</small>
+          )}
+          {hasError &&
+            evidenceInfo.url.trim() &&
+            !urlRegex.test(evidenceInfo.url) && (
+              <small className="text-danger d-block">
+                {t("page_assessment_edit.err_evidence")}
+              </small>
+            )}
+
           <InputGroup className="mt-2" size="sm">
-            <InputGroup.Text id="label-add-url">
-              {t("fields.description")}:
-            </InputGroup.Text>
             <Form.Control
               id="input-add-description"
-              value={newURL.description}
+              as="textarea"
+              aria-label="With textarea"
+              value={evidenceInfo.description}
               onChange={(e) => {
-                setNewURL({ ...newURL, description: e.target.value });
-                setError("");
+                setEvidenceInfo((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }));
               }}
               aria-describedby="label-add-url"
               placeholder={t("page_assessment_edit.evidence_description")}
@@ -129,17 +112,49 @@ export const EvidenceURLS = (props: EvidenceURLSProps) => {
                   handleAddURL();
                 }
               }}
+              title={t("page_assessment_edit.evidence_description")}
             />
           </InputGroup>
+          {hasError && !evidenceInfo.description?.trim() && (
+            <small className="text-danger d-block">{t("required")}</small>
+          )}
         </Col>
-        <Col md="auto">
-          <span className="btn btn-primary btn-sm" onClick={handleAddURL}>
-            {t("buttons.add")}
+
+        <Col md={1}>
+          <span
+            className={`btn btn-evidence text-evidence btn-sm float-right ${props?.isPreviewMode && "disabled"}`}
+            onClick={handleAddURL}
+          >
+            +
           </span>
         </Col>
       </Row>
 
-      {error && <small className="text-danger">{error}</small>}
+      {urlList.map((evid, index) => (
+        <Row className="mt-2" key={index}>
+          <Col md={10}>
+            <p className="lh-sm">
+              <small>
+                <a key={index} href={evid.url} target="_blank" rel="noreferrer">
+                  # Evidence [{index}]
+                </a>
+
+                <span> {evid.description}</span>
+              </small>
+            </p>
+          </Col>
+          <Col md="auto">
+            <small>
+              <span
+                className="btn btn-secondary btn-sm float-right"
+                onClick={() => handleRemoveURL(index)}
+              >
+                -
+              </span>
+            </small>
+          </Col>
+        </Row>
+      ))}
     </div>
   );
 };
