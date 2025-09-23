@@ -126,13 +126,9 @@ function AdminAssessments() {
     search: searchTerm,
   });
 
-  // const { data: userObjects } = useGetObjects({
-  //   size: 100,
-  //   page: 1,
-  //   token: keycloak?.token || "",
-  //   assessmentTypeId: motivationIdParam || "",
-  //   actorId: actorIdParam || "",
-  // });
+  useEffect(() => {
+    refetch();
+  }, [opts, refetch]);
 
   const [asmtNumID, setAsmtNumID] = useState<string>("");
   const qAssessment = useGetAdminAssessment({
