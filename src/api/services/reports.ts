@@ -11,7 +11,7 @@ export interface ReportDefinition {
 }
 
 export interface ReportRequest {
-  reportDefinitionId: string;
+  filters: Record<string, string | number | boolean | string[]>;
 }
 
 export interface ReportResponse {
@@ -25,6 +25,22 @@ export interface ReportResponse {
   rows: string[];
   columns: string[];
   data: string[][];
+}
+
+export interface FilterValue {
+  id: string;
+  label: string;
+}
+
+export interface FilterDefinition {
+  name: string;
+  type: string;
+  required: boolean;
+}
+
+export interface ReportFilter {
+  definition: FilterDefinition;
+  values: FilterValue[];
 }
 
 export const useGetReportDefinitions = ({
@@ -47,12 +63,38 @@ export const useGetReportDefinitions = ({
 
 export const useGenerateReport = (token: string) => {
   return useMutation({
-    mutationFn: async (reportRequest: ReportRequest) => {
+    mutationFn: async ({
+      reportId,
+      reportRequest,
+    }: {
+      reportId: string;
+      reportRequest?: ReportRequest;
+    }) => {
       const response = await APIClient(token).post<ReportResponse>(
-        "/v1/reports",
+        `/v1/reports/generate/${reportId}`,
         reportRequest,
       );
       return response.data;
     },
   });
 };
+
+export const useGetReportFilters = ({
+  reportDefinitionId,
+  token,
+  isRegistered,
+}: {
+  reportDefinitionId: string;
+  token: string;
+  isRegistered: boolean;
+}) =>
+  useQuery({
+    queryKey: ["report-filters", reportDefinitionId],
+    queryFn: async () => {
+      const response = await APIClient(token).get<ReportFilter[]>(
+        `/v1/reports/filters/by-report-definition/${reportDefinitionId}`,
+      );
+      return response.data;
+    },
+    enabled: !!token && !!reportDefinitionId && isRegistered,
+  });
