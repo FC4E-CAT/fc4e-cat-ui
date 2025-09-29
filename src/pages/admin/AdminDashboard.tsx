@@ -110,7 +110,7 @@ function AdminDashboard() {
   const validationStats = statistics?.validation_statistics;
 
   return (
-    <div className="container-fluid">
+    <div>
       <div className="cat-view-heading-block row">
         <div className="col">
           <h2 className="cat-view-heading text-muted">
@@ -122,7 +122,7 @@ function AdminDashboard() {
         </div>
       </div>
 
-      <Row className="mt-1">
+      <Row className="mt-1 px-2">
         {/* Role-Based Status */}
         <Col lg={3} md={6} className="mb-4">
           <div className={styles["dashboard-section"]}>
@@ -396,7 +396,7 @@ function AdminDashboard() {
         </Col>
       </Row>
 
-      <Row className="mt-4">
+      <Row className="mt-4 px-2">
         <Col lg={12} className="mb-4">
           <div className={styles["most-failed-section"]}>
             <div className={styles["section-header"]}>

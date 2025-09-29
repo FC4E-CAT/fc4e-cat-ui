@@ -112,7 +112,7 @@ export function ProtectedRoute() {
         <div>
           <AdminMenu />
         </div>
-        <div className="bg-white container-fluid mb-4 flex-grow-1">
+        <div className="bg-white container-fluid mb-4 flex-grow-1 overflow-x-hidden">
           <Outlet />
         </div>
       </div>
@@ -121,7 +121,7 @@ export function ProtectedRoute() {
         <div>
           <UserMenu />
         </div>
-        <div className="rounded bg-white container-fluid mb-4 flex-grow-1">
+        <div className="rounded bg-white container-fluid mb-4 flex-grow-1 overflow-x-hidden">
           <Outlet />
         </div>
       </div>

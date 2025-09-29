@@ -11,6 +11,7 @@ import {
   FaBars,
   FaTimes,
   FaChartBar,
+  FaFileAlt,
 } from "react-icons/fa";
 import { FaClipboardQuestion, FaFileCircleCheck } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
@@ -179,6 +180,14 @@ function renderMenuContent(
               className={`cat-nav-link-item ${isSel(adminPath, "dashboard") ? "active" : ""}`}
             >
               <FaChartBar /> {t("Dashboard")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={ROUTES.ADMIN.REPORTS}
+              className={`cat-nav-link-item ${isSel(adminPath, "reports") ? "active" : ""}`}
+            >
+              <FaFileAlt /> {t("Reports")}
             </Link>
           </li>
           <li>
