@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FaBars, FaTimes, FaUsers } from "react-icons/fa";
+import { FaBars, FaFileAlt, FaTimes, FaUsers } from "react-icons/fa";
 import ROUTES from "../routes";
 
 function isSel(path: string, name: string): boolean {
   return path.toLowerCase() === name.toLowerCase();
 }
 
-export default function UserMenu() {
+export default function UserMenu({ roles }: { roles?: string[] }) {
   const userPath = useLocation().pathname.split("/")[1] ?? "";
+  const adminPath = useLocation().pathname.split("/")[2] ?? "";
   const currentPath = useLocation().pathname;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  const isReporter = roles?.includes("reporter") ?? false;
 
   const { t } = useTranslation();
 
@@ -106,7 +109,7 @@ export default function UserMenu() {
                   overflowY: "auto",
                 }}
               >
-                {renderMenuContent({ userPath, t })}
+                {renderMenuContent({ isReporter, adminPath, userPath, t })}
               </div>
             </div>
           </>
@@ -117,15 +120,19 @@ export default function UserMenu() {
 
   return (
     <div className="cat-sidebar-container">
-      {renderMenuContent({ userPath, t })}
+      {renderMenuContent({ isReporter, adminPath, userPath, t })}
     </div>
   );
 }
 
 function renderMenuContent({
+  isReporter,
+  adminPath,
   userPath,
   t,
 }: {
+  isReporter: boolean;
+  adminPath: string;
   userPath: string;
   t: ReturnType<typeof useTranslation>["t"];
 }) {
@@ -142,6 +149,16 @@ function renderMenuContent({
               <FaUsers /> {t("profile")}
             </Link>
           </li>
+          {isReporter && (
+            <li>
+              <Link
+                to={ROUTES.ADMIN.REPORTS}
+                className={`cat-nav-link-item ${isSel(adminPath, "reports") ? "active" : ""}`}
+              >
+                <FaFileAlt /> {t("Reports")}
+              </Link>
+            </li>
+          )}
           <li>
             <Link
               to={ROUTES.VALIDATIONS.ROOT}

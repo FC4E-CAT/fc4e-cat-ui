@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
 import { AuthContext } from "@/auth";
 import {
   useGetReportDefinitions,
@@ -40,6 +40,43 @@ function ReportsContainer() {
 
   const generateReportMutation = useGenerateReport(keycloak?.token || "");
 
+  const handleGenerateReportForDefinition = useCallback(
+    async (definitionId: string, filters?: Record<string, string[]>) => {
+      if (!isInitialLoad) {
+        setIsGenerating(true);
+      }
+
+      try {
+        const filterParams: Record<string, string[]> = {};
+        const filtersToUse = filters || selectedFilters;
+
+        Object.entries(filtersToUse).forEach(([filterName, filterValues]) => {
+          if (filterValues.length > 0) {
+            filterParams[filterName] = filterValues;
+          }
+        });
+
+        const result = await generateReportMutation.mutateAsync({
+          reportId: definitionId,
+          reportRequest: {
+            filters: filterParams,
+          },
+        });
+        setReportData(result);
+
+        if (isInitialLoad) {
+          setIsInitialLoad(false);
+        }
+      } catch (error) {
+        toast.error("Failed to generate report");
+        console.error("Error generating report:", error);
+      } finally {
+        setIsGenerating(false);
+      }
+    },
+    [isInitialLoad, selectedFilters, generateReportMutation],
+  );
+
   useEffect(() => {
     if (
       reportDefinitions &&
@@ -54,7 +91,12 @@ function ReportsContainer() {
     if (selectedReportDefinition && !reportData && isInitialLoad) {
       handleGenerateReportForDefinition(selectedReportDefinition);
     }
-  }, [selectedReportDefinition, reportData, isInitialLoad]);
+  }, [
+    selectedReportDefinition,
+    reportData,
+    isInitialLoad,
+    handleGenerateReportForDefinition,
+  ]);
 
   const handleReportDefinitionChange = (definitionId: string) => {
     setSelectedReportDefinition(definitionId);
@@ -65,43 +107,6 @@ function ReportsContainer() {
       handleGenerateReportForDefinition(definitionId, {});
       setSelectedFilters({});
       setAppliedFilters({});
-    }
-  };
-
-  const handleGenerateReportForDefinition = async (
-    definitionId: string,
-    filters?: Record<string, string[]>,
-  ) => {
-    if (!isInitialLoad) {
-      setIsGenerating(true);
-    }
-
-    try {
-      const filterParams: Record<string, string[]> = {};
-      const filtersToUse = filters || selectedFilters;
-
-      Object.entries(filtersToUse).forEach(([filterName, filterValues]) => {
-        if (filterValues.length > 0) {
-          filterParams[filterName] = filterValues;
-        }
-      });
-
-      const result = await generateReportMutation.mutateAsync({
-        reportId: definitionId,
-        reportRequest: {
-          filters: filterParams,
-        },
-      });
-      setReportData(result);
-
-      if (isInitialLoad) {
-        setIsInitialLoad(false);
-      }
-    } catch (error) {
-      toast.error("Failed to generate report");
-      console.error("Error generating report:", error);
-    } finally {
-      setIsGenerating(false);
     }
   };
 
