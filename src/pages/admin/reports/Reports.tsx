@@ -28,6 +28,7 @@ interface ReportsProps {
   reportData: ReportResponse | null;
   isLoadingDefinitions: boolean;
   isGenerating: boolean;
+  isExporting: boolean;
   definitionsError: unknown;
   reportFilters: ReportFilter[];
   selectedFilters: Record<string, string[]>;
@@ -40,6 +41,7 @@ interface ReportsProps {
   ) => void;
   onApplyFilters: () => void;
   onClearAllFilters: () => void;
+  onExportReport: () => void;
 }
 
 function Reports({
@@ -48,6 +50,7 @@ function Reports({
   reportData,
   isLoadingDefinitions,
   isGenerating,
+  isExporting,
   definitionsError,
   reportFilters,
   selectedFilters,
@@ -56,6 +59,7 @@ function Reports({
   onFilterChange,
   onApplyFilters,
   onClearAllFilters,
+  onExportReport,
 }: ReportsProps) {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
@@ -159,17 +163,23 @@ function Reports({
               <OverlayTrigger
                 placement="top"
                 overlay={
-                  <Tooltip id="tip-export-pdf">Export report as PDF</Tooltip>
+                  <Tooltip id="tip-export-pdf">
+                    Export report as CSV file
+                  </Tooltip>
                 }
               >
                 <Button
                   className={styles["export-button"]}
-                  disabled={isGenerating || !reportData}
-                  onClick={() => {}}
+                  disabled={isGenerating || isExporting || !reportData}
+                  onClick={onExportReport}
                   size="sm"
                   variant="secondary"
                 >
-                  <FaDownload />
+                  {isExporting ? (
+                    <Spinner as="span" size="sm" />
+                  ) : (
+                    <FaDownload />
+                  )}
                 </Button>
               </OverlayTrigger>
             </div>
