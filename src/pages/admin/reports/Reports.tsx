@@ -191,7 +191,7 @@ function Reports({
           <div>
             <div className={styles["table-container"]}>
               <div className="p-3 pb-0">
-                <h5>{reportData.description}</h5>
+                <h6>{reportData.description}</h6>
               </div>
 
               <div className="px-3">

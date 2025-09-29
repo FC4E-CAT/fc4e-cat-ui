@@ -5,6 +5,7 @@ export interface UserProfile {
   orcid_id?: string;
   registered_on: string;
   user_type: string;
+  roles: string[];
   name: string;
   surname: string;
   email: string;

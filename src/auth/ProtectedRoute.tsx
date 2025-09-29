@@ -12,6 +12,7 @@ import AdminMenu from "@/components/AdminMenu";
 export function ProtectedRoute() {
   // check if the current path leads to an admin-view
   const adminRoute = useLocation().pathname.startsWith("/admin");
+  const reportsRoute = useLocation().pathname === ROUTES.ADMIN.REPORTS;
 
   // load navigate hook to use it to programmaticaly navigate to profile page if needed
   const navigate = useNavigate();
@@ -98,13 +99,21 @@ export function ProtectedRoute() {
     }
   }, [isSuccessRegister, setRegistered, profileData]);
 
-  // check if a non-admin user tries to access an admin view
+  // check if a non-admin user tries to access an admin view (except reports for reporter)
   useEffect(() => {
     if (authenticated && adminRoute && profileData) {
-      if (profileData.user_type.toLowerCase() !== "admin")
+      const userType = profileData.user_type.toLowerCase();
+      const roles = profileData.roles || [];
+
+      if (reportsRoute && roles.includes("reporter")) {
+        return;
+      }
+
+      if (userType !== "admin") {
         navigate(ROUTES.PROFILE.ROOT);
+      }
     }
-  }, [authenticated, adminRoute, profileData, navigate]);
+  }, [authenticated, adminRoute, reportsRoute, profileData, navigate]);
 
   if (authenticated && isSuccess && profileData) {
     return profileData.user_type.toLowerCase() === "admin" ? (
@@ -119,7 +128,7 @@ export function ProtectedRoute() {
     ) : (
       <div className="cat-admin-container d-flex flex-row">
         <div>
-          <UserMenu />
+          <UserMenu roles={profileData.roles} />
         </div>
         <div className="rounded bg-white container-fluid mb-4 flex-grow-1 overflow-x-hidden">
           <Outlet />
