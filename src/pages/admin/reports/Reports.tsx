@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import {
   Container,
   Row,
@@ -9,9 +10,16 @@ import {
   Button,
   OverlayTrigger,
   Tooltip,
+  Dropdown,
+  Badge,
 } from "react-bootstrap";
-import { FaDownload } from "react-icons/fa";
-import type { ReportResponse, ReportDefinition } from "@/api/services/reports";
+import { FaDownload, FaTimes } from "react-icons/fa";
+import { HiOutlineFilter } from "react-icons/hi";
+import type {
+  ReportResponse,
+  ReportDefinition,
+  ReportFilter,
+} from "@/api/services/reports";
 import styles from "./Reports.module.css";
 
 interface ReportsProps {
@@ -21,7 +29,17 @@ interface ReportsProps {
   isLoadingDefinitions: boolean;
   isGenerating: boolean;
   definitionsError: unknown;
+  reportFilters: ReportFilter[];
+  selectedFilters: Record<string, string[]>;
+  appliedFilters: Record<string, string[]>;
   onReportDefinitionChange: (definitionId: string) => void;
+  onFilterChange: (
+    filterName: string,
+    valueId: string,
+    checked: boolean,
+  ) => void;
+  onApplyFilters: () => void;
+  onClearAllFilters: () => void;
 }
 
 function Reports({
@@ -31,8 +49,25 @@ function Reports({
   isLoadingDefinitions,
   isGenerating,
   definitionsError,
+  reportFilters,
+  selectedFilters,
+  appliedFilters,
   onReportDefinitionChange,
+  onFilterChange,
+  onApplyFilters,
+  onClearAllFilters,
 }: ReportsProps) {
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+  const getAppliedFilterCount = useCallback(() => {
+    return Object.values(appliedFilters).reduce(
+      (total, values) => total + values.length,
+      0,
+    );
+  }, [appliedFilters]);
+
+  const appliedFilterCount = getAppliedFilterCount();
+
   const getStatusClass = (cellValue: string) => {
     const value = cellValue.toLowerCase().trim();
 
@@ -152,8 +187,8 @@ function Reports({
       )}
 
       {reportData && (
-        <Row className="px-2">
-          <Col>
+        <div className="px-2">
+          <div>
             <div className={styles["table-container"]}>
               <div className="p-3 pb-0">
                 <h5>{reportData.description}</h5>
@@ -175,35 +210,157 @@ function Reports({
                 <Table className={styles["report-table"]}>
                   <thead>
                     <tr>
-                      <th></th>
+                      <th className={styles["filter-header"]}>
+                        <div className={styles["dropdown-menu-wrapper"]}>
+                          <Dropdown
+                            show={showFilterDropdown}
+                            onToggle={() =>
+                              setShowFilterDropdown(!showFilterDropdown)
+                            }
+                            style={{
+                              zIndex: 1050,
+                              position: "absolute",
+                              transform: "none",
+                              height: "1000px",
+                            }}
+                          >
+                            <Dropdown.Toggle
+                              as="div"
+                              className={styles["filter-toggle"]}
+                              onClick={() =>
+                                setShowFilterDropdown(!showFilterDropdown)
+                              }
+                            >
+                              <HiOutlineFilter
+                                className={styles["filter-icon"]}
+                              />
+                              {appliedFilterCount > 0 && (
+                                <Badge
+                                  bg="primary"
+                                  className={styles["filter-badge"]}
+                                >
+                                  {appliedFilterCount}
+                                </Badge>
+                              )}
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu className={styles["filter-menu"]}>
+                              <div className={styles["filter-header-text"]}>
+                                <span>Filters</span>
+
+                                <Button
+                                  variant="primary"
+                                  size="sm"
+                                  onClick={() => {
+                                    onApplyFilters();
+                                    setShowFilterDropdown(false);
+                                  }}
+                                  className={styles["apply-filters-button"]}
+                                >
+                                  Apply Filters
+                                </Button>
+                              </div>
+
+                              <div className={styles["dropdown-content"]}>
+                                {reportFilters.map((filter) => (
+                                  <div
+                                    key={filter.definition.name}
+                                    className={styles["filter-group"]}
+                                  >
+                                    <div
+                                      className={styles["filter-group-title"]}
+                                    >
+                                      {filter.definition.name
+                                        .replace("_", " ")
+                                        .toUpperCase()}
+                                    </div>
+                                    {filter.values.map((value) => (
+                                      <Form.Check
+                                        className={styles["filter-checkbox"]}
+                                        key={value.id}
+                                        id={`filter-${filter.definition.name}-${value.id}`}
+                                        label={value.label}
+                                        checked={
+                                          selectedFilters[
+                                            filter.definition.name
+                                          ]?.includes(value.id) || false
+                                        }
+                                        onChange={(e) =>
+                                          onFilterChange(
+                                            filter.definition.name,
+                                            value.id,
+                                            e.target.checked,
+                                          )
+                                        }
+                                        type="checkbox"
+                                      />
+                                    ))}
+                                  </div>
+                                ))}
+                              </div>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        </div>
+                        {appliedFilterCount > 0 && (
+                          <Button
+                            variant="link"
+                            size="sm"
+                            onClick={onClearAllFilters}
+                            className={styles["clear-filters"]}
+                          >
+                            <FaTimes /> Clear All
+                          </Button>
+                        )}
+                      </th>
                       {reportData.columns.map((column, index) => (
                         <th key={index}>{column}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {reportData.rows.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        <td className={styles["row-header"]}>{row}</td>
-                        {reportData.data[rowIndex]?.map(
-                          (cellValue, cellIndex) => (
-                            <td key={cellIndex}>
-                              <span
-                                className={`${styles["status-badge"]} ${getStatusClass(cellValue)}`}
-                              >
-                                {getDisplayValue(cellValue)}
-                              </span>
-                            </td>
-                          ),
-                        )}
+                    {reportData.rows.length === 0 ||
+                    reportData.data.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={reportData.columns.length + 1}
+                          className={styles["no-data-message"]}
+                        >
+                          <div className="text-center py-4">
+                            <div className="text-muted">
+                              <h6>No data available</h6>
+                              <p className="mb-0">
+                                {appliedFilterCount > 0
+                                  ? "No results match the selected filters. Try adjusting your filter criteria."
+                                  : "No data available for this report configuration."}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
                       </tr>
-                    ))}
+                    ) : (
+                      reportData.rows.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                          <td className={styles["row-header"]}>{row}</td>
+                          {reportData.data[rowIndex]?.map(
+                            (cellValue, cellIndex) => (
+                              <td key={cellIndex}>
+                                <span
+                                  className={`${styles["status-badge"]} ${getStatusClass(cellValue)}`}
+                                >
+                                  {getDisplayValue(cellValue)}
+                                </span>
+                              </td>
+                            ),
+                          )}
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </Table>
               </div>
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
       )}
     </div>
   );
