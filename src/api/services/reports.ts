@@ -79,6 +79,34 @@ export const useGenerateReport = (token: string) => {
   });
 };
 
+export const useExportReport = (token: string) => {
+  return useMutation({
+    mutationFn: async ({
+      reportId,
+      reportData,
+    }: {
+      reportId: string;
+      reportData: ReportResponse;
+    }) => {
+      const response = await APIClient(token).post(
+        `/v1/reports/export/${reportId}`,
+        reportData,
+        {
+          responseType: "blob",
+          headers: {
+            Accept: "text/csv",
+          },
+        },
+      );
+
+      return {
+        data: response.data,
+        headers: response.headers,
+      };
+    },
+  });
+};
+
 export const useGetReportFilters = ({
   reportDefinitionId,
   token,
