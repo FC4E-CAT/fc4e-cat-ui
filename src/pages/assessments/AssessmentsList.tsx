@@ -14,16 +14,20 @@ import {
   FaEyeSlash,
   FaBars,
   FaUsers,
+  FaCheckCircle,
+  FaTrophy,
+  FaClock,
 } from "react-icons/fa";
 import {
   Alert,
+  Badge,
   Button,
+  Card,
   Form,
   Row,
   Col,
   OverlayTrigger,
   Tooltip,
-  Table,
 } from "react-bootstrap";
 import type {
   AssessmentListItem,
@@ -46,6 +50,7 @@ import { toast } from "react-hot-toast";
 import { ShareModal } from "./components/ShareModal";
 import { useTranslation } from "react-i18next";
 import { PublishModal } from "@/components";
+import styles from "@/pages/admin/reports/Reports.module.css";
 
 type Pagination = {
   page: number;
@@ -426,384 +431,480 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           </Row>
         </Col>
       </div>
-      <>
-        <div className="mt-2">
-          <Table hover>
-            <thead>
-              <tr className="table-light">
-                <th className="col-lg-2">
-                  <span>{t("fields.name")}</span>
-                </th>
-
-                <th>
-                  <span>{t("fields.compliance")}</span>
-                </th>
-                <th>
-                  <span>{t("fields.ranking")}</span>
-                </th>
-                <th>
-                  <span>{t("fields.access")}</span>
-                </th>
-                <th>
-                  <span>{t("fields.subject")} </span>
-                </th>
-                <th>
-                  <span>{t("fields.organisation")}</span>
-                </th>
-                <th className="col-lg-1">
-                  <span>{t("fields.created_on")}</span>
-                </th>
-                <th className="col-lg-2">
-                  <span>{t("fields.actions")}</span>
-                </th>
-              </tr>
-            </thead>
-            {assessments.length > 0 ? (
-              <tbody>
-                {assessments.map((item) => {
-                  return (
-                    <tr key={item.id}>
-                      <td className="align-middle">
-                        <div>
-                          <span className="text-black float-start">
-                            {item.name}
-                            {item.shared_to_user && (
-                              <OverlayTrigger
-                                key="shared-with-others"
-                                placement="top"
-                                overlay={
-                                  <Tooltip id={`tip-shared-with-others`}>
-                                    {t("page_assessment_list.tip_shared_by")}
-                                  </Tooltip>
-                                }
-                              >
-                                <span>
-                                  <FaUsers className="ms-2 fs-5 float-end text-info" />
-                                </span>
-                              </OverlayTrigger>
-                            )}
-                            {item.shared_by_user && (
-                              <OverlayTrigger
-                                key="shared-from-others"
-                                placement="top"
-                                overlay={
-                                  <Tooltip id={`tip-shared-from-others`}>
-                                    {t("page_assessment_list.tip_shared_with")}
-                                  </Tooltip>
-                                }
-                              >
-                                <span>
-                                  <FaUsers className="ms-2 fs-5 float-end text-info" />
-                                </span>
-                              </OverlayTrigger>
-                            )}
-                          </span>
-                          <br />
-                          <div>
-                            <span className="text-muted text-xs">
-                              {item.type}
-                            </span>
-                          </div>
+      <div className="py-2 px-2">
+        {assessments.length > 0 ? (
+          <Row className="mt-3 align-items-stretch">
+            {assessments.map((item) => (
+              <Col
+                key={item.id}
+                lg={3}
+                md={6}
+                sm={12}
+                className="mb-2 d-flex align-items-stretch"
+              >
+                <Card className="shadow border-1 w-100">
+                  <Card.Body className="p-3">
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <div className="flex-grow-1 me-3">
+                        <Card.Title className="fw-light fs-5">
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-name-${item.id}`}>
+                                {t("fields.name")}
+                              </Tooltip>
+                            }
+                          >
+                            <span>{item.name}</span>
+                          </OverlayTrigger>
+                        </Card.Title>
+                        <div className="text-muted small mb-1">
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-type-${item.id}`}>
+                                {t("fields.type")}
+                              </Tooltip>
+                            }
+                          >
+                            <span>{item.type}</span>
+                          </OverlayTrigger>
                         </div>
-                      </td>
-                      <td className="align-middle text-center">
-                        {item.compliance === null ? (
-                          <span className="badge rounded-pill text-bg-light text-warning border border-warning">
-                            {t("na").toUpperCase()}
-                          </span>
-                        ) : item.compliance ? (
-                          <span className="badge rounded-pill text-bg-light text-success border border-success">
-                            {t("pass").toUpperCase()}
-                          </span>
-                        ) : (
-                          <span className="badge rounded-pill text-bg-light text-danger border border-danger">
-                            {t("fail").toUpperCase()}
-                          </span>
-                        )}
-                      </td>
-                      <td className="align-middle text-center">
-                        {item.ranking === null ? (
-                          <h6>
-                            <span className="badge bg-secondary">
-                              {t("na").toUpperCase()}
-                            </span>
-                          </h6>
-                        ) : (
-                          <h5>
-                            <span className="badge bg-info">
-                              {prettyPrintRanking(item.ranking)}
-                            </span>
-                          </h5>
-                        )}
-                      </td>
-                      <td className="align-middle text-center">
-                        {item.published ? (
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={tooltipPublic}
-                          >
-                            <span>
-                              <FaEye className="text-success fs-4" />
-                            </span>
-                          </OverlayTrigger>
-                        ) : (
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={tooltipPrivate}
-                          >
-                            <span>
-                              <FaEyeSlash className="text-secondary fs-4" />
-                            </span>
-                          </OverlayTrigger>
-                        )}
-                      </td>
-                      <td className="align-middle">
-                        {item.subject_name}
-
-                        <span className="mt-2">({item.subject_type})</span>
-                        <br />
-                      </td>
-                      <td className="align-middle ">
-                        <span className="text-sm">{item.organisation}</span>
-                      </td>
-                      <td className="align-middle">
-                        <small>{item.created_on.split(" ")[0]}</small>
-                      </td>
-                      <td>
-                        <div className="d-flex flex-nowrap">
-                          <p>
-                            {" "}
+                        <div className="d-flex align-items-center">
+                          {item.shared_to_user && (
                             <OverlayTrigger
+                              key="shared-with-others"
                               placement="top"
                               overlay={
-                                <Tooltip id="tip-view">
-                                  {t("page_assessment_list.tip_view")}
+                                <Tooltip id={`tip-shared-with-others`}>
+                                  {t("page_assessment_list.tip_shared_by")}
                                 </Tooltip>
                               }
                             >
-                              <Link
-                                id={`view-button-${item.id}`}
-                                className="btn btn-light btn-sm m-1"
-                                to={
-                                  listPublic
-                                    ? buildRoute(
-                                        ROUTES.PUBLIC_ASSESSMENTS.VIEW,
-                                        { asmtId: item.id },
-                                      )
-                                    : buildRoute(ROUTES.ASSESSMENTS.VIEW, {
-                                        asmtId: item.id,
-                                      })
-                                }
-                              >
-                                <FaBars />
-                              </Link>
+                              <FaUsers className="text-info me-2" />
                             </OverlayTrigger>
-                            {!listPublic && (
-                              <OverlayTrigger
-                                placement="top"
-                                overlay={
-                                  <Tooltip id="tip-edit">
-                                    {t("page_assessment_list.tip_edit")}
-                                  </Tooltip>
-                                }
-                              >
-                                <Link
-                                  id={`edit-button-${item.id}`}
-                                  className="btn btn-light btn-sm m-1"
-                                  to={buildRoute(ROUTES.ASSESSMENTS.EDIT, {
-                                    asmtId: item.id,
-                                  })}
-                                >
-                                  <FaEdit />
-                                </Link>
-                              </OverlayTrigger>
-                            )}
+                          )}
+                          {item.shared_by_user && (
+                            <OverlayTrigger
+                              key="shared-from-others"
+                              placement="top"
+                              overlay={
+                                <Tooltip id={`tip-shared-from-others`}>
+                                  {t("page_assessment_list.tip_shared_with")}
+                                </Tooltip>
+                              }
+                            >
+                              <FaUsers className="text-info" />
+                            </OverlayTrigger>
+                          )}
+                        </div>
+                      </div>
+                      <div className="d-flex flex-column align-items-end">
+                        <div className="d-flex gap-2">
+                          {item.compliance === null ? (
                             <OverlayTrigger
                               placement="top"
                               overlay={
-                                <Tooltip id="tip-export">
-                                  {t("page_assessment_list.tip_export")}
+                                <Tooltip
+                                  id={`tooltip-compliance-na-${item.id}`}
+                                >
+                                  {t("fields.compliance")}
+                                </Tooltip>
+                              }
+                            >
+                              <span
+                                className={`${styles["status-badge"]} ${styles["status-na"]} d-flex align-items-center gap-2 py-1 px-2`}
+                                style={{ fontSize: "0.875rem" }}
+                              >
+                                <FaExclamationTriangle
+                                  style={{ fontSize: "0.875rem" }}
+                                />
+                                {t("na").toUpperCase()}
+                              </span>
+                            </OverlayTrigger>
+                          ) : item.compliance ? (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip
+                                  id={`tooltip-compliance-pass-${item.id}`}
+                                >
+                                  {t("fields.compliance")}
+                                </Tooltip>
+                              }
+                            >
+                              <span
+                                className={`${styles["status-badge"]} ${styles["status-pass"]} d-flex align-items-center gap-2 py-1 px-2`}
+                                style={{ fontSize: "0.875rem" }}
+                              >
+                                <FaCheckCircle
+                                  style={{ fontSize: "0.875rem" }}
+                                />
+                                {t("pass").toUpperCase()}
+                              </span>
+                            </OverlayTrigger>
+                          ) : (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip
+                                  id={`tooltip-compliance-fail-${item.id}`}
+                                >
+                                  {t("fields.compliance")}
+                                </Tooltip>
+                              }
+                            >
+                              <span
+                                className={`${styles["status-badge"]} ${styles["status-fail"]} d-flex align-items-center gap-2 py-1 px-2`}
+                                style={{ fontSize: "0.875rem" }}
+                              >
+                                <FaTimes style={{ fontSize: "0.875rem" }} />
+                                {t("fail").toUpperCase()}
+                              </span>
+                            </OverlayTrigger>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="fw-light fs-6 mb-1">
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id={`tooltip-subject-${item.id}`}>
+                              {t("fields.subject")}
+                            </Tooltip>
+                          }
+                        >
+                          <span>
+                            <FaInfoCircle className="me-2 text-secondary" />
+                            {item.subject_name} ({item.subject_type})
+                          </span>
+                        </OverlayTrigger>
+                      </div>
+                      <div className="fw-light fs-6 mb-1">
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id={`tooltip-organisation-${item.id}`}>
+                              {t("fields.organisation")}
+                            </Tooltip>
+                          }
+                        >
+                          <span>
+                            <FaUsers className="me-2 text-secondary" />
+                            {item.organisation}
+                          </span>
+                        </OverlayTrigger>
+                      </div>
+                      <div className="fw-light fs-6 mb-1">
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            item.published ? tooltipPublic : tooltipPrivate
+                          }
+                        >
+                          <span>
+                            {item.published ? (
+                              <FaEye className="me-2 text-secondary" />
+                            ) : (
+                              <FaEyeSlash className="me-2 text-secondary" />
+                            )}
+                            {item.published ? "Public" : "Private"}
+                          </span>
+                        </OverlayTrigger>
+                      </div>
+                    </div>
+
+                    <div className="fw-light fs-6 mb-2 ">
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip id={`tooltip-created-${item.id}`}>
+                            {t("fields.created_on")}
+                          </Tooltip>
+                        }
+                      >
+                        <span>
+                          <FaClock className="me-2 text-secondary" />
+                          {item.created_on.split(" ")[0]}
+                        </span>
+                      </OverlayTrigger>
+                    </div>
+
+                    <div className="d-flex gap-2 mb-2">
+                      <div className="d-flex gap-2">
+                        {item.ranking === null ? (
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-ranking-na-${item.id}`}>
+                                {t("fields.ranking")}
+                              </Tooltip>
+                            }
+                          >
+                            <Badge
+                              bg="secondary"
+                              className="d-flex align-items-center gap-1"
+                            >
+                              <FaTrophy />
+                              {t("na").toUpperCase()}
+                            </Badge>
+                          </OverlayTrigger>
+                        ) : (
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-ranking-${item.id}`}>
+                                {t("fields.ranking")}
+                              </Tooltip>
+                            }
+                          >
+                            <Badge
+                              bg="secondary"
+                              className="d-flex align-items-center gap-1"
+                            >
+                              <FaTrophy />
+                              {prettyPrintRanking(item.ranking)}
+                            </Badge>
+                          </OverlayTrigger>
+                        )}
+                      </div>
+                    </div>
+                  </Card.Body>
+
+                  <Card.Footer className="bg-transparent border-1">
+                    <div className="d-flex justify-content-end gap-2 flex-wrap">
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip id="tip-view">
+                            {t("page_assessment_list.tip_view")}
+                          </Tooltip>
+                        }
+                      >
+                        <Link
+                          id={`view-button-${item.id}`}
+                          className="btn btn-light btn-sm"
+                          to={
+                            listPublic
+                              ? buildRoute(ROUTES.PUBLIC_ASSESSMENTS.VIEW, {
+                                  asmtId: item.id,
+                                })
+                              : buildRoute(ROUTES.ASSESSMENTS.VIEW, {
+                                  asmtId: item.id,
+                                })
+                          }
+                        >
+                          <FaBars />
+                        </Link>
+                      </OverlayTrigger>
+
+                      {!listPublic && (
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-edit">
+                              {t("page_assessment_list.tip_edit")}
+                            </Tooltip>
+                          }
+                        >
+                          <Link
+                            id={`edit-button-${item.id}`}
+                            className="btn btn-light btn-sm"
+                            to={buildRoute(ROUTES.ASSESSMENTS.EDIT, {
+                              asmtId: item.id,
+                            })}
+                          >
+                            <FaEdit />
+                          </Link>
+                        </OverlayTrigger>
+                      )}
+
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip id="tip-export">
+                            {t("page_assessment_list.tip_export")}
+                          </Tooltip>
+                        }
+                      >
+                        <Button
+                          id={`download-button-${item.id}`}
+                          className="btn btn-light btn-sm"
+                          onClick={() => {
+                            setAsmtNumID(item["id"]);
+                          }}
+                        >
+                          <FaDownload />
+                        </Button>
+                      </OverlayTrigger>
+
+                      {!listPublic && (
+                        <>
+                          {item.published ? (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="tip-unpublish">
+                                  {t("tip_unpublish_assessment")}
                                 </Tooltip>
                               }
                             >
                               <Button
-                                id={`download-button-${item.id}`}
-                                className="btn btn-light btn-sm m-1"
+                                id={`unpublish-button-${item.id}`}
+                                className="btn btn-light btn-sm"
                                 onClick={() => {
-                                  setAsmtNumID(item["id"]);
+                                  setPublishModalConfig({
+                                    id: item.id,
+                                    name: item.name,
+                                    admin: false,
+                                    show: true,
+                                    publish: false,
+                                  });
                                 }}
                               >
-                                <FaDownload />
+                                <FaEyeSlash />
                               </Button>
                             </OverlayTrigger>
-                            {!listPublic && (
-                              <>
-                                {item.published ? (
-                                  <OverlayTrigger
-                                    placement="top"
-                                    overlay={
-                                      <Tooltip id="tip-unpublish">
-                                        {t("tip_unpublish_assessment")}
-                                      </Tooltip>
-                                    }
-                                  >
-                                    <Button
-                                      id={`unpublish-button-${item.id}`}
-                                      className="btn btn-light btn-sm m-1"
-                                      onClick={() => {
-                                        setPublishModalConfig({
-                                          id: item.id,
-                                          name: item.name,
-                                          admin: false,
-                                          show: true,
-                                          publish: false,
-                                        });
-                                      }}
-                                    >
-                                      <FaEyeSlash />
-                                    </Button>
-                                  </OverlayTrigger>
-                                ) : (
-                                  <OverlayTrigger
-                                    placement="top"
-                                    overlay={
-                                      <Tooltip id="tip-publish">
-                                        {t("tip_publish_assessment")}
-                                      </Tooltip>
-                                    }
-                                  >
-                                    <Button
-                                      id={`publish-button-${item.id}`}
-                                      className="btn btn-light btn-sm m-1"
-                                      onClick={() => {
-                                        setPublishModalConfig({
-                                          id: item.id,
-                                          name: item.name,
-                                          admin: false,
-                                          show: true,
-                                          publish: true,
-                                        });
-                                      }}
-                                    >
-                                      <FaEye />
-                                    </Button>
-                                  </OverlayTrigger>
-                                )}
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={
-                                    <Tooltip id="tip-share">
-                                      {t("page_assessment_list.tip_share")}
-                                    </Tooltip>
-                                  }
-                                >
-                                  <Button
-                                    id={`share-button-${item.id}`}
-                                    className="btn btn-light btn-sm m-1"
-                                    onClick={() => {
-                                      handleShareOpenModal(item);
-                                    }}
-                                  >
-                                    <FaShare />
-                                  </Button>
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={
-                                    <Tooltip id="tip-delete">
-                                      {t("page_assessment_list.tip_delete")}
-                                    </Tooltip>
-                                  }
-                                >
-                                  <Button
-                                    id={`delete-button-${item.id}`}
-                                    className="btn btn-light btn-sm m-1 text-danger"
-                                    onClick={() => {
-                                      handleDeleteOpenModal(item);
-                                    }}
-                                  >
-                                    <FaTimes />
-                                  </Button>
-                                </OverlayTrigger>
-                              </>
-                            )}
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            ) : null}
-          </Table>
-          {!isLoading && assessments.length === 0 && (
-            <Alert variant="warning" className="text-center mx-auto">
-              <h3>
-                <FaExclamationTriangle />
-              </h3>
-              <h5>{t("no_data")}</h5>
-            </Alert>
-          )}
-          <div className="d-flex justify-content-between pb-4">
-            <div>
-              <Link
-                className="btn btn-secondary"
-                to={ROUTES.ASSESSMENTS.ASSESS}
-              >
-                {t("buttons.back")}
-              </Link>
-            </div>
-            <div className="d-flex justify-content-end">
-              <div>
-                <span className="mx-1">{t("rows_per_page")}</span>
-                <select
-                  name="per-page"
-                  value={opts.size.toString() || "20"}
-                  id="per-page"
-                  onChange={handleChangePageSize}
-                >
-                  <option value="5">5</option>
-                  <option value="10">10</option>
-                  <option value="15">15</option>
-                  <option value="20">20</option>
-                </select>
-              </div>
+                          ) : (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="tip-publish">
+                                  {t("tip_publish_assessment")}
+                                </Tooltip>
+                              }
+                            >
+                              <Button
+                                id={`publish-button-${item.id}`}
+                                className="btn btn-light btn-sm"
+                                onClick={() => {
+                                  setPublishModalConfig({
+                                    id: item.id,
+                                    name: item.name,
+                                    admin: false,
+                                    show: true,
+                                    publish: true,
+                                  });
+                                }}
+                              >
+                                <FaEye />
+                              </Button>
+                            </OverlayTrigger>
+                          )}
 
-              {data && data.number_of_page && data.total_pages && (
-                <div className="ms-4">
-                  <span>
-                    {(data.number_of_page - 1) * opts.size + 1} -{" "}
-                    {(data.number_of_page - 1) * opts.size + data.size_of_page}{" "}
-                    of {data.total_elements}
-                  </span>
-                  <span
-                    onClick={() => {
-                      setOpts({ ...opts, page: opts.page - 1 });
-                    }}
-                    className={`ms-4 btn py-0 btn-light btn-small ${
-                      opts.page === 1 ? "disabled text-muted" : null
-                    }`}
-                  >
-                    <FaArrowLeft />
-                  </span>
-                  <span
-                    onClick={() => {
-                      setOpts({ ...opts, page: opts.page + 1 });
-                    }}
-                    className={`btn py-0 btn-light btn-small" ${
-                      data?.total_pages > data?.number_of_page
-                        ? null
-                        : "disabled text-muted"
-                    }`}
-                  >
-                    <FaArrowRight />
-                  </span>
-                </div>
-              )}
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-share">
+                                {t("page_assessment_list.tip_share")}
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              id={`share-button-${item.id}`}
+                              className="btn btn-light btn-sm"
+                              onClick={() => {
+                                handleShareOpenModal(item);
+                              }}
+                            >
+                              <FaShare />
+                            </Button>
+                          </OverlayTrigger>
+
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-delete">
+                                {t("page_assessment_list.tip_delete")}
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              id={`delete-button-${item.id}`}
+                              className="btn btn-light btn-sm text-danger"
+                              onClick={() => {
+                                handleDeleteOpenModal(item);
+                              }}
+                            >
+                              <FaTimes />
+                            </Button>
+                          </OverlayTrigger>
+                        </>
+                      )}
+                    </div>
+                  </Card.Footer>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : null}
+        {!isLoading && assessments.length === 0 && (
+          <Alert variant="warning" className="text-center mx-auto">
+            <h3>
+              <FaExclamationTriangle />
+            </h3>
+            <h5>{t("no_data")}</h5>
+          </Alert>
+        )}
+        <div className="d-flex justify-content-between pb-4">
+          <div className="mt-5">
+            <Link className="btn btn-secondary" to={ROUTES.ASSESSMENTS.ASSESS}>
+              {t("buttons.back")}
+            </Link>
+          </div>
+          <div className="d-flex justify-content-end">
+            <div>
+              <span className="mx-1">{t("rows_per_page")}</span>
+              <select
+                name="per-page"
+                value={opts.size.toString() || "20"}
+                id="per-page"
+                onChange={handleChangePageSize}
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+              </select>
             </div>
+
+            {data && data.number_of_page && data.total_pages && (
+              <div className="ms-4">
+                <span>
+                  {(data.number_of_page - 1) * opts.size + 1} -{" "}
+                  {(data.number_of_page - 1) * opts.size + data.size_of_page} of{" "}
+                  {data.total_elements}
+                </span>
+                <span
+                  onClick={() => {
+                    setOpts({ ...opts, page: opts.page - 1 });
+                  }}
+                  className={`ms-4 btn py-0 btn-light btn-small ${
+                    opts.page === 1 ? "disabled text-muted" : null
+                  }`}
+                >
+                  <FaArrowLeft />
+                </span>
+                <span
+                  onClick={() => {
+                    setOpts({ ...opts, page: opts.page + 1 });
+                  }}
+                  className={`btn py-0 btn-light btn-small" ${
+                    data?.total_pages > data?.number_of_page
+                      ? null
+                      : "disabled text-muted"
+                  }`}
+                >
+                  <FaArrowRight />
+                </span>
+              </div>
+            )}
           </div>
         </div>
-      </>
+      </div>
     </div>
   );
 }
