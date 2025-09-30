@@ -9,6 +9,7 @@ import {
   FaArrowRight,
   FaExclamationTriangle,
   FaStaylinked,
+  FaTag,
 } from "react-icons/fa";
 import type { AlertInfo, Subject } from "@/types";
 import {
@@ -20,14 +21,16 @@ import {
 } from "@/api/services/subjects";
 import {
   Alert,
+  Badge,
   Button,
+  Card,
   Form,
   InputGroup,
   Modal,
   OverlayTrigger,
   Row,
+  Col,
   Tooltip,
-  Table,
 } from "react-bootstrap";
 import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
@@ -454,90 +457,89 @@ function Subjects() {
         </div>
       </div>
       <div className="py-2 px-2">
-        <Table hover>
-          <thead>
-            <tr className="table-light">
-              <th>
-                <span>{t("page_subjects.subject_name")}</span>
-              </th>
+        {subjects.length > 0 ? (
+          <Row className="mt-3 align-items-stretch">
+            {subjects.map((item) => (
+              <Col
+                key={item.id}
+                lg={3}
+                md={6}
+                sm={12}
+                className="mb-2 d-flex align-items-stretch"
+              >
+                <Card className="shadow border-1 w-100">
+                  <Card.Body className="p-3">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <FaStaylinked
+                        size="2rem"
+                        style={{ color: idToColor(item.subject_id) }}
+                      />
+                      <div className="small text-end">
+                        <Badge bg="light" text="dark">
+                          {t("fields.id")}: {item.id}
+                        </Badge>
+                      </div>
+                    </div>
 
-              <th>
-                <span>{t("page_subjects.subject_type")}</span>
-              </th>
-              <th>
-                <span>{t("fields.actions")}</span>
-              </th>
-            </tr>
-          </thead>
-          {subjects.length > 0 ? (
-            <tbody>
-              {subjects.map((item) => {
-                return (
-                  <tr key={item.id}>
-                    <td className="align-middle">
-                      <div className="d-flex  justify-content-start">
-                        <div>
-                          <FaStaylinked
-                            size={"3rem"}
-                            style={{ color: idToColor(item.subject_id) }}
-                          />
-                        </div>
-                        <div className="ms-2 d-flex flex-column justify-content-between">
-                          <div>{item.name}</div>
-                          <span
-                            style={{ fontSize: "0.64rem" }}
-                            className="text-muted"
-                          >
-                            {t("fields.id")}: {item.id}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="align-middle">{item.type}</td>
-                    <td>
-                      <div className="d-flex flex-nowrap">
-                        <OverlayTrigger placement="top" overlay={tooltipEdit}>
-                          <Button
-                            id={`edit-button-${item.id}`}
-                            className="btn btn-light btn-sm m-1 "
-                            onClick={() => {
-                              if (item.id) {
-                                setSubjectModalConfig({
-                                  id: item.id,
-                                  mode: SubjectModalMode.Update,
-                                  show: true,
-                                });
-                              }
-                            }}
-                          >
-                            <FaEdit />
-                          </Button>
-                        </OverlayTrigger>
-                        <OverlayTrigger placement="top" overlay={tooltipDelete}>
-                          <Button
-                            id={`delete-button-${item.id}`}
-                            className="btn btn-light btn-sm m-1"
-                            onClick={() => {
-                              if (item.id) {
-                                setSubjectModalConfig({
-                                  id: item.id,
-                                  mode: SubjectModalMode.Delete,
-                                  show: true,
-                                });
-                              }
-                            }}
-                          >
-                            <FaTimes />
-                          </Button>
-                        </OverlayTrigger>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          ) : null}
-        </Table>
+                    <div className="gap-2 mb-1">
+                      <Card.Title className="fw-light fs-5">
+                        {item.name}
+                      </Card.Title>
+                    </div>
+
+                    <div className="fw-light fs-6">
+                      <FaInfoCircle className="me-2 text-secondary" />
+                      {item.subject_id}
+                    </div>
+                    <div className="fw-light fs-6">
+                      <FaTag className="me-2 text-secondary" />
+                      {item.type}
+                    </div>
+                  </Card.Body>
+
+                  <Card.Footer className="bg-transparent border-1">
+                    <div className="d-flex justify-content-end gap-2">
+                      <OverlayTrigger placement="top" overlay={tooltipEdit}>
+                        <Button
+                          id={`edit-button-${item.id}`}
+                          className="btn btn-light btn-sm"
+                          onClick={() => {
+                            if (item.id) {
+                              setSubjectModalConfig({
+                                id: item.id,
+                                mode: SubjectModalMode.Update,
+                                show: true,
+                              });
+                            }
+                          }}
+                        >
+                          <FaEdit />
+                        </Button>
+                      </OverlayTrigger>
+                      <OverlayTrigger placement="top" overlay={tooltipDelete}>
+                        <Button
+                          id={`delete-button-${item.id}`}
+                          className="btn btn-light btn-sm"
+                          onClick={() => {
+                            if (item.id) {
+                              setSubjectModalConfig({
+                                id: item.id,
+                                mode: SubjectModalMode.Delete,
+                                show: true,
+                              });
+                            }
+                          }}
+                        >
+                          <FaTimes />
+                        </Button>
+                      </OverlayTrigger>
+                    </div>
+                  </Card.Footer>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : null}
       </div>
       {!isLoading && subjects.length === 0 && (
         <Alert variant="warning" className="text-center mx-auto">
