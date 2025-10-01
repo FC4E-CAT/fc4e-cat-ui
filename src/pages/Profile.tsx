@@ -38,10 +38,12 @@ function Profile() {
       {copySuccess ? t("copied") : t("copy")}
     </Tooltip>
   );
-  // check if the user has details
-  const hasDetails =
-    (userProfile?.name && userProfile?.surname && userProfile?.name) ||
+
+  const shouldShowActions =
+    (userProfile?.name && userProfile?.surname && userProfile?.email) ||
     userProfile?.user_type === "Admin";
+
+  const isIdentified = userProfile?.user_type === "Identified";
 
   if (keycloak?.token && authenticated) {
     return (
@@ -128,7 +130,7 @@ function Profile() {
               <div className="row py-3 mt-4">
                 <h4>{t("validation_requests")}</h4>
                 <section className="col-9 disabled">
-                  {!hasDetails && (
+                  {!shouldShowActions && (
                     <div
                       id={"validation-alert-warning"}
                       className="alert alert-warning"
@@ -137,7 +139,7 @@ function Profile() {
                       <FaLock /> {t("page_profile.validation_requests_alert")}
                     </div>
                   )}
-                  {hasDetails && (
+                  {shouldShowActions && (
                     <>
                       <div>
                         {t("page_profile.validation_requests_subtitle")}
@@ -162,61 +164,68 @@ function Profile() {
                   )}
                 </section>
               </div>
-              <div className="row border-top py-3 mt-4">
-                <h4>{t("assessments")}</h4>
-                <section id="assessments_section" className="col-9 disabled">
-                  {(userProfile?.user_type === "Validated" ||
-                    userProfile?.user_type === "Admin") && (
-                    <>
-                      <div>{t("page_profile.assessments_subtitle")}</div>
-                      <div className="mt-4">
-                        <Link
-                          id="view_assessments_button"
-                          to={ROUTES.ASSESSMENTS.ROOT}
-                          className="btn btn-light border-black"
-                        >
-                          {t("buttons.view_list")}
-                        </Link>
-                        <Link
-                          id="create_assessment_button"
-                          to={ROUTES.ASSESSMENTS.CREATE}
-                          className="btn btn-light border-black mx-3"
-                        >
-                          <FaPlus /> {t("buttons.create_new")}
-                        </Link>
-                      </div>
-                    </>
-                  )}
-                </section>
-              </div>
-              <div className="row border-top py-3 mt-4">
-                <h4>{t("subjects")}</h4>
+              {shouldShowActions && !isIdentified && (
+                <>
+                  <div className="row border-top py-3 mt-4">
+                    <h4>{t("assessments")}</h4>
+                    <section
+                      id="assessments_section"
+                      className="col-9 disabled"
+                    >
+                      {(userProfile?.user_type === "Validated" ||
+                        userProfile?.user_type === "Admin") && (
+                        <>
+                          <div>{t("page_profile.assessments_subtitle")}</div>
+                          <div className="mt-4">
+                            <Link
+                              id="view_assessments_button"
+                              to={ROUTES.ASSESSMENTS.ROOT}
+                              className="btn btn-light border-black"
+                            >
+                              {t("buttons.view_list")}
+                            </Link>
+                            <Link
+                              id="create_assessment_button"
+                              to={ROUTES.ASSESSMENTS.CREATE}
+                              className="btn btn-light border-black mx-3"
+                            >
+                              <FaPlus /> {t("buttons.create_new")}
+                            </Link>
+                          </div>
+                        </>
+                      )}
+                    </section>
+                  </div>
 
-                <section id="subjects_section" className="col-9 disabled">
-                  {(userProfile?.user_type === "Validated" ||
-                    userProfile?.user_type === "Admin") && (
-                    <>
-                      <div>{t("page_profile.subjects_subtitle")}</div>
-                      <div className="mt-4">
-                        <Link
-                          id="view_subjects_button"
-                          to={ROUTES.SUBJECTS}
-                          className="btn btn-light border-black"
-                        >
-                          {t("buttons.view_list")}
-                        </Link>
-                        <Link
-                          id="create_subject_button"
-                          to={`${ROUTES.SUBJECTS}?create`}
-                          className="btn btn-light border-black mx-3"
-                        >
-                          <FaPlus /> {t("buttons.create_new")}
-                        </Link>
-                      </div>
-                    </>
-                  )}
-                </section>
-              </div>
+                  <div className="row border-top py-3 mt-4">
+                    <h4>{t("subjects")}</h4>
+                    <section id="subjects_section" className="col-9 disabled">
+                      {(userProfile?.user_type === "Validated" ||
+                        userProfile?.user_type === "Admin") && (
+                        <>
+                          <div>{t("page_profile.subjects_subtitle")}</div>
+                          <div className="mt-4">
+                            <Link
+                              id="view_subjects_button"
+                              to={ROUTES.SUBJECTS}
+                              className="btn btn-light border-black"
+                            >
+                              {t("buttons.view_list")}
+                            </Link>
+                            <Link
+                              id="create_subject_button"
+                              to={`${ROUTES.SUBJECTS}?create`}
+                              className="btn btn-light border-black mx-3"
+                            >
+                              <FaPlus /> {t("buttons.create_new")}
+                            </Link>
+                          </div>
+                        </>
+                      )}
+                    </section>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
