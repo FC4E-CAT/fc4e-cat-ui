@@ -289,6 +289,9 @@ function Subjects() {
   });
 
   const { t } = useTranslation();
+  const { keycloak, userType } = useContext(AuthContext)!;
+
+  const isIdentified = userType === "Identified";
 
   // create the tooltips
   const tooltipEdit = (
@@ -304,9 +307,6 @@ function Subjects() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const doCreate = searchParams.has("create");
-
-  // mutation hook for creating a new subject
-  const { keycloak } = useContext(AuthContext)!;
 
   const [opts, setOpts] = useState<SubjectState>({
     page: 1,
@@ -439,22 +439,24 @@ function Subjects() {
             <p className="lead cat-view-lead">Manage your own subjects.</p>
           </h2>
         </div>
-        <div className="col-md-auto cat-heading-right">
-          <Button
-            variant="warning"
-            className="cat-button-create-new"
-            onClick={() =>
-              setSubjectModalConfig({
-                id: -1,
-                mode: SubjectModalMode.Create,
-                show: true,
-              })
-            }
-          >
-            <FaPlus className="me-2" />
-            {t("buttons.create_new")}
-          </Button>
-        </div>
+        {!isIdentified && (
+          <div className="col-md-auto cat-heading-right">
+            <Button
+              variant="warning"
+              className="cat-button-create-new"
+              onClick={() =>
+                setSubjectModalConfig({
+                  id: -1,
+                  mode: SubjectModalMode.Create,
+                  show: true,
+                })
+              }
+            >
+              <FaPlus className="me-2" />
+              {t("buttons.create_new")}
+            </Button>
+          </div>
+        )}
       </div>
       <div className="py-2 px-2">
         {subjects.length > 0 ? (
@@ -498,42 +500,44 @@ function Subjects() {
                   </Card.Body>
 
                   <Card.Footer className="bg-transparent border-1">
-                    <div className="d-flex justify-content-end gap-2">
-                      <OverlayTrigger placement="top" overlay={tooltipEdit}>
-                        <Button
-                          id={`edit-button-${item.id}`}
-                          className="btn btn-light btn-sm"
-                          onClick={() => {
-                            if (item.id) {
-                              setSubjectModalConfig({
-                                id: item.id,
-                                mode: SubjectModalMode.Update,
-                                show: true,
-                              });
-                            }
-                          }}
-                        >
-                          <FaEdit />
-                        </Button>
-                      </OverlayTrigger>
-                      <OverlayTrigger placement="top" overlay={tooltipDelete}>
-                        <Button
-                          id={`delete-button-${item.id}`}
-                          className="btn btn-light btn-sm"
-                          onClick={() => {
-                            if (item.id) {
-                              setSubjectModalConfig({
-                                id: item.id,
-                                mode: SubjectModalMode.Delete,
-                                show: true,
-                              });
-                            }
-                          }}
-                        >
-                          <FaTimes />
-                        </Button>
-                      </OverlayTrigger>
-                    </div>
+                    {!isIdentified && (
+                      <div className="d-flex justify-content-end gap-2">
+                        <OverlayTrigger placement="top" overlay={tooltipEdit}>
+                          <Button
+                            id={`edit-button-${item.id}`}
+                            className="btn btn-light btn-sm"
+                            onClick={() => {
+                              if (item.id) {
+                                setSubjectModalConfig({
+                                  id: item.id,
+                                  mode: SubjectModalMode.Update,
+                                  show: true,
+                                });
+                              }
+                            }}
+                          >
+                            <FaEdit />
+                          </Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger placement="top" overlay={tooltipDelete}>
+                          <Button
+                            id={`delete-button-${item.id}`}
+                            className="btn btn-light btn-sm"
+                            onClick={() => {
+                              if (item.id) {
+                                setSubjectModalConfig({
+                                  id: item.id,
+                                  mode: SubjectModalMode.Delete,
+                                  show: true,
+                                });
+                              }
+                            }}
+                          >
+                            <FaTimes />
+                          </Button>
+                        </OverlayTrigger>
+                      </div>
+                    )}
                   </Card.Footer>
                 </Card>
               </Col>

@@ -11,6 +11,8 @@ export interface AuthContextProps {
   keycloak: NullableKeycloak;
   setKeycloak: React.Dispatch<React.SetStateAction<NullableKeycloak>>;
   refreshUserToken: () => Promise<void>;
+  userType: string;
+  setUserType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const AuthContext = createContext<AuthContextProps | null>(null);

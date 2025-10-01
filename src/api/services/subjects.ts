@@ -20,6 +20,7 @@ export const useGetSubjects = ({
       );
       return response.data;
     },
+    retry: false,
     enabled: !!token && isRegistered,
   });
 

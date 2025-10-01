@@ -10,6 +10,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [registered, setRegistered] = useState(false);
   const [keycloak, setKeycloak] = useState<NullableKeycloak>(null);
+  const [userType, setUserType] = useState<string>("");
 
   const refreshUserToken = useCallback(async () => {
     if (!keycloak) {
@@ -38,6 +39,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     keycloak,
     setKeycloak,
     refreshUserToken,
+    userType,
+    setUserType,
   };
 
   return (

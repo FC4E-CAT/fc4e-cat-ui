@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import { useGetValidationList } from "@/api";
+import { useGetProfile, useGetValidationList } from "@/api";
 import { AuthContext } from "@/auth";
 import type { ValidationResponse } from "@/types";
 import { Link } from "react-router-dom";
@@ -40,6 +40,15 @@ function ValidationList() {
   const { t } = useTranslation();
 
   const { keycloak, registered } = useContext(AuthContext)!;
+
+  const { data: profileData } = useGetProfile({
+    token: keycloak?.token || "",
+    isRegistered: registered,
+  });
+
+  const shouldShowActions =
+    (profileData?.name && profileData?.surname && profileData?.email) ||
+    profileData?.user_type === "Admin";
 
   const [opts, setOpts] = useState<ValidationState>({
     sortBy: "",
@@ -85,14 +94,16 @@ function ValidationList() {
             </p>
           </h2>
         </div>
-        <div className="col-md-auto cat-heading-right">
-          <Link
-            to={ROUTES.VALIDATIONS.REQUEST}
-            className="btn btn-warning mx-2"
-          >
-            <FaPlus className="m2" /> {t("buttons.create_new")}
-          </Link>
-        </div>
+        {shouldShowActions && (
+          <div className="col-md-auto cat-heading-right">
+            <Link
+              to={ROUTES.VALIDATIONS.REQUEST}
+              className="btn btn-warning mx-2"
+            >
+              <FaPlus className="m2" /> {t("buttons.create_new")}
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="py-2 px-2 ">

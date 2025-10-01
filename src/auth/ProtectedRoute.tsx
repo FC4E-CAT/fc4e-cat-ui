@@ -24,6 +24,7 @@ export function ProtectedRoute() {
     setKeycloak,
     registered,
     setRegistered,
+    setUserType,
   } = useContext(AuthContext)!;
 
   const {
@@ -96,8 +97,9 @@ export function ProtectedRoute() {
   useEffect(() => {
     if (isSuccessRegister || profileData) {
       setRegistered(true);
+      setUserType(profileData?.user_type || "");
     }
-  }, [isSuccessRegister, setRegistered, profileData]);
+  }, [isSuccessRegister, setRegistered, setUserType, profileData]);
 
   // check if a non-admin user tries to access an admin view (except reports for reporter)
   useEffect(() => {

@@ -90,7 +90,10 @@ interface PublishModalConfig {
 }
 
 function AssessmentsList({ listPublic = false }: AssessmentListProps) {
-  const { keycloak, registered } = useContext(AuthContext)!;
+  const { keycloak, registered, userType } = useContext(AuthContext)!;
+
+  const isIdentified = userType === "Identified";
+
   // get the extra url parameters when in public list mode from url
   const urlParams = new URLSearchParams(location.search);
   const actorName = urlParams.get("actor-name");
@@ -325,7 +328,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           </h2>
         </div>
         <div className="col-md-auto cat-heading-right">
-          {!listPublic && (
+          {!listPublic && !isIdentified && (
             <>
               <Link
                 to={ROUTES.ASSESSMENTS.CREATE}
