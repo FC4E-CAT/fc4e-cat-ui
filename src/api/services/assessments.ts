@@ -92,6 +92,18 @@ export function useUpdateAssessment(
   });
 }
 
+export function useCreateAssessmentVersion(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assessmentId: string) => {
+      return APIClient(token).post(`/v2/assessments/${assessmentId}/version`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assessments"] });
+    },
+  });
+}
+
 export const useGetAssessments = ({
   size,
   page,

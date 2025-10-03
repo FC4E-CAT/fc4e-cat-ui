@@ -16,6 +16,7 @@ import {
   FaUsers,
   FaCheckCircle,
   FaTrophy,
+  FaCodeBranch,
   FaClock,
 } from "react-icons/fa";
 import {
@@ -39,6 +40,7 @@ import {
   useGetObjects,
   useDeleteAssessment,
   useGetAssessment,
+  useCreateAssessmentVersion,
 } from "@/api";
 import { AuthContext } from "@/auth";
 import { getUniqueValuesForKey, prettyPrintRanking } from "@/utils";
@@ -205,6 +207,36 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   }, [qAssessment]);
 
   const mutationDeleteAssessment = useDeleteAssessment(keycloak?.token || "");
+  const mutationCreateVersion = useCreateAssessmentVersion(
+    keycloak?.token || "",
+  );
+
+  const handleCreateVersion = (assessmentId: string) => {
+    const promise = mutationCreateVersion
+      .mutateAsync(assessmentId)
+      .catch((err) => {
+        alert.current = {
+          message:
+            t("page_assessment_list.toast_version_fail") ||
+            "Failed to create version",
+        };
+        throw err;
+      })
+      .then(() => {
+        alert.current = {
+          message:
+            t("page_assessment_list.toast_version_success") ||
+            "Version created successfully",
+        };
+      });
+    toast.promise(promise, {
+      loading:
+        t("page_assessment_list.toast_version_progress") ||
+        "Creating version...",
+      success: () => `${alert.current.message}`,
+      error: () => `${alert.current.message}`,
+    });
+  };
 
   const handleDeleteConfirmed = () => {
     if (deleteModalConfig.itemId) {
@@ -273,7 +305,17 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   }, [userObjects]);
 
   // get the assessment data to create the table
-  const assessments: AssessmentListItem[] = data ? data?.content : [];
+  const assessmentData: AssessmentListItem[] = data ? data?.content : [];
+
+  const assessments: AssessmentListItem[] = assessmentData.reduce<
+    AssessmentListItem[]
+  >((acc, item) => {
+    acc.push(item);
+    if (item?.versions && item.versions?.length > 0) {
+      acc.push(...item.versions);
+    }
+    return acc;
+  }, []);
 
   return (
     <div className={listPublic ? "container bg-light p-2 mb-5 rounded" : ""}>
@@ -502,8 +544,8 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                           )}
                         </div>
                       </div>
-                      <div className="d-flex flex-column align-items-end">
-                        <div className="d-flex gap-2">
+                      <div>
+                        <div className="d-flex flex-column align-items-end gap-2">
                           {item.compliance === null ? (
                             <OverlayTrigger
                               placement="top"
@@ -564,6 +606,20 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                 <FaTimes style={{ fontSize: "0.875rem" }} />
                                 {t("fail").toUpperCase()}
                               </span>
+                            </OverlayTrigger>
+                          )}
+                          {item.assessment_doc_version && (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id={`tooltip-versioning-${item.id}`}>
+                                  Current version of assessment
+                                </Tooltip>
+                              }
+                            >
+                              <Badge bg="info" className="ms-2 mt-1">
+                                {item.assessment_doc_version}
+                              </Badge>
                             </OverlayTrigger>
                           )}
                         </div>
@@ -709,19 +765,65 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                           placement="top"
                           overlay={
                             <Tooltip id="tip-edit">
-                              {t("page_assessment_list.tip_edit")}
+                              {item.published
+                                ? t("page_assessment_list.tip_edit_disabled") ||
+                                  "Cannot edit published assessment"
+                                : t("page_assessment_list.tip_edit")}
                             </Tooltip>
                           }
                         >
-                          <Link
-                            id={`edit-button-${item.id}`}
-                            className="btn btn-light btn-sm"
-                            to={buildRoute(ROUTES.ASSESSMENTS.EDIT, {
-                              asmtId: item.id,
-                            })}
-                          >
-                            <FaEdit />
-                          </Link>
+                          <span>
+                            <Link
+                              id={`edit-button-${item.id}`}
+                              className={`btn btn-light btn-sm ${item.published ? "disabled opacity-50" : ""}`}
+                              to={
+                                item.published
+                                  ? "#"
+                                  : buildRoute(ROUTES.ASSESSMENTS.EDIT, {
+                                      asmtId: item.id,
+                                    })
+                              }
+                              onClick={(e) => {
+                                if (item.published) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
+                              <FaEdit />
+                            </Link>
+                          </span>
+                        </OverlayTrigger>
+                      )}
+
+                      {!listPublic && (
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tip-version">
+                              {!item.published
+                                ? t(
+                                    "page_assessment_list.tip_version_disabled",
+                                  ) ||
+                                  "Publish assessment first to create versions"
+                                : t(
+                                    "page_assessment_list.tip_create_version",
+                                  ) || "Create new version to edit"}
+                            </Tooltip>
+                          }
+                        >
+                          <span>
+                            <Button
+                              id={`version-button-${item.id}`}
+                              className={`btn btn-light btn-sm ${!item.published ? "disabled opacity-50" : ""}`}
+                              onClick={() => {
+                                if (item.published) {
+                                  handleCreateVersion(item.id);
+                                }
+                              }}
+                            >
+                              <FaCodeBranch />
+                            </Button>
+                          </span>
                         </OverlayTrigger>
                       )}
 
@@ -852,60 +954,53 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             <h5>{t("no_data")}</h5>
           </Alert>
         )}
-        <div className="d-flex justify-content-between pb-4">
-          <div className="mt-5">
-            <Link className="btn btn-secondary" to={ROUTES.ASSESSMENTS.ASSESS}>
-              {t("buttons.back")}
-            </Link>
+        <div className="d-flex justify-content-end mt-5">
+          <div>
+            <span className="mx-1">{t("rows_per_page")}</span>
+            <select
+              name="per-page"
+              value={opts.size.toString() || "20"}
+              id="per-page"
+              onChange={handleChangePageSize}
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
           </div>
-          <div className="d-flex justify-content-end">
-            <div>
-              <span className="mx-1">{t("rows_per_page")}</span>
-              <select
-                name="per-page"
-                value={opts.size.toString() || "20"}
-                id="per-page"
-                onChange={handleChangePageSize}
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-              </select>
-            </div>
 
-            {data && data.number_of_page && data.total_pages && (
-              <div className="ms-4">
-                <span>
-                  {(data.number_of_page - 1) * opts.size + 1} -{" "}
-                  {(data.number_of_page - 1) * opts.size + data.size_of_page} of{" "}
-                  {data.total_elements}
-                </span>
-                <span
-                  onClick={() => {
-                    setOpts({ ...opts, page: opts.page - 1 });
-                  }}
-                  className={`ms-4 btn py-0 btn-light btn-small ${
-                    opts.page === 1 ? "disabled text-muted" : null
-                  }`}
-                >
-                  <FaArrowLeft />
-                </span>
-                <span
-                  onClick={() => {
-                    setOpts({ ...opts, page: opts.page + 1 });
-                  }}
-                  className={`btn py-0 btn-light btn-small" ${
-                    data?.total_pages > data?.number_of_page
-                      ? null
-                      : "disabled text-muted"
-                  }`}
-                >
-                  <FaArrowRight />
-                </span>
-              </div>
-            )}
-          </div>
+          {data && data.number_of_page && data.total_pages && (
+            <div className="ms-4">
+              <span>
+                {(data.number_of_page - 1) * opts.size + 1} -{" "}
+                {(data.number_of_page - 1) * opts.size + data.size_of_page} of{" "}
+                {data.total_elements}
+              </span>
+              <span
+                onClick={() => {
+                  setOpts({ ...opts, page: opts.page - 1 });
+                }}
+                className={`ms-4 btn py-0 btn-light btn-small ${
+                  opts.page === 1 ? "disabled text-muted" : null
+                }`}
+              >
+                <FaArrowLeft />
+              </span>
+              <span
+                onClick={() => {
+                  setOpts({ ...opts, page: opts.page + 1 });
+                }}
+                className={`btn py-0 btn-light btn-small" ${
+                  data?.total_pages > data?.number_of_page
+                    ? null
+                    : "disabled text-muted"
+                }`}
+              >
+                <FaArrowRight />
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

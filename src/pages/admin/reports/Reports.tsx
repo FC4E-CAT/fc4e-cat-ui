@@ -228,7 +228,7 @@ function Reports({
                               setShowFilterDropdown(!showFilterDropdown)
                             }
                             style={{
-                              zIndex: 1050,
+                              zIndex: 10,
                               position: "absolute",
                               transform: "none",
                               height: "1000px",

@@ -433,6 +433,8 @@ export interface AssessmentListItem {
   subject_type: string;
   subject_name: string;
   organisation: string;
+  assessment_doc_version: string;
+  versions: AssessmentListItem[];
 }
 
 export type AsmtEligibilityResponse = ResponsePage<ActorOrgAsmtType[]>;
