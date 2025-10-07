@@ -16,6 +16,7 @@ import { useUpdateMotivationAlgorithmSettings } from "@/api/services/motivations
 import { AuthContext } from "@/auth";
 import toast from "react-hot-toast";
 import { round } from "./utils";
+import { TestToolTip } from "../assessments/components";
 
 interface MetricConfiguration {
   mtr: string;
@@ -226,6 +227,12 @@ function AssessmentBuilderMetric({
           <div className={styles["section-header"]}>
             <span className={styles["section-icon"]}>⚙️</span>
             <h6 className={styles["section-title"]}>Algorithm Type</h6>
+            <span className="mb-1">
+              <TestToolTip
+                tipId="algorithm-type-info"
+                tipText=" If a criterion contains multiple tests, their results are combined into a single metric using an algorithm. CAT supports various algorithm types, such as “Test = Metric”, where the final result is identical to the original test outcome without modification."
+              />
+            </span>
             {showErrors && !metricConfig?.type_algorithm_id && (
               <span className={`mx-2 ${styles["invalid-feedback"]}`}>
                 {t("required")}
@@ -316,6 +323,12 @@ function AssessmentBuilderMetric({
           <div className={styles["section-header"]}>
             <span className={styles["section-icon"]}>🎯</span>
             <h6 className={styles["section-title"]}>Benchmark Type</h6>
+            <span className="mb-1">
+              <TestToolTip
+                tipId="benchmark-type-info"
+                tipText="Benchmarking is the systematic process of measuring and analyzing performance to identify areas for improvement and adopt best practices. In CAT, a benchmark is considered acceptable only if all related tests are passed, and it supports various types such as quantitative, rating schemes, binary, and numeric. For instance, in a String-Binary benchmark, a qualitative metric expressed as text is mapped to the closest semantically similar outcome of Pass or Fail."
+              />
+            </span>
             {showErrors && !metricConfig?.type_benchmark_id && (
               <span className={`mx-2 {styles["invalid-feedback"]}`}>
                 {t("required")}

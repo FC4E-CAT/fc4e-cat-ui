@@ -651,3 +651,20 @@ export const useUpdateAdminSetting = (token: string) => {
     },
   });
 };
+
+export const usePublishToZenodo = (token: string) => {
+  return useMutation({
+    mutationFn: async ({ id, file }: { id: string; file: File }) => {
+      const response = await APIClient(token).post(
+        `/v2/zenodo/publish/assessment/${id}`,
+        file,
+        {
+          headers: {
+            "Content-Type": "application/octet-stream",
+          },
+        },
+      );
+      return response.data;
+    },
+  });
+};

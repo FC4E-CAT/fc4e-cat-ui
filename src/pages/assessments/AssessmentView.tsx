@@ -11,51 +11,12 @@ import imgAssessmentBadgePassed from "@/assets/badge-passed.png";
 import imgAssessmentBadgeWip from "@/assets/badge-wip.png";
 import imgAssessmentBadgeFailed from "@/assets/badge-failed.png";
 import Accordion from "react-bootstrap/Accordion";
-import {
-  type Assessment,
-  AssessmentCriterionImperative,
-  type AssessmentStats,
-} from "@/types";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import AssessmentPdf from "./AssessmentPdf";
 import { useTranslation } from "react-i18next";
 import { prettyPrintRanking } from "@/utils";
 import { AutoTestDetails } from "./components/tests/AutoTestDetails";
-
-// dig through the assessment and collect the completion statistics
-function gatherStats(assessment: Assessment | undefined): AssessmentStats {
-  let total_principles = 0;
-  let total_criteria = 0;
-  let total_mandatory = 0;
-  let total_optional = 0;
-  let completed_mandatory = 0;
-  let completed_optional = 0;
-
-  if (assessment) {
-    total_principles = assessment.principles.length;
-    assessment.principles.forEach((pri) => {
-      total_criteria += pri.criteria.length;
-      pri.criteria.forEach((cri) => {
-        if (cri.imperative == AssessmentCriterionImperative.MUST) {
-          total_mandatory += 1;
-          if (cri.metric.result !== null) completed_mandatory += 1;
-        } else {
-          total_optional += 1;
-          if (cri.metric.result !== null) completed_optional += 1;
-        }
-      });
-    });
-  }
-
-  return {
-    total_principles: total_principles,
-    total_criteria: total_criteria,
-    total_mandatory: total_mandatory,
-    total_optional: total_optional,
-    completed_mandatory: completed_mandatory,
-    completed_optional: completed_optional,
-  };
-}
+import gatherStats from "./utils/gatherStats";
 
 /** AssessmentView page that displays the results of an assessment */
 const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
