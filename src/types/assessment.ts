@@ -435,6 +435,9 @@ export interface AssessmentListItem {
   organisation: string;
   assessment_doc_version: string;
   versions: AssessmentListItem[];
+  zenodo_published: boolean;
+  zenodo_deposit_id: string;
+  zenodo_file_url: string;
 }
 
 export type AsmtEligibilityResponse = ResponsePage<ActorOrgAsmtType[]>;

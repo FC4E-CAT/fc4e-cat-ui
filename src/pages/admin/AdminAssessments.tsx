@@ -3,11 +3,12 @@ import {
   FaExclamationTriangle,
   FaArrowRight,
   FaArrowLeft,
-  FaTimes,
   FaDownload,
   FaEye,
   FaEyeSlash,
   FaCopy,
+  FaTrash,
+  FaSearch,
 } from "react-icons/fa";
 import {
   Alert,
@@ -26,6 +27,10 @@ import {
   useGetAdminAssessment,
   useGetAdminAssessments,
 } from "@/api";
+import {
+  useGetAdminSettings,
+  usePublishToZenodo,
+} from "@/api/services/registry";
 import { AuthContext } from "@/auth";
 import { prettyPrintRanking } from "@/utils";
 import { Link } from "react-router-dom";
@@ -37,6 +42,11 @@ import { useTranslation } from "react-i18next";
 import { PublishModal } from "@/components";
 import { trimField } from "@/utils/admin";
 import { CopyToClipboard } from "react-copy-to-clipboard-ts";
+import { pdf } from "@react-pdf/renderer";
+import type { Assessment } from "@/types";
+import ZenodoModal from "../assessments/components/ZenodoModal";
+import { PdfDocument } from "../assessments/AssessmentPdf";
+import gatherStats from "../assessments/utils/gatherStats";
 
 type Pagination = {
   page: number;
@@ -52,6 +62,14 @@ interface DeleteModalConfig {
   itemName: string;
 }
 
+interface ZenodoModalConfig {
+  show: boolean;
+  name: string;
+  id: string;
+  isPublished: boolean;
+  zenodoUrl?: string;
+}
+
 interface PublishModalConfig {
   show: boolean;
   id: string;
@@ -62,6 +80,8 @@ interface PublishModalConfig {
 
 function AdminAssessments() {
   const { keycloak, registered } = useContext(AuthContext)!;
+  const [shouldDownloadAssessmentJSON, setShouldDownloadAssessmentJSON] =
+    useState(false);
 
   const { t } = useTranslation();
 
@@ -108,6 +128,16 @@ function AdminAssessments() {
     },
   );
 
+  const [zenodoModalConfig, setZenodoModalConfig] = useState<ZenodoModalConfig>(
+    {
+      show: false,
+      name: "",
+      id: "",
+      isPublished: false,
+      zenodoUrl: "",
+    },
+  );
+
   // Publish Modal
   const [publishModalConfig, setPublishModalConfig] =
     useState<PublishModalConfig>({
@@ -138,7 +168,7 @@ function AdminAssessments() {
   });
 
   useEffect(() => {
-    if (qAssessment.data) {
+    if (qAssessment.data && shouldDownloadAssessmentJSON) {
       const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
         JSON.stringify(qAssessment.data.assessment_doc, null, 2),
       )}`;
@@ -147,12 +177,77 @@ function AdminAssessments() {
       link.download = `${qAssessment.data.assessment_doc.id}.json`;
 
       link.click();
+      setShouldDownloadAssessmentJSON(false);
     }
-  }, [qAssessment]);
+  }, [qAssessment, shouldDownloadAssessmentJSON]);
 
   const mutationDeleteAssessment = useAdminDeleteAssessment(
     keycloak?.token || "",
   );
+
+  const mutationPublishToZenodo = usePublishToZenodo(keycloak?.token || "");
+
+  const { data: adminSettings } = useGetAdminSettings({
+    token: keycloak?.token || "",
+    isRegistered: registered || false,
+  });
+
+  // Check if Zenodo publishing is enabled
+  const isZenodoEnabled =
+    adminSettings?.some(
+      (setting) =>
+        setting.data.label?.toLowerCase() === "zenodo" && setting.enabled,
+    ) || false;
+
+  const handlePublishToZenodo = async (assessmentId: string) => {
+    try {
+      const assessment = qAssessment.data?.assessment_doc;
+
+      console.log("assessment::", assessment);
+
+      const assessmentStats = gatherStats(assessment);
+
+      const pdfDoc = (
+        <PdfDocument
+          assessment={assessment as Assessment}
+          assessmentStats={assessmentStats}
+          t={t}
+        />
+      );
+
+      // Convert PDF to blob
+      const pdfBlob = await pdf(pdfDoc).toBlob();
+
+      // Create file from PDF blob
+      const file = new File([pdfBlob], `assessment-${assessmentId}.pdf`, {
+        type: "application/pdf",
+      });
+
+      const promise = mutationPublishToZenodo
+        .mutateAsync({ id: assessmentId, file })
+        .catch((err) => {
+          alert.current = {
+            message: t("page_assessment_list.toast_zenodo_fail"),
+          };
+          throw err;
+        })
+        .then(() => {
+          alert.current = {
+            message: t("page_assessment_list.toast_zenodo_success"),
+          };
+          refetch();
+        });
+
+      toast.promise(promise, {
+        loading: t("page_assessment_list.toast_zenodo_progress"),
+        success: () => `${alert.current.message}`,
+        error: () => `${alert.current.message}`,
+      });
+    } catch (error) {
+      console.error("Error publishing to Zenodo:", error);
+      toast.error(t("page_assessment_list.toast_zenodo_fail"));
+    }
+  };
 
   const handleDeleteConfirmed = () => {
     if (deleteModalConfig.itemId) {
@@ -192,6 +287,16 @@ function AdminAssessments() {
     });
   };
 
+  const handleZenodoOpenModal = (item: AssessmentListItem) => {
+    setZenodoModalConfig({
+      show: true,
+      name: item.name,
+      id: item.id,
+      isPublished: item.zenodo_published,
+      zenodoUrl: item.zenodo_file_url,
+    });
+  };
+
   // get the assessment data to create the table
   const assessments: AssessmentListItem[] = data ? data.content : [];
 
@@ -212,6 +317,23 @@ function AdminAssessments() {
             publish: true,
           });
         }}
+      />
+      <ZenodoModal
+        show={zenodoModalConfig.show}
+        name={zenodoModalConfig.name}
+        id={zenodoModalConfig.id}
+        isPublished={zenodoModalConfig.isPublished}
+        zenodoUrl={zenodoModalConfig.zenodoUrl}
+        onHide={() => {
+          setZenodoModalConfig({
+            show: false,
+            name: "",
+            id: "",
+            isPublished: false,
+            zenodoUrl: "",
+          });
+        }}
+        onPublish={handlePublishToZenodo}
       />
       <DeleteModal
         show={deleteModalConfig.show}
@@ -422,6 +544,7 @@ function AdminAssessments() {
                               className="btn btn-light btn-sm m-1"
                               onClick={() => {
                                 setAsmtNumID(item["id"]);
+                                setShouldDownloadAssessmentJSON(true);
                               }}
                             >
                               <FaDownload />
@@ -479,6 +602,37 @@ function AdminAssessments() {
                               </Button>
                             </OverlayTrigger>
                           )}
+                          {isZenodoEnabled && (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="tip-zenodo">
+                                  {!item.published
+                                    ? t(
+                                        "page_assessment_list.tip_zenodo_disabled",
+                                      )
+                                    : item.zenodo_published
+                                      ? t(
+                                          "page_assessment_list.tip_zenodo_published",
+                                        )
+                                      : t("page_assessment_list.tip_zenodo")}
+                                </Tooltip>
+                              }
+                            >
+                              <Button
+                                id={`zenodo-button-${item.id}`}
+                                className={`btn btn-light btn-sm m-1 ${!item.published ? "disabled opacity-50" : ""}`}
+                                onClick={() => {
+                                  if (item.published) {
+                                    setAsmtNumID(item.id);
+                                    handleZenodoOpenModal(item);
+                                  }
+                                }}
+                              >
+                                <FaSearch />
+                              </Button>
+                            </OverlayTrigger>
+                          )}
                           <OverlayTrigger
                             placement="top"
                             overlay={
@@ -489,12 +643,12 @@ function AdminAssessments() {
                           >
                             <Button
                               id={`delete-button-${item.id}`}
-                              className="btn btn-light btn-sm m-1 text-danger"
+                              className="btn btn-light btn-sm m-1"
                               onClick={() => {
                                 handleDeleteOpenModal(item);
                               }}
                             >
-                              <FaTimes />
+                              <FaTrash />
                             </Button>
                           </OverlayTrigger>
                         </div>

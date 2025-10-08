@@ -21,7 +21,7 @@ interface AssessmentPdfProps {
 }
 
 // Move PDF Document component outside to prevent recreation
-const PdfDocument = ({
+export const PdfDocument = ({
   assessment,
   assessmentStats,
   t,
