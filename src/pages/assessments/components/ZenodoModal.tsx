@@ -74,9 +74,21 @@ function ZenodoModal({
           </Alert>
         ) : (
           <>
-            <p>{t("page_assessment_list.zenodo_publish_confirmation")}</p>
-            <Alert variant="info" className="mt-3">
-              <small>{t("page_assessment_list.zenodo_publish_note")}</small>
+            <p
+              style={{
+                fontSize: "1.1rem",
+                lineHeight: "1.3",
+              }}
+            >
+              {t("page_assessment_list.zenodo_publish_confirmation")}
+            </p>
+            <Alert variant="warning" className="mb-1">
+              <small>
+                <strong>
+                  {t("page_assessment_list.zenodo_warning_title")}
+                </strong>{" "}
+                {t("page_assessment_list.zenodo_warning_message")}
+              </small>
             </Alert>
           </>
         )}
