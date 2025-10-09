@@ -18,7 +18,6 @@ import {
   FaTrophy,
   FaCodeBranch,
   FaClock,
-  FaSearch,
   FaTrash,
 } from "react-icons/fa";
 import {
@@ -109,6 +108,9 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const { keycloak, registered, userType } = useContext(AuthContext)!;
   const [shouldDownloadAssessmentJSON, setShouldDownloadAssessmentJSON] =
     useState(false);
+  const [isPublishedToZenodo, setIsPublishedToZenodo] = useState<
+    boolean | undefined
+  >();
 
   const isIdentified = userType === "Identified";
 
@@ -241,7 +243,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
     token: keycloak?.token || "",
     isRegistered: registered || false,
   });
-  console.log("qAssessment", qAssessment);
 
   // Check if Zenodo publishing is enabled
   const isZenodoEnabled =
@@ -249,8 +250,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       (setting) =>
         setting.data.label?.toLowerCase() === "zenodo" && setting.enabled,
     ) || false;
-
-  console.log("isZenodoEnabled", isZenodoEnabled);
 
   const handleCreateVersion = (assessmentId: string) => {
     const promise = mutationCreateVersion
@@ -314,6 +313,12 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             message: t("page_assessment_list.toast_zenodo_success"),
           };
           refetch();
+          setIsPublishedToZenodo(true);
+          setZenodoModalConfig({
+            ...zenodoModalConfig,
+            show: false,
+            isPublished: true,
+          });
         });
 
       toast.promise(promise, {
@@ -378,7 +383,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       show: true,
       name: item.name,
       id: item.id,
-      isPublished: item.zenodo_published,
+      isPublished: isPublishedToZenodo || item.zenodo_published,
       zenodoUrl: item.zenodo_file_url,
     });
   };
@@ -593,7 +598,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         </Col>
       </div>
       <div className="py-2 px-2">
-        {assessments.length > 0 ? (
+        {assessments?.length > 0 ? (
           <Row className="mt-3 align-items-stretch">
             {assessments.map((item) => (
               <Col
@@ -850,7 +855,8 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                   </Card.Body>
 
                   <Card.Footer className="bg-transparent border-1">
-                    <div className="d-flex justify-content-end gap-2 flex-wrap">
+                    {/* First Row: Assessment Management Actions */}
+                    <div className="d-flex justify-content-end gap-2 flex-wrap mb-3">
                       <OverlayTrigger
                         placement="top"
                         overlay={
@@ -877,190 +883,66 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       </OverlayTrigger>
 
                       {!listPublic && (
-                        <OverlayTrigger
-                          placement="top"
-                          overlay={
-                            <Tooltip id="tip-edit">
-                              {item.published
-                                ? t("page_assessment_list.tip_edit_disabled") ||
-                                  "Cannot edit published assessment"
-                                : t("page_assessment_list.tip_edit")}
-                            </Tooltip>
-                          }
-                        >
-                          <span>
-                            <Link
-                              id={`edit-button-${item.id}`}
-                              className={`btn btn-light btn-sm ${item.published ? "disabled opacity-50" : ""}`}
-                              to={
-                                item.published
-                                  ? "#"
-                                  : buildRoute(ROUTES.ASSESSMENTS.EDIT, {
-                                      asmtId: item.id,
-                                    })
-                              }
-                              onClick={(e) => {
-                                if (item.published) {
-                                  e.preventDefault();
-                                }
-                              }}
-                            >
-                              <FaEdit />
-                            </Link>
-                          </span>
-                        </OverlayTrigger>
-                      )}
-
-                      {!listPublic && (
-                        <OverlayTrigger
-                          placement="top"
-                          overlay={
-                            <Tooltip id="tip-version">
-                              {!item.published
-                                ? t("page_assessment_list.tip_version_disabled")
-                                : t("page_assessment_list.tip_create_version")}
-                            </Tooltip>
-                          }
-                        >
-                          <span>
-                            <Button
-                              id={`version-button-${item.id}`}
-                              className={`btn btn-light btn-sm ${!item.published ? "disabled opacity-50" : ""}`}
-                              onClick={() => {
-                                if (item.published) {
-                                  handleCreateVersion(item.id);
-                                }
-                              }}
-                            >
-                              <FaCodeBranch />
-                            </Button>
-                          </span>
-                        </OverlayTrigger>
-                      )}
-
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id="tip-export">
-                            {t("page_assessment_list.tip_export")}
-                          </Tooltip>
-                        }
-                      >
-                        <Button
-                          id={`download-button-${item.id}`}
-                          className="btn btn-light btn-sm"
-                          onClick={() => {
-                            setAsmtNumID(item.id);
-                            setShouldDownloadAssessmentJSON(true);
-                          }}
-                        >
-                          <FaDownload />
-                        </Button>
-                      </OverlayTrigger>
-
-                      {isZenodoEnabled && (
-                        <OverlayTrigger
-                          placement="top"
-                          overlay={
-                            <Tooltip id="tip-zenodo">
-                              {!item.published
-                                ? t("page_assessment_list.tip_zenodo_disabled")
-                                : item.zenodo_published
-                                  ? t(
-                                      "page_assessment_list.tip_zenodo_published",
-                                    )
-                                  : t("page_assessment_list.tip_zenodo")}
-                            </Tooltip>
-                          }
-                        >
-                          <span>
-                            <Button
-                              id={`zenodo-button-${item.id}`}
-                              className={`btn btn-light btn-sm ${!item.published ? "disabled opacity-50" : ""}`}
-                              onClick={() => {
-                                if (item.published) {
-                                  setAsmtNumID(item.id);
-                                  handleZenodoOpenModal(item);
-                                }
-                              }}
-                            >
-                              <FaSearch />
-                            </Button>
-                          </span>
-                        </OverlayTrigger>
-                      )}
-
-                      {!listPublic && (
                         <>
-                          {item.published ? (
-                            <OverlayTrigger
-                              placement="top"
-                              overlay={
-                                <Tooltip id="tip-unpublish">
-                                  {t("tip_unpublish_assessment")}
-                                </Tooltip>
-                              }
-                            >
-                              <Button
-                                id={`unpublish-button-${item.id}`}
-                                className="btn btn-light btn-sm"
-                                onClick={() => {
-                                  setPublishModalConfig({
-                                    id: item.id,
-                                    name: item.name,
-                                    admin: false,
-                                    show: true,
-                                    publish: false,
-                                  });
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-edit">
+                                {item.published
+                                  ? t("page_assessment_list.tip_edit_disabled")
+                                  : t("page_assessment_list.tip_edit")}
+                              </Tooltip>
+                            }
+                          >
+                            <span>
+                              <Link
+                                id={`edit-button-${item.id}`}
+                                className={`btn btn-light btn-sm ${item.published ? "disabled opacity-50" : ""}`}
+                                to={
+                                  item.published
+                                    ? "#"
+                                    : buildRoute(ROUTES.ASSESSMENTS.EDIT, {
+                                        asmtId: item.id,
+                                      })
+                                }
+                                onClick={(e) => {
+                                  if (item.published) {
+                                    e.preventDefault();
+                                  }
                                 }}
                               >
-                                <FaEyeSlash />
-                              </Button>
-                            </OverlayTrigger>
-                          ) : (
-                            <OverlayTrigger
-                              placement="top"
-                              overlay={
-                                <Tooltip id="tip-publish">
-                                  {t("tip_publish_assessment")}
-                                </Tooltip>
-                              }
-                            >
-                              <Button
-                                id={`publish-button-${item.id}`}
-                                className="btn btn-light btn-sm"
-                                onClick={() => {
-                                  setPublishModalConfig({
-                                    id: item.id,
-                                    name: item.name,
-                                    admin: false,
-                                    show: true,
-                                    publish: true,
-                                  });
-                                }}
-                              >
-                                <FaEye />
-                              </Button>
-                            </OverlayTrigger>
-                          )}
+                                <FaEdit />
+                              </Link>
+                            </span>
+                          </OverlayTrigger>
 
                           <OverlayTrigger
                             placement="top"
                             overlay={
-                              <Tooltip id="tip-share">
-                                {t("page_assessment_list.tip_share")}
+                              <Tooltip id="tip-version">
+                                {!item.published
+                                  ? t(
+                                      "page_assessment_list.tip_version_disabled",
+                                    )
+                                  : t(
+                                      "page_assessment_list.tip_create_version",
+                                    )}
                               </Tooltip>
                             }
                           >
-                            <Button
-                              id={`share-button-${item.id}`}
-                              className="btn btn-light btn-sm"
-                              onClick={() => {
-                                handleShareOpenModal(item);
-                              }}
-                            >
-                              <FaShare />
-                            </Button>
+                            <span>
+                              <Button
+                                id={`version-button-${item.id}`}
+                                className={`btn btn-light btn-sm ${!item.published ? "disabled opacity-50" : ""}`}
+                                onClick={() => {
+                                  if (item.published) {
+                                    handleCreateVersion(item.id);
+                                  }
+                                }}
+                              >
+                                <FaCodeBranch />
+                              </Button>
+                            </span>
                           </OverlayTrigger>
 
                           <OverlayTrigger
@@ -1083,6 +965,156 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                           </OverlayTrigger>
                         </>
                       )}
+                    </div>
+
+                    {/* Second Row: Publishing & Sharing Actions */}
+                    <div className="d-flex justify-content-end gap-2 flex-wrap">
+                      {!listPublic && (
+                        <>
+                          {item.published ? (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="tip-unpublish">
+                                  {isPublishedToZenodo || item.zenodo_published
+                                    ? t("tip_unpublish_assessment_disabled")
+                                    : t("tip_unpublish_assessment")}
+                                </Tooltip>
+                              }
+                            >
+                              <span>
+                                <Button
+                                  id={`unpublish-button-${item.id}`}
+                                  className={`btn btn-light btn-sm ${isPublishedToZenodo || item.zenodo_published ? "disabled opacity-50" : ""}`}
+                                  onClick={() => {
+                                    if (
+                                      isPublishedToZenodo ||
+                                      item.zenodo_published
+                                    ) {
+                                      return;
+                                    }
+                                    setPublishModalConfig({
+                                      id: item.id,
+                                      name: item.name,
+                                      admin: false,
+                                      show: true,
+                                      publish: false,
+                                    });
+                                  }}
+                                >
+                                  <FaEyeSlash />
+                                </Button>
+                              </span>
+                            </OverlayTrigger>
+                          ) : (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="tip-publish">
+                                  {item.compliance == null
+                                    ? t("tip_publish_assessment_disabled")
+                                    : t("tip_publish_assessment")}
+                                </Tooltip>
+                              }
+                            >
+                              <span>
+                                <Button
+                                  id={`publish-button-${item.id}`}
+                                  className={`btn btn-light btn-sm ${item.compliance == null ? "disabled opacity-50" : ""}`}
+                                  onClick={() => {
+                                    setPublishModalConfig({
+                                      id: item.id,
+                                      name: item.name,
+                                      admin: false,
+                                      show: true,
+                                      publish: true,
+                                    });
+                                  }}
+                                >
+                                  <FaEye />
+                                </Button>
+                              </span>
+                            </OverlayTrigger>
+                          )}
+
+                          {isZenodoEnabled && (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="tip-zenodo">
+                                  {!item.published
+                                    ? t(
+                                        "page_assessment_list.tip_zenodo_disabled",
+                                      )
+                                    : isPublishedToZenodo ||
+                                        item.zenodo_published
+                                      ? t(
+                                          "page_assessment_list.tip_zenodo_published",
+                                        )
+                                      : t("page_assessment_list.tip_zenodo")}
+                                </Tooltip>
+                              }
+                            >
+                              <span>
+                                <Button
+                                  id={`zenodo-button-${item.id}`}
+                                  className={`btn btn-light btn-sm ${!item.published ? "disabled opacity-50" : ""}`}
+                                  onClick={() => {
+                                    if (item.published) {
+                                      setAsmtNumID(item.id);
+                                      handleZenodoOpenModal(item);
+                                    }
+                                  }}
+                                >
+                                  <img
+                                    src="zenodo.svg"
+                                    style={{ height: "1rem" }}
+                                  />
+                                </Button>
+                              </span>
+                            </OverlayTrigger>
+                          )}
+
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="tip-share">
+                                {t("page_assessment_list.tip_share")}
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              id={`share-button-${item.id}`}
+                              className="btn btn-light btn-sm"
+                              onClick={() => {
+                                handleShareOpenModal(item);
+                              }}
+                            >
+                              <FaShare />
+                            </Button>
+                          </OverlayTrigger>
+                        </>
+                      )}
+
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip id="tip-export">
+                            {t("page_assessment_list.tip_export")}
+                          </Tooltip>
+                        }
+                      >
+                        <Button
+                          id={`download-button-${item.id}`}
+                          className="btn btn-light btn-sm"
+                          onClick={() => {
+                            setAsmtNumID(item.id);
+                            setShouldDownloadAssessmentJSON(true);
+                          }}
+                        >
+                          <FaDownload />
+                        </Button>
+                      </OverlayTrigger>
                     </div>
                   </Card.Footer>
                 </Card>
