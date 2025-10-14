@@ -108,9 +108,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   const { keycloak, registered, userType } = useContext(AuthContext)!;
   const [shouldDownloadAssessmentJSON, setShouldDownloadAssessmentJSON] =
     useState(false);
-  const [isPublishedToZenodo, setIsPublishedToZenodo] = useState<
-    boolean | undefined
-  >();
 
   const isIdentified = userType === "Identified";
 
@@ -212,7 +209,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   });
 
   const [asmtNumID, setAsmtNumID] = useState<string>("");
-  const qAssessment = useGetAssessment({
+  const { data: qAssessment, refetch: refetchAssessment } = useGetAssessment({
     id: asmtNumID,
     token: keycloak?.token || "",
     isRegistered: registered || false,
@@ -220,13 +217,13 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   });
 
   useEffect(() => {
-    if (qAssessment.data && shouldDownloadAssessmentJSON) {
+    if (qAssessment && shouldDownloadAssessmentJSON) {
       const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-        JSON.stringify(qAssessment.data.assessment_doc, null, 2),
+        JSON.stringify(qAssessment.assessment_doc, null, 2),
       )}`;
       const link = document.createElement("a");
       link.href = jsonString;
-      link.download = `${qAssessment.data.assessment_doc.id}.json`;
+      link.download = `${qAssessment.assessment_doc.id}.json`;
 
       link.click();
       setShouldDownloadAssessmentJSON(false);
@@ -280,7 +277,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
 
   const handlePublishToZenodo = async (assessmentId: string) => {
     try {
-      const assessment = qAssessment.data?.assessment_doc;
+      const assessment = qAssessment?.assessment_doc;
 
       const assessmentStats = gatherStats(assessment);
 
@@ -304,28 +301,29 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         .mutateAsync({ id: assessmentId, file })
         .catch((err) => {
           alert.current = {
-            message: t("page_assessment_list.toast_zenodo_fail"),
+            message: err.message || t("page_assessment_list.toast_zenodo_fail"),
           };
           throw err;
         })
-        .then(() => {
+        .then((data) => {
           alert.current = {
-            message: t("page_assessment_list.toast_zenodo_success"),
+            message:
+              data.message || t("page_assessment_list.toast_zenodo_success"),
           };
           refetch();
-          setIsPublishedToZenodo(true);
-          setZenodoModalConfig({
-            ...zenodoModalConfig,
-            show: false,
-            isPublished: true,
-          });
         });
 
-      toast.promise(promise, {
-        loading: t("page_assessment_list.toast_zenodo_progress"),
-        success: () => `${alert.current.message}`,
-        error: () => `${alert.current.message}`,
-      });
+      toast.promise(
+        promise,
+        {
+          loading: t("page_assessment_list.toast_zenodo_progress"),
+          success: () => `${alert.current.message}`,
+          error: () => `${alert.current.message}`,
+        },
+        {
+          duration: 4000,
+        },
+      );
     } catch (error) {
       console.error("Error publishing to Zenodo:", error);
       toast.error(t("page_assessment_list.toast_zenodo_fail"));
@@ -379,12 +377,13 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
   };
 
   const handleZenodoOpenModal = (item: AssessmentListItem) => {
+    setAsmtNumID(item.id);
     setZenodoModalConfig({
       show: true,
       name: item.name,
       id: item.id,
-      isPublished: isPublishedToZenodo || item.zenodo_published,
-      zenodoUrl: item.zenodo_file_url,
+      isPublished: item.zenodo_published,
+      zenodoUrl: item.zenodo_deposit_url,
     });
   };
 
@@ -453,6 +452,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         id={zenodoModalConfig.id}
         isPublished={zenodoModalConfig.isPublished}
         zenodoUrl={zenodoModalConfig.zenodoUrl}
+        zenodoState={qAssessment?.zenodo_publication_state}
         onHide={() => {
           setZenodoModalConfig({
             show: false,
@@ -463,6 +463,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
           });
         }}
         onPublish={handlePublishToZenodo}
+        onRefetch={refetchAssessment}
       />
       <DeleteModal
         show={deleteModalConfig.show}
@@ -854,9 +855,8 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                     </div>
                   </Card.Body>
 
-                  <Card.Footer className="bg-transparent border-1">
-                    {/* First Row: Assessment Management Actions */}
-                    <div className="d-flex justify-content-end gap-2 flex-wrap mb-3">
+                  <Card.Footer className="bg-transparent border-0 mt-1">
+                    <div className="d-flex justify-content-end gap-3 flex-wrap">
                       <OverlayTrigger
                         placement="top"
                         overlay={
@@ -967,8 +967,16 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                       )}
                     </div>
 
-                    {/* Second Row: Publishing & Sharing Actions */}
-                    <div className="d-flex justify-content-end gap-2 flex-wrap">
+                    <div
+                      style={{
+                        height: "1px",
+                        backgroundColor: "#eee",
+                        width: "100%",
+                        margin: "0.8rem 0",
+                      }}
+                    />
+
+                    <div className="d-flex justify-content-end gap-3 flex-wrap">
                       {!listPublic && (
                         <>
                           {item.published ? (
@@ -976,7 +984,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                               placement="top"
                               overlay={
                                 <Tooltip id="tip-unpublish">
-                                  {isPublishedToZenodo || item.zenodo_published
+                                  {item.zenodo_published
                                     ? t("tip_unpublish_assessment_disabled")
                                     : t("tip_unpublish_assessment")}
                                 </Tooltip>
@@ -985,12 +993,9 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                               <span>
                                 <Button
                                   id={`unpublish-button-${item.id}`}
-                                  className={`btn btn-light btn-sm ${isPublishedToZenodo || item.zenodo_published ? "disabled opacity-50" : ""}`}
+                                  className={`btn btn-light btn-sm ${item.zenodo_published ? "disabled opacity-50" : ""}`}
                                   onClick={() => {
-                                    if (
-                                      isPublishedToZenodo ||
-                                      item.zenodo_published
-                                    ) {
+                                    if (item.zenodo_published) {
                                       return;
                                     }
                                     setPublishModalConfig({
@@ -1046,8 +1051,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                     ? t(
                                         "page_assessment_list.tip_zenodo_disabled",
                                       )
-                                    : isPublishedToZenodo ||
-                                        item.zenodo_published
+                                    : item.zenodo_published
                                       ? t(
                                           "page_assessment_list.tip_zenodo_published",
                                         )
@@ -1061,13 +1065,12 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
                                   className={`btn btn-light btn-sm ${!item.published ? "disabled opacity-50" : ""}`}
                                   onClick={() => {
                                     if (item.published) {
-                                      setAsmtNumID(item.id);
                                       handleZenodoOpenModal(item);
                                     }
                                   }}
                                 >
                                   <img
-                                    src="zenodo.svg"
+                                    src="/zenodo.svg"
                                     style={{ height: "1rem" }}
                                   />
                                 </Button>

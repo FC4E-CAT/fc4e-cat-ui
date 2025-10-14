@@ -8,7 +8,6 @@ import {
   FaEyeSlash,
   FaCopy,
   FaTrash,
-  FaSearch,
 } from "react-icons/fa";
 import {
   Alert,
@@ -161,20 +160,21 @@ function AdminAssessments() {
   }, [opts, refetch]);
 
   const [asmtNumID, setAsmtNumID] = useState<string>("");
-  const qAssessment = useGetAdminAssessment({
-    id: asmtNumID,
-    token: keycloak?.token || "",
-    isRegistered: registered || false,
-  });
+  const { data: qAssessment, refetch: refetchAssessment } =
+    useGetAdminAssessment({
+      id: asmtNumID,
+      token: keycloak?.token || "",
+      isRegistered: registered || false,
+    });
 
   useEffect(() => {
-    if (qAssessment.data && shouldDownloadAssessmentJSON) {
+    if (qAssessment && shouldDownloadAssessmentJSON) {
       const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-        JSON.stringify(qAssessment.data.assessment_doc, null, 2),
+        JSON.stringify(qAssessment.assessment_doc, null, 2),
       )}`;
       const link = document.createElement("a");
       link.href = jsonString;
-      link.download = `${qAssessment.data.assessment_doc.id}.json`;
+      link.download = `${qAssessment.assessment_doc.id}.json`;
 
       link.click();
       setShouldDownloadAssessmentJSON(false);
@@ -201,10 +201,7 @@ function AdminAssessments() {
 
   const handlePublishToZenodo = async (assessmentId: string) => {
     try {
-      const assessment = qAssessment.data?.assessment_doc;
-
-      console.log("assessment::", assessment);
-
+      const assessment = qAssessment?.assessment_doc;
       const assessmentStats = gatherStats(assessment);
 
       const pdfDoc = (
@@ -227,22 +224,29 @@ function AdminAssessments() {
         .mutateAsync({ id: assessmentId, file })
         .catch((err) => {
           alert.current = {
-            message: t("page_assessment_list.toast_zenodo_fail"),
+            message: err.message || t("page_assessment_list.toast_zenodo_fail"),
           };
           throw err;
         })
-        .then(() => {
+        .then((data) => {
           alert.current = {
-            message: t("page_assessment_list.toast_zenodo_success"),
+            message:
+              data.message || t("page_assessment_list.toast_zenodo_success"),
           };
           refetch();
         });
 
-      toast.promise(promise, {
-        loading: t("page_assessment_list.toast_zenodo_progress"),
-        success: () => `${alert.current.message}`,
-        error: () => `${alert.current.message}`,
-      });
+      toast.promise(
+        promise,
+        {
+          loading: t("page_assessment_list.toast_zenodo_progress"),
+          success: () => `${alert.current.message}`,
+          error: () => `${alert.current.message}`,
+        },
+        {
+          duration: 4000,
+        },
+      );
     } catch (error) {
       console.error("Error publishing to Zenodo:", error);
       toast.error(t("page_assessment_list.toast_zenodo_fail"));
@@ -288,12 +292,13 @@ function AdminAssessments() {
   };
 
   const handleZenodoOpenModal = (item: AssessmentListItem) => {
+    setAsmtNumID(item.id);
     setZenodoModalConfig({
       show: true,
       name: item.name,
       id: item.id,
       isPublished: item.zenodo_published,
-      zenodoUrl: item.zenodo_file_url,
+      zenodoUrl: item.zenodo_deposit_url,
     });
   };
 
@@ -324,6 +329,7 @@ function AdminAssessments() {
         id={zenodoModalConfig.id}
         isPublished={zenodoModalConfig.isPublished}
         zenodoUrl={zenodoModalConfig.zenodoUrl}
+        zenodoState={qAssessment?.zenodo_publication_state}
         onHide={() => {
           setZenodoModalConfig({
             show: false,
@@ -334,6 +340,7 @@ function AdminAssessments() {
           });
         }}
         onPublish={handlePublishToZenodo}
+        onRefetch={refetchAssessment}
       />
       <DeleteModal
         show={deleteModalConfig.show}
@@ -619,18 +626,22 @@ function AdminAssessments() {
                                 </Tooltip>
                               }
                             >
-                              <Button
-                                id={`zenodo-button-${item.id}`}
-                                className={`btn btn-light btn-sm m-1 ${!item.published ? "disabled opacity-50" : ""}`}
-                                onClick={() => {
-                                  if (item.published) {
-                                    setAsmtNumID(item.id);
-                                    handleZenodoOpenModal(item);
-                                  }
-                                }}
-                              >
-                                <FaSearch />
-                              </Button>
+                              <span>
+                                <Button
+                                  id={`zenodo-button-${item.id}`}
+                                  className={`btn btn-light btn-sm m-1 ${!item.published ? "disabled opacity-50" : ""}`}
+                                  onClick={() => {
+                                    if (item.published) {
+                                      handleZenodoOpenModal(item);
+                                    }
+                                  }}
+                                >
+                                  <img
+                                    src="/zenodo.svg"
+                                    style={{ height: "1rem" }}
+                                  />
+                                </Button>
+                              </span>
                             </OverlayTrigger>
                           )}
                           <OverlayTrigger

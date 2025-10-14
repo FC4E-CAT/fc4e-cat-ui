@@ -9,6 +9,7 @@ import type {
   Principle,
   PrincipleInput,
   Pagination,
+  ZenodoAssessmentResponse,
 } from "@/types";
 import {
   useInfiniteQuery,
@@ -651,6 +652,26 @@ export const useUpdateAdminSetting = (token: string) => {
     },
   });
 };
+
+export const useGetZenodoAssessment = ({
+  id,
+  token,
+  isRegistered,
+}: {
+  id: string;
+  token: string;
+  isRegistered: boolean;
+}) =>
+  useQuery({
+    queryKey: ["zenodo-assessment", id],
+    queryFn: async () => {
+      const response = await APIClient(token).get<ZenodoAssessmentResponse>(
+        `/v2/zenodo/assessment/${id}`,
+      );
+      return response.data;
+    },
+    enabled: !!token && isRegistered && id !== "" && id !== undefined,
+  });
 
 export const usePublishToZenodo = (token: string) => {
   return useMutation({
