@@ -1,13 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  FaCog,
-  FaRuler,
-  FaChartLine,
-  FaCode,
-  FaSearch,
-  FaUserCog,
-} from "react-icons/fa";
+import { FaCog, FaRuler, FaChartLine, FaCode, FaUserCog } from "react-icons/fa";
 import { Row, Col, Card } from "react-bootstrap";
 import ROUTES from "@/routes";
 
@@ -54,7 +47,13 @@ const Settings: React.FC = () => {
         {
           title: "Zenodo",
           description: "Enable or disable Zenodo integration features",
-          icon: <FaSearch size={24} className="text-muted me-3" />,
+          icon: (
+            <img
+              className="me-3"
+              src="/zenodo.svg"
+              style={{ height: "1.5rem" }}
+            />
+          ),
           path: ROUTES.ADMIN.SETTINGS.ZENODO,
         },
         {

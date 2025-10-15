@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Row, Col, Form, Button, InputGroup } from "react-bootstrap";
-import { FaSearch, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { AuthContext } from "@/auth";
 import {
   useGetAdminSettings,
@@ -10,6 +10,7 @@ import {
 import ROUTES from "@/routes";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import type { AxiosError } from "axios";
 
 interface ZenodoFormData {
   enabled: boolean;
@@ -83,8 +84,12 @@ function ZenodoSettings() {
 
       toast.success("Zenodo settings updated successfully!");
       return true;
-    } catch (error) {
-      toast.error("Failed to update Zenodo settings. Please try again.");
+    } catch (err) {
+      const error = (err as AxiosError<{ message?: string }>)?.response?.data
+        ?.message;
+      toast.error(
+        error || "Failed to update Zenodo settings. Please try again.",
+      );
       console.error("Error updating Zenodo settings:", error);
       return false;
     } finally {
@@ -137,7 +142,7 @@ function ZenodoSettings() {
           <div className="test-method-settings-item d-flex justify-content-between gap-3">
             <div>
               <div className="d-flex align-items-center gap-2">
-                <FaSearch size={16} />
+                <img src="/zenodo.svg" style={{ height: "1.2rem" }} />
                 <h6 className="mb-0">Enable Zenodo Integration</h6>
               </div>
               <span className="text-muted small">

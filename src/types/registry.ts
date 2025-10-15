@@ -23,3 +23,15 @@ export interface RegistryMetric {
 }
 
 export type RegistryMetricResponse = ResponsePage<RegistryMetric[]>;
+
+export interface ZenodoAssessmentResponse {
+  assessmentId: string;
+  depositId: string;
+  published_at: string;
+  uploaded_at: string;
+  is_published: boolean;
+  zenodo_state: string;
+  doi: string;
+  image_url: string;
+  target_url: string;
+}
