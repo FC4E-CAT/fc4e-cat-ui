@@ -7,12 +7,12 @@ import { AuthContext } from "@/auth";
 import { useContext } from "react";
 
 type ZenodoState =
-  | "PROCESS_INIT"
-  | "DEPOSIT_CREATED"
-  | "FILE_UPLOADED_TO_DEPOSIT"
-  | "DEPOSIT_PUBLISHED"
-  | "PROCESS_COMPLETED"
-  | "PROCESS_FAILED";
+  | "PROCESS INIT"
+  | "DEPOSIT CREATED"
+  | "FILE UPLOADED TO DEPOSIT"
+  | "DEPOSIT PUBLISHED"
+  | "PROCESS COMPLETED"
+  | "PROCESS FAILED";
 
 interface ZenodoModalProps {
   show: boolean;
@@ -49,37 +49,48 @@ function ZenodoModal({
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
+    let timeout: NodeJS.Timeout;
 
     if (
       show &&
-      zenodoState !== "PROCESS_COMPLETED" &&
-      zenodoState !== "PROCESS_FAILED" &&
+      zenodoState !== "PROCESS COMPLETED" &&
+      zenodoState !== "PROCESS FAILED" &&
       onRefetch
     ) {
       interval = setInterval(() => {
         onRefetch();
-      }, 1000); // Poll every 2 seconds
+      }, 1000); // Poll every 1 second
+
+      // Stop polling after 1 minute to prevent infinite polling
+      timeout = setTimeout(() => {
+        if (interval) {
+          clearInterval(interval);
+        }
+      }, 20000); // 20 seconds timeout
     }
 
     return () => {
       if (interval) {
         clearInterval(interval);
       }
+      if (timeout) {
+        clearTimeout(timeout);
+      }
     };
   }, [show, zenodoState, onRefetch]);
 
   const isInProgressState = (state: string): boolean => {
     return [
-      "PROCESS_INIT",
-      "DEPOSIT_CREATED",
-      "FILE_UPLOADED_TO_DEPOSIT",
-      "DEPOSIT_PUBLISHED",
+      "PROCESS INIT",
+      "DEPOSIT CREATED",
+      "FILE UPLOADED TO DEPOSIT",
+      "DEPOSIT PUBLISHED",
     ].includes(state);
   };
 
   // Reset publishing state when process fails
   useEffect(() => {
-    if (zenodoState === "PROCESS_FAILED" && isPublishing) {
+    if (zenodoState === "PROCESS FAILED" && isPublishing) {
       setIsPublishing(false);
     }
   }, [zenodoState, isPublishing]);
@@ -97,22 +108,22 @@ function ZenodoModal({
   const getStepStatus = (stepState: ZenodoState) => {
     // If we're publishing but no zenodo_publication_state yet, show first step as active
     if (isPublishing && !zenodoState) {
-      return stepState === "PROCESS_INIT" ? "active" : "pending";
+      return stepState === "PROCESS INIT" ? "active" : "pending";
     }
 
     if (!zenodoState) return "pending";
 
     const stateOrder = [
-      "PROCESS_INIT",
-      "DEPOSIT_CREATED",
-      "FILE_UPLOADED_TO_DEPOSIT",
-      "DEPOSIT_PUBLISHED",
-      "PROCESS_COMPLETED",
+      "PROCESS INIT",
+      "DEPOSIT CREATED",
+      "FILE UPLOADED TO DEPOSIT",
+      "DEPOSIT PUBLISHED",
+      "PROCESS COMPLETED",
     ];
     const currentIndex = stateOrder.indexOf(zenodoState);
     const stepIndex = stateOrder.indexOf(stepState);
 
-    if (zenodoState === "PROCESS_FAILED") return "failed";
+    if (zenodoState === "PROCESS FAILED") return "failed";
     if (stepIndex < currentIndex) return "completed";
     if (stepIndex === currentIndex) return "active";
     return "pending";
@@ -147,16 +158,16 @@ function ZenodoModal({
     if (!zenodoState) return 0;
 
     const stateOrder = [
-      "PROCESS_INIT",
-      "DEPOSIT_CREATED",
-      "FILE_UPLOADED_TO_DEPOSIT",
-      "DEPOSIT_PUBLISHED",
-      "PROCESS_COMPLETED",
+      "PROCESS INIT",
+      "DEPOSIT CREATED",
+      "FILE UPLOADED TO DEPOSIT",
+      "DEPOSIT PUBLISHED",
+      "PROCESS COMPLETED",
     ];
     const currentIndex = stateOrder.indexOf(zenodoState);
 
-    if (zenodoState === "PROCESS_FAILED") return 100;
-    if (zenodoState === "PROCESS_COMPLETED") return 100;
+    if (zenodoState === "PROCESS FAILED") return 100;
+    if (zenodoState === "PROCESS COMPLETED") return 100;
 
     return Math.max(0, (currentIndex / (stateOrder.length - 1)) * 100);
   };
@@ -222,7 +233,7 @@ function ZenodoModal({
           <>
             {(zenodoState &&
               (isInProgressState(zenodoState) ||
-                zenodoState === "PROCESS_FAILED")) ||
+                zenodoState === "PROCESS FAILED")) ||
             isPublishing ? (
               <>
                 <div className="mb-3">
@@ -231,46 +242,46 @@ function ZenodoModal({
 
                   <div className="steps-container">
                     <div
-                      className={`step-item d-flex align-items-center mb-2 ${getStepStatus("PROCESS_INIT")}`}
+                      className={`step-item d-flex align-items-center mb-2 ${getStepStatus("PROCESS INIT")}`}
                     >
-                      {renderStepIcon(getStepStatus("PROCESS_INIT"))}
+                      {renderStepIcon(getStepStatus("PROCESS INIT"))}
                       <span
-                        className={`ms-2 ${["completed", "active"].includes(getStepStatus("PROCESS_INIT")) ? "text-primary" : ""}`}
+                        className={`ms-2 ${["completed", "active"].includes(getStepStatus("PROCESS INIT")) ? "text-primary" : ""}`}
                       >
                         Initializing Process
                       </span>
                     </div>
 
                     <div
-                      className={`step-item d-flex align-items-center mb-2 ${getStepStatus("DEPOSIT_CREATED")}`}
+                      className={`step-item d-flex align-items-center mb-2 ${getStepStatus("DEPOSIT CREATED")}`}
                     >
-                      {renderStepIcon(getStepStatus("DEPOSIT_CREATED"))}
+                      {renderStepIcon(getStepStatus("DEPOSIT CREATED"))}
                       <span
-                        className={`ms-2 ${["completed", "active"].includes(getStepStatus("DEPOSIT_CREATED")) ? "text-primary" : ""}`}
+                        className={`ms-2 ${["completed", "active"].includes(getStepStatus("DEPOSIT CREATED")) ? "text-primary" : ""}`}
                       >
                         Creating Zenodo Deposit
                       </span>
                     </div>
 
                     <div
-                      className={`step-item d-flex align-items-center mb-2 ${getStepStatus("FILE_UPLOADED_TO_DEPOSIT")}`}
+                      className={`step-item d-flex align-items-center mb-2 ${getStepStatus("FILE UPLOADED TO DEPOSIT")}`}
                     >
                       {renderStepIcon(
-                        getStepStatus("FILE_UPLOADED_TO_DEPOSIT"),
+                        getStepStatus("FILE UPLOADED TO DEPOSIT"),
                       )}
                       <span
-                        className={`ms-2 ${["completed", "active"].includes(getStepStatus("FILE_UPLOADED_TO_DEPOSIT")) ? "text-primary" : ""}`}
+                        className={`ms-2 ${["completed", "active"].includes(getStepStatus("FILE UPLOADED TO DEPOSIT")) ? "text-primary" : ""}`}
                       >
                         Uploading Assessment File
                       </span>
                     </div>
 
                     <div
-                      className={`step-item d-flex align-items-center mb-2 ${getStepStatus("DEPOSIT_PUBLISHED")}`}
+                      className={`step-item d-flex align-items-center mb-2 ${getStepStatus("DEPOSIT PUBLISHED")}`}
                     >
-                      {renderStepIcon(getStepStatus("DEPOSIT_PUBLISHED"))}
+                      {renderStepIcon(getStepStatus("DEPOSIT PUBLISHED"))}
                       <span
-                        className={`ms-2 ${["completed", "active"].includes(getStepStatus("DEPOSIT_PUBLISHED")) ? "text-primary" : ""}`}
+                        className={`ms-2 ${["completed", "active"].includes(getStepStatus("DEPOSIT PUBLISHED")) ? "text-primary" : ""}`}
                       >
                         Publishing to Repository
                       </span>
@@ -278,39 +289,39 @@ function ZenodoModal({
 
                     <div
                       className={`step-item d-flex align-items-center mb-2 ${
-                        zenodoState === "PROCESS_COMPLETED"
+                        zenodoState === "PROCESS COMPLETED"
                           ? "completed"
-                          : zenodoState === "PROCESS_FAILED"
+                          : zenodoState === "PROCESS FAILED"
                             ? "failed"
                             : "pending"
                       }`}
                     >
-                      {zenodoState === "PROCESS_COMPLETED" ? (
+                      {zenodoState === "PROCESS COMPLETED" ? (
                         <FaCheck className="text-success" />
-                      ) : zenodoState === "PROCESS_FAILED" ? (
+                      ) : zenodoState === "PROCESS FAILED" ? (
                         <FaTimes className="text-danger" />
                       ) : (
                         <div className="step-pending-icon"></div>
                       )}
                       <span
                         className={`ms-2 ${
-                          zenodoState === "PROCESS_COMPLETED"
+                          zenodoState === "PROCESS COMPLETED"
                             ? "text-success fw-bold"
-                            : zenodoState === "PROCESS_FAILED"
+                            : zenodoState === "PROCESS FAILED"
                               ? "text-danger fw-bold"
                               : ""
                         }`}
                       >
-                        {zenodoState === "PROCESS_COMPLETED"
+                        {zenodoState === "PROCESS COMPLETED"
                           ? "Successfully Published!"
-                          : zenodoState === "PROCESS_FAILED"
+                          : zenodoState === "PROCESS FAILED"
                             ? "Publishing Failed"
                             : "Finalizing..."}
                       </span>
                     </div>
                   </div>
 
-                  {zenodoState === "PROCESS_FAILED" && (
+                  {zenodoState === "PROCESS FAILED" && (
                     <Alert variant="danger" className="mt-3">
                       <small>
                         <strong>Error:</strong> Publishing to Zenodo failed.
@@ -319,11 +330,8 @@ function ZenodoModal({
                     </Alert>
                   )}
 
-                  {zenodoState === "PROCESS_COMPLETED" && zenodoUrl && (
+                  {zenodoState === "PROCESS COMPLETED" && zenodoUrl && (
                     <Alert variant="success" className="mt-3">
-                      <Alert.Heading className="h6">
-                        🎉 Successfully Published!
-                      </Alert.Heading>
                       <p className="mb-2">
                         Your assessment has been successfully published to
                         Zenodo.
@@ -375,9 +383,9 @@ function ZenodoModal({
         >
           {t("buttons.close")}
         </Button>
-        {!isPublished && zenodoState !== "PROCESS_COMPLETED" && (
+        {!isPublished && zenodoState !== "PROCESS COMPLETED" && (
           <Button
-            variant={zenodoState === "PROCESS_FAILED" ? "warning" : "success"}
+            variant={zenodoState === "PROCESS FAILED" ? "warning" : "success"}
             onClick={handlePublish}
             disabled={
               isPublishing ||
@@ -397,7 +405,7 @@ function ZenodoModal({
               </>
             ) : (
               <>
-                {zenodoState === "PROCESS_FAILED"
+                {zenodoState === "PROCESS FAILED"
                   ? "Retry Publishing to Zenodo"
                   : "Request to Publish to Zenodo"}
               </>

@@ -93,7 +93,6 @@ interface ZenodoModalConfig {
   name: string;
   id: string;
   isPublished: boolean;
-  zenodoUrl?: string;
 }
 
 interface PublishModalConfig {
@@ -162,7 +161,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       name: "",
       id: "",
       isPublished: false,
-      zenodoUrl: "",
     },
   );
 
@@ -383,7 +381,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
       name: item.name,
       id: item.id,
       isPublished: item.zenodo_published,
-      zenodoUrl: item.zenodo_deposit_url,
     });
   };
 
@@ -451,7 +448,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
         name={zenodoModalConfig.name}
         id={zenodoModalConfig.id}
         isPublished={zenodoModalConfig.isPublished}
-        zenodoUrl={zenodoModalConfig.zenodoUrl}
+        zenodoUrl={qAssessment?.zenodo_deposit_url}
         zenodoState={qAssessment?.zenodo_publication_state}
         onHide={() => {
           setZenodoModalConfig({
@@ -459,7 +456,6 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
             name: "",
             id: "",
             isPublished: false,
-            zenodoUrl: "",
           });
         }}
         onPublish={handlePublishToZenodo}

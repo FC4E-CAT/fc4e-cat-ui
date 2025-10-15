@@ -452,6 +452,7 @@ export interface AssessmentDetailsResponse {
   assessment_doc: Assessment;
   assessment_doc_version?: string;
   zenodo_publication_state?: string;
+  zenodo_deposit_url?: string;
 }
 
 export interface ObjectListItem {
