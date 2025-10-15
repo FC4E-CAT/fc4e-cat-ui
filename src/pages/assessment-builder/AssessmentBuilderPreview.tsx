@@ -19,7 +19,7 @@ import {
 } from "@/api";
 import { AuthContext } from "@/auth";
 import type { RegistryTest, TestFull } from "@/types/tests";
-import { relMtvMetricTest } from "@/config";
+import { displayImperatives, relMtvMetricTest } from "@/config";
 import toast from "react-hot-toast";
 import styles from "./AssessmentBuilder.module.css";
 import AssessmentBuilderDeleteModal from "./AssessmentBuilderDeleteModal";
@@ -292,6 +292,15 @@ function AssessmentBuilderPreview({
                         ?.criteria[builderState.selectedCriterionIndex]?.name
                     }
                   </span>{" "}
+                  {displayImperatives && (
+                    <span className="ms-1 badge bg-dark">
+                      {
+                        assessment[builderState.selectedPrincipleIndex || 0]
+                          ?.criteria[builderState.selectedCriterionIndex]
+                          ?.imperative
+                      }
+                    </span>
+                  )}
                   {assessment[builderState.selectedPrincipleIndex || 0]
                     ?.criteria[builderState.selectedCriterionIndex]
                     ?.imperative === AssessmentCriterionImperative.MUST ? (

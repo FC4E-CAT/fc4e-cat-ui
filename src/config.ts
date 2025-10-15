@@ -35,6 +35,8 @@ const themeAppTitle = config.theme?.app_title ?? "CAT";
 
 const pidSelectionView = config.embedded_views?.pid_selection_view || "";
 
+const displayImperatives = config.display_imperatives || false;
+
 // some minimal theme configs
 const themeFooterDisplay = config.theme?.footer?.display ?? true;
 const themeHomeBenefits = config.theme?.home?.display_benefits ?? true;
@@ -67,4 +69,5 @@ export {
   themeAbout,
   pidSelectionView,
   autoSubjectType,
+  displayImperatives,
 };

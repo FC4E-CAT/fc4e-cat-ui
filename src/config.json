@@ -33,5 +33,6 @@
     "NFDI Infra Staging": "nfdiinfrastaging",
     "Academic Id": "academic-id",
     "Cilogon": "cilogon"
-  }
+  },
+  "display_imperatives": true
 }
