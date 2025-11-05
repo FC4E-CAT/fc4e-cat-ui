@@ -144,6 +144,7 @@ function AssessmentBuilder({
     fetchNextPage: criteriaFetchNextPage,
     hasNextPage: criteriaHaveNextPage,
     isFetchingNextPage: criteriaAreFetchingNextPage,
+    refetch: refetchCriteria,
   } = useGetAllCriteria({
     size: 20,
     token: keycloak?.token || "",
@@ -594,6 +595,7 @@ function AssessmentBuilder({
                 allCriteria={allCriteria}
                 hasUnsavedChanges={hasUnsavedChanges}
                 isEditing={isEditing}
+                refetchCriteria={refetchCriteria}
               />
             </div>
           </div>
@@ -745,6 +747,7 @@ function AssessmentBuilder({
                     }
                     motivationCriteriaMutation={motivationCriteriaMutation}
                     refetchAssessmentData={refetchAssessmentData}
+                    refetchCriteria={refetchCriteria}
                   />
                 )}
                 {builderState.entityMode === "principle" && (

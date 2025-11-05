@@ -38,6 +38,7 @@ function AssessmentBuilderStructure({
   allCriteria,
   hasUnsavedChanges,
   isEditing,
+  refetchCriteria,
 }: {
   mtvId: string;
   actId: string;
@@ -51,6 +52,7 @@ function AssessmentBuilderStructure({
   allCriteria: Criterion[];
   hasUnsavedChanges?: boolean;
   isEditing?: boolean;
+  refetchCriteria: () => void;
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
   const { t } = useTranslation();
@@ -239,6 +241,7 @@ function AssessmentBuilderStructure({
 
           return newAssessment;
         });
+        refetchCriteria();
       }
     } catch (error) {
       console.error("Remove criterion-principle failed:", error);
