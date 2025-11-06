@@ -661,7 +661,11 @@ export const canEditCriterion = ({
   const currentMotivation = usedByMotivations?.find(
     (motivation) => motivation.id === mtvId,
   );
-  if (currentMotivation && currentMotivation.first_actor_assignment === actId) {
+  if (
+    currentMotivation &&
+    (currentMotivation.first_actor_assignment === actId ||
+      currentMotivation.first_actor_assignment == null)
+  ) {
     return true;
   }
 

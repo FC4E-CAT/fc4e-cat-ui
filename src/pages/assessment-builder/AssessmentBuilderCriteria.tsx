@@ -43,6 +43,7 @@ function AssessmentBuilderCriteria({
   criterionId,
   motivationCriteriaMutation,
   refetchAssessmentData,
+  refetchCriteria,
   setBuilderState,
 }: {
   assessment: AssessmentPrinciple[];
@@ -57,6 +58,7 @@ function AssessmentBuilderCriteria({
     mutateAsync: (data: { mtvId: string }) => Promise<{ content: Criterion[] }>;
   };
   refetchAssessmentData: () => void;
+  refetchCriteria: () => void;
   setBuilderState: React.Dispatch<React.SetStateAction<AssessmentBuilderState>>;
 }) {
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -449,30 +451,18 @@ function AssessmentBuilderCriteria({
     }
 
     if (formMode === "select" && selectedRegistryCriterionId) {
-      const selectedCriterionPid = allCriteria.find(
+      const selectedCriterion = allCriteria.find(
         (criterion) => criterion.cri === selectedRegistryCriterionId,
-      )?.id;
+      );
 
-      if (principleTag) {
-        formattedPriCri = formatDataToAssignPrincipleToCriterion({
-          principleId: principleTag || "",
-          criterionId: selectedCriterionPid || "",
-          allMotivationCriteria: allMotivationCriteria,
-        });
-
-        try {
-          await assignPrincipleToCriterion.mutateAsync(formattedPriCri);
-        } catch (error) {
-          console.error("Assign principle to criterion failed:", error);
-          throw error;
-        }
-      }
+      const imperativeId =
+        typeof selectedCriterion?.imperative === "string"
+          ? selectedCriterion.imperative
+          : selectedCriterion?.imperative?.id || "";
 
       criImp.push({
-        criterion_id: selectedCriterionPid || "",
-        imperative_id:
-          criterionForm?.imperative ||
-          (imperatives.length > 0 ? imperatives[0].id : ""),
+        criterion_id: selectedCriterion?.id || "",
+        imperative_id: imperativeId,
       });
     }
 
@@ -532,10 +522,13 @@ function AssessmentBuilderCriteria({
             };
           });
         }
+
         await assignCriteriaToActorMutation.mutateAsync(criImp);
       } catch (error) {
         console.error("Assign criteria to actor failed:", error);
         throw error;
+      } finally {
+        refetchCriteria();
       }
     }
   };
