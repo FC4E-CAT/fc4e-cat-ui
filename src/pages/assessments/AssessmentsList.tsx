@@ -236,7 +236,7 @@ function AssessmentsList({ listPublic = false }: AssessmentListProps) {
 
   const { data: adminSettings } = useGetAdminSettings({
     token: keycloak?.token || "",
-    isRegistered: registered || false,
+    isRegistered: (registered && userType?.toLowerCase() === "admin") || false,
   });
 
   // Check if Zenodo publishing is enabled
