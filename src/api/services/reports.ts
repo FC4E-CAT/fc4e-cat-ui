@@ -1,5 +1,11 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { APIClient } from "../client";
+import type {
+  ApiAdminAssessments,
+  AssessmentDetailsResponse,
+  AssessmentListResponse,
+  Pagination,
+} from "@/types";
 
 export interface ReportDefinition {
   id: string;
@@ -126,3 +132,50 @@ export const useGetReportFilters = ({
     },
     enabled: !!token && !!reportDefinitionId && isRegistered,
   });
+
+export const useGetReportAssessments = ({
+  size,
+  token,
+  search,
+  isRegistered,
+}: ApiAdminAssessments) =>
+  useInfiniteQuery({
+    queryKey: ["all-assessments", { size, search }],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await APIClient(token).get<AssessmentListResponse>(
+        `/v1/reports/assessments?size=${size}&page=${pageParam}${search !== "" ? "&search=" + search : ""}`,
+      );
+      return response.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const pageMeta = lastPage as Pagination;
+      if (pageMeta.number_of_page < pageMeta.total_pages) {
+        return pageMeta.number_of_page + 1;
+      } else {
+        return undefined;
+      }
+    },
+    enabled: !!token && isRegistered,
+  });
+
+export function useGetReportAssessmentById({
+  id,
+  token,
+  isRegistered,
+}: {
+  id: string;
+  token?: string;
+  isRegistered?: boolean;
+}) {
+  return useQuery({
+    queryKey: ["assessment", id],
+    queryFn: async () => {
+      const url = `/v1/reports/assessments/${id}`;
+      const response =
+        await APIClient(token).get<AssessmentDetailsResponse>(url);
+      return response.data;
+    },
+    enabled: !!token && isRegistered && id !== "",
+  });
+}

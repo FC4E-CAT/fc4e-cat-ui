@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Container,
   Row,
@@ -20,6 +21,9 @@ import type {
   ReportDefinition,
   ReportFilter,
 } from "@/api/services/reports";
+import type { AssessmentListItem } from "@/types";
+import { buildRoute } from "@/routes";
+import ROUTES from "@/routes";
 import styles from "./Reports.module.css";
 
 interface ReportsProps {
@@ -33,6 +37,7 @@ interface ReportsProps {
   reportFilters: ReportFilter[];
   selectedFilters: Record<string, string[]>;
   appliedFilters: Record<string, string[]>;
+  assessments: AssessmentListItem[];
   onReportDefinitionChange: (definitionId: string) => void;
   onFilterChange: (
     filterName: string,
@@ -55,6 +60,7 @@ function Reports({
   reportFilters,
   selectedFilters,
   appliedFilters,
+  assessments,
   onReportDefinitionChange,
   onFilterChange,
   onApplyFilters,
@@ -62,6 +68,18 @@ function Reports({
   onExportReport,
 }: ReportsProps) {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+  // Create assessment name-to-ID lookup map
+  const assessmentNameToIdMap = useMemo(() => {
+    const map = new Map<string, string>();
+    assessments.forEach((assessment) => {
+      map.set(assessment.name, assessment.id);
+    });
+    return map;
+  }, [assessments]);
+
+  const isRowAssessment = reportData?.rows_dimension === "assessment";
+  const isColumnAssessment = reportData?.columns_dimension === "assessment";
 
   const getAppliedFilterCount = useCallback(() => {
     return Object.values(appliedFilters).reduce(
@@ -322,9 +340,24 @@ function Reports({
                           </Button>
                         )}
                       </th>
-                      {reportData.columns.map((column, index) => (
-                        <th key={index}>{column}</th>
-                      ))}
+                      {reportData.columns.map((column, index) => {
+                        const assessmentId = assessmentNameToIdMap.get(column);
+                        const isClickable = isColumnAssessment && assessmentId;
+
+                        return isClickable ? (
+                          <th key={index}>
+                            <Link
+                              to={buildRoute(ROUTES.ASSESSMENTS.VIEW, {
+                                asmtId: assessmentId,
+                              })}
+                            >
+                              {column}
+                            </Link>
+                          </th>
+                        ) : (
+                          <th key={index}>{column}</th>
+                        );
+                      })}
                     </tr>
                   </thead>
                   <tbody>
@@ -348,22 +381,39 @@ function Reports({
                         </td>
                       </tr>
                     ) : (
-                      reportData.rows.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                          <td className={styles["row-header"]}>{row}</td>
-                          {reportData.data[rowIndex]?.map(
-                            (cellValue, cellIndex) => (
-                              <td key={cellIndex}>
-                                <span
-                                  className={`${styles["status-badge"]} ${getStatusClass(cellValue)}`}
+                      reportData.rows.map((row, rowIndex) => {
+                        const assessmentId = assessmentNameToIdMap.get(row);
+                        const isClickable = isRowAssessment && assessmentId;
+
+                        return (
+                          <tr key={rowIndex}>
+                            {isClickable ? (
+                              <td className={styles["row-header"]}>
+                                <Link
+                                  to={buildRoute(ROUTES.ASSESSMENTS.VIEW, {
+                                    asmtId: assessmentId,
+                                  })}
                                 >
-                                  {getDisplayValue(cellValue)}
-                                </span>
+                                  {row}
+                                </Link>
                               </td>
-                            ),
-                          )}
-                        </tr>
-                      ))
+                            ) : (
+                              <td className={styles["row-header"]}>{row}</td>
+                            )}
+                            {reportData.data[rowIndex]?.map(
+                              (cellValue, cellIndex) => (
+                                <td key={cellIndex}>
+                                  <span
+                                    className={`${styles["status-badge"]} ${getStatusClass(cellValue)}`}
+                                  >
+                                    {getDisplayValue(cellValue)}
+                                  </span>
+                                </td>
+                              ),
+                            )}
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
                 </Table>

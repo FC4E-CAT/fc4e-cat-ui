@@ -6,9 +6,11 @@ import {
   useGetReportFilters,
   useExportReport,
   type ReportResponse,
+  useGetReportAssessments,
 } from "@/api/services/reports";
 import toast from "react-hot-toast";
 import Reports from "./Reports";
+import type { AssessmentListItem } from "@/types";
 
 function ReportsContainer() {
   const { keycloak, registered } = useContext(AuthContext)!;
@@ -23,6 +25,12 @@ function ReportsContainer() {
   const [appliedFilters, setAppliedFilters] = useState<
     Record<string, string[]>
   >({});
+  const [shouldFetchAssessments, setShouldFetchAssessments] = useState(false);
+  const [allAssessments, setAllAssessments] = useState<AssessmentListItem[]>(
+    [],
+  );
+  const [isFetchingAllAssessments, setIsFetchingAllAssessments] =
+    useState(false);
 
   const {
     data: reportDefinitions,
@@ -39,8 +47,39 @@ function ReportsContainer() {
     isRegistered: registered,
   });
 
+  const {
+    data: assessmentsData,
+    fetchNextPage,
+    hasNextPage,
+  } = useGetReportAssessments({
+    size: 5,
+    token: keycloak?.token || "",
+    search: "",
+    isRegistered:
+      registered && shouldFetchAssessments && isFetchingAllAssessments,
+  });
+
   const generateReportMutation = useGenerateReport(keycloak?.token || "");
   const exportReportMutation = useExportReport(keycloak?.token || "");
+
+  // Fetch all assessments with pagination
+  useEffect(() => {
+    if (!assessmentsData || !isFetchingAllAssessments) return;
+
+    let tmpAssessments: AssessmentListItem[] = [];
+    if (assessmentsData?.pages) {
+      assessmentsData.pages.map((page) => {
+        tmpAssessments = [...tmpAssessments, ...page.content];
+      });
+      if (hasNextPage) {
+        fetchNextPage();
+      }
+    }
+
+    setAllAssessments(tmpAssessments);
+    setIsFetchingAllAssessments(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assessmentsData, fetchNextPage, hasNextPage, isFetchingAllAssessments]);
 
   const handleGenerateReportForDefinition = useCallback(
     async (definitionId: string, filters?: Record<string, string[]>) => {
@@ -66,6 +105,16 @@ function ReportsContainer() {
         });
         setReportData(result);
 
+        if (
+          (result.rows_dimension === "assessment" ||
+            result.columns_dimension === "assessment") &&
+          !shouldFetchAssessments
+        ) {
+          setAllAssessments([]);
+          setShouldFetchAssessments(true);
+          setIsFetchingAllAssessments(true);
+        }
+
         if (isInitialLoad) {
           setIsInitialLoad(false);
         }
@@ -76,7 +125,12 @@ function ReportsContainer() {
         setIsGenerating(false);
       }
     },
-    [isInitialLoad, selectedFilters, generateReportMutation],
+    [
+      isInitialLoad,
+      selectedFilters,
+      generateReportMutation,
+      shouldFetchAssessments,
+    ],
   );
 
   useEffect(() => {
@@ -93,12 +147,8 @@ function ReportsContainer() {
     if (selectedReportDefinition && !reportData && isInitialLoad) {
       handleGenerateReportForDefinition(selectedReportDefinition);
     }
-  }, [
-    selectedReportDefinition,
-    reportData,
-    isInitialLoad,
-    handleGenerateReportForDefinition,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedReportDefinition, reportData, isInitialLoad]);
 
   const handleReportDefinitionChange = (definitionId: string) => {
     setSelectedReportDefinition(definitionId);
@@ -202,6 +252,7 @@ function ReportsContainer() {
       reportFilters={reportFilters || []}
       selectedFilters={selectedFilters}
       appliedFilters={appliedFilters}
+      assessments={allAssessments}
       onReportDefinitionChange={handleReportDefinitionChange}
       onFilterChange={handleFilterChange}
       onApplyFilters={handleApplyFilters}

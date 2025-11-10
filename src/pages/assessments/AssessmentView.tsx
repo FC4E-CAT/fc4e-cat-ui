@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { prettyPrintRanking } from "@/utils";
 import { AutoTestDetails } from "./components/tests/AutoTestDetails";
 import gatherStats from "./utils/gatherStats";
+import { useGetReportAssessmentById } from "@/api/services/reports";
 
 /** AssessmentView page that displays the results of an assessment */
 const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
@@ -28,14 +29,29 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
 
   const asmtNumID = asmtId !== undefined ? asmtId : "";
 
+  const hasFullAssessmentAccess =
+    keycloak?.resourceAccess?.["backend-service"]?.roles?.some((role) =>
+      ["admin", "reporter"].includes(role),
+    ) ?? false;
+
+  const { data: reportAssessmentData } = useGetReportAssessmentById({
+    id: asmtNumID,
+    token: keycloak?.token || "",
+    isRegistered: registered && hasFullAssessmentAccess,
+  });
+
   const { data: assessmentData } = useGetAssessment({
     id: asmtNumID,
     token: keycloak?.token || "",
-    isRegistered: registered,
+    isRegistered: registered && !hasFullAssessmentAccess,
     isPublic: isPublic,
   });
 
-  const assessment = assessmentData?.assessment_doc;
+  const finalAssessmentData = hasFullAssessmentAccess
+    ? reportAssessmentData
+    : assessmentData;
+
+  const assessment = finalAssessmentData?.assessment_doc;
   const stats = gatherStats(assessment);
 
   return (
