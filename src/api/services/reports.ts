@@ -28,8 +28,8 @@ export interface ReportResponse {
   value_type: string;
   created_by: string;
   created_on: string;
-  rows: string[];
-  columns: string[];
+  rows: (string | { id: string; name: string })[];
+  columns: (string | { id: string; name: string })[];
   data: string[][];
 }
 

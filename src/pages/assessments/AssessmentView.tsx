@@ -24,15 +24,13 @@ const AssessmentView = ({ isPublic }: { isPublic: boolean }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const { keycloak, registered } = useContext(AuthContext)!;
+  const { keycloak, registered, roles } = useContext(AuthContext)!;
   const { asmtId } = useParams();
 
   const asmtNumID = asmtId !== undefined ? asmtId : "";
 
   const hasFullAssessmentAccess =
-    keycloak?.resourceAccess?.["backend-service"]?.roles?.some((role) =>
-      ["admin", "reporter"].includes(role),
-    ) ?? false;
+    roles?.some((role) => ["admin", "reporter"].includes(role)) ?? false;
 
   const { data: reportAssessmentData } = useGetReportAssessmentById({
     id: asmtNumID,

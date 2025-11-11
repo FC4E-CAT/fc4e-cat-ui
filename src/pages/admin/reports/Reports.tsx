@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Container,
@@ -21,7 +21,6 @@ import type {
   ReportDefinition,
   ReportFilter,
 } from "@/api/services/reports";
-import type { AssessmentListItem } from "@/types";
 import { buildRoute } from "@/routes";
 import ROUTES from "@/routes";
 import styles from "./Reports.module.css";
@@ -37,7 +36,6 @@ interface ReportsProps {
   reportFilters: ReportFilter[];
   selectedFilters: Record<string, string[]>;
   appliedFilters: Record<string, string[]>;
-  assessments: AssessmentListItem[];
   onReportDefinitionChange: (definitionId: string) => void;
   onFilterChange: (
     filterName: string,
@@ -60,7 +58,6 @@ function Reports({
   reportFilters,
   selectedFilters,
   appliedFilters,
-  assessments,
   onReportDefinitionChange,
   onFilterChange,
   onApplyFilters,
@@ -68,15 +65,6 @@ function Reports({
   onExportReport,
 }: ReportsProps) {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-
-  // Create assessment name-to-ID lookup map
-  const assessmentNameToIdMap = useMemo(() => {
-    const map = new Map<string, string>();
-    assessments.forEach((assessment) => {
-      map.set(assessment.name, assessment.id);
-    });
-    return map;
-  }, [assessments]);
 
   const isRowAssessment = reportData?.rows_dimension === "assessment";
   const isColumnAssessment = reportData?.columns_dimension === "assessment";
@@ -341,7 +329,8 @@ function Reports({
                         )}
                       </th>
                       {reportData.columns.map((column, index) => {
-                        const assessmentId = assessmentNameToIdMap.get(column);
+                        const assessmentId =
+                          typeof column === "string" ? column : column?.id;
                         const isClickable = isColumnAssessment && assessmentId;
 
                         return isClickable ? (
@@ -351,11 +340,15 @@ function Reports({
                                 asmtId: assessmentId,
                               })}
                             >
-                              {column}
+                              {typeof column === "string"
+                                ? column
+                                : column?.name}
                             </Link>
                           </th>
                         ) : (
-                          <th key={index}>{column}</th>
+                          <th key={index}>
+                            {typeof column === "string" ? column : column?.name}
+                          </th>
                         );
                       })}
                     </tr>
@@ -382,7 +375,8 @@ function Reports({
                       </tr>
                     ) : (
                       reportData.rows.map((row, rowIndex) => {
-                        const assessmentId = assessmentNameToIdMap.get(row);
+                        const assessmentId =
+                          typeof row === "string" ? row : row?.id;
                         const isClickable = isRowAssessment && assessmentId;
 
                         return (
@@ -394,11 +388,13 @@ function Reports({
                                     asmtId: assessmentId,
                                   })}
                                 >
-                                  {row}
+                                  {typeof row === "string" ? row : row?.name}
                                 </Link>
                               </td>
                             ) : (
-                              <td className={styles["row-header"]}>{row}</td>
+                              <td className={styles["row-header"]}>
+                                {typeof row === "string" ? row : row?.name}
+                              </td>
                             )}
                             {reportData.data[rowIndex]?.map(
                               (cellValue, cellIndex) => (
