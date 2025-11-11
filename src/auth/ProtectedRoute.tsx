@@ -25,6 +25,7 @@ export function ProtectedRoute() {
     registered,
     setRegistered,
     setUserType,
+    setRoles,
   } = useContext(AuthContext)!;
 
   const {
@@ -98,6 +99,7 @@ export function ProtectedRoute() {
     if (isSuccessRegister || profileData) {
       setRegistered(true);
       setUserType(profileData?.user_type || "");
+      setRoles(profileData?.roles || []);
     }
   }, [isSuccessRegister, setRegistered, setUserType, profileData]);
 

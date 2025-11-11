@@ -13,6 +13,8 @@ export interface AuthContextProps {
   refreshUserToken: () => Promise<void>;
   userType: string;
   setUserType: React.Dispatch<React.SetStateAction<string>>;
+  roles: string[];
+  setRoles: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const AuthContext = createContext<AuthContextProps | null>(null);
